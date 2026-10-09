@@ -1,0 +1,576 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Simuladores, jogos, atividades e avaliações para os cursos técnicos. Acesso livre, sem cadastro.">
+<style>:root{color-scheme:light}html{-webkit-text-size-adjust:100%}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Fazenda de Projetos</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<style>
+/* Layout: caderno de oficina. Faixa de régua sob o cabeçalho, títulos condensados grandes,
+   e a trilha Praticar > Aplicar > Avaliar como eixo de cada página. Mesmos tokens dos simuladores de paquímetro. */
+:root{
+  --bg:#E4EAEF; --panel:#F5F8FA; --ink:#14202B; --muted:#4F5F6C; --line:#B8C4CE;
+  --accent:#A85400; --accent-ink:#FFFFFF;
+  --ok:#17703F; --ok-bg:#DCEFE3; --inc:#7A5200; --inc-bg:#F6E7C4; --idle-bg:#D5DEE6;
+  --stage:#1D3B5C; --stage-ink:#E8EEF3; --steel:#BDBFC1; --steel-ink:#373435; --piece:#F2A93B;
+  --display:'Big Shoulders Display','Arial Narrow',Impact,sans-serif;
+  --body:Barlow,'Arial Narrow',Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --bg:#0D1926; --panel:#132638; --ink:#E8EEF3; --muted:#98AAB9; --line:#2A4258;
+  --accent:#F2A93B; --accent-ink:#1A1204;
+  --ok:#5FD08F; --ok-bg:#12382A; --inc:#F2C879; --inc-bg:#3A2E12; --idle-bg:#1B3148;
+  --stage:#1D3B5C; --stage-ink:#E8EEF3; --steel:#BDBFC1; --steel-ink:#373435; --piece:#F2A93B;
+  color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#0D1926; --panel:#132638; --ink:#E8EEF3; --muted:#98AAB9; --line:#2A4258;
+  --accent:#F2A93B; --accent-ink:#1A1204;
+  --ok:#5FD08F; --ok-bg:#12382A; --inc:#F2C879; --inc-bg:#3A2E12; --idle-bg:#1B3148;
+  --stage:#1D3B5C; --stage-ink:#E8EEF3; --steel:#BDBFC1; --steel-ink:#373435; --piece:#F2A93B;
+  color-scheme:dark}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--body)}
+a{color:inherit}
+p{margin:0}
+ul,ol{margin:0;padding:0;list-style:none}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h1:focus{outline:none}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.wrap{max-width:1080px;margin-inline:auto;padding-inline:16px}
+
+/* cabeçalho */
+.top .wrap{display:flex;align-items:center;justify-content:space-between;gap:10px 20px;flex-wrap:wrap;padding-block:14px}
+.brand{font:800 27px/1 var(--display);letter-spacing:.04em;text-transform:uppercase;text-decoration:none}
+.brand b{color:var(--accent);font-weight:800}
+.menu-btn{display:none;font:600 16px/1 var(--body);padding:11px 14px;border:2px solid var(--ink);border-radius:4px;background:transparent;color:var(--ink);cursor:pointer}
+.nav{display:flex;gap:2px;flex-wrap:wrap}
+.nav a{font:600 16px/1 var(--body);padding:11px 12px;border-radius:4px;text-decoration:none}
+.nav a:hover{background:var(--panel)}
+.nav a[aria-current="page"]{background:var(--ink);color:var(--bg)}
+@media (max-width:860px){
+  .menu-btn{display:inline-flex}
+  .nav{display:none;width:100%;flex-direction:column}
+  .nav.open{display:flex}
+  .nav a{padding:14px 12px}
+}
+.rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+
+/* base das páginas */
+main .wrap{display:grid;gap:56px;padding-block:36px 72px}
+main .wrap>*{min-width:0}
+h1{font:800 clamp(42px,7.6vw,78px)/.94 var(--display);letter-spacing:.005em;margin:0;text-wrap:balance}
+h2{font:800 clamp(28px,4.4vw,40px)/1 var(--display);letter-spacing:.01em;margin:0;text-wrap:balance}
+h3{font:700 23px/1.1 var(--display);letter-spacing:.02em;margin:0}
+.lead{font-size:clamp(18px,2.1vw,21px);color:var(--muted);max-width:60ch}
+.eyebrow{font:600 14px/1 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--accent)}
+.head{display:grid;gap:14px}
+.sec{display:grid;gap:22px}
+.crumbs{font-size:15px;color:var(--muted)}
+.crumbs a{text-underline-offset:3px}
+.btn{display:inline-flex;align-items:center;min-height:48px;font:700 19px/1 var(--display);letter-spacing:.04em;padding:13px 22px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);text-decoration:none;cursor:pointer}
+.btn.ghost{background:transparent;color:var(--ink);border-color:var(--ink)}
+.btns{display:flex;gap:10px;flex-wrap:wrap}
+.pill{display:inline-block;font:600 13px/1 var(--body);letter-spacing:.03em;padding:6px 9px;border-radius:3px;white-space:nowrap}
+.pill.ok{background:var(--ok-bg);color:var(--ok)}
+.pill.inc{background:var(--inc-bg);color:var(--inc)}
+.pill.breve{background:var(--idle-bg);color:var(--muted)}
+
+/* início */
+.hero .head{gap:22px}
+.hero h1{max-width:13ch}
+
+.steps{display:grid;gap:22px;counter-reset:s}
+@media (min-width:760px){.steps{grid-template-columns:repeat(3,1fr)}}
+.steps li{border-top:3px solid var(--ink);padding-top:12px;display:grid;gap:6px;align-content:start;counter-increment:s}
+.steps li::before{content:counter(s);font:800 44px/.9 var(--display);color:var(--accent)}
+.steps p{color:var(--muted)}
+
+.areas{display:grid;gap:14px}
+@media (min-width:700px){.areas{grid-template-columns:repeat(2,1fr)}}
+.area{display:grid;gap:8px;align-content:start;background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px;text-decoration:none}
+.area:hover{border-color:var(--ink)}
+.area .n{font:800 30px/1 var(--display);letter-spacing:.01em}
+.area .c{font-size:15px;color:var(--accent);font-weight:600}
+.area p{color:var(--muted)}
+
+/* listas em linha */
+.rows{border-top:1px solid var(--line)}
+.rows>li{display:flex;align-items:center;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;padding:12px 2px;border-bottom:1px solid var(--line)}
+.rows .what{display:grid;gap:2px;min-width:0;flex:1 1 260px}
+.rows .tipo{font:600 12.5px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.rows .nome{font-weight:600}
+.rows .onde{font-size:15px;color:var(--muted)}
+.open{font:700 18px/1 var(--display);letter-spacing:.04em;padding:10px 14px;border:2px solid var(--accent);border-radius:4px;color:var(--accent);text-decoration:none;white-space:nowrap}
+.open:hover{background:var(--accent);color:var(--accent-ink)}
+a.rowlink{display:flex;align-items:center;justify-content:space-between;gap:8px 16px;flex-wrap:wrap;width:100%;text-decoration:none}
+a.rowlink:hover .nome{text-decoration:underline;text-underline-offset:3px}
+
+.band{display:grid;gap:14px;border:2px solid var(--ink);border-radius:6px;padding:22px}
+.band p{color:var(--muted);max-width:62ch}
+
+/* disciplina */
+.carimbo{display:grid;grid-template-columns:repeat(2,1fr);border:2px solid var(--ink);border-radius:2px;margin:0}
+.carimbo div:first-child{grid-column:1/-1}
+@media (min-width:760px){.carimbo{grid-template-columns:2fr 1fr 1.6fr}.carimbo div:first-child{grid-column:auto}}
+.carimbo div{padding:9px 12px;border:1px solid var(--ink);margin:-1px 0 0 -1px;min-width:0}
+.carimbo dt{font:600 11.5px/1.2 var(--body);letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.carimbo dd{margin:2px 0 0;font:700 22px/1.1 var(--display);letter-spacing:.02em;font-variant-numeric:tabular-nums}
+
+.assuntos{display:grid;gap:8px}
+.assunto{background:var(--panel);border:1px solid var(--line);border-radius:6px}
+.assunto[open]{border-color:var(--ink)}
+.assunto>summary{display:grid;grid-template-columns:auto 1fr auto;gap:4px 14px;align-items:center;padding:14px 16px;cursor:pointer;list-style:none}
+.assunto>summary::-webkit-details-marker{display:none}
+.assunto .num{font:800 34px/1 var(--display);color:var(--accent);min-width:1.3em;font-variant-numeric:tabular-nums}
+.assunto .ttl{display:grid;gap:2px;min-width:0}
+.assunto .ttl b{font:700 24px/1.05 var(--display);letter-spacing:.02em}
+.assunto .ttl span{color:var(--muted);font-size:15.5px}
+.assunto .st{display:flex;align-items:center;gap:10px}
+.assunto .st::after{content:"+";font:700 26px/1 var(--display);width:.7em;text-align:center}
+.assunto[open] .st::after{content:"\2212"}
+@media (max-width:560px){
+  .assunto>summary{grid-template-columns:auto 1fr}
+  .assunto .st{grid-column:2;justify-content:space-between}
+}
+.assunto .body{display:grid;gap:20px;padding:4px 16px 18px;border-top:1px solid var(--line)}
+.topicos{padding-top:14px;display:grid;gap:4px 28px;color:var(--muted)}
+@media (min-width:700px){.topicos{grid-template-columns:repeat(2,1fr)}}
+.topicos li{padding-left:16px;position:relative}
+.topicos li::before{content:"";position:absolute;left:0;top:.72em;width:8px;height:2px;background:var(--accent)}
+.fases{display:grid;gap:20px}
+@media (min-width:880px){.fases{grid-template-columns:repeat(3,1fr);gap:18px}}
+.fase{display:grid;gap:8px;align-content:start;min-width:0}
+.fase h3 small{font:400 15px/1 var(--body);letter-spacing:0;color:var(--muted);margin-left:6px}
+.fase .rows>li{padding:10px 0}
+.fase .rows .what{flex-basis:150px}
+
+.normas>summary{cursor:pointer;font:700 23px/1.1 var(--display);letter-spacing:.02em}
+.tablewrap{overflow-x:auto;margin-top:14px}
+table{border-collapse:collapse;width:100%;min-width:420px}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line)}
+th{font:600 12.5px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+td:last-child{font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.note{font-size:15.5px;color:var(--muted);max-width:68ch}
+
+/* recursos */
+.filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.chip{font:600 15.5px/1 var(--body);min-height:42px;padding:10px 14px;border:2px solid var(--line);border-radius:999px;background:transparent;color:var(--ink);cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.chk{display:inline-flex;gap:8px;align-items:center;cursor:pointer}
+.chk input{width:20px;height:20px;accent-color:var(--accent)}
+
+/* texto corrido */
+.prose{display:grid;gap:16px;max-width:66ch}
+.prose h2{margin-top:14px}
+.duo{display:grid;gap:26px}
+@media (min-width:820px){.duo{grid-template-columns:repeat(2,1fr);gap:36px}}
+.duo>div{display:grid;gap:10px;align-content:start;border-top:3px solid var(--ink);padding-top:12px}
+.duo p{color:var(--muted)}
+
+footer{border-top:1px solid var(--line)}
+footer .wrap{display:flex;gap:10px 28px;flex-wrap:wrap;justify-content:space-between;padding-block:22px 28px;font-size:15.5px;color:var(--muted)}
+footer a{text-underline-offset:3px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <a class="brand" href="#inicio" data-go="inicio">Fazenda <b>de Projetos</b></a>
+    <button class="menu-btn" id="menu-btn" type="button" aria-expanded="false" aria-controls="nav">Menu</button>
+    <nav class="nav" id="nav" aria-label="Principal">
+      <a href="#inicio" data-go="inicio">Início</a>
+      <a href="#disciplinas" data-go="disciplinas">Disciplinas</a>
+      <a href="#recursos" data-go="recursos">Recursos</a>
+      <a href="#professores" data-go="professores">Professores</a>
+      <a href="#sobre" data-go="sobre">Sobre</a>
+      <a href="#contato" data-go="contato">Contato</a>
+    </nav>
+  </div>
+  <div class="rule" aria-hidden="true"></div>
+</header>
+
+<main><div class="wrap" id="view"></div></main>
+
+<footer>
+  <div class="wrap">
+    <span>Fazenda de Projetos. Material do Prof. Rodrigo Leandro Martins.</span>
+    <span><a href="#entrar" data-go="entrar">Área do aluno e do professor</a>, prevista para 2028</span>
+  </div>
+</footer>
+
+<script>
+document.documentElement.lang = 'pt-BR';
+
+/* ---------- dados ---------- */
+const TIPOS = {sim:'Simulador', jogo:'Jogo', ativ:'Atividade', aval:'Avaliação', apoio:'Material de apoio'};
+const r = (tipo, nome, st = 'breve', url = '') => ({tipo, nome, st, url});
+
+const AREAS = [
+  {id:'mecanica', nome:'Mecânica', desc:'Medir, desenhar, projetar, fabricar e manter.', disc:[
+    ['metrologia','Metrologia','ativa'], ['desenho-mecanico','Desenho Mecânico'], ['mecanica-geral','Mecânica'],
+    ['processo-de-fabricacao','Processo de Fabricação'], ['tecnologia-dos-materiais','Tecnologia Mecânica dos Materiais'],
+    ['resistencia-dos-materiais','Resistência dos Materiais'], ['elementos-de-maquinas','Elementos de Máquinas'],
+    ['projetos-mecanicos','Projetos Mecânicos'], ['eletromecanica','Eletromecânica'],
+    ['manutencao-de-maquinas','Manutenção de Máquinas e Equipamentos']]},
+  {id:'producao', nome:'Produção', desc:'Planejar, programar e acompanhar o que a fábrica produz.', disc:[
+    ['planejamento-da-producao','Planejamento da Produção'], ['programacao-e-monitoramento','Programação e Monitoramento da Produção'],
+    ['gestao-da-producao-e-qualidade','Gestão da Produção e Qualidade'],
+    ['manutencao-e-melhorias','Processos de Manutenção e Melhorias da Produção'],
+    ['sustentabilidade','Sustentabilidade nos Processos de Produção']]},
+  {id:'gestao', nome:'Gestão', desc:'Organização, projetos, processos e pessoas.', disc:[
+    ['gestao-organizacional','Gestão Organizacional'], ['gestao-de-projetos-e-processos','Gestão de Projetos e Processos'],
+    ['gestao-de-equipes','Gestão de Equipes de Trabalho']]},
+  {id:'formacao-geral', nome:'Formação geral', desc:'O que serve aos dois cursos, da informática à segurança.', disc:[
+    ['tic','Tecnologia da Informação e Comunicação'], ['industria-4-0','Indústria 4.0'],
+    ['seguranca-e-saude','Segurança e Saúde no Trabalho']]}
+];
+
+const ASSUNTOS = [
+  {nome:'Fundamentos da metrologia', resumo:'De onde vêm as medidas e por que toda medição tem erro.',
+   topicos:['História das medidas, do cúbito ao metro','O que é medir','Resolução e exatidão','Fontes de erro, como a paralaxe','Noções de incerteza e rastreabilidade'],
+   praticar:[r('jogo','Linha do tempo das medidas'), r('sim','Paralaxe: mude o ângulo e veja a leitura mudar')],
+   aplicar:[r('ativ','Medir com palmo, pé e régua')],
+   avaliar:[r('aval','Avaliação de fundamentos')]},
+  {nome:'Sistemas de unidades e conversões', resumo:'Milímetro e polegada, e como passar de um para o outro.',
+   topicos:['Múltiplos e submúltiplos do metro','Sistema inglês: jarda, pé e polegada','Polegada fracionária, até 1/128"','Polegada milesimal, como .725"','Conversões entre milímetro e polegada'],
+   praticar:[r('sim','Conversor passo a passo'), r('jogo','Pares de medidas equivalentes'), r('sim','Régua de polegada interativa')],
+   aplicar:[r('ativ','Converter as cotas de uma peça')],
+   avaliar:[r('aval','Avaliação de conversões')]},
+  {nome:'Réguas graduadas', resumo:'O instrumento mais simples da oficina, em milímetro e em polegada.',
+   topicos:['Tipos de régua e seus usos','Leitura em milímetro','Leitura em polegada fracionária','Conservação'],
+   praticar:[r('sim','Escala em milímetro','inc'), r('sim','Escala em polegada fracionária'), r('jogo','Qual régua usar')],
+   aplicar:[r('ativ','Aula prática: folha de medição com régua graduada','ok','metrologia/aula-pratica-medicao.html')],
+   avaliar:[r('aval','Avaliação de réguas graduadas')]},
+  {nome:'Noções de tolerância', resumo:'Por que nenhuma peça sai exata e quanta variação se aceita.',
+   topicos:['Por que nenhuma peça sai com a medida exata','O que é tolerância','Medida nominal, máxima e mínima','Como ler uma cota como 25 ± 0,5','Peça dentro e fora da tolerância'],
+   praticar:[r('sim','Faixa de tolerância'), r('jogo','Passa ou não passa')],
+   aplicar:[r('ativ','Dentro ou fora da tolerância, com a régua')],
+   avaliar:[r('aval','Avaliação de noções de tolerância')]},
+  {nome:'Paquímetro', resumo:'Partes, princípio do nônio e leitura em milímetro e em polegada.',
+   topicos:['As 14 partes e os tipos de medição','Princípio do nônio e cálculo da resolução','Leitura em milímetro: nônios de 10, 20 e 50 divisões','Leitura em polegada fracionária e milesimal','Erros de leitura e conservação'],
+   praticar:[r('jogo','Ache a peça: as 14 partes do paquímetro','ok','metrologia/paquimetro-partes.html'),
+     r('sim','Leitura: nônio de 10 divisões (0,1 mm)','ok','metrologia/paquimetro-nonio-10.html'),
+     r('sim','Leitura: nônio de 20 divisões (0,05 mm)','ok','metrologia/paquimetro-nonio-20.html'),
+     r('sim','Leitura: nônio de 50 divisões (0,02 mm)','ok','metrologia/paquimetro-nonio-50.html'),
+     r('jogo','Domine o Paquímetro, por fases','ok','metrologia/paquimetro-jogo-fases.html'),
+     r('sim','Leitura em polegada fracionária (1/128")'), r('sim','Leitura em polegada milesimal (.001")')],
+   aplicar:[r('ativ','Aula prática: folha de medição com paquímetro','ok','metrologia/aula-pratica-medicao.html')],
+   avaliar:[r('aval','Avaliação de paquímetro: 60 leituras e 10 questões','ok','metrologia/paquimetro-avaliacao.html'),
+     r('aval','Avaliação de 50 leituras','inc'), r('aval','Questões de leitura em polegada')],
+   apoio:[r('apoio','Guia do paquímetro','inc')]},
+  {nome:'Micrômetro', resumo:'Leitura de centésimos e milésimos de milímetro.',
+   topicos:['Partes do micrômetro e a função da catraca','Tipos e usos','Cálculo da resolução','Leitura em milímetro: 0,01 mm e 0,001 mm','Leitura em polegada: .001" e .0001"','Micrômetro interno','Conservação'],
+   praticar:[r('jogo','Partes do micrômetro'), r('sim','Leitura de 0,01 mm'), r('sim','Leitura de 0,001 mm, com nônio'), r('sim','Leitura em polegada: .001" e .0001"'), r('jogo','Micrômetro por fases')],
+   aplicar:[r('ativ','Folha de medição com micrômetro')],
+   avaliar:[r('aval','Avaliação de micrômetro')]},
+  {nome:'Relógio comparador', resumo:'Medir por comparação: quanto a peça difere do padrão.',
+   topicos:['Medição por comparação','Partes do relógio','Amplificação por engrenagem, por alavanca e mista','Leitura de 0,01 mm e sentido do ponteiro','Pré-carga e ajuste do zero','Paralelismo, excentricidade e concentricidade','Relógio apalpador e conservação'],
+   praticar:[r('jogo','Partes do relógio comparador'), r('sim','Leitura do ponteiro e do contador de voltas'), r('sim','Pré-carga e zeragem'), r('sim','Excentricidade de um eixo')],
+   aplicar:[r('ativ','Folha de inspeção de um lote')],
+   avaliar:[r('aval','Avaliação de relógio comparador')]},
+  {nome:'Goniômetro', resumo:'Medição de ângulos em graus e minutos.',
+   topicos:['Grau e minuto, ângulo agudo e obtuso','Goniômetro simples, com resolução de 1°','Goniômetro de precisão e seu nônio','Cálculo da resolução: 5 minutos','Leitura nos sentidos horário e anti-horário','Aplicações e conservação'],
+   praticar:[r('jogo','Partes do goniômetro'), r('sim','Goniômetro simples'), r('sim','Goniômetro de precisão: graus e minutos'), r('jogo','Goniômetro por fases')],
+   aplicar:[r('ativ','Folha de medição de ângulos')],
+   avaliar:[r('aval','Avaliação de goniômetro')]},
+  {nome:'Blocos-padrão', resumo:'O padrão de referência da oficina e do laboratório.',
+   topicos:['O que são e para que servem','Composição de um jogo e blocos protetores','Classes 00, 0, 1 e 2','Materiais: aço, metal duro e cerâmica','Erros admissíveis','Montagem de uma medida com o menor número de blocos','Conservação'],
+   praticar:[r('sim','Montagem de medidas com o jogo de blocos'), r('jogo','Menos blocos'), r('jogo','Qual classe usar')],
+   aplicar:[r('ativ','Planejar a montagem de medidas')],
+   avaliar:[r('aval','Avaliação de blocos-padrão')]},
+  {nome:'Tolerâncias dimensionais', resumo:'Afastamentos, ajustes e o sistema ISO de tolerâncias.',
+   topicos:['Afastamento superior e inferior','Campo de tolerância na cota do desenho','Peça aprovada, retrabalho e refugo','Ajustes com folga, com interferência e incertos','Sistema ISO: furo-base, eixo-base e indicações como H7/g6'],
+   praticar:[r('sim','Campo de tolerância'), r('jogo','Aprova, retrabalha ou refuga'), r('sim','Ajuste entre furo e eixo'), r('sim','Consulta da tabela ISO')],
+   aplicar:[r('ativ','Laudo de inspeção de uma peça')],
+   avaliar:[r('aval','Avaliação de tolerâncias dimensionais')]},
+  {nome:'Calibradores e verificadores', resumo:'Conferir sem ler um valor: passa ou não passa.',
+   topicos:['Medição indireta','Calibradores passa-não-passa: tampão, de boca e ajustável','Calibradores de rosca e cônicos','Verificadores: régua de controle, esquadro, gabaritos, raio, folga e fieira','Conservação'],
+   praticar:[r('sim','Passa-não-passa em um lote'), r('jogo','Qual instrumento usar'), r('jogo','Identifique o instrumento')],
+   aplicar:[r('ativ','Inspeção com calibradores e verificadores')],
+   avaliar:[r('aval','Avaliação de calibradores e verificadores')]},
+  {nome:'Rugosidade', resumo:'O acabamento da superfície: como medir e como ler no desenho.',
+   topicos:['O que é rugosidade e por que importa','Perfil, rugosidade e ondulação','Comprimento de amostragem e rugosímetro','Parâmetros Ra, Ry, Rt e Rz','Classes de N1 a N12','Símbolos no desenho e direção das estrias','Processo de usinagem e acabamento'],
+   praticar:[r('sim','Perfil de rugosidade: de onde vêm Ra, Ry e Rz'), r('jogo','Classes de rugosidade'), r('jogo','Leitura dos símbolos')],
+   aplicar:[r('ativ','Interpretar a rugosidade de um desenho')],
+   avaliar:[r('aval','Avaliação de rugosidade')]},
+  {nome:'Tolerâncias geométricas', resumo:'Forma, orientação, posição e batimento.',
+   topicos:['Diferença entre tolerância dimensional e geométrica','Forma: retilineidade, planeza, circularidade e cilindricidade','Orientação: paralelismo, perpendicularidade e inclinação','Posição: concentricidade, coaxialidade e simetria','Batimento radial e axial','Leitura do quadro de tolerância'],
+   praticar:[r('jogo','Símbolos de tolerância geométrica'), r('sim','Campo de tolerância de forma'), r('jogo','Leitura do quadro de tolerância'), r('sim','Batimento com relógio comparador')],
+   aplicar:[r('ativ','Interpretar e verificar um desenho')],
+   avaliar:[r('aval','Avaliação de tolerâncias geométricas')]}
+];
+
+const NORMAS = [
+  ['Temperatura de referência, 20 °C','NBR NM-ISO 1'], ['Paquímetro','NBR NM 216'], ['Micrômetro externo','NBR NM-ISO 3611'],
+  ['Relógio comparador','NBR ISO 463'], ['Blocos-padrão','NBR NM 215'], ['Tolerâncias e ajustes','NBR 6158'],
+  ['Tolerâncias gerais','NBR ISO 2768-1'], ['Calibradores','NBR 6406'],
+  ['Dimensões e tolerâncias no desenho','NBR 17068'], ['Tolerâncias geométricas','NBR 6409']
+];
+
+const FASES = [['praticar','Praticar','simuladores e jogos'], ['aplicar','Aplicar','atividades'], ['avaliar','Avaliar','avaliações'], ['apoio','Material de apoio','']];
+const allOf = a => FASES.flatMap(f => a[f[0]] || []);
+const RECURSOS = ASSUNTOS.flatMap((a, i) => allOf(a).map(x => ({...x, assunto:a.nome, n:i + 1})));
+const N_OK = RECURSOS.filter(x => x.st === 'ok').length;
+// As 21 disciplinas ficam cadastradas em AREAS. Para mostrar mais uma no site, inclua o id dela aqui.
+const VISIVEIS = ['metrologia', 'desenho-mecanico'];
+const DISC = Object.fromEntries(AREAS.flatMap(ar => ar.disc.filter(d => VISIVEIS.includes(d[0])).map(d => [d[0], {id:d[0], nome:d[1], st:d[2] || 'breve'}])));
+const LISTA = VISIVEIS.map(id => DISC[id]);
+
+/* ---------- utilidades ---------- */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const $ = id => document.getElementById(id);
+const link = (go, txt, cls = '') => `<a ${cls ? `class="${cls}" ` : ''}href="#${go}" data-go="${go}">${txt}</a>`;
+const pill = st => st === 'ok' ? '<span class="pill ok">Disponível</span>' : st === 'inc' ? '<span class="pill inc">Pronto, falta incluir</span>' : '<span class="pill breve">Em breve</span>';
+const acao = x => x.url ? `<a class="open" href="${x.url}">Abrir<span class="sr"> ${esc(x.nome)}</span></a>` : pill(x.st);
+const discPill = st => st === 'ativa' ? '<span class="pill ok">Com material</span>' : '<span class="pill breve">Em breve</span>';
+const plural = (n, s, p) => n + ' ' + (n === 1 ? s : p);
+
+/* ---------- páginas ---------- */
+function pgInicio(){
+  const prontos = RECURSOS.filter(x => x.st === 'ok' && x.assunto === 'Paquímetro');
+  return `
+  <section class="hero">
+    <div class="head">
+      <h1>Aprenda jogando e testando os simuladores.</h1>
+      <p class="lead">Simuladores, jogos, atividades e avaliações para os cursos técnicos. Acesso livre, sem cadastro, para alunos e professores de qualquer instituição.</p>
+      <div class="btns">${link('disciplinas','Ver as disciplinas','btn')}</div>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="head"><h2>Cada assunto segue três passos</h2></div>
+    <ol class="steps">
+      <li><h3>Praticar</h3><p>Simuladores e jogos para errar à vontade, até a leitura sair sem pensar.</p></li>
+      <li><h3>Aplicar</h3><p>Atividades com peça e instrumento na mão, anotando as medidas numa folha interativa.</p></li>
+      <li><h3>Avaliar</h3><p>Avaliações com nota na hora e folha de respostas para entregar ao professor.</p></li>
+    </ol>
+  </section>
+
+  <section class="sec">
+    <div class="head"><h2>Disciplinas</h2><p class="lead">Metrologia já tem material. Desenho Mecânico entra em breve.</p></div>
+    <div class="areas">
+      <a class="area" href="#d-metrologia" data-go="d-metrologia"><span class="n">Metrologia</span><span class="c">${ASSUNTOS.length} assuntos, ${N_OK} recursos disponíveis</span><p>A ciência das medidas, dos fundamentos às tolerâncias geométricas.</p></a>
+      <a class="area" href="#d-desenho-mecanico" data-go="d-desenho-mecanico"><span class="n">Desenho Mecânico</span><span class="c">Em breve</span><p>Ler e representar peças: vistas, cotas, cortes e tolerâncias.</p></a>
+    </div>
+  </section>
+
+  <section class="sec">
+    <div class="head"><h2>Disponível agora</h2><p class="lead">Tudo de paquímetro, do primeiro contato à avaliação.</p></div>
+    <ul class="rows">
+      ${prontos.map(x => `<li><div class="what"><span class="tipo">${TIPOS[x.tipo]}</span><span class="nome">${esc(x.nome)}</span></div>${acao(x)}</li>`).join('')}
+    </ul>
+    <div class="btns">${link('recursos','Ver todos os recursos','btn ghost')}</div>
+  </section>
+
+  <section class="band">
+    <h2>Para professores</h2>
+    <p>Use os simuladores no projetor, passe os jogos como tarefa e aplique as avaliações em sala ou em casa. O aluno não precisa de conta: ele digita o nome e entrega a folha de respostas.</p>
+    <div class="btns">${link('professores','Como usar em aula','btn')}</div>
+  </section>`;
+}
+
+function pgDisciplinas(){
+  return `
+  <div class="head">
+    <h1 tabindex="-1">Disciplinas</h1>
+    <p class="lead">O site começa por Metrologia. Desenho Mecânico entra em breve, e as outras disciplinas chegam depois.</p>
+  </div>
+  <ul class="rows">
+    ${LISTA.map(d => `<li><a class="rowlink" href="#d-${d.id}" data-go="d-${d.id}"><span class="what"><span class="nome">${d.nome}</span></span>${discPill(d.st)}</a></li>`).join('')}
+  </ul>`;
+}
+
+function assuntoHTML(a, i){
+  const todos = allOf(a), ok = todos.filter(x => x.st === 'ok').length;
+  const st = ok ? `<span class="pill ok">${ok} de ${todos.length} disponíveis</span>` : todos.some(x => x.st === 'inc') ? '<span class="pill inc">Em preparo</span>' : '<span class="pill breve">Em breve</span>';
+  const fases = FASES.filter(f => f[0] !== 'apoio').map(f => `
+      <div class="fase"><h3>${f[1]}<small>${f[2]}</small></h3>
+        <ul class="rows">${a[f[0]].map(x => `<li><div class="what"><span class="tipo">${TIPOS[x.tipo]}</span><span class="nome">${esc(x.nome)}</span></div>${acao(x)}</li>`).join('')}</ul>
+      </div>`).join('');
+  const apoio = a.apoio ? `
+      <div class="fase"><h3>Material de apoio</h3>
+        <ul class="rows">${a.apoio.map(x => `<li><div class="what"><span class="nome">${esc(x.nome)}</span></div>${acao(x)}</li>`).join('')}</ul>
+      </div>` : '';
+  return `
+  <details class="assunto"${ok > 2 ? ' open' : ''}>
+    <summary><span class="num">${i + 1}</span><span class="ttl"><b>${esc(a.nome)}</b><span>${esc(a.resumo)}</span></span><span class="st">${st}</span></summary>
+    <div class="body">
+      <ul class="topicos">${a.topicos.map(t => `<li>${esc(t)}</li>`).join('')}</ul>
+      <div class="fases">${fases}</div>${apoio}
+    </div>
+  </details>`;
+}
+
+function pgMetrologia(){
+  return `
+  <div class="head">
+    <p class="crumbs">${link('disciplinas','Disciplinas')}</p>
+    <h1 tabindex="-1">Metrologia</h1>
+    <p class="lead">A ciência das medidas. Treze assuntos, dos fundamentos às tolerâncias geométricas, cada um com prática, aplicação e avaliação.</p>
+  </div>
+  <dl class="carimbo">
+    <div><dt>Disciplina</dt><dd>Metrologia</dd></div>
+    <div><dt>Assuntos</dt><dd>${ASSUNTOS.length}</dd></div>
+    <div><dt>Recursos disponíveis</dt><dd>${N_OK} de ${RECURSOS.length}</dd></div>
+  </dl>
+  <section class="sec">
+    <div class="head"><h2>Trilha da disciplina</h2><p class="lead">Siga a ordem. Toque num assunto para ver o que ele tem.</p></div>
+    <div class="assuntos">${ASSUNTOS.map(assuntoHTML).join('')}</div>
+  </section>
+  <details class="normas">
+    <summary>Normas de referência</summary>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Assunto</th><th>Norma ABNT</th></tr></thead>
+      <tbody>${NORMAS.map(n => `<tr><td>${n[0]}</td><td>${n[1]}</td></tr>`).join('')}</tbody>
+    </table></div>
+    <p class="note" style="margin-top:12px">Lista levantada em outubro de 2026. Confira a edição em vigor no catálogo da ABNT antes de citar.</p>
+  </details>`;
+}
+
+function pgDisciplinaVazia(d){
+  return `
+  <div class="head">
+    <p class="crumbs">${link('disciplinas','Disciplinas')}</p>
+    <h1 tabindex="-1">${d.nome}</h1>
+    <p class="lead">Esta disciplina está sendo preparada e entra no site em breve.</p>
+  </div>
+  <dl class="carimbo">
+    <div><dt>Disciplina</dt><dd>${d.nome}</dd></div>
+    <div><dt>Assuntos</dt><dd>A definir</dd></div>
+    <div><dt>Situação</dt><dd>Em breve</dd></div>
+  </dl>
+  <section class="sec">
+    <div class="head"><h2>Como ela vai funcionar</h2><p class="lead">Do mesmo jeito que Metrologia: cada assunto com simuladores e jogos para praticar, uma atividade para aplicar e uma avaliação.</p></div>
+    <div class="btns">${link('d-metrologia','Ver Metrologia','btn')}${link('disciplinas','Voltar às disciplinas','btn ghost')}</div>
+  </section>`;
+}
+
+const F = {tipo:'todos', so:false};
+function listaRecursos(){
+  const l = RECURSOS.filter(x => (F.tipo === 'todos' || x.tipo === F.tipo) && (!F.so || x.st === 'ok'))
+    .sort((a, b) => (a.st === 'ok' ? 0 : a.st === 'inc' ? 1 : 2) - (b.st === 'ok' ? 0 : b.st === 'inc' ? 1 : 2) || a.n - b.n);
+  if(!l.length) return '<li><div class="what"><span class="nome">Nenhum recurso disponível neste tipo por enquanto.</span><span class="onde">Desmarque a opção acima para ver o que está por vir.</span></div></li>';
+  return l.map(x => `<li><div class="what"><span class="tipo">${TIPOS[x.tipo]}</span><span class="nome">${esc(x.nome)}</span><span class="onde">Metrologia, assunto ${x.n}: ${esc(x.assunto)}</span></div>${acao(x)}</li>`).join('');
+}
+function pgRecursos(){
+  const chips = [['todos','Todos'], ['sim','Simuladores'], ['jogo','Jogos'], ['ativ','Atividades'], ['aval','Avaliações'], ['apoio','Material de apoio']];
+  return `
+  <div class="head">
+    <h1 tabindex="-1">Recursos</h1>
+    <p class="lead">Tudo o que o site tem, separado por tipo. ${N_OK} de ${RECURSOS.length} recursos de Metrologia já estão disponíveis.</p>
+  </div>
+  <section class="sec">
+    <div class="filters" role="group" aria-label="Tipo de recurso">
+      ${chips.map(c => `<button class="chip" type="button" data-tipo="${c[0]}" aria-pressed="${F.tipo === c[0]}">${c[1]}</button>`).join('')}
+    </div>
+    <label class="chk"><input type="checkbox" id="so-ok" ${F.so ? 'checked' : ''}> Mostrar só o que já está disponível</label>
+    <ul class="rows" id="lista-rec">${listaRecursos()}</ul>
+  </section>`;
+}
+
+function pgProfessores(){
+  return `
+  <div class="head">
+    <h1 tabindex="-1">Professores</h1>
+    <p class="lead">O material é livre para usar em qualquer escola. Veja como encaixar na sua aula.</p>
+  </div>
+  <section class="sec">
+    <div class="head"><h2>Uma aula em três passos</h2></div>
+    <ol class="steps">
+      <li><h3>Praticar</h3><p>Abra o simulador no projetor para explicar a leitura. Depois, cada aluno treina no celular ou no computador, com correção na hora.</p></li>
+      <li><h3>Aplicar</h3><p>Na bancada, o aluno mede a peça real e anota as cotas na folha interativa, que confere as leituras e mostra o resultado.</p></li>
+      <li><h3>Avaliar</h3><p>A avaliação mostra a nota ao finalizar e gera a folha de respostas para o aluno entregar.</p></li>
+    </ol>
+  </section>
+  <section class="duo">
+    <div><h3>Sem cadastro</h3><p>O aluno abre o link, digita o nome e começa. Nas avaliações, ele informa também a turma e o número de chamada.</p></div>
+    <div><h3>O que a avaliação entrega</h3><p>A de paquímetro tem 60 leituras e 10 questões interpretativas e vale 50 pontos. A ordem das questões muda conforme o número de chamada.</p></div>
+    <div><h3>Material de apoio</h3><p>Guias de cada assunto e a lista de normas de referência, que fica no fim da página de ${link('d-metrologia','Metrologia')}.</p></div>
+    <div><h3>Previsto para 2028</h3><p>Uma área do professor, com turmas e relatórios de notas, e uma área do aluno, com o progresso salvo.</p></div>
+  </section>
+  <div class="btns">${link('recursos','Ver os recursos','btn')}${link('d-metrologia','Ver a trilha de Metrologia','btn ghost')}</div>`;
+}
+
+function pgSobre(){
+  return `
+  <div class="head"><h1 tabindex="-1">Sobre</h1></div>
+  <div class="prose">
+    <p class="lead">Sou Rodrigo Leandro Martins, professor de cursos técnicos desde 2018.</p>
+    <p>Este site reúne os simuladores, jogos, atividades e avaliações que eu crio para as minhas aulas nos cursos técnicos em Mecânica e em Planejamento e Controle da Produção.</p>
+    <p>A ideia é simples: o aluno aprende fazendo. Antes de pegar o instrumento na oficina, ele treina a leitura quantas vezes quiser. Depois mede a peça de verdade. Por fim, mostra o que aprendeu.</p>
+    <p>O acesso é livre para alunos e professores de qualquer instituição.</p>
+  </div>
+  <div class="btns">${link('disciplinas','Ver as disciplinas','btn')}</div>`;
+}
+
+function pgContato(){
+  return `
+  <div class="head"><h1 tabindex="-1">Contato</h1></div>
+  <div class="prose">
+    <p class="lead">Encontrou um erro, tem uma sugestão ou quer usar o material na sua escola?</p>
+    <p>O canal de contato será divulgado nesta página em breve.</p>
+  </div>`;
+}
+
+function pgEntrar(){
+  return `
+  <div class="head">
+    <h1 tabindex="-1">Área do aluno e do professor</h1>
+    <p class="lead">Por enquanto o site não tem login: tudo é de acesso livre. As áreas com conta estão previstas para 2028.</p>
+  </div>
+  <section class="duo">
+    <div><h3>Para o aluno</h3><p>Notas e progresso salvos, para continuar de onde parou em qualquer aparelho.</p></div>
+    <div><h3>Para o professor</h3><p>Turmas, relatórios de acertos e erros por assunto e avaliações prontas para aplicar.</p></div>
+  </section>
+  <div class="btns">${link('inicio','Voltar ao início','btn')}</div>`;
+}
+
+function mountRecursos(){
+  const lista = $('lista-rec'); if(!lista) return;
+  document.querySelectorAll('.chip').forEach(b => b.onclick = () => {
+    F.tipo = b.dataset.tipo;
+    document.querySelectorAll('.chip').forEach(c => c.setAttribute('aria-pressed', c === b));
+    lista.innerHTML = listaRecursos();
+  });
+  $('so-ok').onchange = e => { F.so = e.target.checked; lista.innerHTML = listaRecursos(); };
+}
+
+/* ---------- navegação ---------- */
+const PAGINAS = {inicio:pgInicio, disciplinas:pgDisciplinas, recursos:pgRecursos, professores:pgProfessores, sobre:pgSobre, contato:pgContato, entrar:pgEntrar};
+const view = $('view'), nav = $('nav'), menuBtn = $('menu-btn');
+let atual = null;
+
+function render(tok, primeira){
+  let html, ativo = tok;
+  if(tok === 'd-metrologia'){ html = pgMetrologia(); ativo = 'disciplinas'; }
+  else if(tok.startsWith('d-') && DISC[tok.slice(2)]){ html = pgDisciplinaVazia(DISC[tok.slice(2)]); ativo = 'disciplinas'; }
+  else { if(!PAGINAS[tok]) tok = 'inicio'; html = PAGINAS[tok](); ativo = tok; }
+  atual = tok;
+  view.innerHTML = html;
+  nav.querySelectorAll('a').forEach(a => a.dataset.go === ativo ? a.setAttribute('aria-current','page') : a.removeAttribute('aria-current'));
+  nav.classList.remove('open'); menuBtn.setAttribute('aria-expanded','false');
+  mountRecursos();
+  if(primeira) return;
+  window.scrollTo(0, 0);
+  const h1 = view.querySelector('h1[tabindex]');
+  if(h1) h1.focus({preventScroll:true});
+}
+function go(tok){
+  render(tok);
+  try{ if(location.hash !== '#' + atual) history.replaceState(null, '', '#' + atual); }catch(_){}
+}
+document.addEventListener('click', e => {
+  const a = e.target.closest('a[data-go]');
+  if(a){ e.preventDefault(); go(a.dataset.go); }
+});
+menuBtn.onclick = () => { const o = nav.classList.toggle('open'); menuBtn.setAttribute('aria-expanded', o); };
+window.addEventListener('hashchange', () => { const t = location.hash.slice(1); if(t && t !== atual) render(t); });
+render((location.hash || '#inicio').slice(1), true);
+</script>
+</body>
+</html>

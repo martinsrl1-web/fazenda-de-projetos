@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="color-scheme" content="light dark">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Leitura de Paquímetro</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<style>
+:root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--bad:#B3261E;
+box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80}}
+:root[data-theme="dark"]{--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.5 Barlow,'Arial Narrow',Arial,sans-serif}
+main{max-width:980px;margin:0 auto;padding:20px 16px 40px}
+h1{font:800 clamp(38px,8vw,64px)/.95 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:0 0 4px;letter-spacing:.01em}
+.sub{color:var(--muted);margin:0 0 18px;max-width:60ch}
+.stage{background:#1D3B5C;border-radius:6px;padding:10px 6px 4px;overflow:hidden;touch-action:none}
+.stage svg{display:block;width:100%;height:auto}
+#slider{cursor:grab;outline:none}#slider.fixed{cursor:default}#slider:focus-visible .body{stroke:#F2A93B;stroke-width:110}
+.tabs{display:flex;gap:0;margin:18px 0 14px;border:2px solid var(--ink);border-radius:4px;overflow:hidden;width:fit-content;max-width:100%}
+.tabs button{font:700 20px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:11px 18px;background:transparent;color:var(--ink);border:0;cursor:pointer}
+.tabs button+button{border-left:2px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:20px}
+.big{font:800 clamp(56px,14vw,104px)/.9 'Big Shoulders Display','Arial Narrow',sans-serif;font-variant-numeric:tabular-nums}
+.big small{font-size:.38em;margin-left:.2em;color:var(--muted)}
+.stats{display:flex;gap:26px;flex-wrap:wrap;margin-bottom:14px;color:var(--muted)}
+.stats b{display:block;font:800 30px/1 'Big Shoulders Display',sans-serif;color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+button.act{font:700 19px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:13px 22px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+input[type=text]{font:800 44px/1 'Big Shoulders Display',sans-serif;width:6.5ch;padding:6px 10px;border:2px solid var(--ink);border-radius:4px;background:var(--bg);color:var(--ink);text-align:right}
+.fb{margin-top:14px;padding:12px 14px;border-left:6px solid var(--line);background:var(--bg);border-radius:0 4px 4px 0}
+.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}.fb strong{font-size:1.1em}
+.eq{color:var(--muted);margin:10px 0 0}.eq b{color:var(--ink)}
+label.chk{display:flex;gap:8px;align-items:center;cursor:pointer}
+@media (prefers-reduced-motion:no-preference){.fb{animation:pop .18s ease-out}@keyframes pop{from{transform:translateY(4px);opacity:.4}}}
+
+/* responsivo: retrato e paisagem */
+.stage svg{max-height:56vh;max-height:56dvh;margin:0 auto}
+.stage{user-select:none;-webkit-user-select:none}
+button.act,.tabs button{min-height:48px}
+input[type=text]{min-height:56px}
+.panel.m-explore{display:grid;grid-template-columns:1fr;gap:0}
+@media (max-width:640px){
+  .tabs{width:100%}.tabs button{flex:1;padding:11px 6px}
+  .stats{gap:16px}
+  .row .act{flex:1 1 auto}
+}
+@media (min-width:1000px) and (orientation:portrait){
+  main{max-width:1100px}.panel{padding:26px}body{font-size:19px}
+}
+@media (orientation:landscape) and (max-height:820px){
+  main{padding:10px 18px 18px;max-width:1200px}
+  h1{font-size:36px;margin:0 0 6px}
+  .sub{display:none}
+  .stage{padding:6px 4px 2px}
+  .stage svg{max-height:48vh;max-height:48dvh}
+  .tabs{margin:10px 0 8px}
+  .tabs button{padding:8px 16px;min-height:42px;font-size:18px}
+  .panel{padding:12px 16px}
+  .stats{margin-bottom:6px;gap:22px}.stats b{font-size:24px}
+  .big{font-size:56px}
+  .row{margin-top:8px}.fb{margin-top:8px;padding:8px 12px}
+  p{margin:0}
+  .panel.m-explore{grid-template-columns:auto 1fr;column-gap:28px;align-items:center}
+  .panel.m-explore .big{grid-row:1/span 2}
+  .panel.m-explore .row{margin-top:6px}
+  .panel.m-explore .eq{margin:0}
+}
+@media (orientation:landscape) and (max-height:820px) and (min-width:900px){
+  .panel.m-read,.panel.m-adjust{display:grid;grid-template-columns:auto 1fr;column-gap:28px;align-items:start}
+  .panel.m-read .stats,.panel.m-adjust .stats{grid-row:1/span 3;flex-direction:column;gap:6px;margin:0}
+  .panel.m-read .stats span,.panel.m-adjust .stats span{display:flex;gap:10px;align-items:baseline}
+}
+
+/* Cabeçalho comum do site Fazenda de Projetos */
+.fp-in{max-width:1000px;margin-inline:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.fp-brand{font:800 27px/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.fp-brand b{color:var(--accent);font-weight:800}
+.fp-onde{font:600 13.5px/1.2 Barlow,'Arial Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fp-rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+</style>
+</head>
+<body>
+<header class="fp-top">
+  <div class="fp-in"><a class="fp-brand" href="../index.html">Fazenda <b>de Projetos</b></a><span class="fp-onde">Metrologia · Paquímetro</span></div>
+  <div class="fp-rule" aria-hidden="true"></div>
+</header>
+<main>
+<h1>Leitura de paquímetro</h1>
+<p class="sub">Nônio de 10 divisões, resolução de 0,1 mm. Arraste o cursor, leia a escala e descubra qual traço do nônio coincide com a escala fixa.</p>
+
+<div class="stage">
+<svg id="svg" viewBox="300 450 20500 8800" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Paquímetro com escala fixa em milímetros e nônio de 0,1 mm">
+  <rect x="556.79" y="635.58" width="20000" height="5119.17" fill="#BDBFC1" stroke="#373435" stroke-width="50"/>
+  <g id="ticks" stroke="#373435" fill="#373435"></g>
+  <g id="slider" tabindex="0" role="slider" aria-label="Cursor do paquímetro" aria-valuemin="0" aria-valuemax="0">
+    <path class="body" fill="#E6E7E8" stroke="#373435" stroke-width="50" d="M17060.45 7279.47l-10187.27 0c-163.69,0.52 -296.22,133.37 -296.22,297.16l0 297.18 -3516.51 0 0 -2542.45 3516.51 0 10483.49 0 0 1948.11z"/>
+    <g id="vern" stroke="#373435"></g>
+    <path fill="#E6E7E8" stroke="#373435" stroke-width="50" d="M12516.13 7279.47c234.64,621.87 887.92,1069.26 1657.16,1069.26 769.24,0 1422.52,-447.39 1657.16,-1069.26l-3314.32 0z"/>
+    <path fill="#E6E7E8" stroke="#373435" stroke-width="40" d="M14173.28 8186.67c-681.15,0 -1262.8,-376.58 -1493.65,-907.2l2987.3 0c-230.85,530.62 -812.5,907.2 -1493.65,907.2z"/>
+    <text x="5060.45" y="6901" text-anchor="middle" font-size="700" font-weight="700" fill="#373435" font-family="Arial,Helvetica,sans-serif">0</text>
+    <text x="14060.5" y="6901" text-anchor="middle" font-size="700" font-weight="700" fill="#373435" font-family="Arial,Helvetica,sans-serif">10</text>
+  </g>
+  <g id="guide" stroke-linecap="round"></g>
+</svg>
+</div>
+
+<div class="tabs" role="tablist" aria-label="Modo de jogo">
+  <button role="tab" data-m="explore">Explorar</button>
+  <button role="tab" data-m="read">Ler</button>
+  <button role="tab" data-m="adjust">Ajustar</button>
+</div>
+<section class="panel" id="panel" aria-live="polite"></section>
+</main>
+
+<script>
+const X0=556.82, V0=5060.45, ROUNDS=10, TMIN=15, TMAX=79;
+const $=id=>document.getElementById(id), svg=$('svg'), sl=$('slider');
+const S={mode:'explore',W:2,t:45,target:0,round:1,score:0,streak:0,best:0,done:false,answered:false,hint:false,guide:true,last:null};
+try{S.best=+localStorage.getItem('paq-best')||0}catch(e){}
+const fmt=n=>(n/10).toFixed(1).replace('.',',');
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const R10=()=>S.W*10+S.t, whole=()=>S.W+Math.floor(S.t/10), dv=()=>S.t%10;
+
+/* escala fixa (1 mm por traço; traço longo a cada 5 mm, como na imagem) */
+function drawScale(){
+  let h='';
+  for(let m=1;m<=19;m++){
+    const x=X0+m*1000, v=S.W+m, big10=v%10===0, big5=!big10&&v%5===0;
+    const y1=big10?3189.7:big5?3689.7:4144.75, y2=big10?5754.75:big5?5689.7:5644.75, sw=big10?100:50;
+    h+=`<line x1="${x}" x2="${x}" y1="${y1}" y2="${y2}" stroke-width="${sw}"/>`;
+    if(big10) h+=`<text x="${x}" y="2909.7" text-anchor="middle" font-size="635" font-weight="700" stroke="none" font-family="Arial,Helvetica,sans-serif">${v}</text>`;
+  }
+  $('ticks').innerHTML=h;
+}
+/* nônio: 10 divisões de 0,9 mm */
+(function(){let h='';for(let k=0;k<=10;k++){const x=V0+900*k;
+  const y1=k===5?5316.83:5331.36, y2=k%5?5831.36:(k===5?6316.83:6331.36);
+  h+=`<line x1="${x}" x2="${x}" y1="${y1}" y2="${y2}" stroke-width="${k%10?50:100}"/>`}
+  $('vern').innerHTML=h})();
+
+function draw(){
+  const v0=X0+S.t*100;
+  sl.setAttribute('transform',`translate(${v0-V0},0)`);
+  sl.setAttribute('aria-valuenow',fmt(R10()));sl.setAttribute('aria-valuetext',fmt(R10())+' milímetros');
+  sl.setAttribute('aria-valuemin',fmt(S.W*10+TMIN));sl.setAttribute('aria-valuemax',fmt(S.W*10+TMAX));
+  sl.classList.toggle('fixed',!canDrag());
+  const full=S.mode==='explore'?S.guide:S.answered, hintOnly=S.mode==='read'&&S.hint&&!S.answered;
+  let g='';
+  if(full||hintOnly){
+    const xm=X0+Math.floor(S.t/10)*1000;
+    g+=`<line x1="${xm}" x2="${xm}" y1="3550" y2="6450" stroke="#F2A93B" stroke-width="70" stroke-dasharray="180 160"/>`;
+  }
+  if(full){
+    const xa=v0+900*dv();
+    g+=`<line x1="${xa}" x2="${xa}" y1="3550" y2="6500" stroke="#F2A93B" stroke-width="90"/><circle cx="${xa}" cy="6500" r="150" fill="#F2A93B"/>`;
+  }
+  $('guide').innerHTML=g;
+}
+const canDrag=()=>S.mode==='explore'||(S.mode==='adjust'&&!S.answered&&!S.done);
+
+/* arrastar */
+let grab=null;
+const sx=e=>{const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse()).x};
+sl.addEventListener('pointerdown',e=>{if(!canDrag())return;grab=sx(e)-(X0+S.t*100);sl.setPointerCapture(e.pointerId);sl.focus()});
+sl.addEventListener('pointermove',e=>{if(grab===null)return;setT(Math.round((sx(e)-grab-X0)/100))});
+['pointerup','pointercancel'].forEach(ev=>sl.addEventListener(ev,()=>grab=null));
+sl.addEventListener('keydown',e=>{if(!canDrag())return;
+  const d={ArrowLeft:-1,ArrowDown:-1,ArrowRight:1,ArrowUp:1,PageUp:10,PageDown:-10}[e.key];
+  if(d){e.preventDefault();setT(S.t+d)}});
+function setT(t){t=Math.max(TMIN,Math.min(TMAX,t));if(t===S.t)return;S.t=t;draw();if(S.mode==='explore')panelExplore(true)}
+
+/* painéis */
+const P=$('panel');
+function stats(){return `<div class="stats"><span>Rodada<b>${Math.min(S.round,ROUNDS)}/${ROUNDS}</b></span><span>Pontos<b>${S.score}</b></span><span>Sequência<b>${S.streak}</b></span><span>Recorde<b>${S.best}</b></span></div>`}
+const explain=()=>`<b>${whole()} mm</b> na escala fixa (traço à esquerda do zero do nônio) + traço <b>${dv()}</b> do nônio coincidindo = <b>0,${dv()} mm</b>`;
+
+function panelExplore(keepFocus){
+  P.innerHTML=`<div class="big">${fmt(R10())}<small>mm</small></div>
+  <p class="eq">${explain()}</p>
+  <div class="row"><label class="chk"><input type="checkbox" id="g" ${S.guide?'checked':''}> Mostrar guias</label>
+  <button class="act ghost" id="oth">Outro trecho da escala</button></div>`;
+  $('g').onchange=e=>{S.guide=e.target.checked;draw()};
+  $('oth').onclick=()=>{S.W=2+5*rnd(0,13);drawScale();draw();panelExplore()};
+}
+
+function newRound(){
+  S.answered=false;S.hint=false;S.last=null;
+  let t;do{t=rnd(TMIN,TMAX)}while(t===S.t);
+  S.W=2+5*rnd(0,13);S.t=t;
+  if(S.mode==='adjust'){S.target=S.W*10+rnd(TMIN,TMAX);do{S.t=rnd(TMIN,TMAX)}while(S.W*10+S.t===S.target)}
+  drawScale();draw();
+}
+function pts(diff,hint){return diff===0?(hint?7:10):Math.abs(diff)===1?3:0}
+function finish(diff,hint,said){
+  S.answered=true;const p=pts(diff,hint);S.score+=p;S.streak=diff===0?S.streak+1:0;
+  S.last={diff,p,said};draw();panelGame();
+}
+function panelGame(){
+  if(S.done){
+    const nb=S.score>S.best;if(nb){S.best=S.score;try{localStorage.setItem('paq-best',S.best)}catch(e){}}
+    const msg=S.score>=90?'Mão de metrologista.':S.score>=70?'Leitura firme. Falta pouco para a precisão total.':S.score>=40?'Bom caminho. Reveja qual traço do nônio coincide.':'Use o modo Explorar para treinar os guias e tente de novo.';
+    P.innerHTML=`<div class="big">${S.score}<small>de 100 pontos</small></div><p>${msg}${nb&&S.score>0?' Novo recorde.':''}</p><div class="row"><button class="act" id="again">Jogar de novo</button></div>`;
+    $('again').onclick=startGame;return;
+  }
+  const rd=S.mode==='read', l=S.last;
+  let top=stats();
+  top+=rd?`<p style="margin:0 0 6px">Qual é a leitura do paquímetro?</p>`:`<p style="margin:0 0 6px">Leve o cursor até a medida:</p><div class="big">${fmt(S.target)}<small>mm</small></div>`;
+  let body='';
+  if(rd&&!S.answered){
+    body=`<div class="row"><input type="text" id="ans" inputmode="decimal" autocomplete="off" aria-label="Leitura em milímetros"><span>mm</span>
+    <button class="act" id="ok">Conferir</button><button class="act ghost" id="hint" ${S.hint?'disabled':''}>Dica (−3)</button></div>`;
+    if(S.hint) body+=`<p class="eq">Escala fixa: <b>${whole()} mm</b>. Falta achar o traço do nônio que coincide.</p>`;
+  }else if(!rd&&!S.answered){
+    body=`<div class="row"><button class="act" id="ok">Conferir</button></div>`;
+  }else{
+    const got=rd?l.said:R10(), ok=l.diff===0;
+    body=`<div class="fb ${ok?'ok':'no'}"><strong>${ok?'Certo!':l.p?'Quase.':'Não foi dessa vez.'} +${l.p}</strong><br>
+    ${rd?`Você respondeu ${fmt(got)} mm. `:`Você marcou ${fmt(got)} mm. `}${ok?'':`O correto era ${fmt(rd?R10():S.target)} mm.`}<br>
+    ${rd?explain():'Confira os guias: o traço do nônio que coincide define o décimo de milímetro.'}</div>
+    <div class="row"><button class="act" id="next">${S.round>=ROUNDS?'Ver resultado':'Próxima'}</button></div>`;
+  }
+  P.innerHTML=top+body;
+  const ok=$('ok'),ans=$('ans');
+  if(ans){ans.focus();ans.onkeydown=e=>{if(e.key==='Enter')ok.click()}}
+  if(ok&&!S.answered)ok.onclick=()=>{
+    if(rd){const v=parseFloat((ans.value||'').replace(',','.'));if(isNaN(v)){ans.focus();return}
+      const said=Math.round(v*10);finish(said-R10(),S.hint,said)}
+    else finish(R10()-S.target,false,R10());
+    const n=$('next');if(n)n.focus();
+  };
+  if($('hint'))$('hint').onclick=()=>{S.hint=true;S.score=Math.max(0,S.score);draw();panelGame()};
+  if($('next'))$('next').onclick=()=>{if(S.round>=ROUNDS){S.done=true;draw();panelGame()}else{S.round++;newRound();panelGame()}};
+}
+function startGame(){S.round=1;S.score=0;S.streak=0;S.done=false;newRound();panelGame()}
+
+/* abas */
+const tabs=[...document.querySelectorAll('.tabs button')];
+function setMode(m){
+  S.mode=m;P.className='panel m-'+m;S.done=false;S.answered=false;S.hint=false;
+  tabs.forEach(b=>b.setAttribute('aria-selected',b.dataset.m===m));
+  if(m==='explore'){S.W=2;S.t=45;drawScale();draw();panelExplore()}else startGame();
+}
+tabs.forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+setMode('explore');
+</script>
+</body>
+</html>
