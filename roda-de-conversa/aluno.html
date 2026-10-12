@@ -1,0 +1,132 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Roda de Conversa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<style>
+body{font-size:17px;padding:calc(14px + env(safe-area-inset-top,0px)) 16px calc(24px + env(safe-area-inset-bottom,0px))}
+.wrap{max-width:560px;margin:0 auto;display:grid;gap:14px}
+.top{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.brand{font-size:1.05em;min-width:0}
+.top .pill{flex:none}
+.card{background:var(--paper);border:3px dashed var(--line);border-radius:22px;padding:18px;display:grid;gap:8px}
+.card .q{font-family:var(--display);font-weight:600;font-size:1.35em;line-height:1.2;text-wrap:balance}
+.card .sub{color:var(--muted)}
+.faces{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.face{border:3px solid var(--line);background:var(--paper);border-radius:16px;padding:10px 4px 8px;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
+.face svg{width:58px;height:58px}
+.face span{font-size:.74em;font-weight:700;text-transform:uppercase;text-align:center;overflow-wrap:anywhere}
+.face[aria-pressed="true"]{border-color:var(--ink);background:var(--accent-soft);transform:scale(1.03)}
+.cm{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.vbtn{border-radius:18px;padding:22px 10px;border:3px solid;font-weight:800;font-family:var(--display);font-size:1.5em}
+.vbtn.c{border-color:var(--good);background:var(--good-soft);color:var(--good)}
+.vbtn.m{border-color:var(--bad);background:var(--bad-soft);color:var(--bad)}
+.vbtn[aria-pressed="true"]{box-shadow:0 0 0 4px var(--ink) inset}
+.status{text-align:center;color:var(--muted);font-weight:700;min-height:1.5em}
+.status.ok{color:var(--good)}
+.phrase{font-family:var(--display);font-weight:800;font-size:1.8em;line-height:1.15;text-wrap:balance}
+.card.good{border-style:solid;border-color:var(--good);background:var(--good-soft)}
+.card.bad{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.verdict{font-family:var(--display);font-weight:800;font-size:1.2em}
+.good .verdict{color:var(--good)} .bad .verdict{color:var(--bad)}
+.swap{background:var(--paper);border-radius:14px;padding:12px;border:2px solid var(--good)}
+.swap small{display:block;font-weight:700;color:var(--good);text-transform:uppercase;letter-spacing:.08em;font-size:.7em}
+.swap p{margin:.2em 0 0;font-weight:700}
+.join{display:grid;gap:12px;text-align:center;margin-top:10vh}
+.join input{font:inherit;font-family:var(--display);font-weight:800;font-size:2.4em;text-align:center;letter-spacing:.2em;width:100%;padding:10px;border:3px solid var(--line);border-radius:16px;background:var(--paper);color:var(--ink)}
+textarea{width:100%;min-height:110px;border:2px solid var(--line);border-radius:14px;padding:12px;background:var(--paper);color:var(--ink);font:inherit;resize:vertical}
+.rules{display:grid;gap:8px;margin:0;padding:0;list-style:none}
+.rules li{background:var(--paper);border:2px solid var(--line);border-radius:14px;padding:10px 12px;display:flex;gap:10px}
+.rules b{font-family:var(--display);color:var(--accent);font-size:1.3em;line-height:1}
+.wait{text-align:center;padding:24px 8px;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="config.js"></script>
+<script src="roda.js"></script>
+<script>
+const {EMO,RULES,face,esc}=RODA;
+const db=RODA.connect();
+const $=s=>document.querySelector(s);
+const app=$("#app");
+let sala=new URLSearchParams(location.search).get("sala")||"";
+let me="";try{me=localStorage.getItem("roda-aluno-id")||""}catch(e){}
+if(!me){me="a"+Math.random().toString(36).slice(2,10);try{localStorage.setItem("roda-aluno-id",me)}catch(e){}}
+let est=null,myVote=null,unVote=null,voteKey=null,sentNote=false,noteDraft="";
+
+function header(){return `<div class="top"><div class="brand">Palavras que <span class="c">constroem</span> e <span class="m">machucam</span><small>Sala ${esc(sala)}</small></div>${db.mode==="teste"?`<span class="pill teste">Modo teste</span>`:""}</div>`}
+
+function showJoin(msg){
+  app.innerHTML=`<div class="join"><div class="brand" style="font-size:1.3em">Roda de Conversa<small>Palavras que constroem e machucam</small></div>
+  <form id="f"><label for="cod" class="hint" style="display:block">Digite o código da sala que está no telão</label>
+  <input id="cod" inputmode="numeric" maxlength="4" autocomplete="off" pattern="[0-9]{4}" required>
+  <p class="hint" style="color:var(--bad)">${msg||""}</p>
+  <button class="btn primary" style="width:100%;padding:14px">Entrar</button></form></div>`;
+  $("#f").addEventListener("submit",e=>{e.preventDefault();const v=$("#cod").value.trim();if(!/^\d{4}$/.test(v))return;sala=v;history.replaceState(null,"","?sala="+v);start()});
+}
+
+function watchMyVote(){
+  const k=est&&est.key||null;if(k===voteKey)return;voteKey=k;
+  if(unVote){unVote();unVote=null}myVote=null;
+  if(k)unVote=db.watch("salas/"+sala+"/votos/"+k+"/"+me,v=>{myVote=v;render()});
+}
+function vote(v){if(!voteKey)return;myVote=v;db.set("salas/"+sala+"/votos/"+voteKey+"/"+me,v);render()}
+
+function render(){
+  if(!est){app.innerHTML=header()+`<div class="wait"><p>Procurando a sala ${esc(sala)}…</p><p class="hint">Se demorar, confira o código no telão.</p><button class="ghost" id="trocar">Trocar código</button></div>`;
+    $("#trocar").onclick=()=>{sala="";showJoin()};return}
+  let h=header();
+  if(est.tipo==="espera"){
+    h+=`<div class="card"><div class="eyebrow">Você entrou na roda!</div><div class="q">Enquanto todos entram, leia os nossos combinados.</div></div>
+    <ul class="rules">${RULES.map((r,i)=>`<li><b>${i+1}</b><span>${r[0]}</span></li>`).join("")}</ul>`;
+  }else if(est.tipo==="emocao"){
+    h+=`<div class="card"><div class="eyebrow">${esc(est.eyebrow)}</div><div class="q">${esc(est.q)}</div>${est.sub?`<div class="sub">${esc(est.sub)}</div>`:""}</div>
+    <p class="hint" style="margin:0;text-align:center">Que emoção isso te causa?</p>
+    <div class="faces">${EMO.map(e=>`<button class="face" data-v="${e.id}" aria-pressed="${myVote===e.id}">${face(e.id,58)}<span>${e.l}</span></button>`).join("")}</div>
+    <p class="status ${myVote?"ok":""}">${myVote?"Resposta enviada. Você pode trocar se quiser.":"Toque em uma carinha."}</p>`;
+  }else if(est.tipo==="frase"){
+    if(!est.revelado){
+      h+=`<div class="card"><div class="eyebrow">Frase ${est.n} de 12</div><div class="phrase">“${esc(est.t)}”</div></div>
+      <p class="hint" style="margin:0;text-align:center">Essa frase constrói ou machuca?</p>
+      <div class="cm"><button class="vbtn c" data-v="c" aria-pressed="${myVote==="c"}">Constrói</button><button class="vbtn m" data-v="m" aria-pressed="${myVote==="m"}">Machuca</button></div>
+      <p class="status ${myVote?"ok":""}">${myVote?"Resposta enviada. Você pode trocar até o professor revelar.":"Escolha uma opção."}</p>`;
+    }else{
+      const acertou=myVote?((myVote==="c")===est.ok):null;
+      h+=`<div class="card ${est.ok?"good":"bad"}"><div class="verdict">${est.ok?"Constrói ✓":"Machuca ✗"}</div><div class="phrase">“${esc(est.t)}”</div>${est.ok?"":`<div class="swap"><small>Do jeito que constrói</small><p>“${esc(est.swap)}”</p></div>`}</div>
+      <p class="status ${acertou?"ok":""}">${acertou===null?"Você não respondeu esta.":acertou?"Você pensou igual. Muito bem!":"Essa era diferente. Vale pensar sobre ela."}</p>`;
+    }
+  }else if(est.tipo==="fechamento"){
+    h+=`<div class="card"><div class="eyebrow">Cartão de fechamento</div><div class="q">Na minha turma, eu posso ajudar a melhorar a convivência quando eu…</div></div>`;
+    h+=sentNote?`<div class="note"><p>Sua resposta foi enviada. Ela aparece no telão depois que o professor aprovar.</p></div><button class="ghost" id="outra">Escrever outra</button>`
+      :`<form id="nf"><label for="nt" class="hint" style="display:block">Complete a frase. Lembre: sem citar nomes de colegas.</label><textarea id="nt" maxlength="220" placeholder="…escuto meus colegas sem rir."></textarea><button class="btn primary" style="width:100%;margin-top:8px;padding:12px">Enviar para o mural</button></form>`;
+  }
+  app.innerHTML=h;
+  const nt=$("#nt");if(nt){nt.value=noteDraft;nt.oninput=()=>noteDraft=nt.value;
+    $("#nf").onsubmit=e=>{e.preventDefault();const t=nt.value.trim().replace(/^(…|\.\.\.)\s*/,"").slice(0,220);if(!t)return;db.push("salas/"+sala+"/mural",{t,ok:false,ts:Date.now()});sentNote=true;noteDraft="";render()}}
+  const o=$("#outra");if(o)o.onclick=()=>{sentNote=false;render()};
+}
+app.addEventListener("click",e=>{const b=e.target.closest("[data-v]");if(!b)return;
+  if(est&&est.tipo==="frase"&&est.revelado)return;vote(b.dataset.v)});
+
+let unEst=null;
+function start(){
+  if(unEst)unEst();est=null;render();
+  db.presence("salas/"+sala+"/presenca/"+me);
+  unEst=db.watch("salas/"+sala+"/estado",v=>{est=v;watchMyVote();
+    // não redesenha por cima do texto que o aluno está escrevendo
+    if(est&&est.tipo==="fechamento"&&document.activeElement&&document.activeElement.id==="nt")return;
+    render()});
+}
+if(/^\d{4}$/.test(sala))start();else showJoin();
+</script>
+</body>
+</html>

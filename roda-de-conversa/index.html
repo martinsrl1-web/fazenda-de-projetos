@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Roda de Conversa · Telão</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Grandstander:wght@600;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap">
+<link rel="stylesheet" href="estilo.css">
+<style>
+body{font-size:clamp(15px,1.1vw,19px);padding:14px clamp(16px,2vw,32px) 24px}
+.top{display:flex;flex-wrap:wrap;align-items:center;gap:10px 18px;justify-content:space-between;margin-bottom:14px}
+.brand{font-size:1.25em}
+.tabs{display:flex;flex-wrap:wrap;gap:6px}
+.tab{border:2px solid var(--line);background:var(--paper);border-radius:999px;padding:6px 14px;font-weight:700;font-size:.88em}
+.tab[aria-selected="true"]{background:var(--accent);border-color:var(--accent);color:var(--paper)}
+.layout{display:grid;grid-template-columns:clamp(220px,19vw,300px) minmax(0,1fr);gap:18px;align-items:start}
+.layout.noqr{grid-template-columns:minmax(0,1fr)}
+@media (max-width:860px){.layout{grid-template-columns:1fr}}
+/* painel do QR */
+.join{display:flex;flex-direction:column;gap:10px;align-items:center;text-align:center;position:sticky;top:12px}
+.join .code{font-family:var(--display);font-weight:800;font-size:2.6em;letter-spacing:.08em;line-height:1;font-variant-numeric:tabular-nums}
+#qr{background:#fff;padding:10px;border-radius:14px;width:100%;max-width:240px;aspect-ratio:1}
+#qr svg,#modqr svg{width:100%;height:auto;display:block}
+.join .url{font-size:.74em;color:var(--muted);overflow-wrap:anywhere}
+.join .people{font-weight:700;font-variant-numeric:tabular-nums}
+.join .row{display:flex;gap:6px;flex-wrap:wrap;justify-content:center}
+/* conteúdo */
+.rules{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,185px),1fr));gap:12px;margin-top:16px}
+.rule{background:var(--paper);border:2px solid var(--line);border-radius:18px;padding:16px;display:flex;gap:12px}
+.rule b{font-family:var(--display);font-size:2em;line-height:1;color:var(--accent)}
+.rule h3{font-size:1.2em}.rule p{margin:.3em 0 0;color:var(--muted)}
+.lead{font-size:1.1em;max-width:62ch;color:var(--muted);margin:.5em 0 0}
+.stage{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:1100px){.stage{grid-template-columns:1fr}}
+.card{background:var(--paper);border:3px dashed var(--line);border-radius:26px;padding:clamp(20px,2.6vw,40px);min-height:clamp(200px,30vh,380px);display:flex;flex-direction:column;justify-content:center;gap:14px}
+.card .q{font-family:var(--display);font-weight:600;font-size:clamp(1.5em,2.6vw,2.5em);line-height:1.2;text-wrap:balance}
+.card .sub{font-size:clamp(1.05em,1.5vw,1.4em);color:var(--muted);max-width:52ch}
+.card .ask{color:var(--muted);border-top:2px dashed var(--line);padding-top:12px}
+.card.good{border-style:solid;border-color:var(--good);background:var(--good-soft)}
+.card.bad{border-style:solid;border-color:var(--bad);background:var(--bad-soft)}
+.phrase{font-family:var(--display);font-weight:800;font-size:clamp(2em,4vw,3.8em);line-height:1.1;text-wrap:balance}
+.verdict{font-family:var(--display);font-weight:800;font-size:1.4em}
+.good .verdict{color:var(--good)} .bad .verdict{color:var(--bad)}
+.swap{background:var(--paper);border-radius:16px;padding:14px 16px;border:2px solid var(--good)}
+.swap small{display:block;font-weight:700;color:var(--good);text-transform:uppercase;letter-spacing:.08em;font-size:.72em}
+.swap p{margin:.2em 0 0;font-size:1.25em;font-weight:700}
+.nav{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;flex-wrap:wrap}
+.count{font-variant-numeric:tabular-nums;color:var(--muted);font-weight:700}
+.dots{display:flex;gap:5px;flex-wrap:wrap}
+.dot{width:12px;height:12px;border-radius:50%;background:var(--line);border:0;padding:0}
+.dot.on{background:var(--accent)}
+/* resultados */
+.res-head{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.res-head h3{font-size:1.2em}
+.total{font-family:var(--display);font-weight:800;font-size:1.5em;font-variant-numeric:tabular-nums}
+.bars{display:grid;gap:8px;margin-top:10px}
+.bar{display:grid;grid-template-columns:34px 8.6em minmax(0,1fr) 2.4em;align-items:center;gap:8px;font-size:.92em}
+.bar svg{width:34px;height:34px}
+.bar i{display:block;height:18px;border-radius:9px;background:var(--line);overflow:hidden}
+.bar i b{display:block;height:100%;border-radius:9px;transition:width .4s ease}
+.bar em{font-style:normal;font-weight:700;font-variant-numeric:tabular-nums;text-align:right}
+.bar.zero{opacity:.45}
+.cm{display:grid;gap:14px;margin-top:12px}
+.cm .row{display:grid;grid-template-columns:7em minmax(0,1fr) 4.2em;gap:10px;align-items:center;font-family:var(--display);font-weight:800;font-size:1.3em}
+.cm .row i{display:block;height:34px;border-radius:12px;background:var(--line);overflow:hidden}
+.cm .row i b{display:block;height:100%;transition:width .4s ease}
+.cm .c{color:var(--good)} .cm .c b{background:var(--good)}
+.cm .m{color:var(--bad)} .cm .m b{background:var(--bad)}
+.cm em{font-style:normal;text-align:right;font-variant-numeric:tabular-nums;color:var(--ink)}
+.hiddenres{display:grid;place-items:center;min-height:160px;color:var(--muted);text-align:center}
+.reveal{width:100%;margin-top:14px}
+/* fechamento */
+.close{display:grid;gap:18px}
+.prompt{font-family:var(--display);font-size:clamp(1.4em,2.4vw,2.2em);font-weight:600;line-height:1.2}
+.mural{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,210px),1fr));gap:12px}
+.mural .note{font-size:1.05em}
+.mural .note:nth-child(3n+1){transform:rotate(-1.2deg)} .mural .note:nth-child(3n+2){transform:rotate(.9deg)}
+.mural .note button{position:absolute;top:4px;right:6px;border:0;background:none;color:inherit;opacity:.5}
+.queue{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.strip{margin-top:18px;border-top:2px dashed var(--line);padding-top:10px;display:flex;flex-wrap:wrap;gap:6px 18px;font-size:.84em;color:var(--muted)}
+.strip b{color:var(--accent);font-family:var(--display)}
+.confirm{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.85em}
+/* moderação (celular do professor) */
+.mod{max-width:560px;margin:0 auto;display:grid;gap:12px}
+.mod .item{display:grid;gap:10px}
+.mod .item .acts{display:flex;gap:8px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="brand">Palavras que <span class="c">constroem</span> e <span class="m">machucam</span><small>Roda de Conversa · Língua Portuguesa · 8º ano</small></div>
+  <nav class="tabs" id="tabs" role="tablist"></nav>
+</header>
+<div class="layout" id="layout">
+  <aside class="panel join" id="join">
+    <span class="eyebrow">Entre pelo celular</span>
+    <div id="qr" role="img" aria-label="QR Code para entrar na roda"></div>
+    <div><div class="hint" style="margin:0">Código da sala</div><div class="code" id="code">----</div></div>
+    <div class="url" id="url"></div>
+    <div class="people" id="people">0 aparelhos conectados</div>
+    <span class="pill" id="conn"><i></i><span>Conectando…</span></span>
+    <div class="row" id="joinTools"></div>
+  </aside>
+  <main id="app"></main>
+</div>
+<footer class="strip" id="strip"></footer>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="qrcode.js"></script>
+<script src="config.js"></script>
+<script src="roda.js"></script>
+<script>
+const {EMO,RULES,DECKS,FRASES,FRASE_ORDEM,face,esc}=RODA;
+const db=RODA.connect();
+const $=s=>document.querySelector(s);
+const params=new URLSearchParams(location.search);
+const SHORT=["Respeitar quem fala","Não interromper","Não rir nem debochar","Não citar nomes","Pode passar a vez"];
+const STAGES=[["abertura","Combinados"],["sit","Situações"],["perg","Perguntas"],["disc","Discussão"],["frases","Constrói ou machuca?"],["fechamento","Fechamento"]];
+const KEY="roda-ao-vivo-telao";
+
+function novoCodigo(){return String(Math.floor(1000+Math.random()*9000))}
+function fresh(){return{sala:novoCodigo(),stage:"abertura",idx:{sit:0,perg:0,disc:0},fi:0,revelado:{},mostrar:true,qr:true}}
+let S=fresh();
+try{const r=localStorage.getItem(KEY);if(r)S=Object.assign(fresh(),JSON.parse(r))}catch(e){}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S))}catch(e){}}
+save();
+let confirmNova=false;
+const base=()=>"salas/"+S.sala;
+
+/* ---------- modo moderação (abre no celular do professor) ---------- */
+if(params.get("moderar")){
+  const sala=params.get("moderar");
+  document.body.innerHTML=`<div class="mod"><div class="brand" style="font-size:1.2em">Moderar o mural<small>Sala ${esc(sala)} · só no seu celular</small></div><p class="hint">Aprove as respostas que podem aparecer no telão. Apague as que citam nomes ou desrespeitam alguém.</p><div id="list"></div></div>`;
+  db.watch("salas/"+sala+"/mural",v=>{
+    const items=Object.entries(v||{}).filter(([,n])=>!n.ok).sort((a,b)=>(a[1].ts||0)-(b[1].ts||0));
+    $("#list").innerHTML=items.length?items.map(([id,n])=>`<div class="note item"><p>…${esc(n.t)}</p><div class="acts"><button class="btn primary" data-ok="${id}">Mostrar no telão</button><button class="btn" data-del="${id}">Apagar</button></div></div>`).join(""):`<p class="empty">Nenhuma resposta esperando aprovação.</p>`;
+  });
+  document.addEventListener("click",e=>{const b=e.target.closest("[data-ok],[data-del]");if(!b)return;
+    if(b.dataset.ok)db.update("salas/"+sala+"/mural/"+b.dataset.ok,{ok:true});else db.remove("salas/"+sala+"/mural/"+b.dataset.del)});
+  throw new Error("modo moderação");
+}
+
+/* ---------- QR e conexão ---------- */
+function alunoURL(){return new URL("aluno.html?sala="+S.sala,location.href).href}
+function qrSVG(t){const q=qrcode(0,"M");q.addData(t);q.make();return q.createSvgTag({cellSize:8,margin:0,scalable:true})}
+function drawQR(){
+  $("#code").textContent=S.sala;$("#url").textContent=alunoURL().replace(/^https?:\/\//,"");
+  const el=$("#qr");el.innerHTML="";
+  if(window.qrcode){el.innerHTML=qrSVG(alunoURL())}
+  else el.innerHTML=`<p class="empty" style="color:#333">QR indisponível. Use o código.</p>`;
+}
+db.onConn(ok=>{const c=$("#conn");
+  if(db.mode==="teste"){c.className="pill teste";c.innerHTML="<span>Modo teste · só neste navegador</span>";return}
+  c.className="pill"+(ok?"":" off");c.innerHTML=`<i></i><span>${ok?"Conectado":"Sem conexão"}</span>`});
+let unPeople=null;
+function watchPeople(){if(unPeople)unPeople();unPeople=db.watch(base()+"/presenca",v=>{const n=v?Object.keys(v).length:0;$("#people").textContent=n+(n===1?" aparelho conectado":" aparelhos conectados")})}
+
+/* ---------- estado enviado aos alunos ---------- */
+function estado(){
+  const st=S.stage;
+  if(st==="abertura")return{tipo:"espera"};
+  if(DECKS[st]){const D=DECKS[st],i=S.idx[st],it=D.items[i];return{tipo:"emocao",key:st+"-"+i,eyebrow:D.eyebrow+" "+(i+1),q:it[0],sub:it[1]||"",ask:D.ask||""}}
+  if(st==="frases"){const id=FRASE_ORDEM[S.fi],f=FRASES.find(x=>x.id===id);return{tipo:"frase",key:"f-"+id,n:S.fi+1,t:f.t,revelado:!!S.revelado[id],ok:f.ok,swap:f.swap||""}}
+  return{tipo:"fechamento"};
+}
+let lastSent="";
+function publish(){const e=estado();e.atualizado=Date.now();const s=JSON.stringify(Object.assign({},e,{atualizado:0}));if(s===lastSent)return;lastSent=s;db.set(base()+"/estado",e)}
+
+/* ---------- resultados ao vivo ---------- */
+let votes={},unVotes=null,watchingKey=null,mural={},unMural=null;
+function watchVotes(){
+  const e=estado(),k=e.key||null;
+  if(k===watchingKey)return;watchingKey=k;
+  if(unVotes){unVotes();unVotes=null}votes={};
+  if(k)unVotes=db.watch(base()+"/votos/"+k,v=>{votes=v||{};renderResults()});
+}
+function watchMural(){if(unMural)unMural();unMural=db.watch(base()+"/mural",v=>{mural=v||{};if(S.stage==="fechamento")renderResults()})}
+
+function renderResults(){
+  const box=$("#results");if(!box)return;
+  const vals=Object.values(votes),n=vals.length;
+  if(S.stage==="fechamento"){
+    const all=Object.entries(mural).sort((a,b)=>(a[1].ts||0)-(b[1].ts||0));
+    const ok=all.filter(([,x])=>x.ok),pend=all.length-ok.length;
+    $("#queue").innerHTML=`<span class="pill">${pend} ${pend===1?"resposta esperando":"respostas esperando"} aprovação</span>`;
+    box.innerHTML=ok.length?`<div class="mural">${ok.map(([id,x])=>`<div class="note"><p>…${esc(x.t)}</p><button data-hide="${id}" aria-label="Tirar do mural">✕</button></div>`).join("")}</div>`:`<p class="empty">As respostas aprovadas aparecem aqui como bilhetes.</p>`;
+    return;
+  }
+  const head=`<div class="res-head"><h3>${S.stage==="frases"?"O que a turma acha?":"Como a turma se sente"}</h3><span><span class="total">${n}</span> ${n===1?"resposta":"respostas"}</span></div>`;
+  if(!S.mostrar){box.innerHTML=head+`<div class="hiddenres"><p>Resultados escondidos enquanto a turma responde.</p></div>`;return}
+  if(S.stage==="frases"){
+    const c=vals.filter(v=>v==="c").length,m=vals.filter(v=>v==="m").length,t=Math.max(1,c+m);
+    box.innerHTML=head+`<div class="cm"><div class="row c"><span>Constrói</span><i><b style="width:${c/t*100}%"></b></i><em>${c}</em></div><div class="row m"><span>Machuca</span><i><b style="width:${m/t*100}%"></b></i><em>${m}</em></div></div>`;
+    return;
+  }
+  const cnt={};vals.forEach(v=>cnt[v]=(cnt[v]||0)+1);
+  const max=Math.max(1,...Object.values(cnt));
+  const arr=EMO.map(e=>({e,n:cnt[e.id]||0})).sort((a,b)=>b.n-a.n);
+  box.innerHTML=head+(n?`<div class="bars">${arr.map(x=>`<div class="bar ${x.n?"":"zero"}">${face(x.e.id,34)}<span>${x.e.l}</span><i><b style="width:${x.n/max*100}%;background:${x.e.c}"></b></i><em>${x.n}</em></div>`).join("")}</div>`:`<div class="hiddenres"><p>Esperando as respostas pelo celular…</p></div>`);
+}
+
+/* ---------- telas ---------- */
+function renderChrome(){
+  $("#tabs").innerHTML=STAGES.map(([id,l])=>`<button class="tab" role="tab" aria-selected="${S.stage===id}" data-stage="${id}">${l}</button>`).join("");
+  $("#layout").classList.toggle("noqr",!S.qr);$("#join").hidden=!S.qr;
+  $("#joinTools").innerHTML=confirmNova
+   ?`<div class="confirm">Nova sala apaga os resultados da tela. <button class="btn" data-act="nova-sim">Criar</button><button class="ghost" data-act="nova-nao">Cancelar</button></div>`
+   :`<button class="ghost" data-act="qr">Ocultar QR</button><button class="ghost" data-act="nova">Nova turma</button>`;
+  $("#strip").innerHTML=S.stage==="abertura"?"":`<span><b>Combinados:</b></span>`+SHORT.map((r,i)=>`<span><b>${i+1}</b> ${r}</span>`).join("")+(S.qr?"":`<span><button class="ghost" data-act="qr">Mostrar QR (sala ${S.sala})</button></span>`);
+}
+function toggles(){return `<div class="nav" style="margin-top:12px"><button class="ghost" data-act="mostrar">${S.mostrar?"Esconder resultados":"Mostrar resultados"}</button><button class="ghost" data-act="zerar">Zerar respostas deste cartão</button></div>`}
+function render(){
+  renderChrome();
+  const st=S.stage;let h="";
+  if(st==="abertura"){
+    h=`<section><h2 style="font-size:clamp(1.8em,3.2vw,2.8em)">Combinados da nossa roda</h2>
+     <p class="lead">As palavras têm poder. Elas podem aproximar, incluir e incentivar, ou machucar, excluir e diminuir. Enquanto a turma entra pelo QR Code, vamos combinar como a conversa vai funcionar.</p>
+     <div class="rules">${RULES.map((r,i)=>`<div class="rule"><b>${i+1}</b><div><h3>${r[0]}</h3><p>${r[1]}</p></div></div>`).join("")}</div>
+     <div class="nav"><span></span><button class="btn primary" data-stage="sit">Começar pelas situações →</button></div></section>`;
+  }else if(DECKS[st]){
+    const D=DECKS[st],i=S.idx[st],it=D.items[i];
+    h=`<div class="stage"><div>
+      <article class="card pop"><div class="eyebrow">${D.eyebrow} ${i+1}</div><div class="q">${esc(it[0])}</div>${it[1]?`<div class="sub">${esc(it[1])}</div>`:""}${D.ask?`<div class="ask">${D.ask}</div>`:""}</article>
+      <div class="nav"><button class="btn" data-act="prev" ${i===0?"disabled":""}>← Anterior</button><div class="dots">${D.items.map((_,j)=>`<button class="dot ${j===i?"on":""}" data-go="${j}" aria-label="Cartão ${j+1}"></button>`).join("")}</div><button class="btn primary" data-act="next" ${i===D.items.length-1?"disabled":""}>Próximo →</button></div>
+     </div><section class="panel"><div id="results"></div>${toggles()}</section></div>`;
+  }else if(st==="frases"){
+    const id=FRASE_ORDEM[S.fi],f=FRASES.find(x=>x.id===id),rev=!!S.revelado[id];
+    const card=!rev?`<article class="card pop"><div class="eyebrow">Frase ${S.fi+1} de 12</div><div class="phrase">“${esc(f.t)}”</div><div class="sub">Essa frase constrói ou machuca? Responda no celular.</div></article>`
+      :f.ok?`<article class="card good pop"><div class="verdict">Constrói ✓</div><div class="phrase">“${esc(f.t)}”</div><div class="sub">Essa frase aproxima, incentiva e respeita quem ouve.</div></article>`
+      :`<article class="card bad pop"><div class="verdict">Machuca ✗</div><div class="phrase">“${esc(f.t)}”</div><div class="swap"><small>Do jeito que constrói</small><p>“${esc(f.swap)}”</p></div></article>`;
+    h=`<div class="stage"><div>${card}
+      <div class="nav"><button class="btn" data-act="fprev" ${S.fi===0?"disabled":""}>← Anterior</button><span class="count">${S.fi+1} / 12</span><button class="btn primary" data-act="fnext" ${S.fi===11?"disabled":""}>Próxima →</button></div>
+     </div><section class="panel"><div id="results"></div><button class="btn primary reveal" data-act="revelar">${rev?"Esconder resposta":"Revelar resposta"}</button>${toggles()}</section></div>`;
+  }else{
+    h=`<div class="close"><section class="panel"><div class="eyebrow">Cartão de fechamento</div><p class="prompt">Na minha turma, eu posso ajudar a melhorar a convivência quando eu…</p>
+      <p class="hint">Os alunos escrevem no celular. As respostas só aparecem no mural depois que você aprova.</p>
+      <div class="queue"><span id="queue"></span><button class="ghost" data-act="modlink">Aprovar pelo meu celular</button><button class="ghost" data-act="aprovar">Aprovar todas aqui</button></div>
+      <div id="modbox" hidden style="margin-top:12px"></div></section>
+     <section><h2 style="font-size:1.6em;margin-bottom:12px">Juntos podemos fazer da nossa sala um lugar melhor!</h2><div id="results"></div></section></div>`;
+  }
+  $("#app").innerHTML=h;
+  watchVotes();renderResults();publish();
+}
+
+/* ---------- ações ---------- */
+document.addEventListener("click",ev=>{
+  const b=ev.target.closest("[data-stage],[data-act],[data-go],[data-hide]");if(!b)return;const d=b.dataset;
+  if(d.stage){S.stage=d.stage;confirmNova=false}
+  else if(d.go!=null){S.idx[S.stage]=+d.go}
+  else if(d.hide){db.remove(base()+"/mural/"+d.hide);return}
+  else switch(d.act){
+    case"prev":S.idx[S.stage]=Math.max(0,S.idx[S.stage]-1);break;
+    case"next":S.idx[S.stage]=Math.min(DECKS[S.stage].items.length-1,S.idx[S.stage]+1);break;
+    case"fprev":S.fi=Math.max(0,S.fi-1);break;
+    case"fnext":S.fi=Math.min(11,S.fi+1);break;
+    case"revelar":{const id=FRASE_ORDEM[S.fi];if(S.revelado[id])delete S.revelado[id];else S.revelado[id]=1;break}
+    case"mostrar":S.mostrar=!S.mostrar;break;
+    case"zerar":{const k=estado().key;if(k)db.remove(base()+"/votos/"+k);break}
+    case"qr":S.qr=!S.qr;if(S.qr)setTimeout(drawQR,0);break;
+    case"nova":confirmNova=true;break;
+    case"nova-nao":confirmNova=false;break;
+    case"nova-sim":{const old=S.sala;S=fresh();S.qr=true;confirmNova=false;db.remove("salas/"+old);save();lastSent="";watchingKey=null;drawQR();watchPeople();watchMural();break}
+    case"aprovar":Object.entries(mural).forEach(([id,x])=>{if(!x.ok)db.update(base()+"/mural/"+id,{ok:true})});return;
+    case"modlink":{const box=$("#modbox");box.hidden=!box.hidden;if(!box.hidden){const u=new URL("index.html?moderar="+S.sala,location.href).href;box.innerHTML=`<p class="hint">Escaneie com o <b>seu</b> celular e feche este quadro logo depois.</p><div id="modqr" style="background:#fff;padding:8px;border-radius:12px;width:180px"></div>`;if(window.qrcode)$("#modqr").innerHTML=qrSVG(u)}return}
+  }
+  save();render();
+});
+document.addEventListener("keydown",ev=>{
+  if(ev.target.closest("textarea,input"))return;
+  if(ev.key!=="ArrowRight"&&ev.key!=="ArrowLeft")return;
+  const f=ev.key==="ArrowRight"?1:-1;
+  if(DECKS[S.stage]){S.idx[S.stage]=Math.max(0,Math.min(DECKS[S.stage].items.length-1,S.idx[S.stage]+f))}
+  else if(S.stage==="frases"){S.fi=Math.max(0,Math.min(11,S.fi+f))}else return;
+  save();render();
+});
+
+drawQR();watchPeople();watchMural();render();
+</script>
+</body>
+</html>

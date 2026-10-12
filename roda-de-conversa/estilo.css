@@ -1,0 +1,39 @@
+/* Roda de Conversa ao vivo — tokens e componentes comuns */
+:root{
+  --bg:#EDF1F6; --paper:#FFFFFF; --ink:#1C2140; --muted:#5A6283; --line:#D3DAE6;
+  --accent:#5847D1; --accent-soft:#E6E2FB; --good:#18915A; --good-soft:#DDF3E7; --bad:#D2364A; --bad-soft:#FBE1E5;
+  --note:#FFE993; --note-ink:#3A3110;
+  --display:"Grandstander","Comic Sans MS","Trebuchet MS",cursive;
+  --body:"Atkinson Hyperlegible","Segoe UI",Roboto,Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root{
+  --bg:#121629; --paper:#1C2140; --ink:#EEF0FA; --muted:#A5ACCB; --line:#2F3660;
+  --accent:#9C8EFF; --accent-soft:#2D2A5A; --good:#4FD08F; --good-soft:#163A2A; --bad:#FF7486; --bad-soft:#44202A;
+  --note:#5B4E17; --note-ink:#FFF4C2; color-scheme:dark}}
+*{box-sizing:border-box}
+html,body{margin:0;background:var(--bg);color:var(--ink)}
+body{font-family:var(--body);line-height:1.45}
+[hidden]{display:none!important}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+h1,h2,h3{font-family:var(--display);font-weight:800;text-wrap:balance;margin:0;line-height:1.12}
+.brand{font-family:var(--display);font-weight:800;line-height:1.1}
+.brand .c{color:var(--good)} .brand .m{color:var(--bad)}
+.brand small{display:block;font-family:var(--body);font-weight:400;font-size:.62em;color:var(--muted);letter-spacing:.06em;text-transform:uppercase}
+.eyebrow{font-size:.78em;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.panel{background:var(--paper);border-radius:20px;padding:16px;border:2px solid var(--line)}
+.hint{margin:.2em 0 .8em;color:var(--muted);font-size:.88em}
+.btn{border:2px solid var(--ink);background:var(--paper);border-radius:12px;padding:8px 16px;font-weight:700}
+.btn.primary{background:var(--ink);color:var(--paper)}
+.btn:disabled{opacity:.35;cursor:default}
+.ghost{border:2px solid var(--line);background:transparent;border-radius:10px;padding:6px 12px;font-size:.85em;font-weight:700;color:var(--muted)}
+.empty{color:var(--muted);font-size:.95em}
+.note{background:var(--note);color:var(--note-ink);padding:14px 14px 16px;border-radius:4px 4px 14px 4px;position:relative;box-shadow:0 2px 0 rgba(0,0,0,.08)}
+.note p{margin:0;overflow-wrap:anywhere}
+.pill{display:inline-flex;align-items:center;gap:6px;border-radius:999px;padding:3px 10px;font-size:.78em;font-weight:700;background:var(--accent-soft);color:var(--ink)}
+.pill.teste{background:var(--note);color:var(--note-ink)}
+.pill i{width:8px;height:8px;border-radius:50%;background:var(--good)}
+.pill.off i{background:var(--bad)}
+.pop{animation:pop .35s ease}
+@keyframes pop{from{transform:scale(.97)}to{transform:none}}
+@media (prefers-reduced-motion:reduce){*{transition:none!important;animation:none!important}}

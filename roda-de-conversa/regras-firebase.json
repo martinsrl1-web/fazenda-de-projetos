@@ -1,0 +1,22 @@
+{
+  "rules": {
+    "salas": {
+      "$sala": {
+        ".read": true,
+        ".write": "$sala.length === 4",
+        "votos": {
+          "$cartao": {
+            "$aluno": {
+              ".validate": "newData.isString() && newData.val().length <= 20"
+            }
+          }
+        },
+        "mural": {
+          "$nota": {
+            ".validate": "newData.hasChildren(['t']) && newData.child('t').isString() && newData.child('t').val().length <= 220"
+          }
+        }
+      }
+    }
+  }
+}
