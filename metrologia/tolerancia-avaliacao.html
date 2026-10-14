@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Avaliação: noções de tolerância</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<style>
+:root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--bad:#B3261E;--zone:#CFE6D8;--steel:#1D3B5C;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}}
+:root[data-theme="dark"]{--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 Barlow,'Arial Narrow',Arial,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 48px}
+h1{font:800 clamp(36px,8vw,60px)/.95 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:0 0 6px}
+h2{font:800 clamp(26px,5vw,36px)/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:34px 0 10px;letter-spacing:.01em}
+h3{font:700 22px/1.1 'Big Shoulders Display','Arial Narrow',sans-serif;margin:18px 0 6px;letter-spacing:.02em}
+.sub{color:var(--muted);margin:0 0 18px;max-width:66ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.big{font:800 clamp(48px,12vw,88px)/.9 'Big Shoulders Display','Arial Narrow',sans-serif;font-variant-numeric:tabular-nums}
+.big small{font-size:.38em;margin-left:.2em;color:var(--muted)}
+.stats{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.stats b{display:block;font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+button.act,a.act{display:inline-flex;align-items:center;justify-content:center;font:700 19px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:13px 22px;min-height:48px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;text-decoration:none}
+button.ghost,a.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabs{display:flex;margin:16px 0 12px;border:2px solid var(--ink);border-radius:4px;overflow:hidden;width:fit-content;max-width:100%}
+.tabs button{font:700 20px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:11px 18px;min-height:48px;background:transparent;color:var(--ink);border:0;cursor:pointer}
+.tabs button+button{border-left:2px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.fb{margin-top:12px;padding:12px 14px;border-left:6px solid var(--line);background:var(--bg);border-radius:0 4px 4px 0}
+.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.okc{color:var(--ok);font-weight:700}.noc{color:var(--bad);font-weight:700}
+input[type=text],input[type=number],select,textarea{font:600 18px/1.2 Barlow,Arial,sans-serif;padding:10px 12px;min-height:46px;border:2px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);max-width:100%}
+textarea{width:100%;min-height:90px;resize:vertical}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--muted);font-size:15px}
+.num{font-variant-numeric:tabular-nums}
+@media (max-width:640px){.tabs{width:100%}.tabs button{flex:1;padding:11px 6px}.row .act{flex:1 1 auto}}
+@media (prefers-reduced-motion:no-preference){.fb{animation:pop .18s ease-out}@keyframes pop{from{transform:translateY(4px);opacity:.4}}}
+@media print{.fp-rule,.noprint{display:none!important}body{background:#fff;color:#000}}
+
+/* Cabeçalho comum do site Fazenda de Projetos */
+.fp-in{max-width:1000px;margin-inline:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.fp-brand{font:800 27px/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.fp-brand b{color:var(--accent);font-weight:800}
+.fp-onde{font:600 13.5px/1.2 Barlow,'Arial Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fp-rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+.trilha{display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.trilha a{font:600 15px/1.2 Barlow,sans-serif;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:4px;padding:10px 12px;min-height:44px;display:inline-flex;align-items:center;background:var(--panel)}
+.trilha a[aria-current]{border-color:var(--accent);color:var(--accent);font-weight:700}
+.trilha .t{flex-basis:100%;font:600 13px/1 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* Página */
+.id{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px}
+.id input{width:100%}
+.q{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px 18px;margin-top:12px}
+.q .en{margin:0 0 10px;font-weight:600}
+.q .en .n{font:800 22px/1 'Big Shoulders Display',sans-serif;color:var(--accent);margin-right:6px}
+.q.ok{border-left:6px solid var(--ok)}.q.no{border-left:6px solid var(--bad)}
+.alts{display:flex;flex-direction:column;gap:6px}
+.alt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:2px solid var(--line);border-radius:4px;background:var(--bg);cursor:pointer;min-height:46px}
+.alt input{margin-top:4px;width:18px;height:18px;flex:none}
+.alt.c{border-color:var(--ok)}.alt.x{border-color:var(--bad)}
+.resp{display:flex;gap:8px;align-items:center}
+.resp input{width:9ch;font-weight:800;font-size:22px}
+.cor{margin-top:10px;font-size:15.5px}
+.nota{font:800 clamp(56px,14vw,96px)/.9 'Big Shoulders Display',sans-serif}
+.erro{color:var(--bad);font-weight:600}
+@media (max-width:640px){.id{grid-template-columns:1fr 1fr}.id label:first-child{grid-column:1/-1}}
+</style>
+</head>
+<body>
+<header class="fp-top">
+  <div class="fp-in"><a class="fp-brand" href="../index.html">Fazenda <b>de Projetos</b></a><span class="fp-onde">Metrologia · Noções de tolerância</span></div>
+  <div class="fp-rule" aria-hidden="true"></div>
+</header>
+<main>
+<h1>Avaliação: noções de tolerância</h1>
+<p class="sub">Dez questões sorteadas: cálculo de máxima e mínima, peças dentro ou fora e conceitos. Cada questão vale 1 ponto. Escreva os números com vírgula, como 24,5.</p>
+<section class="panel">
+<div class="id">
+  <label class="f">Nome<input type="text" id="nome" autocomplete="name" maxlength="60"></label>
+  <label class="f">Turma<input type="text" id="turma" maxlength="20"></label>
+  <label class="f">Nº<input type="text" id="numero" inputmode="numeric" maxlength="4"></label>
+</div>
+</section>
+<div id="qs"></div>
+<section class="panel" style="margin-top:14px" id="fim" aria-live="polite"></section>
+<nav class="trilha noprint" aria-label="Noções de tolerância"><span class="t">Noções de tolerância</span><a href="tolerancia-o-que-e.html">Leitura</a><a href="tolerancia-faixa.html">Simulador</a><a href="tolerancia-passa-nao-passa.html">Jogo</a><a href="tolerancia-regua.html">Atividade</a><a href="tolerancia-avaliacao.html" aria-current="page">Avaliação</a><a href="../index.html#d-metrologia">Voltar à trilha de Metrologia</a></nav>
+</main>
+<script src="../vendor/jspdf.umd.min.js"></script>
+<script>
+/* Valores em centésimos de milímetro (inteiros). */
+const $=id=>document.getElementById(id);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[rnd(0,a.length-1)],shuf=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=rnd(0,i);[a[i],a[j]]=[a[j],a[i]]}return a};
+const fc=v=>{let s=(v/100).toFixed(2).replace(/0+$/,'').replace(/\.$/,'');return s.replace('.',',')};
+const parse=s=>{s=String(s).trim().replace(/\s|mm/gi,'').replace(',','.');if(!/^\d+(\.\d{1,3})?$/.test(s))return null;return Math.round(parseFloat(s)*100)};
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PECAS=['eixo','pino','bucha','espaçador','bloco','flange'];
+const TOLS=[100,50,30,20,10,5];
+function cota(){const t=pick(TOLS);const n=rnd(5,150)*100+(t<=20?pick([0,0,50]):0);return {n,t}}
+
+const CONC=[
+ {q:'O que é tolerância?',c:'A variação permitida na medida de uma peça em relação à nominal.',e:['O erro que o operador comete ao medir a peça.','A medida exata que a peça deve ter.','A diferença entre dois instrumentos de medição.']},
+ {q:'Por que nenhuma peça sai com a medida exata do desenho?',c:'Porque máquina, ferramenta, temperatura, material e medição sempre variam um pouco.',e:['Porque os desenhos sempre têm erros de cota.','Porque os operadores não seguem o desenho.','Porque as réguas e paquímetros nunca medem certo.']},
+ {q:'O que é a medida nominal?',c:'O valor de referência escrito no desenho, antes do ±.',e:['A maior medida aceita.','A medida encontrada na inspeção.','A largura da faixa de tolerância.']},
+ {q:'Qual a principal desvantagem de usar tolerâncias muito apertadas sem necessidade?',c:'O custo de fabricação e de inspeção aumenta, e mais peças são recusadas.',e:['A peça fica mais fraca.','O desenho fica proibido pela norma.','A peça deixa de ser intercambiável.']},
+ {q:'Graças à tolerância, uma porca de um fornecedor serve no parafuso de outro. Esse benefício se chama:',c:'Intercambiabilidade.',e:['Calibração.','Rastreabilidade.','Paralaxe.']},
+ {q:'Um eixo mediu menos que a medida mínima. O que normalmente acontece com ele?',c:'Vira refugo, porque não há como devolver material à peça.',e:['Vai para retrabalho e é usinado de novo.','É aprovado, porque ficou perto da nominal.','É aprovado, porque o limite mínimo é aceito.']},
+ {q:'Por que o operador costuma regular a máquina mirando a nominal, no meio da faixa?',c:'Para ter margem quando a ferramenta se desgastar e a medida começar a mudar.',e:['Porque a nominal é o único valor aceito.','Para economizar matéria-prima.','Porque a máxima e a mínima não são aceitas.']},
+ {q:'Para conferir uma cota de 20 ± 0,05 mm, qual instrumento é mais adequado?',c:'Um instrumento de resolução 0,01 mm, como o micrômetro.',e:['Uma régua graduada de 1 mm.','Uma trena.','Qualquer instrumento, desde que seja novo.']}
+];
+
+let Q=[],done=false;
+function montar(){Q=[];
+  /* 3 de cálculo de máxima ou mínima */
+  shuf(['max','min',pick(['max','min'])]).forEach(k=>{const {n,t}=cota();Q.push({tipo:'num',en:`Na cota <b>${fc(n)} ± ${fc(t)}</b>, qual é a medida <b>${k==='max'?'máxima':'mínima'}</b> aceita, em mm?`,txt:`Na cota ${fc(n)} ± ${fc(t)}, qual é a medida ${k==='max'?'máxima':'mínima'} aceita, em mm?`,ok:k==='max'?n+t:n-t,exp:k==='max'?`Máxima = ${fc(n)} + ${fc(t)} = ${fc(n+t)} mm.`:`Mínima = ${fc(n)} − ${fc(t)} = ${fc(n-t)} mm.`})});
+  /* 1 de largura da faixa */
+  {const {n,t}=cota();Q.push({tipo:'num',en:`Qual é a largura da faixa de tolerância da cota <b>${fc(n)} ± ${fc(t)}</b>, em mm?`,txt:`Qual é a largura da faixa de tolerância da cota ${fc(n)} ± ${fc(t)}, em mm?`,ok:2*t,exp:`Faixa = máxima − mínima = ${fc(n+t)} − ${fc(n-t)} = ${fc(2*t)} mm.`})}
+  /* 4 de dentro ou fora: um no limite, um logo fora, um claro dentro, um claro fora */
+  shuf(['lim','justo','dentro','fora']).forEach(k=>{const {n,t}=cota(),st=t>=50?10:t>=10?(t%2?1:2):1,s=pick([-1,1]);let m;
+    if(k==='lim')m=n+s*t;else if(k==='justo')m=n+s*(t+st);else if(k==='dentro')m=n+s*Math.round(t*rnd(2,7)/10/st)*st;else m=n+s*(t+st*rnd(3,8));
+    const dentro=m>=n-t&&m<=n+t,peca=pick(PECAS);
+    Q.push({tipo:'mc',en:`Um ${peca} com cota <b>${fc(n)} ± ${fc(t)}</b> mediu <b>${fc(m)} mm</b>. Ele está:`,txt:`Um ${peca} com cota ${fc(n)} ± ${fc(t)} mediu ${fc(m)} mm. Ele está:`,
+      alts:['Dentro da tolerância','Fora da tolerância'],c:dentro?0:1,fixa:true,
+      exp:`Mínima ${fc(n-t)} e máxima ${fc(n+t)}. ${dentro?(m===n-t||m===n+t?`${fc(m)} está exatamente no limite, que ainda é aceito.`:`${fc(m)} está entre elas.`):(m>n+t?`${fc(m)} passou da máxima.`:`${fc(m)} ficou abaixo da mínima.`)}`})});
+  /* 2 conceituais */
+  shuf(CONC).slice(0,2).forEach(x=>{const alts=shuf([x.c,...x.e]);Q.push({tipo:'mc',en:esc(x.q),txt:x.q,alts,c:alts.indexOf(x.c),exp:`Resposta: ${x.c}`})});
+  Q.forEach(q=>q.r=null);done=false;render()}
+
+function render(){
+  $('qs').innerHTML=Q.map((q,i)=>{const st=done?(q.certo?'ok':'no'):'';
+    let body;
+    if(q.tipo==='num')body=`<div class="resp"><input type="text" inputmode="decimal" id="a${i}" data-i="${i}" maxlength="10" value="${esc(q.r??'')}" ${done?'disabled':''} aria-label="Resposta da questão ${i+1}"><span>mm</span></div>`;
+    else body=`<div class="alts" role="radiogroup" aria-label="Alternativas da questão ${i+1}">${q.alts.map((a,j)=>`<label class="alt ${done&&j===q.c?'c':''} ${done&&j===q.r&&j!==q.c?'x':''}"><input type="radio" name="q${i}" data-i="${i}" value="${j}" ${q.r===j?'checked':''} ${done?'disabled':''}><span>${q.fixa?'':String.fromCharCode(65+j)+') '}${esc(a)}</span></label>`).join('')}</div>`;
+    const cor=done?`<div class="cor ${q.certo?'okc':'noc'}">${q.certo?'Certo.':'Errado.'} <span style="color:var(--ink);font-weight:400">${q.exp}</span></div>`:'';
+    return `<div class="q ${st}"><p class="en"><span class="n">${i+1}</span>${q.en}</p>${body}${cor}</div>`}).join('');
+  if(!done){$('fim').innerHTML=`<div id="emsg"></div><div class="row"><button class="act" id="fin">Finalizar e corrigir</button></div>`;$('fin').onclick=finalizar}
+  else{const n=Q.filter(q=>q.certo).length;
+    $('fim').innerHTML=`<div class="stats"><span>Nota</span></div><div class="nota">${n}<small style="font-size:.4em;color:var(--muted)"> / 10</small></div>
+     <div class="fb ${n>=7?'ok':'no'}">${n===10?'Excelente! Você domina as noções de tolerância.':n>=7?'Bom resultado. Revise as questões marcadas em vermelho.':'Releia o texto sobre tolerância, pratique no simulador e faça a avaliação de novo.'}</div>
+     <div id="emsg"></div><div class="row"><button class="act" id="pdf">Baixar PDF</button><button class="act ghost" id="nova">Nova avaliação</button><a class="act ghost" href="tolerancia-o-que-e.html">Rever o texto</a></div>`;
+    $('pdf').onclick=gerarPDF;$('nova').onclick=()=>{if(confirm('Começar uma nova avaliação com outras questões?')){montar();window.scrollTo(0,0)}}}}
+
+$('qs').addEventListener('input',e=>{const i=+e.target.dataset.i;if(isNaN(i))return;const q=Q[i];q.r=q.tipo==='num'?e.target.value:+e.target.value});
+$('qs').addEventListener('change',e=>{if(e.target.type==='radio'){Q[+e.target.dataset.i].r=+e.target.value}});
+
+function finalizar(){
+  if(!$('nome').value.trim()){$('emsg').innerHTML='<p class="erro">Escreva o seu nome antes de finalizar.</p>';$('nome').focus();return}
+  const vaz=Q.map((q,i)=>(q.r===null||q.r==='')?i+1:0).filter(Boolean);
+  if(vaz.length&&!confirm(`A${vaz.length>1?'s questões':' questão'} ${vaz.join(', ')} ${vaz.length>1?'estão':'está'} sem resposta. Finalizar mesmo assim?`))return;
+  Q.forEach(q=>{q.certo=q.tipo==='num'?parse(q.r??'')===q.ok:q.r===q.c});
+  done=true;['nome','turma','numero'].forEach(k=>$(k).disabled=true);render();$('fim').scrollIntoView({behavior:'smooth'})}
+
+function gerarPDF(){
+  if(!window.jspdf||!window.jspdf.jsPDF){$('emsg').innerHTML='<p class="erro">O gerador de PDF não carregou. Confira a internet e recarregue a página.</p>';return}
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),L=15,W=180,n=Q.filter(q=>q.certo).length;let y=18;
+  const pdfTxt=s=>String(s).replace(/<[^>]+>/g,'').replace(/−/g,'-').replace(/&lt;/g,'<').replace(/&gt;/g,'>').replace(/&amp;/g,'&').replace(/&quot;/g,'"');
+  const linha=(t,sz=11,b=false,c=[20,32,43],ind=0)=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...c);
+    doc.splitTextToSize(pdfTxt(t),W-ind).forEach(l=>{if(y>282){doc.addPage();y=18}doc.text(l,L+ind,y);y+=sz*.45})};
+  doc.setFillColor(168,84,0);doc.rect(0,0,210,6,'F');
+  linha('FAZENDA DE PROJETOS · Metrologia · Noções de tolerância',9,true,[79,95,108]);y+=1;
+  linha('Avaliação: noções de tolerância',16,true);y+=2;
+  linha(`Nome: ${$('nome').value.trim()}    Turma: ${$('turma').value.trim()||'—'}    Nº: ${$('numero').value.trim()||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')}`,10);y+=2;
+  linha(`Nota: ${n} / 10`,14,true,n>=7?[23,112,63]:[179,38,30]);y+=3;
+  Q.forEach((q,i)=>{if(y>262){doc.addPage();y=18}
+    linha(`${i+1}. ${q.txt}`,10.5,true);
+    const resp=q.tipo==='num'?(q.r?`${q.r} mm`:'(sem resposta)'):(q.r===null?'(sem resposta)':q.alts[q.r]);
+    linha(`Sua resposta: ${resp}`,10,false,q.certo?[23,112,63]:[179,38,30],4);
+    if(!q.certo)linha(q.tipo==='num'?`Correto: ${fc(q.ok)} mm`:`Correto: ${q.alts[q.c]}`,10,false,[20,32,43],4);
+    linha(q.exp,9.5,false,[79,95,108],4);y+=2.5});
+  const nm=$('nome').value.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  doc.save(`avaliacao-tolerancia-${nm||'aluno'}.pdf`);$('emsg').innerHTML='<p class="okc">PDF gerado. Confira nos downloads.</p>'}
+montar();
+</script>
+</body>
+</html>

@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Dentro ou fora, com a régua</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<style>
+:root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--bad:#B3261E;--zone:#CFE6D8;--steel:#1D3B5C;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}}
+:root[data-theme="dark"]{--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 Barlow,'Arial Narrow',Arial,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 48px}
+h1{font:800 clamp(36px,8vw,60px)/.95 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:0 0 6px}
+h2{font:800 clamp(26px,5vw,36px)/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:34px 0 10px;letter-spacing:.01em}
+h3{font:700 22px/1.1 'Big Shoulders Display','Arial Narrow',sans-serif;margin:18px 0 6px;letter-spacing:.02em}
+.sub{color:var(--muted);margin:0 0 18px;max-width:66ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.big{font:800 clamp(48px,12vw,88px)/.9 'Big Shoulders Display','Arial Narrow',sans-serif;font-variant-numeric:tabular-nums}
+.big small{font-size:.38em;margin-left:.2em;color:var(--muted)}
+.stats{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.stats b{display:block;font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+button.act,a.act{display:inline-flex;align-items:center;justify-content:center;font:700 19px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:13px 22px;min-height:48px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;text-decoration:none}
+button.ghost,a.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabs{display:flex;margin:16px 0 12px;border:2px solid var(--ink);border-radius:4px;overflow:hidden;width:fit-content;max-width:100%}
+.tabs button{font:700 20px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:11px 18px;min-height:48px;background:transparent;color:var(--ink);border:0;cursor:pointer}
+.tabs button+button{border-left:2px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.fb{margin-top:12px;padding:12px 14px;border-left:6px solid var(--line);background:var(--bg);border-radius:0 4px 4px 0}
+.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.okc{color:var(--ok);font-weight:700}.noc{color:var(--bad);font-weight:700}
+input[type=text],input[type=number],select,textarea{font:600 18px/1.2 Barlow,Arial,sans-serif;padding:10px 12px;min-height:46px;border:2px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);max-width:100%}
+textarea{width:100%;min-height:90px;resize:vertical}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--muted);font-size:15px}
+.num{font-variant-numeric:tabular-nums}
+@media (max-width:640px){.tabs{width:100%}.tabs button{flex:1;padding:11px 6px}.row .act{flex:1 1 auto}}
+@media (prefers-reduced-motion:no-preference){.fb{animation:pop .18s ease-out}@keyframes pop{from{transform:translateY(4px);opacity:.4}}}
+@media print{.fp-rule,.noprint{display:none!important}body{background:#fff;color:#000}}
+
+/* Cabeçalho comum do site Fazenda de Projetos */
+.fp-in{max-width:1000px;margin-inline:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.fp-brand{font:800 27px/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.fp-brand b{color:var(--accent);font-weight:800}
+.fp-onde{font:600 13.5px/1.2 Barlow,'Arial Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fp-rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+.trilha{display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.trilha a{font:600 15px/1.2 Barlow,sans-serif;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:4px;padding:10px 12px;min-height:44px;display:inline-flex;align-items:center;background:var(--panel)}
+.trilha a[aria-current]{border-color:var(--accent);color:var(--accent);font-weight:700}
+.trilha .t{flex-basis:100%;font:600 13px/1 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* Página */
+.id{display:grid;grid-template-columns:2fr 1fr 1fr;gap:10px;margin-bottom:14px}
+.id input{width:100%}
+.steps{margin:0 0 14px;padding-left:22px}.steps li{margin-bottom:4px}
+.lin{display:grid;grid-template-columns:32px 1.7fr 1fr .8fr 1fr 1.2fr;gap:8px;align-items:end;padding:10px 0;border-bottom:1px solid var(--line)}
+.lin.h{font:600 13px/1.2 Barlow,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding-top:0}
+.lin input,.lin select{width:100%}
+.lin .n{font:800 24px/46px 'Big Shoulders Display',sans-serif;color:var(--muted);text-align:center}
+.lin .lb{display:none;font-size:13px;color:var(--muted);font-weight:600}
+.res{grid-column:2/-1;font-size:15.5px;padding:8px 10px;border-radius:4px;background:var(--bg);border-left:5px solid var(--line)}
+.res.ok{border-color:var(--ok)}.res.no{border-color:var(--bad)}
+.dica{font-size:15px;color:var(--muted)}
+.erro{color:var(--bad);font-weight:600}
+@media (max-width:720px){
+ .id{grid-template-columns:1fr 1fr}.id label:first-child{grid-column:1/-1}
+ .lin{grid-template-columns:1fr 1fr;gap:8px 10px}.lin.h{display:none}
+ .lin .n{grid-column:1/-1;text-align:left;line-height:1}
+ .lin .p{grid-column:1/-1}
+ .lin .lb{display:block}
+ .res{grid-column:1/-1}
+}
+</style>
+</head>
+<body>
+<header class="fp-top">
+  <div class="fp-in"><a class="fp-brand" href="../index.html">Fazenda <b>de Projetos</b></a><span class="fp-onde">Metrologia · Noções de tolerância</span></div>
+  <div class="fp-rule" aria-hidden="true"></div>
+</header>
+<main>
+<h1>Dentro ou fora, com a régua</h1>
+<p class="sub">Aula prática: meça peças de verdade com a régua graduada e decida se cada uma está dentro da tolerância. A folha sempre começa em branco.</p>
+
+<section class="panel">
+<div class="id">
+  <label class="f">Nome<input type="text" id="nome" autocomplete="name" maxlength="60"></label>
+  <label class="f">Turma<input type="text" id="turma" maxlength="20"></label>
+  <label class="f">Nº<input type="text" id="numero" inputmode="numeric" maxlength="4"></label>
+</div>
+<h3 style="margin-top:4px">Como fazer</h3>
+<ol class="steps">
+  <li>Escreva o nome da peça que você vai medir e a cota que o professor passou para ela, como 50 ± 1.</li>
+  <li>Meça a peça com a régua, olhando a escala de frente para evitar a paralaxe, e anote a medida.</li>
+  <li>Calcule a máxima e a mínima e escolha se a peça está <b>dentro</b> ou <b>fora</b>.</li>
+  <li>Toque em <b>Conferir</b>. Depois responda às duas perguntas e gere o PDF.</li>
+</ol>
+<p class="dica">Sem cota do professor? Use a medida que você acha que a peça deveria ter (por exemplo, 100 mm para um bloco de 10 cm) com tolerância de ± 1 mm.</p>
+</section>
+
+<section class="panel" style="margin-top:14px">
+<div class="lin h"><span></span><span>Peça</span><span>Nominal (mm)</span><span>Tol. ± (mm)</span><span>Medida (mm)</span><span>Sua decisão</span></div>
+<div id="linhas"></div>
+<div class="row"><button class="act ghost" id="add">+ Mais uma peça</button></div>
+<div id="msg" aria-live="polite"></div>
+<div class="row"><button class="act" id="conf">Conferir</button></div>
+</section>
+
+<section class="panel" style="margin-top:14px">
+<h3 style="margin-top:0">Para pensar</h3>
+<label class="f" style="color:var(--ink)">1. Alguma peça ficou fora da tolerância? O que pode ter causado isso? Se todas ficaram dentro, diga qual chegou mais perto de um limite.<textarea id="r1" maxlength="800"></textarea></label>
+<label class="f" style="color:var(--ink);margin-top:12px">2. Por que a régua serve para conferir uma tolerância de ± 1 mm, mas não serviria para ± 0,05 mm?<textarea id="r2" maxlength="800"></textarea></label>
+<div id="pmsg" aria-live="polite"></div>
+<div class="row"><button class="act" id="pdf">Gerar PDF</button><button class="act ghost" id="nova">Começar folha nova</button></div>
+</section>
+<nav class="trilha noprint" aria-label="Noções de tolerância"><span class="t">Noções de tolerância</span><a href="tolerancia-o-que-e.html">Leitura</a><a href="tolerancia-faixa.html">Simulador</a><a href="tolerancia-passa-nao-passa.html">Jogo</a><a href="tolerancia-regua.html" aria-current="page">Atividade</a><a href="tolerancia-avaliacao.html">Avaliação</a><a href="../index.html#d-metrologia">Voltar à trilha de Metrologia</a></nav>
+</main>
+<script src="../vendor/jspdf.umd.min.js"></script>
+<script>
+const $=id=>document.getElementById(id),MAXL=10;
+let N=0,conferido=false,resultado=[];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const parse=s=>{s=String(s).trim().replace(',','.');if(!/^\d+(\.\d{1,2})?$/.test(s))return null;return Math.round(parseFloat(s)*100)};
+const fc=v=>{let s=(v/100).toFixed(2).replace(/0+$/,'').replace(/\.$/,'');return s.replace('.',',')};
+const fm=fc;
+
+function linhaHTML(i){return `<div class="lin" data-i="${i}">
+  <span class="n">${i+1}</span>
+  <label class="p"><span class="lb">Peça</span><input type="text" class="pc" maxlength="40" placeholder="ex.: borracha" aria-label="Peça ${i+1}"></label>
+  <label><span class="lb">Nominal (mm)</span><input type="text" class="nm" inputmode="decimal" maxlength="8" aria-label="Nominal da peça ${i+1}"></label>
+  <label><span class="lb">Tol. ± (mm)</span><input type="text" class="tl" inputmode="decimal" maxlength="6" value="1" aria-label="Tolerância da peça ${i+1}"></label>
+  <label><span class="lb">Medida (mm)</span><input type="text" class="md" inputmode="decimal" maxlength="8" aria-label="Medida da peça ${i+1}"></label>
+  <label><span class="lb">Sua decisão</span><select class="dc" aria-label="Decisão da peça ${i+1}"><option value="">—</option><option value="d">Dentro</option><option value="f">Fora</option></select></label>
+  <div class="res" hidden></div></div>`}
+function addLinha(){if(N>=MAXL)return;$('linhas').insertAdjacentHTML('beforeend',linhaHTML(N));N++;if(N>=MAXL)$('add').disabled=true}
+function zerar(){$('linhas').innerHTML='';N=0;$('add').disabled=false;for(let i=0;i<5;i++)addLinha();
+  ['nome','turma','numero','r1','r2'].forEach(k=>$(k).value='');$('msg').innerHTML='';$('pmsg').innerHTML='';conferido=false;resultado=[]}
+$('add').onclick=addLinha;
+$('linhas').addEventListener('input',()=>{if(conferido){conferido=false;document.querySelectorAll('.res').forEach(r=>r.hidden=true);$('msg').innerHTML='<p class="dica">Você mudou a folha. Toque em Conferir de novo.</p>'}});
+$('linhas').addEventListener('change',e=>{if(e.target.matches('select'))$('linhas').dispatchEvent(new Event('input'))});
+
+function ler(){const out=[],erros=[];
+  document.querySelectorAll('#linhas .lin').forEach((el,i)=>{const g=c=>el.querySelector(c).value.trim();
+    const pc=g('.pc'),nm=g('.nm'),tl=g('.tl'),md=g('.md'),dc=g('.dc');
+    if(!pc&&!nm&&!md&&!dc)return;
+    const n=parse(nm),t=parse(tl),m=parse(md);
+    if(!pc||n===null||t===null||m===null||!dc){erros.push(i+1);return}
+    if(t<=0||t>=n){erros.push(i+1);return}
+    out.push({i:i+1,el,pc,n,t,m,dc})});
+  return {out,erros}}
+
+$('conf').onclick=()=>{const {out,erros}=ler();
+  if(erros.length){$('msg').innerHTML=`<p class="erro">Complete ou corrija a linha ${erros.join(', ')}: peça, nominal, tolerância e medida com números (ex.: 48,5) e a sua decisão.</p>`;return}
+  if(!out.length){$('msg').innerHTML='<p class="erro">Preencha pelo menos uma peça.</p>';return}
+  resultado=out.map(r=>{const mx=r.n+r.t,mn=r.n-r.t,dentro=r.m>=mn&&r.m<=mx,certo=(r.dc==='d')===dentro;
+    const box=r.el.querySelector('.res');box.hidden=false;box.className='res '+(certo?'ok':'no');
+    const pos=dentro?`está entre ${fm(mn)} e ${fm(mx)}${r.m===mn||r.m===mx?' (no limite, que é aceito)':''}`:r.m>mx?`passou da máxima ${fm(mx)} em ${fm(r.m-mx)} mm`:`ficou abaixo da mínima ${fm(mn)} em ${fm(mn-r.m)} mm`;
+    box.innerHTML=`Máx. ${fm(mx)} · Mín. ${fm(mn)} → a peça está <b class="${dentro?'okc':'noc'}">${dentro?'dentro':'fora'}</b>: ${fm(r.m)} ${pos}. ${certo?'<span class="okc">Sua decisão está certa.</span>':'<span class="noc">Sua decisão não confere: refaça a conta.</span>'}`;
+    return {...r,mx,mn,dentro,certo}});
+  conferido=true;const ac=resultado.filter(r=>r.certo).length,fora=resultado.filter(r=>!r.dentro).length;
+  $('msg').innerHTML=`<div class="fb ${ac===resultado.length?'ok':'no'}">Você decidiu certo em <b>${ac} de ${resultado.length}</b> peças. ${fora?`${fora} peça${fora>1?'s ficaram':' ficou'} fora da tolerância.`:'Todas as peças ficaram dentro da tolerância.'}</div>`};
+
+$('pdf').onclick=()=>{
+  if(!window.jspdf||!window.jspdf.jsPDF){$('pmsg').innerHTML='<p class="erro">O gerador de PDF não carregou. Confira a internet e recarregue a página.</p>';return}
+  if(!$('nome').value.trim()){$('pmsg').innerHTML='<p class="erro">Escreva o seu nome antes de gerar o PDF.</p>';$('nome').focus();return}
+  if(!conferido){$('pmsg').innerHTML='<p class="erro">Toque em Conferir antes de gerar o PDF.</p>';return}
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),L=15,W=180;let y=18;
+  const linha=(t,sz=11,b=false,c=[20,32,43])=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...c);
+    const ls=doc.splitTextToSize(t,W);ls.forEach(l=>{if(y>282){doc.addPage();y=18}doc.text(l,L,y);y+=sz*.45})};
+  doc.setFillColor(168,84,0);doc.rect(0,0,210,6,'F');
+  linha('FAZENDA DE PROJETOS · Metrologia · Noções de tolerância',9,true,[79,95,108]);y+=1;
+  linha('Aula prática: dentro ou fora, com a régua',16,true);y+=2;
+  linha(`Nome: ${$('nome').value.trim()}    Turma: ${$('turma').value.trim()||'—'}    Nº: ${$('numero').value.trim()||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')}`,10);y+=3;
+  const cols=[['Nº',10],['Peça',44],['Cota',26],['Mín.',18],['Máx.',18],['Medida',20],['Resultado',22],['Decisão',22]];
+  const head=()=>{doc.setFillColor(29,59,92);doc.rect(L,y-4.5,W,7,'F');doc.setTextColor(255,255,255);doc.setFont('helvetica','bold');doc.setFontSize(9);let x=L+1.5;cols.forEach(([t,w])=>{doc.text(t,x,y);x+=w});y+=6};
+  head();doc.setFont('helvetica','normal');
+  resultado.forEach((r,k)=>{if(y>275){doc.addPage();y=18;head()}
+    if(k%2){doc.setFillColor(238,242,245);doc.rect(L,y-4.3,W,6.4,'F')}
+    doc.setTextColor(20,32,43);doc.setFontSize(9.5);doc.setFont('helvetica','normal');
+    const v=[String(r.i),doc.splitTextToSize(r.pc,42)[0],`${fc(r.n)} ± ${fc(r.t)}`,fm(r.mn),fm(r.mx),fm(r.m),r.dentro?'Dentro':'Fora',r.certo?'Certa':'Errada'];
+    let x=L+1.5;v.forEach((t,j)=>{if(j===7)doc.setTextColor(...(r.certo?[23,112,63]:[179,38,30]));doc.text(t,x,y);x+=cols[j][1]});y+=6.4});
+  y+=3;const ac=resultado.filter(r=>r.certo).length;
+  linha(`Decisões certas: ${ac} de ${resultado.length}.`,10,true);y+=4;
+  linha('1. Alguma peça ficou fora da tolerância? O que pode ter causado isso?',10.5,true);linha($('r1').value.trim()||'(sem resposta)',10.5);y+=3;
+  linha('2. Por que a régua serve para ± 1 mm, mas não para ± 0,05 mm?',10.5,true);linha($('r2').value.trim()||'(sem resposta)',10.5);
+  const nm=$('nome').value.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  doc.save(`tolerancia-regua-${nm||'aluno'}.pdf`);$('pmsg').innerHTML='<p class="okc">PDF gerado. Confira nos downloads.</p>'};
+$('nova').onclick=()=>{if(confirm('Apagar tudo e começar uma folha nova?'))zerar()};
+zerar();
+</script>
+</body>
+</html>

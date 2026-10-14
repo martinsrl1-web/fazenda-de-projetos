@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Faixa de tolerância</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<style>
+:root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--bad:#B3261E;--zone:#CFE6D8;--steel:#1D3B5C;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}}
+:root[data-theme="dark"]{--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 Barlow,'Arial Narrow',Arial,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 48px}
+h1{font:800 clamp(36px,8vw,60px)/.95 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:0 0 6px}
+h2{font:800 clamp(26px,5vw,36px)/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:34px 0 10px;letter-spacing:.01em}
+h3{font:700 22px/1.1 'Big Shoulders Display','Arial Narrow',sans-serif;margin:18px 0 6px;letter-spacing:.02em}
+.sub{color:var(--muted);margin:0 0 18px;max-width:66ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.big{font:800 clamp(48px,12vw,88px)/.9 'Big Shoulders Display','Arial Narrow',sans-serif;font-variant-numeric:tabular-nums}
+.big small{font-size:.38em;margin-left:.2em;color:var(--muted)}
+.stats{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.stats b{display:block;font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+button.act,a.act{display:inline-flex;align-items:center;justify-content:center;font:700 19px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:13px 22px;min-height:48px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;text-decoration:none}
+button.ghost,a.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabs{display:flex;margin:16px 0 12px;border:2px solid var(--ink);border-radius:4px;overflow:hidden;width:fit-content;max-width:100%}
+.tabs button{font:700 20px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:11px 18px;min-height:48px;background:transparent;color:var(--ink);border:0;cursor:pointer}
+.tabs button+button{border-left:2px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.fb{margin-top:12px;padding:12px 14px;border-left:6px solid var(--line);background:var(--bg);border-radius:0 4px 4px 0}
+.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.okc{color:var(--ok);font-weight:700}.noc{color:var(--bad);font-weight:700}
+input[type=text],input[type=number],select,textarea{font:600 18px/1.2 Barlow,Arial,sans-serif;padding:10px 12px;min-height:46px;border:2px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);max-width:100%}
+textarea{width:100%;min-height:90px;resize:vertical}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--muted);font-size:15px}
+.num{font-variant-numeric:tabular-nums}
+@media (max-width:640px){.tabs{width:100%}.tabs button{flex:1;padding:11px 6px}.row .act{flex:1 1 auto}}
+@media (prefers-reduced-motion:no-preference){.fb{animation:pop .18s ease-out}@keyframes pop{from{transform:translateY(4px);opacity:.4}}}
+@media print{.fp-rule,.noprint{display:none!important}body{background:#fff;color:#000}}
+
+/* Cabeçalho comum do site Fazenda de Projetos */
+.fp-in{max-width:1000px;margin-inline:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.fp-brand{font:800 27px/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.fp-brand b{color:var(--accent);font-weight:800}
+.fp-onde{font:600 13.5px/1.2 Barlow,'Arial Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fp-rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+.trilha{display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.trilha a{font:600 15px/1.2 Barlow,sans-serif;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:4px;padding:10px 12px;min-height:44px;display:inline-flex;align-items:center;background:var(--panel)}
+.trilha a[aria-current]{border-color:var(--accent);color:var(--accent);font-weight:700}
+.trilha .t{flex-basis:100%;font:600 13px/1 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* Página */
+.stage{background:var(--steel);border-radius:6px;padding:10px 6px 4px;touch-action:none;user-select:none;-webkit-user-select:none}
+.stage svg{display:block;width:100%;height:auto;max-height:52dvh;margin:0 auto}
+.stage text{font-family:Barlow,'Arial Narrow',Arial,sans-serif}
+#hand{cursor:grab;outline:none}#hand:focus-visible .knob{stroke:#F2A93B;stroke-width:5}
+.verd{font:800 30px/1 'Big Shoulders Display',sans-serif;letter-spacing:.03em}
+.cfg{display:flex;gap:12px;flex-wrap:wrap;align-items:flex-end;margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.cfg input{width:7.5ch}
+.task{font-size:19px;margin:0 0 8px}
+.task b{color:var(--accent)}
+.grid2{display:grid;grid-template-columns:auto 1fr;gap:6px 24px;align-items:end}
+@media (max-width:640px){.grid2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="fp-top">
+  <div class="fp-in"><a class="fp-brand" href="../index.html">Fazenda <b>de Projetos</b></a><span class="fp-onde">Metrologia · Noções de tolerância</span></div>
+  <div class="fp-rule" aria-hidden="true"></div>
+</header>
+<main>
+<h1>Faixa de tolerância</h1>
+<p class="sub">Arraste a medida da peça pela barra e veja quando ela entra e quando sai da faixa aceita. A peça desenhada cresce e diminui junto, com exagero para você enxergar a diferença.</p>
+<div class="stage">
+<svg id="svg" viewBox="0 0 1000 330" role="img" aria-label="Peça e barra da faixa de tolerância">
+  <g id="peca"></g>
+  <g id="barra"></g>
+  <g id="hand" tabindex="0" role="slider" aria-label="Medida da peça">
+    <line id="hl" x1="0" x2="0" y1="200" y2="262" stroke="#F2A93B" stroke-width="4"/>
+    <circle class="knob" id="hk" cx="0" cy="282" r="20" fill="#F2A93B" stroke="#1a1204" stroke-width="2"/>
+    <path id="ha" d="" fill="#1a1204"/>
+  </g>
+</svg>
+</div>
+<div class="tabs" role="tablist" aria-label="Modo">
+  <button role="tab" data-m="explore">Explorar</button>
+  <button role="tab" data-m="desafio">Desafio</button>
+</div>
+<section class="panel" id="panel" aria-live="polite"></section>
+<nav class="trilha noprint" aria-label="Noções de tolerância"><span class="t">Noções de tolerância</span><a href="tolerancia-o-que-e.html">Leitura</a><a href="tolerancia-faixa.html" aria-current="page">Simulador</a><a href="tolerancia-passa-nao-passa.html">Jogo</a><a href="tolerancia-regua.html">Atividade</a><a href="tolerancia-avaliacao.html">Avaliação</a><a href="../index.html#d-metrologia">Voltar à trilha de Metrologia</a></nav>
+</main>
+<script>
+/* Todas as medidas em centésimos de milímetro (inteiros), para não errar nas contas. */
+const PRESETS=[[2500,50],[5000,100],[1200,20],[8000,30],[4000,10]];
+const $=id=>document.getElementById(id),svg=$('svg'),P=$('panel');
+const S={mode:'explore',nom:2500,tol:50,m:2500,round:0,score:0,task:null,answered:false,done:false,best:0};
+try{S.best=+localStorage.getItem('tol-faixa-best')||0}catch(e){}
+const stepOf=t=>t>=100?10:t>=30?5:t>=20?2:1;
+const decs=()=>stepOf(S.tol)>=10?1:2;
+const f=(v,d=decs())=>(v/100).toFixed(d).replace('.',',');
+const fs=v=>{let d=Math.max(decs(),(v%10?2:1));return (v/100).toFixed(d).replace('.',',')};
+const fc=(v)=>{/* cota sem zeros sobrando */let s=(v/100).toFixed(2).replace(/0+$/,'').replace(/\.$/,'');return s.replace('.',',')};
+const lo=()=>S.nom-S.tol,hi=()=>S.nom+S.tol;
+const R0=()=>S.nom-Math.round(2.2*S.tol),R1=()=>S.nom+Math.round(2.2*S.tol);
+const BX0=70,BX1=930;
+const xOf=v=>BX0+(v-R0())/(R1()-R0())*(BX1-BX0);
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const status=v=>v>hi()?'acima':v<lo()?'abaixo':'dentro';
+
+function drawBarra(){
+  const y=200,h=46;let g='';
+  g+=`<rect x="${BX0}" y="${y}" width="${BX1-BX0}" height="${h}" fill="#B3261E" opacity=".35"/>`;
+  g+=`<rect x="${xOf(lo())}" y="${y}" width="${xOf(hi())-xOf(lo())}" height="${h}" fill="#2E8B57" opacity=".75"/>`;
+  g+=`<text x="${(BX0+xOf(lo()))/2}" y="${y+30}" text-anchor="middle" font-size="18" font-weight="700" fill="#FFD9D5">FORA</text>`;
+  g+=`<text x="${(xOf(hi())+BX1)/2}" y="${y+30}" text-anchor="middle" font-size="18" font-weight="700" fill="#FFD9D5">FORA</text>`;
+  g+=`<text x="${(xOf(lo())+xOf(hi()))/2}" y="${y+30}" text-anchor="middle" font-size="18" font-weight="700" fill="#EAFBF0">DENTRO</text>`;
+  /* escala */
+  const st=stepOf(S.tol),big=st*10;
+  for(let v=Math.ceil(R0()/st)*st;v<=R1();v+=st){const x=xOf(v),b=v%big===0;
+    g+=`<line x1="${x}" x2="${x}" y1="${y+h}" y2="${y+h+(b?14:7)}" stroke="#C9D6E2" stroke-width="${b?2:1}"/>`}
+  [[lo(),'mín.'],[S.nom,'nominal'],[hi(),'máx.']].forEach(([v,t],i)=>{const x=xOf(v);
+    g+=`<line x1="${x}" x2="${x}" y1="${y-8}" y2="${y+h}" stroke="${i===1?'#F2A93B':'#fff'}" stroke-width="3" ${i===1?'stroke-dasharray="6 5"':''}/>`;
+    g+=`<text x="${x}" y="${y-30}" text-anchor="middle" font-size="22" font-weight="700" fill="#fff">${f(v)}</text>`;
+    g+=`<text x="${x}" y="${y-12}" text-anchor="middle" font-size="14" fill="#C9D6E2">${t}</text>`});
+  $('barra').innerHTML=g}
+
+function drawPeca(){
+  /* peça exagerada: largura proporcional à medida dentro da janela da barra */
+  const v=S.m,cx=500,w=260+(v-R0())/(R1()-R0())*380,x0=cx-w/2,y0=40,h=72,s=status(v);
+  const cor=s==='dentro'?'#5FD08F':'#FF8A80';
+  let g=`<rect x="${x0}" y="${y0}" width="${w}" height="${h}" rx="6" fill="#9EB2C4" stroke="${cor}" stroke-width="5"/>`;
+  g+=`<rect x="${x0+10}" y="${y0+12}" width="${w-20}" height="10" rx="4" fill="#C8D6E2" opacity=".7"/>`;
+  g+=`<line x1="${x0}" x2="${x0+w}" y1="${y0+h+22}" y2="${y0+h+22}" stroke="#fff" stroke-width="2"/>`;
+  g+=`<line x1="${x0}" x2="${x0}" y1="${y0+h+4}" y2="${y0+h+30}" stroke="#fff" stroke-width="1.5"/><line x1="${x0+w}" x2="${x0+w}" y1="${y0+h+4}" y2="${y0+h+30}" stroke="#fff" stroke-width="1.5"/>`;
+  g+=`<path d="M${x0} ${y0+h+22}l12-6v12zM${x0+w} ${y0+h+22}l-12-6v12z" fill="#fff"/>`;
+  g+=`<rect x="${cx-62}" y="${y0+h+8}" width="124" height="28" style="fill:var(--steel)"/>`;
+  g+=`<text x="${cx}" y="${y0+h+30}" text-anchor="middle" font-size="22" font-weight="700" fill="#fff">${fs(v)} mm</text>`;
+  g+=`<text x="${cx}" y="${y0+46}" text-anchor="middle" font-size="18" font-weight="700" fill="#14202B">cota ${fc(S.nom)} ± ${fc(S.tol)}</text>`;
+  $('peca').innerHTML=g}
+
+function drawHand(){const x=xOf(S.m);
+  $('hl').setAttribute('x1',x);$('hl').setAttribute('x2',x);$('hk').setAttribute('cx',x);
+  $('ha').setAttribute('d',`M${x-12} 282l7-6v12zM${x+12} 282l-7-6v12z`);
+  const h=$('hand');h.setAttribute('aria-valuetext',fs(S.m)+' milímetros, '+(status(S.m)==='dentro'?'dentro da tolerância':'fora da tolerância'));
+  h.setAttribute('aria-valuemin',f(R0()));h.setAttribute('aria-valuemax',f(R1()));h.setAttribute('aria-valuenow',(S.m/100).toFixed(2))}
+function draw(){drawBarra();drawPeca();drawHand()}
+const canDrag=()=>S.mode==='explore'||(!S.answered&&!S.done);
+function setM(v){const st=stepOf(S.tol);v=Math.round(v/st)*st;v=Math.max(R0(),Math.min(R1(),v));if(v===S.m)return;S.m=v;drawPeca();drawHand();if(S.mode==='explore')panelExplore(true)}
+
+/* arrastar */
+let drag=false;
+const svgX=e=>{const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;return p.matrixTransform(svg.getScreenCTM().inverse()).x};
+const vOf=x=>R0()+(x-BX0)/(BX1-BX0)*(R1()-R0());
+svg.addEventListener('pointerdown',e=>{if(!canDrag())return;const pt=svgX(e);drag=true;svg.setPointerCapture(e.pointerId);$('hand').focus({preventScroll:true});setM(vOf(pt))});
+svg.addEventListener('pointermove',e=>{if(drag)setM(vOf(svgX(e)))});
+['pointerup','pointercancel'].forEach(t=>svg.addEventListener(t,()=>drag=false));
+$('hand').addEventListener('keydown',e=>{if(!canDrag())return;const st=stepOf(S.tol),d={ArrowLeft:-st,ArrowDown:-st,ArrowRight:st,ArrowUp:st,PageUp:st*10,PageDown:-st*10}[e.key];
+  if(d){e.preventDefault();setM(S.m+d)}else if(e.key==='Home'){e.preventDefault();setM(R0())}else if(e.key==='End'){e.preventDefault();setM(R1())}});
+
+function verdHTML(v){const s=status(v),d=v-S.nom;
+  const txt=s==='dentro'?`<span class="okc verd">DENTRO</span>`:`<span class="noc verd">FORA ${s==='acima'?'— acima da máxima':'— abaixo da mínima'}</span>`;
+  return txt}
+function panelExplore(soft){
+  const v=S.m,d=v-S.nom,s=status(v);
+  const desv=(d>0?'+':d<0?'−':'')+fs(Math.abs(d));
+  const why=s==='dentro'?`${fs(v)} está entre a mínima ${f(lo())} e a máxima ${f(hi())}${v===lo()||v===hi()?', exatamente no limite, que ainda é aceito':''}.`
+    :s==='acima'?`${fs(v)} passou da máxima ${f(hi())} em ${fs(v-hi())} mm.`:`${fs(v)} ficou abaixo da mínima ${f(lo())} em ${fs(lo()-v)} mm.`;
+  const top=`<div class="grid2"><div class="big">${fs(v)}<small>mm</small></div><div>${verdHTML(v)}<p style="margin:6px 0 0">Diferença para a nominal: <b class="num">${desv} mm</b></p></div></div>
+   <div class="fb ${s==='dentro'?'ok':'no'}">${why}</div>`;
+  if(soft&&$('ex-top')){$('ex-top').innerHTML=top;return}
+  P.innerHTML=`<div id="ex-top">${top}</div>
+   <div class="cfg">
+    <label class="f">Cota pronta<select id="pre">${PRESETS.map((p,i)=>`<option value="${i}" ${p[0]===S.nom&&p[1]===S.tol?'selected':''}>${fc(p[0])} ± ${fc(p[1])}</option>`).join('')}<option value="c" ${PRESETS.some(p=>p[0]===S.nom&&p[1]===S.tol)?'':'selected'}>Outra cota…</option></select></label>
+    <label class="f">Nominal (mm)<input type="text" inputmode="decimal" id="nom" value="${fc(S.nom)}"></label>
+    <label class="f">Tolerância ± (mm)<input type="text" inputmode="decimal" id="tol" value="${fc(S.tol)}"></label>
+    <button class="act ghost" id="apl">Usar esta cota</button>
+   </div>
+   <p class="eq" id="cfgmsg" style="color:var(--muted);margin:8px 0 0">Máxima = ${fc(S.nom)} + ${fc(S.tol)} = <b>${f(hi())}</b> · Mínima = ${fc(S.nom)} − ${fc(S.tol)} = <b>${f(lo())}</b></p>`;
+  $('pre').onchange=e=>{if(e.target.value==='c'){$('nom').focus();return}const p=PRESETS[+e.target.value];setCota(p[0],p[1])};
+  $('apl').onclick=()=>{const n=parse($('nom').value),t=parse($('tol').value);
+    if(n===null||t===null||n<100||n>100000||t<1||t>=n){$('cfgmsg').innerHTML='<span class="noc">Digite uma nominal entre 1 e 1000 mm e uma tolerância entre 0,01 mm e o valor da nominal.</span>';return}
+    setCota(n,t)}}
+const parse=s=>{s=String(s).trim().replace(',','.');if(!/^\d+(\.\d{1,2})?$/.test(s))return null;return Math.round(parseFloat(s)*100)};
+function setCota(n,t){S.nom=n;S.tol=t;S.m=n;draw();panelExplore()}
+
+/* desafio */
+const ROUNDS=8;
+const TASKS=[
+ {k:'max',t:'Coloque a medida exatamente no <b>limite máximo</b>.',ok:v=>v===hi(),exp:()=>`Máxima = ${fc(S.nom)} + ${fc(S.tol)} = ${f(hi())} mm.`},
+ {k:'min',t:'Coloque a medida exatamente no <b>limite mínimo</b>.',ok:v=>v===lo(),exp:()=>`Mínima = ${fc(S.nom)} − ${fc(S.tol)} = ${f(lo())} mm.`},
+ {k:'nom',t:'Coloque a medida na <b>nominal</b>.',ok:v=>v===S.nom,exp:()=>`A nominal é o número antes do ±: ${f(S.nom)} mm.`},
+ {k:'di',t:'Coloque uma medida <b>dentro</b> da tolerância e <b>maior</b> que a nominal.',ok:v=>v>S.nom&&v<=hi(),exp:()=>`Qualquer valor acima de ${f(S.nom)} e até ${f(hi())} mm.`},
+ {k:'db',t:'Coloque uma medida <b>dentro</b> da tolerância e <b>menor</b> que a nominal.',ok:v=>v<S.nom&&v>=lo(),exp:()=>`Qualquer valor de ${f(lo())} até menos de ${f(S.nom)} mm.`},
+ {k:'fa',t:'Coloque uma medida <b>fora</b> da tolerância, <b>acima</b> da máxima.',ok:v=>v>hi(),exp:()=>`Qualquer valor maior que ${f(hi())} mm.`},
+ {k:'fb',t:'Coloque uma medida <b>fora</b> da tolerância, <b>abaixo</b> da mínima.',ok:v=>v<lo(),exp:()=>`Qualquer valor menor que ${f(lo())} mm.`}
+];
+let order=[];
+function startDesafio(){S.round=1;S.score=0;S.done=false;
+  order=[...TASKS].sort(()=>Math.random()-.5);order=order.concat([TASKS[0],TASKS[1]].sort(()=>Math.random()-.5)).slice(0,ROUNDS);
+  nextRound()}
+function nextRound(){S.answered=false;S.task=order[S.round-1];const p=PRESETS[rnd(0,PRESETS.length-1)];S.nom=p[0];S.tol=p[1];
+  /* começa num lugar que não resolve a tarefa */
+  const cand=[R0(),R1(),S.nom,lo()-stepOf(S.tol)*3,hi()+stepOf(S.tol)*3].filter(v=>!S.task.ok(v)&&v>=R0()&&v<=R1());S.m=cand[rnd(0,cand.length-1)];
+  draw();panelDesafio()}
+function panelDesafio(){
+  const st=`<div class="stats"><span>Tarefa<b>${S.round}/${ROUNDS}</b></span><span>Acertos<b>${S.score}</b></span><span>Recorde<b>${S.best}/${ROUNDS}</b></span></div>`;
+  if(S.done){P.innerHTML=st+`<p class="task">Você acertou <b>${S.score} de ${ROUNDS}</b> tarefas.</p><div class="fb ${S.score>=6?'ok':'no'}">${S.score===ROUNDS?'Perfeito! Você domina a faixa de tolerância.':S.score>=6?'Muito bem. Revise as tarefas em que errou e tente de novo.':'Volte ao modo Explorar, observe onde ficam a máxima e a mínima e tente de novo.'}</div><div class="row"><button class="act" id="again">Jogar de novo</button><a class="act ghost" href="tolerancia-passa-nao-passa.html">Ir para o jogo Passa ou não passa</a></div>`;
+    $('again').onclick=startDesafio;return}
+  P.innerHTML=st+`<p class="task">Cota <b>${fc(S.nom)} ± ${fc(S.tol)}</b>. ${S.task.t}</p>
+   <div id="dres">${S.answered?resHTML():''}</div>
+   <div class="row">${S.answered?`<button class="act" id="nx">${S.round===ROUNDS?'Ver resultado':'Próxima tarefa'}</button>`:`<button class="act" id="chk">Conferir</button>`}</div>`;
+  if(S.answered){$('nx').onclick=()=>{if(S.round===ROUNDS){S.done=true;S.answered=false;draw();panelDesafio()}else{S.round++;nextRound()}};$('nx').focus()}
+  else $('chk').onclick=()=>{S.answered=true;S.last=S.task.ok(S.m);if(S.last)S.score++;
+    if(S.round===ROUNDS&&S.score>S.best){S.best=S.score;try{localStorage.setItem('tol-faixa-best',S.best)}catch(e){}}
+    drawHand();panelDesafio()}}
+function resHTML(){return `<div class="fb ${S.last?'ok':'no'}"><b>${S.last?'Certo!':'Não foi dessa vez.'}</b> Você colocou ${fs(S.m)} mm. ${S.task.exp()}</div>`}
+
+/* abas */
+document.querySelectorAll('.tabs button').forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+function setMode(m){S.mode=m;document.querySelectorAll('.tabs button').forEach(b=>b.setAttribute('aria-selected',b.dataset.m===m));
+  if(m==='explore'){S.answered=false;S.done=false;draw();panelExplore()}else startDesafio()}
+setMode('explore');
+</script>
+</body>
+</html>

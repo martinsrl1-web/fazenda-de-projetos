@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>O que é tolerância</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<style>
+:root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--bad:#B3261E;--zone:#CFE6D8;--steel:#1D3B5C;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}}
+:root[data-theme="dark"]{--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 Barlow,'Arial Narrow',Arial,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 48px}
+h1{font:800 clamp(36px,8vw,60px)/.95 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:0 0 6px}
+h2{font:800 clamp(26px,5vw,36px)/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:34px 0 10px;letter-spacing:.01em}
+h3{font:700 22px/1.1 'Big Shoulders Display','Arial Narrow',sans-serif;margin:18px 0 6px;letter-spacing:.02em}
+.sub{color:var(--muted);margin:0 0 18px;max-width:66ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.big{font:800 clamp(48px,12vw,88px)/.9 'Big Shoulders Display','Arial Narrow',sans-serif;font-variant-numeric:tabular-nums}
+.big small{font-size:.38em;margin-left:.2em;color:var(--muted)}
+.stats{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.stats b{display:block;font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+button.act,a.act{display:inline-flex;align-items:center;justify-content:center;font:700 19px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:13px 22px;min-height:48px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;text-decoration:none}
+button.ghost,a.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabs{display:flex;margin:16px 0 12px;border:2px solid var(--ink);border-radius:4px;overflow:hidden;width:fit-content;max-width:100%}
+.tabs button{font:700 20px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:11px 18px;min-height:48px;background:transparent;color:var(--ink);border:0;cursor:pointer}
+.tabs button+button{border-left:2px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.fb{margin-top:12px;padding:12px 14px;border-left:6px solid var(--line);background:var(--bg);border-radius:0 4px 4px 0}
+.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.okc{color:var(--ok);font-weight:700}.noc{color:var(--bad);font-weight:700}
+input[type=text],input[type=number],select,textarea{font:600 18px/1.2 Barlow,Arial,sans-serif;padding:10px 12px;min-height:46px;border:2px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);max-width:100%}
+textarea{width:100%;min-height:90px;resize:vertical}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--muted);font-size:15px}
+.num{font-variant-numeric:tabular-nums}
+@media (max-width:640px){.tabs{width:100%}.tabs button{flex:1;padding:11px 6px}.row .act{flex:1 1 auto}}
+@media (prefers-reduced-motion:no-preference){.fb{animation:pop .18s ease-out}@keyframes pop{from{transform:translateY(4px);opacity:.4}}}
+@media print{.fp-rule,.noprint{display:none!important}body{background:#fff;color:#000}}
+
+/* Cabeçalho comum do site Fazenda de Projetos */
+.fp-in{max-width:1000px;margin-inline:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.fp-brand{font:800 27px/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.fp-brand b{color:var(--accent);font-weight:800}
+.fp-onde{font:600 13.5px/1.2 Barlow,'Arial Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fp-rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+.trilha{display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.trilha a{font:600 15px/1.2 Barlow,sans-serif;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:4px;padding:10px 12px;min-height:44px;display:inline-flex;align-items:center;background:var(--panel)}
+.trilha a[aria-current]{border-color:var(--accent);color:var(--accent);font-weight:700}
+.trilha .t{flex-basis:100%;font:600 13px/1 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* Página */
+article{max-width:72ch}
+article p{margin:0 0 14px}
+.lead{font-size:20px;color:var(--ink)}
+.def{background:var(--panel);border:1px solid var(--line);border-left:6px solid var(--accent);border-radius:0 6px 6px 0;padding:16px 18px;margin:16px 0;font-size:19px}
+.def b{font-weight:700}
+.causas{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;margin:14px 0 18px;max-width:none}
+.causa{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:12px 14px}
+.causa h3{margin:0 0 4px;font-size:20px}
+.causa p{margin:0;font-size:15.5px;color:var(--muted)}
+figure{margin:18px 0 22px;max-width:none}
+figure svg{display:block;width:100%;height:auto;max-width:720px}
+figcaption{color:var(--muted);font-size:15px;margin-top:6px}
+.t-ink{fill:var(--ink)}.t-mut{fill:var(--muted)}.t-acc{fill:var(--accent)}.t-ok{fill:var(--ok)}.t-bad{fill:var(--bad)}
+.s-ink{stroke:var(--ink)}.s-mut{stroke:var(--muted)}.s-acc{stroke:var(--accent)}.s-line{stroke:var(--line)}
+.zone{fill:var(--zone)}
+svg text{font-family:Barlow,'Arial Narrow',Arial,sans-serif}
+table{border-collapse:collapse;width:100%;margin:10px 0 18px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid var(--line)}
+th{font:700 15px/1.2 Barlow,sans-serif;color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.tablewrap{overflow-x:auto}
+ol.passos{padding-left:0;list-style:none;counter-reset:p;margin:10px 0 18px}
+ol.passos>li{counter-increment:p;position:relative;padding:4px 0 14px 54px;border-left:2px solid var(--line);margin-left:18px}
+ol.passos>li:last-child{border-left-color:transparent}
+ol.passos>li::before{content:counter(p);position:absolute;left:-19px;top:0;width:36px;height:36px;border-radius:50%;background:var(--ink);color:var(--bg);font:800 20px/36px 'Big Shoulders Display',sans-serif;text-align:center}
+ol.passos h3{margin:4px 0 4px}
+ol.passos p{margin:0 0 6px}
+.nota{color:var(--muted);font-size:15.5px;border-top:1px dashed var(--line);padding-top:10px}
+ul.res{padding-left:20px}ul.res li{margin-bottom:6px}
+.quiz{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:16px 18px;margin:12px 0;max-width:none}
+.quiz p.q{font-weight:700;margin:0 0 8px}
+.quiz .ops{display:flex;flex-direction:column;gap:6px}
+.quiz button.op{text-align:left;font:600 16.5px/1.3 Barlow,sans-serif;padding:10px 12px;min-height:46px;border:2px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);cursor:pointer}
+.quiz button.op.certo{border-color:var(--ok)}.quiz button.op.errado{border-color:var(--bad)}
+.toc{display:flex;flex-wrap:wrap;gap:6px 14px;margin:0 0 8px;padding:0;list-style:none;font-size:15.5px}
+.toc a{color:var(--accent);font-weight:700}
+</style>
+</head>
+<body>
+<header class="fp-top">
+  <div class="fp-in"><a class="fp-brand" href="../index.html">Fazenda <b>de Projetos</b></a><span class="fp-onde">Metrologia · Noções de tolerância</span></div>
+  <div class="fp-rule" aria-hidden="true"></div>
+</header>
+<main>
+<h1>O que é tolerância</h1>
+<p class="sub">Por que nenhuma peça sai com a medida exata, quanta variação se aceita e como isso funciona dentro de uma fábrica.</p>
+<ul class="toc noprint" aria-label="Nesta página">
+  <li><a href="#exata">1. Nenhuma peça sai exata</a></li>
+  <li><a href="#conceito">2. O conceito</a></li>
+  <li><a href="#importancia">3. Por que importa</a></li>
+  <li><a href="#industria">4. Na indústria</a></li>
+  <li><a href="#resumo">5. Resumo e confira</a></li>
+</ul>
+
+<article>
+<h2 id="exata">1. Nenhuma peça sai exata</h2>
+<p class="lead">Imagine que o desenho pede um eixo de 25 mm e que a fábrica precisa produzir mil deles. Se você medir todos com um instrumento bem preciso, vai encontrar 25,02, 24,97, 25,01, 24,99… Nenhum vai dar exatamente 25,000.</p>
+<p>Isso não é descuido. Acontece em qualquer processo de fabricação, por melhor que seja, porque várias coisas mudam um pouco de uma peça para outra:</p>
+</article>
+<div class="causas">
+  <div class="causa"><h3>Máquina</h3><p>Folgas, vibração e desgaste das guias fazem a ferramenta não passar sempre no mesmo lugar.</p></div>
+  <div class="causa"><h3>Ferramenta</h3><p>O gume se desgasta um pouco a cada peça, e a medida vai mudando aos poucos.</p></div>
+  <div class="causa"><h3>Temperatura</h3><p>O metal dilata com o calor. Uma peça de aço de 100 mm cresce cerca de 0,01 mm a cada 10 °C a mais.</p></div>
+  <div class="causa"><h3>Material</h3><p>Dureza e composição variam de um lote para outro e mudam o jeito como o material é cortado.</p></div>
+  <div class="causa"><h3>Pessoa</h3><p>A fixação da peça, a regulagem da máquina e o cansaço do operador influenciam o resultado.</p></div>
+  <div class="causa"><h3>Medição</h3><p>O próprio instrumento tem limite de resolução e pode ser lido de forma errada.</p></div>
+</div>
+<article>
+<p>Por isso a metrologia adota 20 °C como temperatura de referência para as medições: assim todo mundo compara medidas na mesma condição.</p>
+<p>Se não dá para fabricar a medida exata, o projeto precisa dizer <b>quanto a medida pode variar</b> para a peça ainda servir. É isso que a tolerância faz.</p>
+
+<h2 id="conceito">2. O que é tolerância</h2>
+<div class="def"><b>Tolerância</b> é a variação permitida na medida de uma peça: o quanto ela pode se afastar do valor pedido no desenho sem deixar de funcionar.</div>
+<p>Quatro palavras aparecem o tempo todo:</p>
+<div class="tablewrap"><table>
+  <thead><tr><th>Termo</th><th>O que significa</th></tr></thead>
+  <tbody>
+    <tr><td><b>Medida nominal</b></td><td>O valor de referência escrito no desenho. É a medida "ideal".</td></tr>
+    <tr><td><b>Medida máxima</b></td><td>A maior medida que ainda é aceita.</td></tr>
+    <tr><td><b>Medida mínima</b></td><td>A menor medida que ainda é aceita.</td></tr>
+    <tr><td><b>Faixa de tolerância</b></td><td>Todo o intervalo entre a mínima e a máxima. Sua largura é máxima − mínima.</td></tr>
+  </tbody>
+</table></div>
+
+<h3>Como ler a cota 25 ± 0,5</h3>
+<p>O sinal ± quer dizer "mais ou menos". A cota diz: a medida nominal é 25 mm e a peça pode ter até 0,5 mm a mais ou 0,5 mm a menos.</p>
+</article>
+<figure>
+<svg viewBox="0 0 720 210" role="img" aria-label="Faixa de tolerância da cota 25 ± 0,5: medida mínima 24,5, nominal 25 e máxima 25,5. Fora da faixa, à esquerda e à direita, a peça é recusada.">
+  <rect x="40" y="96" width="640" height="34" rx="3" class="t-bad" opacity=".18"/>
+  <rect x="200" y="96" width="320" height="34" class="zone"/>
+  <line x1="40" y1="130" x2="680" y2="130" class="s-ink" stroke-width="2"/>
+  <g class="s-mut" stroke-width="1.5">
+    <line x1="40" y1="130" x2="40" y2="142"/><line x1="120" y1="130" x2="120" y2="142"/><line x1="440" y1="130" x2="440" y2="142"/><line x1="600" y1="130" x2="600" y2="142"/><line x1="680" y1="130" x2="680" y2="142"/>
+  </g>
+  <line x1="200" y1="84" x2="200" y2="150" class="s-ink" stroke-width="3"/>
+  <line x1="520" y1="84" x2="520" y2="150" class="s-ink" stroke-width="3"/>
+  <line x1="360" y1="90" x2="360" y2="150" class="s-acc" stroke-width="3" stroke-dasharray="6 5"/>
+  <text x="200" y="172" text-anchor="middle" font-size="20" font-weight="700" class="t-ink">24,5</text>
+  <text x="360" y="172" text-anchor="middle" font-size="20" font-weight="700" class="t-acc">25</text>
+  <text x="520" y="172" text-anchor="middle" font-size="20" font-weight="700" class="t-ink">25,5</text>
+  <text x="200" y="196" text-anchor="middle" font-size="15" class="t-mut">mínima</text>
+  <text x="360" y="196" text-anchor="middle" font-size="15" class="t-mut">nominal</text>
+  <text x="520" y="196" text-anchor="middle" font-size="15" class="t-mut">máxima</text>
+  <text x="360" y="119" text-anchor="middle" font-size="17" font-weight="700" class="t-ok">DENTRO: peça aceita</text>
+  <text x="120" y="119" text-anchor="middle" font-size="15" font-weight="700" class="t-bad">FORA</text>
+  <text x="600" y="119" text-anchor="middle" font-size="15" font-weight="700" class="t-bad">FORA</text>
+  <line x1="200" y1="56" x2="520" y2="56" class="s-ink" stroke-width="1.5"/>
+  <path d="M200 56l10-6v12zM520 56l-10-6v12z" class="t-ink"/>
+  <text x="360" y="44" text-anchor="middle" font-size="16" class="t-ink">faixa de tolerância = 1,0 mm</text>
+  <text x="280" y="80" text-anchor="middle" font-size="14" class="t-mut">− 0,5</text>
+  <text x="440" y="80" text-anchor="middle" font-size="14" class="t-mut">+ 0,5</text>
+</svg>
+<figcaption>Tudo o que fica entre 24,5 e 25,5 mm é aceito, inclusive os dois limites.</figcaption>
+</figure>
+<article>
+<ol class="passos">
+  <li><h3>Ache a nominal</h3><p>É o número antes do ±: <b>25 mm</b>.</p></li>
+  <li><h3>Calcule a máxima</h3><p>Some a tolerância: 25 + 0,5 = <b>25,5 mm</b>.</p></li>
+  <li><h3>Calcule a mínima</h3><p>Subtraia a tolerância: 25 − 0,5 = <b>24,5 mm</b>.</p></li>
+  <li><h3>Compare a medida da peça</h3><p>Se ela estiver entre a mínima e a máxima, a peça está <span class="okc">dentro</span>. Se passar da máxima ou ficar abaixo da mínima, está <span class="noc">fora</span>.</p></li>
+</ol>
+<p>Mais alguns exemplos:</p>
+<div class="tablewrap"><table>
+  <thead><tr><th>Cota</th><th>Mínima</th><th>Máxima</th><th>Faixa</th></tr></thead>
+  <tbody>
+    <tr><td>50 ± 1</td><td>49</td><td>51</td><td>2 mm</td></tr>
+    <tr><td>12 ± 0,2</td><td>11,8</td><td>12,2</td><td>0,4 mm</td></tr>
+    <tr><td>80 ± 0,05</td><td>79,95</td><td>80,05</td><td>0,1 mm</td></tr>
+  </tbody>
+</table></div>
+<p>E com a cota 25 ± 0,5, veja como decidir:</p>
+<div class="tablewrap"><table>
+  <thead><tr><th>Medida da peça</th><th>Resultado</th><th>Por quê</th></tr></thead>
+  <tbody>
+    <tr><td>25,3 mm</td><td class="okc">Dentro</td><td>Está entre 24,5 e 25,5.</td></tr>
+    <tr><td>24,5 mm</td><td class="okc">Dentro</td><td>Está exatamente no limite mínimo, que ainda é aceito.</td></tr>
+    <tr><td>25,6 mm</td><td class="noc">Fora</td><td>Passou da máxima em 0,1 mm.</td></tr>
+    <tr><td>24,4 mm</td><td class="noc">Fora</td><td>Ficou abaixo da mínima em 0,1 mm.</td></tr>
+  </tbody>
+</table></div>
+<p class="nota"><b>Cuidado com a confusão:</b> tolerância não é erro. O erro é a diferença entre o que a peça mediu e a nominal. A tolerância é o limite que o projeto aceita para essa diferença. Uma peça pode ter erro e mesmo assim estar dentro da tolerância.</p>
+<p class="nota">Nem toda tolerância é igual para cima e para baixo, como em 25 +0,2 / −0,1. Essas outras formas de escrever ficam para o assunto <b>Tolerâncias dimensionais</b>, mais adiante na trilha.</p>
+
+<h2 id="importancia">3. Por que a tolerância é importante</h2>
+<h3>Peças que se encaixam sem ajuste</h3>
+<p>Graças à tolerância, um parafuso de qualquer lote entra na porca de qualquer fornecedor, e a peça de reposição comprada na loja encaixa no carro sem precisar ser limada. Isso se chama <b>intercambiabilidade</b>, e é o que permite a produção em série.</p>
+<h3>A máquina funciona como foi projetada</h3>
+<p>Um eixo que gira dentro de um furo precisa de uma folga certa. Folga demais, e o conjunto vibra, faz barulho e se desgasta. Folga de menos, e ele trava ou aquece. A tolerância garante que essa folga fique dentro do que funciona.</p>
+<h3>Custo</h3>
+<p>Quanto mais apertada a tolerância, mais caro fica: exige máquina mais precisa, mais tempo de usinagem, inspeção mais cuidadosa e gera mais peças recusadas. Por isso um bom projeto usa a <b>maior tolerância que ainda garante a função</b>. Tolerância apertada só onde é preciso.</p>
+</article>
+<figure>
+<svg viewBox="0 0 520 330" role="img" aria-label="Gráfico ilustrativo: o custo de fabricação sobe cada vez mais rápido conforme a tolerância fica mais apertada." style="max-width:560px">
+  <line x1="60" y1="260" x2="500" y2="260" class="s-ink" stroke-width="2"/>
+  <line x1="60" y1="260" x2="60" y2="20" class="s-ink" stroke-width="2"/>
+  <path d="M80 30 C 130 170, 220 225, 490 240" fill="none" class="s-acc" stroke-width="5"/>
+  <circle cx="96" cy="69" r="8" class="t-acc"/><text x="114" y="64" font-size="20" font-weight="700" class="t-ink">milésimos de mm</text><text x="114" y="88" font-size="18" class="t-mut">retífica, inspeção minuciosa</text>
+  <circle cx="200" cy="180" r="8" class="t-acc"/><text x="216" y="152" font-size="20" font-weight="700" class="t-ink">centésimos de mm</text><text x="216" y="176" font-size="18" class="t-mut">usinagem cuidadosa</text>
+  <circle cx="450" cy="237" r="8" class="t-acc"/><text x="490" y="212" text-anchor="end" font-size="20" font-weight="700" class="t-ink">milímetros</text>
+  <text x="62" y="290" font-size="18" class="t-mut">← mais apertada</text>
+  <text x="500" y="290" text-anchor="end" font-size="18" class="t-mut">mais aberta →</text>
+  <text x="280" y="320" text-anchor="middle" font-size="18" font-weight="700" class="t-ink">tolerância</text>
+  <text x="34" y="140" text-anchor="middle" font-size="18" font-weight="700" class="t-ink" transform="rotate(-90 34 140)">custo</text>
+</svg>
+<figcaption>Ilustração da tendência, sem valores reais: o custo cresce rápido quando a tolerância fica muito pequena.</figcaption>
+</figure>
+<article>
+<h3>Uma linguagem comum</h3>
+<p>O desenho funciona como um acordo entre quem projeta, quem fabrica e quem inspeciona. Sem tolerância, decidir se uma peça serve vira questão de opinião. Com ela, a regra é clara para todos, inclusive para o fornecedor de outra empresa.</p>
+<h3>Segurança</h3>
+<p>Em freios, direção, peças de avião ou equipamentos de pressão, uma peça fora da tolerância pode causar acidente. Nesses casos, as tolerâncias e a inspeção são ainda mais rigorosas.</p>
+
+<h2 id="industria">4. Como a tolerância é aplicada na indústria</h2>
+<p>Acompanhe o caminho de uma cota com tolerância, do desenho até a peça aprovada:</p>
+<ol class="passos">
+  <li><h3>Projeto</h3><p>O projetista define a medida nominal e a tolerância de cada cota pensando na função da peça: onde ela encaixa, o que gira, o que precisa vedar. Cotas sem função importante recebem tolerâncias mais abertas.</p></li>
+  <li><h3>Planejamento</h3><p>A equipe de processos e de PCP escolhe a máquina, a ferramenta e a sequência de operações capazes de produzir dentro da faixa. Também monta o plano de inspeção: quais cotas medir, em quantas peças e com qual instrumento.</p></li>
+  <li><h3>Fabricação</h3><p>O operador regula a máquina mirando o meio da faixa, perto da nominal. Assim, quando a ferramenta for se desgastando e a medida começar a mudar, ainda sobra margem antes de sair da tolerância.</p></li>
+  <li><h3>Inspeção</h3><p>A peça é medida com um instrumento capaz de "enxergar" bem menos do que a faixa de tolerância. Uma regra prática usada em muitas empresas é que a resolução do instrumento seja de cerca de um décimo da faixa. Para uma faixa de 1 mm, por exemplo, pede-se um instrumento de 0,1 mm ou melhor, como o paquímetro.</p></li>
+  <li><h3>Decisão</h3><p>Dentro da faixa, a peça é <span class="okc">aprovada</span>. Fora, ela é uma <span class="noc">não conformidade</span>. Às vezes dá para corrigir: um eixo maior que a máxima ainda pode ser usinado de novo, e isso é <b>retrabalho</b>. Mas um eixo menor que a mínima não tem como ganhar material de volta, e vira <b>refugo</b>. Os dois custam tempo, material e atrasam a programação da produção.</p></li>
+  <li><h3>Acompanhamento</h3><p>As medidas são registradas. Se elas começam a se aproximar de um dos limites, a equipe corrige a máquina antes que alguma peça saia da tolerância. Prevenir sai muito mais barato que separar peças ruins depois.</p></li>
+</ol>
+<div class="tablewrap"><table>
+  <caption style="text-align:left;color:var(--muted);font-size:15px;padding-bottom:6px">Resolução típica dos instrumentos da trilha</caption>
+  <thead><tr><th>Instrumento</th><th>Resolução comum</th><th>Serve bem para faixas de</th></tr></thead>
+  <tbody>
+    <tr><td>Régua graduada</td><td>1 mm ou 0,5 mm</td><td>alguns milímetros</td></tr>
+    <tr><td>Paquímetro</td><td>0,05 mm ou 0,02 mm</td><td>décimos de milímetro</td></tr>
+    <tr><td>Micrômetro</td><td>0,01 mm ou 0,001 mm</td><td>centésimos de milímetro</td></tr>
+    <tr><td>Relógio comparador</td><td>0,01 mm ou 0,001 mm</td><td>centésimos, por comparação</td></tr>
+  </tbody>
+</table></div>
+<p class="nota">Na atividade desta aula você vai usar a régua com tolerâncias largas, como ± 1 mm, para entender a ideia. Na indústria, a escolha do instrumento segue regras mais rigorosas, como a de um décimo da faixa.</p>
+
+<h2 id="resumo">5. Resumo</h2>
+<ul class="res">
+  <li>Nenhuma peça sai com a medida exata, porque máquina, ferramenta, temperatura, material, pessoa e medição variam.</li>
+  <li>Tolerância é a variação permitida em relação à medida nominal.</li>
+  <li>Na cota 25 ± 0,5, a máxima é 25,5, a mínima é 24,5 e os dois limites são aceitos.</li>
+  <li>A tolerância garante encaixe, funcionamento, segurança e uma regra clara para todos, mas quanto mais apertada, mais cara.</li>
+  <li>Na indústria ela orienta o projeto, o planejamento, a regulagem da máquina, a escolha do instrumento e a decisão de aprovar, retrabalhar ou refugar.</li>
+</ul>
+<h3>Confira o que você entendeu</h3>
+</article>
+<div id="quiz"></div>
+<nav class="trilha noprint" aria-label="Noções de tolerância"><span class="t">Noções de tolerância</span><a href="tolerancia-o-que-e.html" aria-current="page">Leitura</a><a href="tolerancia-faixa.html">Simulador</a><a href="tolerancia-passa-nao-passa.html">Jogo</a><a href="tolerancia-regua.html">Atividade</a><a href="tolerancia-avaliacao.html">Avaliação</a><a href="../index.html#d-metrologia">Voltar à trilha de Metrologia</a></nav>
+</main>
+<script>
+const Q=[
+ {q:'Na cota 40 ± 0,3, qual é a medida máxima aceita?',o:['40,03 mm','40,3 mm','40,6 mm','39,7 mm'],c:1,e:'Máxima = nominal + tolerância: 40 + 0,3 = 40,3 mm. O valor 39,7 mm é a mínima.'},
+ {q:'Uma peça com cota 25 ± 0,5 mediu exatamente 25,5 mm. Ela está:',o:['Fora, porque passou da nominal','Dentro, porque está no limite máximo','Fora, porque está no limite','Dentro só se for remedida'],c:1,e:'Os limites fazem parte da faixa. 25,5 mm é a máxima, então a peça é aceita.'},
+ {q:'Por que um bom projeto não coloca tolerâncias muito apertadas em todas as cotas?',o:['Porque a peça fica mais fraca','Porque o desenho fica difícil de ler','Porque aumenta o custo sem melhorar a função','Porque a norma proíbe']
+  ,c:2,e:'Tolerância apertada exige máquina e inspeção melhores e gera mais refugo. Ela só vale a pena onde a função precisa.'}
+];
+const box=document.getElementById('quiz');
+box.innerHTML=Q.map((x,i)=>`<div class="quiz" id="q${i}"><p class="q">${i+1}. ${x.q}</p><div class="ops">${x.o.map((t,j)=>`<button class="op" data-i="${i}" data-j="${j}">${t}</button>`).join('')}</div><div class="fbx" aria-live="polite"></div></div>`).join('');
+box.addEventListener('click',ev=>{const b=ev.target.closest('button.op');if(!b)return;const i=+b.dataset.i,j=+b.dataset.j,x=Q[i],card=document.getElementById('q'+i);
+  card.querySelectorAll('button.op').forEach(k=>{k.classList.remove('certo','errado')});
+  b.classList.add(j===x.c?'certo':'errado');
+  card.querySelector('.fbx').innerHTML=`<div class="fb ${j===x.c?'ok':'no'}"><b>${j===x.c?'Isso mesmo.':'Ainda não.'}</b> ${j===x.c?x.e:'Tente outra alternativa.'}</div>`});
+</script>
+</body>
+</html>

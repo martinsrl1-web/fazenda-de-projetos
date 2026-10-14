@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Passa ou não passa</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<style>
+:root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--bad:#B3261E;--zone:#CFE6D8;--steel:#1D3B5C;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}}
+:root[data-theme="dark"]{--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 Barlow,'Arial Narrow',Arial,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 48px}
+h1{font:800 clamp(36px,8vw,60px)/.95 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:0 0 6px}
+h2{font:800 clamp(26px,5vw,36px)/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:34px 0 10px;letter-spacing:.01em}
+h3{font:700 22px/1.1 'Big Shoulders Display','Arial Narrow',sans-serif;margin:18px 0 6px;letter-spacing:.02em}
+.sub{color:var(--muted);margin:0 0 18px;max-width:66ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.big{font:800 clamp(48px,12vw,88px)/.9 'Big Shoulders Display','Arial Narrow',sans-serif;font-variant-numeric:tabular-nums}
+.big small{font-size:.38em;margin-left:.2em;color:var(--muted)}
+.stats{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.stats b{display:block;font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+button.act,a.act{display:inline-flex;align-items:center;justify-content:center;font:700 19px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:13px 22px;min-height:48px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;text-decoration:none}
+button.ghost,a.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabs{display:flex;margin:16px 0 12px;border:2px solid var(--ink);border-radius:4px;overflow:hidden;width:fit-content;max-width:100%}
+.tabs button{font:700 20px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:11px 18px;min-height:48px;background:transparent;color:var(--ink);border:0;cursor:pointer}
+.tabs button+button{border-left:2px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.fb{margin-top:12px;padding:12px 14px;border-left:6px solid var(--line);background:var(--bg);border-radius:0 4px 4px 0}
+.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.okc{color:var(--ok);font-weight:700}.noc{color:var(--bad);font-weight:700}
+input[type=text],input[type=number],select,textarea{font:600 18px/1.2 Barlow,Arial,sans-serif;padding:10px 12px;min-height:46px;border:2px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);max-width:100%}
+textarea{width:100%;min-height:90px;resize:vertical}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--muted);font-size:15px}
+.num{font-variant-numeric:tabular-nums}
+@media (max-width:640px){.tabs{width:100%}.tabs button{flex:1;padding:11px 6px}.row .act{flex:1 1 auto}}
+@media (prefers-reduced-motion:no-preference){.fb{animation:pop .18s ease-out}@keyframes pop{from{transform:translateY(4px);opacity:.4}}}
+@media print{.fp-rule,.noprint{display:none!important}body{background:#fff;color:#000}}
+
+/* Cabeçalho comum do site Fazenda de Projetos */
+.fp-in{max-width:1000px;margin-inline:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.fp-brand{font:800 27px/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.fp-brand b{color:var(--accent);font-weight:800}
+.fp-onde{font:600 13.5px/1.2 Barlow,'Arial Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fp-rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+.trilha{display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.trilha a{font:600 15px/1.2 Barlow,sans-serif;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:4px;padding:10px 12px;min-height:44px;display:inline-flex;align-items:center;background:var(--panel)}
+.trilha a[aria-current]{border-color:var(--accent);color:var(--accent);font-weight:700}
+.trilha .t{flex-basis:100%;font:600 13px/1 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* Página */
+.card{background:var(--steel);color:#fff;border-radius:6px;padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:center}
+.card .lbl{font:600 13.5px/1.2 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:#B9CBDB;margin:0 0 4px}
+.card .val{font:800 clamp(40px,9vw,68px)/.95 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums}
+.card .val small{font-size:.4em;color:#B9CBDB;margin-left:.15em}
+.lcd{background:#0B1620;border:2px solid #3B5B78;border-radius:6px;padding:10px 14px;color:#9FF0C2;text-align:right}
+.peca{font-size:15px;color:#B9CBDB;grid-column:1/-1;margin:0}
+.timer{grid-column:1/-1;height:8px;background:#0B1620;border-radius:4px;overflow:hidden}
+.timer i{display:block;height:100%;background:#F2A93B;width:100%}
+.choices{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:14px}
+.choices button{font:800 26px/1 'Big Shoulders Display',sans-serif;letter-spacing:.03em;min-height:72px;border-radius:6px;cursor:pointer;border:3px solid;background:var(--panel)}
+#bp{border-color:var(--ok);color:var(--ok)}#bn{border-color:var(--bad);color:var(--bad)}
+.choices button:disabled{opacity:.5;cursor:default}.choices button.sel,#bp.sel,#bn.sel{color:#fff;opacity:1}#bp.sel{background:var(--ok)}#bn.sel{background:var(--bad)}
+.fases{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin:12px 0}
+.fase{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:14px}
+.fase h3{margin:0 0 4px}.fase p{margin:0;color:var(--muted);font-size:15.5px}
+ul.rev{padding-left:18px;margin:8px 0}ul.rev li{margin-bottom:6px}
+kbd{font:600 13px Barlow,sans-serif;border:1px solid var(--line);border-bottom-width:2px;border-radius:3px;padding:1px 6px;background:var(--bg)}
+@media (max-width:560px){.card{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<header class="fp-top">
+  <div class="fp-in"><a class="fp-brand" href="../index.html">Fazenda <b>de Projetos</b></a><span class="fp-onde">Metrologia · Noções de tolerância</span></div>
+  <div class="fp-rule" aria-hidden="true"></div>
+</header>
+<main>
+<h1>Passa ou não passa</h1>
+<p class="sub">Você é o inspetor de qualidade. Para cada peça aparecem a cota do desenho e a medida encontrada. Decida se a peça passa ou não passa.</p>
+<div id="app" aria-live="polite"></div>
+<nav class="trilha noprint" aria-label="Noções de tolerância"><span class="t">Noções de tolerância</span><a href="tolerancia-o-que-e.html">Leitura</a><a href="tolerancia-faixa.html">Simulador</a><a href="tolerancia-passa-nao-passa.html" aria-current="page">Jogo</a><a href="tolerancia-regua.html">Atividade</a><a href="tolerancia-avaliacao.html">Avaliação</a><a href="../index.html#d-metrologia">Voltar à trilha de Metrologia</a></nav>
+</main>
+<script>
+/* Valores em centésimos de milímetro (inteiros). */
+const $=id=>document.getElementById(id),A=$('app'),PER=8,TEMPO=10;
+const FASES=[
+ {n:'Fase 1 · Aquecimento',d:'Tolerâncias largas e medidas fáceis de decidir.'},
+ {n:'Fase 2 · No limite',d:'Medidas bem perto da máxima e da mínima. Lembre: o limite ainda passa.'},
+ {n:'Fase 3 · Linha de produção',d:`A esteira não para: ${TEMPO} segundos para cada peça.`}
+];
+const PECAS=['Eixo','Bucha','Pino','Espaçador','Chapa','Flange','Arruela','Bloco-guia','Barra'];
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),pick=a=>a[rnd(0,a.length-1)];
+const fc=v=>{let s=(v/100).toFixed(2).replace(/0+$/,'').replace(/\.$/,'');return s.replace('.',',')};
+const fm=(v,d)=>(v/100).toFixed(d).replace('.',',');
+const S={fase:0,i:0,pts:0,ac:0,streak:0,q:null,ans:null,erros:[],acF:[0,0,0],best:0,tid:null,left:0};
+try{S.best=+localStorage.getItem('tol-ppnp-best')||0}catch(e){}
+
+function gerar(f){
+  let nom,tol,step,d;
+  if(f===0){tol=pick([100,50,100]);nom=rnd(2,20)*500;step=10;
+    const far=Math.random()<.5;d=far?pick([-1,1])*rnd(Math.ceil(tol*1.4/step),Math.floor(tol*2/step))*step:pick([-1,1])*rnd(0,Math.floor(tol*.7/step))*step}
+  else{tol=pick([50,20,30,10,50]);nom=rnd(8,120)*100+pick([0,0,50]);step=tol>=30?(tol%10?5:10):tol>=20?2:1;
+    if(tol===30)step=5;
+    const k=pick([-2,-1,0,0,1,2]);d=pick([-1,1])*(tol+k*step)}
+  const m=nom+d,dec=(step%10===0)?1:2;
+  return {nom,tol,m,dec,peca:pick(PECAS),passa:m>=nom-tol&&m<=nom+tol}}
+
+function inicio(){clearInterval(S.tid);
+  A.innerHTML=`<div class="fases">${FASES.map(x=>`<div class="fase"><h3>${x.n}</h3><p>${x.d}</p></div>`).join('')}</div>
+  <div class="panel"><p style="margin:0 0 8px"><b>Como decidir:</b> calcule a máxima (nominal + tolerância) e a mínima (nominal − tolerância). Se a medida estiver entre elas, inclusive nos limites, a peça <span class="okc">passa</span>. Senão, <span class="noc">não passa</span>.</p>
+  <p style="margin:0;color:var(--muted)">Cada acerto vale 10 pontos, e na fase 3 os segundos que sobrarem viram bônus. No teclado, use <kbd>P</kbd> para passa, <kbd>N</kbd> para não passa e <kbd>Enter</kbd> para seguir. Recorde: <b>${S.best}</b> pontos.</p>
+  <div class="row"><button class="act" id="go">Começar</button></div></div>`;
+  $('go').onclick=()=>{Object.assign(S,{fase:0,i:0,pts:0,ac:0,streak:0,erros:[],acF:[0,0,0]});novaFase()};$('go').focus()}
+
+function novaFase(){clearInterval(S.tid);const x=FASES[S.fase];
+  A.innerHTML=`<div class="panel"><h2 style="margin-top:0">${x.n}</h2><p>${x.d}</p><div class="row"><button class="act" id="go">Ir</button></div></div>`;
+  $('go').onclick=()=>{S.i=0;rodada()};$('go').focus()}
+
+function stats(){return `<div class="stats"><span>Fase<b>${S.fase+1}/3</b></span><span>Peça<b>${S.i+1}/${PER}</b></span><span>Pontos<b>${S.pts}</b></span><span>Sequência<b>${S.streak}</b></span></div>`}
+function rodada(){S.q=gerar(S.fase);S.ans=null;render();
+  if(S.fase===2){S.left=TEMPO*10;clearInterval(S.tid);S.tid=setInterval(()=>{S.left--;const t=$('tb');if(t)t.style.width=(S.left/(TEMPO*10)*100)+'%';if(S.left<=0){clearInterval(S.tid);responder(null)}},100)}}
+
+function render(){const q=S.q,r=S.ans!==null;
+  A.innerHTML=stats()+`<div class="card">
+    <p class="peca">Peça: <b style="color:#fff">${q.peca}</b></p>
+    <div><p class="lbl">Cota no desenho</p><div class="val">${fc(q.nom)} <span style="color:#F2A93B">±</span> ${fc(q.tol)}</div></div>
+    <div class="lcd"><p class="lbl" style="color:#6FA88A">Medida encontrada</p><div class="val" style="color:#9FF0C2">${fm(q.m,q.dec)}<small>mm</small></div></div>
+    ${S.fase===2?`<div class="timer" aria-hidden="true"><i id="tb" style="width:${r?0:100}%"></i></div>`:''}
+  </div>
+  <div class="choices"><button id="bp" ${r?'disabled':''} class="${S.ans===true?'sel':''}">PASSA</button><button id="bn" ${r?'disabled':''} class="${S.ans===false?'sel':''}">NÃO PASSA</button></div>
+  <div id="fbk">${r?fb():''}</div>
+  ${r?`<div class="row"><button class="act" id="nx">${S.i===PER-1?(S.fase===2?'Ver resultado':'Próxima fase'):'Próxima peça'}</button></div>`:''}`;
+  if(!r){$('bp').onclick=()=>responder(true);$('bn').onclick=()=>responder(false)}
+  else{$('nx').onclick=seguir;$('nx').focus()}}
+
+function fb(){const q=S.q,mx=q.nom+q.tol,mn=q.nom-q.tol;
+  const certo=S.ans===q.passa;
+  const lim=q.m===mx?' Ela está exatamente na máxima, e o limite ainda é aceito.':q.m===mn?' Ela está exatamente na mínima, e o limite ainda é aceito.':'';
+  const pos=q.passa?`${fm(q.m,q.dec)} está entre ${fc(mn)} e ${fc(mx)}.${lim}`:q.m>mx?`${fm(q.m,q.dec)} passou da máxima ${fc(mx)} em ${fc(q.m-mx)} mm.`:`${fm(q.m,q.dec)} ficou abaixo da mínima ${fc(mn)} em ${fc(mn-q.m)} mm.`;
+  const head=S.timeout?'Tempo esgotado!':certo?'Certo!':'Errou.';
+  return `<div class="fb ${certo?'ok':'no'}"><b>${head}</b> A peça ${q.passa?'<span class="okc">passa</span>':'<span class="noc">não passa</span>'}. Máxima = ${fc(q.nom)} + ${fc(q.tol)} = ${fc(mx)} · Mínima = ${fc(q.nom)} − ${fc(q.tol)} = ${fc(mn)}. ${pos}</div>`}
+
+function responder(v){if(S.ans!==null)return;clearInterval(S.tid);S.timeout=v===null;S.ans=v===null?!S.q.passa:v;
+  const certo=v!==null&&v===S.q.passa;
+  if(certo){S.ac++;S.acF[S.fase]++;S.streak++;S.pts+=10+(S.fase===2?Math.ceil(S.left/10):0)}
+  else{S.streak=0;S.erros.push({...S.q,timeout:S.timeout})}
+  render()}
+function seguir(){if(S.i<PER-1){S.i++;rodada()}else if(S.fase<2){S.fase++;novaFase()}else fim()}
+
+function fim(){clearInterval(S.tid);const novo=S.pts>S.best;if(novo){S.best=S.pts;try{localStorage.setItem('tol-ppnp-best',S.best)}catch(e){}}
+  const tot=PER*3;
+  A.innerHTML=`<div class="panel"><h2 style="margin-top:0">Fim de turno</h2>
+   <div class="stats"><span>Pontos<b>${S.pts}</b></span><span>Acertos<b>${S.ac}/${tot}</b></span>${FASES.map((x,i)=>`<span>Fase ${i+1}<b>${S.acF[i]}/${PER}</b></span>`).join('')}<span>Recorde<b>${S.best}</b></span></div>
+   <div class="fb ${S.ac>=tot*.75?'ok':'no'}">${novo?'<b>Novo recorde!</b> ':''}${S.ac===tot?'Inspeção perfeita: nenhuma peça errada passou e nenhuma peça boa foi recusada.':S.ac>=tot*.75?'Bom trabalho de inspeção. Veja abaixo as peças em que você errou.':'Revise as peças abaixo e volte ao simulador de faixa se precisar.'}</div>
+   ${S.erros.length?`<h3>Peças para revisar</h3><ul class="rev">${S.erros.map(q=>{const mx=q.nom+q.tol,mn=q.nom-q.tol;return `<li>${q.peca}: cota ${fc(q.nom)} ± ${fc(q.tol)} (de ${fc(mn)} a ${fc(mx)}), medida ${fm(q.m,q.dec)} → ${q.passa?'<span class="okc">passa</span>':'<span class="noc">não passa</span>'}${q.timeout?' (tempo esgotado)':''}</li>`}).join('')}</ul>`:''}
+   <div class="row"><button class="act" id="again">Jogar de novo</button><a class="act ghost" href="tolerancia-faixa.html">Simulador de faixa</a><a class="act ghost" href="tolerancia-regua.html">Ir para a atividade com a régua</a></div></div>`;
+  $('again').onclick=()=>{Object.assign(S,{fase:0,i:0,pts:0,ac:0,streak:0,erros:[],acF:[0,0,0]});novaFase()}}
+
+document.addEventListener('keydown',e=>{if(e.target.matches('input,textarea,select'))return;if(!S.q||S.ans!==null)return;
+  const k=e.key.toLowerCase();if(k==='p'&&$('bp')){e.preventDefault();responder(true)}else if(k==='n'&&$('bn')){e.preventDefault();responder(false)}});
+inicio();
+</script>
+</body>
+</html>
