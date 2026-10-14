@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="color-scheme" content="light dark">
-<title>50 exercícios de tolerância</title>
+<title>40 exercícios de tolerância</title>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Big+Shoulders+Display:wght@700;800&display=swap">
 <style>
 :root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--bad:#B3261E;--zone:#CFE6D8;--steel:#1D3B5C;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
@@ -96,7 +96,7 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
 </header>
 <main>
 <div class="top">
-  <div><h1>50 exercícios de interpretação</h1>
+  <div><h1>40 exercícios de interpretação</h1>
   <p class="sub" style="margin-bottom:0">Leia o desenho ou a situação, responda e confira. Cada exercício mostra a explicação depois da resposta. Escreva os números com vírgula, como 24,5.</p></div>
 </div>
 <section class="panel" style="margin-top:14px">
@@ -114,7 +114,7 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
   <div id="rmsg" aria-live="polite"></div>
   <div class="row"><button class="act" id="pdf">Baixar relatório em PDF</button><button class="act ghost" id="zerar">Recomeçar do zero</button></div>
 </section>
-<nav class="trilha noprint" aria-label="Noções de tolerância"><span class="t">Noções de tolerância</span><a href="tolerancia-o-que-e.html">Leitura</a><a href="tolerancia-faixa.html">Simulador</a><a href="tolerancia-passa-nao-passa.html">Jogo</a><a href="tolerancia-regua.html">Atividade</a><a href="tolerancia-exercicios.html" aria-current="page">50 exercícios</a><a href="tolerancia-avaliacao.html">Avaliação</a><a href="../index.html#d-metrologia">Voltar à trilha de Metrologia</a></nav>
+<nav class="trilha noprint" aria-label="Noções de tolerância"><span class="t">Noções de tolerância</span><a href="tolerancia-o-que-e.html">Leitura</a><a href="tolerancia-faixa.html">Simulador</a><a href="tolerancia-passa-nao-passa.html">Jogo</a><a href="tolerancia-regua.html">Atividade</a><a href="tolerancia-exercicios.html" aria-current="page">40 exercícios</a><a href="tolerancia-avaliacao.html">Avaliação</a><a href="../index.html#d-metrologia">Voltar à trilha de Metrologia</a></nav>
 </main>
 <script src="../vendor/jspdf.umd.min.js"></script>
 <script>
@@ -166,7 +166,7 @@ const D={
 
 /* ===== banco de exercícios =====
    tipo: num (resposta numérica, em mm salvo indicação), mc (alternativa), multi (marcar todas). */
-const TEMAS=['Ler a cota','Dentro ou fora','Lotes','Da faixa à cota','Erro e conceitos','Instrumentos','Retrabalho ou refugo','Desenhos com várias cotas'];
+const TEMAS=['Ler a cota','Dentro ou fora','Lotes','Da faixa à cota','Erro e conceitos','Retrabalho ou refugo','Desenhos com várias cotas'];
 const E=[
 /* Ler a cota */
 {tema:0,d:['pino',{cota:'Ø 30 ± 0,2',nome:'pino'}],en:'Qual é o diâmetro máximo aceito para este pino?',tipo:'num',r:'30,2',exp:'Máxima = nominal + tolerância = 30 + 0,2 = 30,2 mm.'},
@@ -176,7 +176,6 @@ const E=[
 {tema:0,d:['chapa',{comp:'200 ± 1',larg:'80 ± 0,5',furo:'Ø 10 ± 0,1',dist:'50 ± 0,2',hl:'dist'}],en:'Qual é a largura da faixa de tolerância da distância entre a borda e o centro do furo?',tipo:'num',r:'0,4',exp:'Cota 50 ± 0,2: de 49,8 a 50,2 mm. Faixa = 50,2 − 49,8 = 0,4 mm.'},
 {tema:0,d:['chapa',{comp:'200 ± 1',larg:'80 ± 0,5',furo:'Ø 10 ± 0,1',dist:'50 ± 0,2'}],en:'Qual cota desta chapa tem a faixa de tolerância mais larga?',tipo:'mc',alts:['O comprimento, 200 ± 1','A largura, 80 ± 0,5','O furo, Ø 10 ± 0,1','A distância do furo, 50 ± 0,2'],c:0,exp:'O comprimento aceita 1 mm para cada lado, uma faixa de 2 mm. As outras faixas são de 1 mm, 0,2 mm e 0,4 mm.'},
 {tema:0,d:['bloco',{cota:'75 ± 0,25',nome:'espaçador'}],en:'Qual é o comprimento máximo aceito para o espaçador?',tipo:'num',r:'75,25',exp:'Máxima = 75 + 0,25 = 75,25 mm.'},
-{tema:0,d:['pino',{cota:'Ø 12 ± 0,05',nome:'pino-guia'}],en:'Qual é a largura da faixa de tolerância do pino-guia?',tipo:'num',r:'0,1',exp:'De 11,95 a 12,05 mm. Faixa = 12,05 − 11,95 = 0,1 mm, ou seja, duas vezes a tolerância.'},
 {tema:0,d:['eixo2',{L:'150 ± 0,5',d1:'Ø 40 ± 0,3',d2:'Ø 25 ± 0,02',hl:'d2'}],en:'Qual é o menor diâmetro aceito na parte fina do eixo?',tipo:'num',r:'24,98',exp:'A parte fina tem Ø 25 ± 0,02. Mínima = 25 − 0,02 = 24,98 mm.'},
 {tema:0,d:['bloco',{cota:'8 ± 0,1',nome:'chapa de 8 mm (espessura)',h:40}],en:'Quanto a espessura da chapa pode ter a mais que a medida nominal?',tipo:'num',r:'0,1',exp:'O ± 0,1 indica que a peça pode ter até 0,1 mm a mais e até 0,1 mm a menos que os 8 mm.'},
 /* Dentro ou fora */
@@ -197,38 +196,29 @@ const E=[
 {tema:2,d:['lote',{cota:'36 ± 0,15',vals:['36,10','35,84','35,85','36,16','36,00'],nome:'buchas'}],en:'Marque todas as buchas aprovadas.',tipo:'multi',c:[0,2,4],exp:'Limites: 35,85 a 36,15. B (35,84) ficou abaixo e D (36,16) passou da máxima. C (35,85) está no limite.'},
 /* Da faixa à cota */
 {tema:3,d:['faixa',{min:'59,7',max:'60,3'}],en:'A faixa aceita vai de 59,7 a 60,3 mm. Qual é a medida nominal?',tipo:'num',r:'60',exp:'A nominal fica no meio da faixa: (59,7 + 60,3) ÷ 2 = 60 mm.'},
-{tema:3,d:['faixa',{min:'39,8',max:'40,2'}],en:'A faixa aceita vai de 39,8 a 40,2 mm. Qual é a tolerância para cada lado?',tipo:'num',r:'0,2',exp:'A nominal é 40 mm. De 40 até 40,2 há 0,2 mm, e de 40 até 39,8 também. A cota é 40 ± 0,2.'},
 {tema:3,d:['faixa',{min:'99,5',max:'100,5'}],en:'Como se escreve a cota para a faixa de 99,5 a 100,5 mm?',tipo:'mc',alts:['100 ± 0,5','100 ± 1','99,5 ± 1','100 ± 0,05'],c:0,exp:'Nominal no meio da faixa: 100. Distância até cada limite: 0,5. Cota: 100 ± 0,5.'},
 {tema:3,d:['faixa',{min:'24,95',max:'25,05'}],en:'Qual é a largura da faixa de tolerância entre 24,95 e 25,05 mm?',tipo:'num',r:'0,1',exp:'Faixa = máxima − mínima = 25,05 − 24,95 = 0,1 mm.'},
 {tema:3,d:['faixa',{min:'11,9',max:'12,1'}],en:'Como se escreve a cota para a faixa de 11,9 a 12,1 mm?',tipo:'mc',alts:['12 ± 0,2','12 ± 0,1','11,9 ± 0,2','12,1 ± 0,1'],c:1,exp:'Nominal 12, e 0,1 mm para cada lado. A largura da faixa é 0,2, mas a tolerância de cada lado é 0,1.'},
 /* Erro e conceitos */
-{tema:4,d:['fala',{txt:'A peça mediu 50,3 mm e o desenho pede 50 mm. Então ela está errada e deve ser jogada fora.'}],en:'A cota completa no desenho é 50 ± 0,5. O colega está certo?',tipo:'mc',alts:['Sim, qualquer diferença da nominal é defeito.','Não. A peça tem erro de 0,3 mm, mas está dentro da tolerância e é aprovada.','Sim, porque 50,3 é maior que 50.','Não, porque a peça deve ser medida de novo até dar 50.'],c:1,exp:'A cota aceita de 49,5 a 50,5 mm. Erro é a diferença para a nominal; tolerância é o limite aceito para essa diferença.'},
 {tema:4,d:['lcd',{cota:'40 ± 0,3',val:'40,2',nome:'eixo'}],en:'Qual é o erro desta peça em relação à medida nominal, em mm?',tipo:'num',r:'0,2',exp:'Erro = medida − nominal = 40,2 − 40 = 0,2 mm (a mais). A peça tem erro, mas está dentro da tolerância de ± 0,3.'},
 {tema:4,en:'Por que nenhuma peça sai da máquina com a medida exata do desenho?',tipo:'mc',alts:['Porque os desenhos sempre têm erros de cota.','Porque máquina, ferramenta, temperatura, material, pessoa e medição variam um pouco.','Porque os operadores não seguem o desenho.','Porque só peças caras saem exatas.'],c:1,exp:'Sempre existe alguma variação no processo. Por isso o projeto diz quanto a medida pode variar.'},
 {tema:4,en:'Uma porca de um fornecedor serve no parafuso de outro fornecedor. Esse benefício da tolerância se chama:',tipo:'mc',alts:['Rastreabilidade','Intercambiabilidade','Calibração','Paralaxe'],c:1,exp:'Intercambiabilidade é a possibilidade de trocar uma peça por outra igual, de qualquer lote ou fornecedor, sem ajuste.'},
 {tema:4,en:'Uma peça mediu exatamente a medida mínima da cota. Ela é:',tipo:'mc',alts:['Aprovada, porque o limite faz parte da faixa.','Recusada, porque não chegou na nominal.','Recusada, porque está no limite.','Aprovada só se for medida de novo.'],c:0,exp:'A faixa vai da mínima até a máxima, incluindo as duas. Só está fora o que passa desses valores.'},
-{tema:4,d:['fala',{txt:'Vamos colocar ± 0,01 mm em todas as cotas da peça. Assim ela fica melhor!'}],en:'Qual é o problema dessa ideia?',tipo:'mc',alts:['Nenhum, quanto menor a tolerância, melhor sempre.','O custo de fabricação e de inspeção sobe muito sem melhorar a função das cotas que não precisam disso.','A peça fica mais fraca.','A norma proíbe tolerâncias pequenas.'],c:1,exp:'Tolerância apertada exige máquina mais precisa, mais tempo e mais inspeção, e gera mais refugo. Ela só vale onde a função precisa.'},
 /* Instrumentos */
-{tema:5,d:['inst',{cota:'12 ± 0,1',items:[['Régua','1 mm'],['Paquímetro','0,05 mm'],['Paquímetro','0,02 mm']]}],en:'Pela regra do décimo, qual instrumento é o adequado?',tipo:'mc',alts:['Régua de 1 mm','Paquímetro de 0,05 mm','Paquímetro de 0,02 mm'],c:2,exp:'Faixa = 0,2 mm. Um décimo da faixa = 0,02 mm. O paquímetro de 0,02 mm atende.'},
-{tema:5,d:['inst',{cota:'300 ± 2',items:[['Régua','0,5 mm'],['Paquímetro','0,02 mm'],['Micrômetro','0,01 mm']]}],en:'Qual é o instrumento mais simples que atende à regra do décimo?',tipo:'mc',alts:['Régua de 0,5 mm','Paquímetro de 0,02 mm','Micrômetro de 0,01 mm'],c:1,exp:'Faixa = 4 mm. Um décimo = 0,4 mm. A régua de 0,5 mm não enxerga 0,4 mm, então o mais simples que atende é o paquímetro. O micrômetro atenderia, mas é mais do que o necessário.'},
-{tema:5,d:['inst',{cota:'Ø 20 ± 0,05',items:[['Paquímetro','0,05 mm'],['Paquímetro','0,02 mm'],['Micrômetro','0,01 mm']]}],en:'Pela regra do décimo, qual instrumento é o adequado?',tipo:'mc',alts:['Paquímetro de 0,05 mm','Paquímetro de 0,02 mm','Micrômetro de 0,01 mm'],c:2,exp:'Faixa = 0,1 mm. Um décimo = 0,01 mm. Só o micrômetro de 0,01 mm atende.'},
-{tema:5,en:'Pela regra do décimo, qual deve ser a resolução máxima do instrumento para conferir a cota 50 ± 0,25? Responda em mm.',tipo:'num',r:'0,05',exp:'Faixa = 0,5 mm. Um décimo = 0,05 mm. Um paquímetro de 0,05 mm ou melhor serve.'},
-{tema:5,en:'Uma régua graduada de 1 mm serve para conferir a cota 25 ± 0,1?',tipo:'mc',alts:['Sim, porque a régua mede até 25 mm.','Não, porque a faixa inteira é de 0,2 mm, muito menor que o menor traço da régua.','Sim, se o aluno olhar com cuidado.','Não, porque a régua só mede peças grandes.'],c:1,exp:'Com traços de 1 mm não dá para ver diferenças de décimos. Pela regra do décimo, seria preciso 0,02 mm.'},
 /* Retrabalho ou refugo */
-{tema:6,d:['lcd',{cota:'25 ± 0,2',val:'25,4',nome:'eixo'}],en:'Este eixo está fora. Qual é o destino mais provável dele?',tipo:'mc',alts:['Retrabalho: ainda há material para tirar.','Refugo: não há como corrigir.','Aprovado: está perto da nominal.'],c:0,exp:'A máxima é 25,2 mm. O eixo ficou maior: pode voltar para a máquina e ser usinado até entrar na faixa.'},
-{tema:6,d:['lcd',{cota:'25 ± 0,2',val:'24,7',nome:'eixo'}],en:'Este eixo está fora. Qual é o destino mais provável dele?',tipo:'mc',alts:['Retrabalho: ainda há material para tirar.','Refugo: não há como devolver material.','Aprovado: está perto da nominal.'],c:1,exp:'A mínima é 24,8 mm. O eixo ficou menor e não dá para colocar material de volta, então vira refugo.'},
-{tema:6,d:['bucha',{ext:'Ø 40 ± 0,2',int:'Ø 25 ± 0,1',hl:'int'}],en:'O furo desta bucha mediu 24,8 mm. Qual é o destino mais provável?',tipo:'mc',alts:['Retrabalho: o furo pode ser alargado.','Refugo: o furo não tem conserto.','Aprovada: está perto da nominal.'],c:0,exp:'No furo a lógica se inverte: um furo menor que a mínima (24,9) ainda pode ser aumentado, por exemplo com um alargador.'},
-{tema:6,d:['bucha',{ext:'Ø 40 ± 0,2',int:'Ø 25 ± 0,1',hl:'int'}],en:'O furo desta bucha mediu 25,3 mm. Qual é o destino mais provável?',tipo:'mc',alts:['Retrabalho: o furo pode ser alargado.','Refugo: não dá para diminuir um furo que ficou grande.','Aprovada: está perto da nominal.'],c:1,exp:'A máxima do furo é 25,1 mm. Um furo grande demais não volta a diminuir, então a peça vira refugo.'},
-{tema:6,d:['bloco',{cota:'120 ± 1',nome:'bloco-guia'}],en:'Um bloco-guia mediu 118,6 mm de comprimento. Qual é o destino dele?',tipo:'mc',alts:['Retrabalho','Refugo','Aprovado'],c:1,exp:'A mínima é 119 mm. O bloco ficou curto e não dá para aumentar o comprimento, então vira refugo.'},
+{tema:5,d:['lcd',{cota:'25 ± 0,2',val:'25,4',nome:'eixo'}],en:'Este eixo está fora. Qual é o destino mais provável dele?',tipo:'mc',alts:['Retrabalho: ainda há material para tirar.','Refugo: não há como corrigir.','Aprovado: está perto da nominal.'],c:0,exp:'A máxima é 25,2 mm. O eixo ficou maior: pode voltar para a máquina e ser usinado até entrar na faixa.'},
+{tema:5,d:['lcd',{cota:'25 ± 0,2',val:'24,7',nome:'eixo'}],en:'Este eixo está fora. Qual é o destino mais provável dele?',tipo:'mc',alts:['Retrabalho: ainda há material para tirar.','Refugo: não há como devolver material.','Aprovado: está perto da nominal.'],c:1,exp:'A mínima é 24,8 mm. O eixo ficou menor e não dá para colocar material de volta, então vira refugo.'},
+{tema:5,d:['bucha',{ext:'Ø 40 ± 0,2',int:'Ø 25 ± 0,1',hl:'int'}],en:'O furo desta bucha mediu 24,8 mm. Qual é o destino mais provável?',tipo:'mc',alts:['Retrabalho: o furo pode ser alargado.','Refugo: o furo não tem conserto.','Aprovada: está perto da nominal.'],c:0,exp:'No furo a lógica se inverte: um furo menor que a mínima (24,9) ainda pode ser aumentado, por exemplo com um alargador.'},
+{tema:5,d:['bucha',{ext:'Ø 40 ± 0,2',int:'Ø 25 ± 0,1',hl:'int'}],en:'O furo desta bucha mediu 25,3 mm. Qual é o destino mais provável?',tipo:'mc',alts:['Retrabalho: o furo pode ser alargado.','Refugo: não dá para diminuir um furo que ficou grande.','Aprovada: está perto da nominal.'],c:1,exp:'A máxima do furo é 25,1 mm. Um furo grande demais não volta a diminuir, então a peça vira refugo.'},
+{tema:5,d:['bloco',{cota:'120 ± 1',nome:'bloco-guia'}],en:'Um bloco-guia mediu 118,6 mm de comprimento. Qual é o destino dele?',tipo:'mc',alts:['Retrabalho','Refugo','Aprovado'],c:1,exp:'A mínima é 119 mm. O bloco ficou curto e não dá para aumentar o comprimento, então vira refugo.'},
 /* Desenhos com várias cotas */
-{tema:7,d:['eixo2',{L:'120 ± 1',d1:'Ø 30 ± 0,5',d2:'Ø 20 ± 0,05',rol:true}],en:'Neste eixo, qual cota tem a tolerância mais apertada?',tipo:'mc',alts:['O comprimento, 120 ± 1','O diâmetro maior, Ø 30 ± 0,5','O diâmetro menor, Ø 20 ± 0,05'],c:2,exp:'O Ø 20 aceita só 0,05 mm para cada lado, uma faixa de 0,1 mm. As outras faixas são de 2 mm e 1 mm.'},
-{tema:7,d:['eixo2',{L:'120 ± 1',d1:'Ø 30 ± 0,5',d2:'Ø 20 ± 0,05',rol:true,hl:'d2'}],en:'Por que o projetista apertou justamente a tolerância do Ø 20?',tipo:'mc',alts:['Porque é a parte mais barata de fabricar.','Porque ali encaixa o rolamento, que precisa da folga ou do aperto certo.','Porque diâmetros pequenos sempre têm tolerância pequena.','Porque o comprimento não pode ser medido.'],c:1,exp:'A tolerância apertada vai onde a função exige: o encaixe com o rolamento. As outras cotas não encaixam em nada com precisão.'},
-{tema:7,d:['chapa',{comp:'200 ± 1',larg:'80 ± 0,5',furo:'Ø 10 ± 0,1',dist:'50 ± 0,2',hl:'furo'}],en:'O furo desta chapa vai receber um pino. Qual é o maior diâmetro aceito para o furo?',tipo:'num',r:'10,1',exp:'Cota do furo: Ø 10 ± 0,1. Máxima = 10 + 0,1 = 10,1 mm.'},
-{tema:7,d:['bucha',{ext:'Ø 40 ± 0,2',int:'Ø 25 ± 0,1'}],en:'A faixa de tolerância do furo é quantas vezes menor que a do diâmetro externo?',tipo:'num',r:'2',un:'vezes',exp:'Faixa externa: 0,4 mm. Faixa do furo: 0,2 mm. 0,4 ÷ 0,2 = 2 vezes menor.'},
-{tema:7,d:['lcd',{cota:'35 ± 0,3',val:'35,28',nome:'primeiro eixo do lote'}],en:'O operador regulou o torno e o primeiro eixo saiu com 35,28 mm. O que ele deve fazer?',tipo:'mc',alts:['Nada: a peça está aprovada, pode seguir assim.','Regular a máquina para buscar perto de 35,00 mm, porque com o desgaste da ferramenta os eixos vão crescer e logo passar da máxima.','Recusar a peça, porque está fora.','Parar a produção e trocar o desenho.'],c:1,exp:'35,28 está dentro, mas a só 0,02 mm da máxima. Mirando o meio da faixa sobra margem para o desgaste da ferramenta.'}
+{tema:6,d:['eixo2',{L:'120 ± 1',d1:'Ø 30 ± 0,5',d2:'Ø 20 ± 0,05',rol:true}],en:'Neste eixo, qual cota tem a tolerância mais apertada?',tipo:'mc',alts:['O comprimento, 120 ± 1','O diâmetro maior, Ø 30 ± 0,5','O diâmetro menor, Ø 20 ± 0,05'],c:2,exp:'O Ø 20 aceita só 0,05 mm para cada lado, uma faixa de 0,1 mm. As outras faixas são de 2 mm e 1 mm.'},
+{tema:6,d:['eixo2',{L:'120 ± 1',d1:'Ø 30 ± 0,5',d2:'Ø 20 ± 0,05',rol:true,hl:'d2'}],en:'Por que o projetista apertou justamente a tolerância do Ø 20?',tipo:'mc',alts:['Porque é a parte mais barata de fabricar.','Porque ali encaixa o rolamento, que precisa da folga ou do aperto certo.','Porque diâmetros pequenos sempre têm tolerância pequena.','Porque o comprimento não pode ser medido.'],c:1,exp:'A tolerância apertada vai onde a função exige: o encaixe com o rolamento. As outras cotas não encaixam em nada com precisão.'},
+{tema:6,d:['chapa',{comp:'200 ± 1',larg:'80 ± 0,5',furo:'Ø 10 ± 0,1',dist:'50 ± 0,2',hl:'furo'}],en:'O furo desta chapa vai receber um pino. Qual é o maior diâmetro aceito para o furo?',tipo:'num',r:'10,1',exp:'Cota do furo: Ø 10 ± 0,1. Máxima = 10 + 0,1 = 10,1 mm.'},
+{tema:6,d:['bucha',{ext:'Ø 40 ± 0,2',int:'Ø 25 ± 0,1'}],en:'A faixa de tolerância do furo é quantas vezes menor que a do diâmetro externo?',tipo:'num',r:'2',un:'vezes',exp:'Faixa externa: 0,4 mm. Faixa do furo: 0,2 mm. 0,4 ÷ 0,2 = 2 vezes menor.'}
 ];
 /* ===== estado ===== */
-const KEY='tol-exercicios-v1';
+const KEY='tol-exercicios-v2';
 let S={f:-1,i:0,res:{}};  /* res[i] = {ok:bool, r:resposta} */
 try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v&&v.res)S.res=v.res}catch(e){}
 const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify({res:S.res}))}catch(e){}};
@@ -236,7 +226,7 @@ const parse=s=>{s=String(s).trim().replace(/\s|mm|vezes/gi,'').replace(',','.');
 const lista=()=>E.map((e,i)=>i).filter(i=>S.f<0||E[i].tema===S.f);
 
 function placar(){const n=Object.keys(S.res).length,ok=Object.values(S.res).filter(r=>r.ok).length;
-  $('placar').innerHTML=`<span>Respondidos<b>${n}/50</b></span><span>Acertos<b class="num">${ok}</b></span><span>Erros<b class="num">${n-ok}</b></span>`}
+  $('placar').innerHTML=`<span>Respondidos<b>${n}/40</b></span><span>Acertos<b class="num">${ok}</b></span><span>Erros<b class="num">${n-ok}</b></span>`}
 function chips(){$('chips').innerHTML=[['-1','Todos']].concat(TEMAS.map((t,i)=>[i,t])).map(([v,t])=>`<button data-f="${v}" aria-pressed="${+v===S.f}">${t}</button>`).join('')}
 function grade(){$('grade').innerHTML=lista().map(i=>{const r=S.res[i];return `<button data-i="${i}" class="${r?(r.ok?'ok':'no'):''}" aria-current="${i===S.i}" aria-label="Exercício ${i+1}${r?(r.ok?', acertou':', errou'):''}">${i+1}</button>`}).join('')}
 
@@ -247,7 +237,7 @@ function render(){const e=E[S.i],r=S.res[S.i],done=!!r;placar();grade();
     return `<label class="alt ${cls}"><input type="${e.tipo==='multi'?'checkbox':'radio'}" name="alt" value="${j}" ${sel?'checked':''} ${done?'disabled':''}><span>${e.tipo==='multi'?'Peça ':''}${esc(a)}</span></label>`}).join('')}</div>`;
   const certo=e.tipo==='num'?`${e.r} ${e.un||'mm'}`:e.tipo==='multi'?e.c.map(j=>e.alts[j]).join(', '):e.alts[e.c];
   const L=lista(),pos=L.indexOf(S.i);
-  $('ex').innerHTML=`<div class="cab"><span>Exercício ${S.i+1} de 50</span><span>${TEMAS[e.tema]}</span></div>
+  $('ex').innerHTML=`<div class="cab"><span>Exercício ${S.i+1} de 40</span><span>${TEMAS[e.tema]}</span></div>
    ${e.d?`<div class="desenho">${D[e.d[0]](e.d[1])}</div>`:''}
    <p class="en">${esc(e.en)}</p>${corpo}
    ${done?`<div class="fb ${r.ok?'ok':'no'}"><b>${r.ok?'Certo!':'Não foi dessa vez.'}</b> ${r.ok?'':'Resposta: <b>'+esc(certo)+'</b>. '}${esc(e.exp)}</div>`:'<div id="emsg"></div>'}
@@ -279,10 +269,10 @@ $('pdf').onclick=()=>{
   const linha=(s,sz=10.5,b=false,c=[20,32,43],ind=0)=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...c);doc.splitTextToSize(t(s),W-ind).forEach(l=>{if(y>282){doc.addPage();y=18}doc.text(l,L+ind,y);y+=sz*.45})};
   doc.setFillColor(168,84,0);doc.rect(0,0,210,6,'F');
   linha('FAZENDA DE PROJETOS · Metrologia · Noções de tolerância',9,true,[79,95,108]);y+=1;
-  linha('Relatório: 50 exercícios de interpretação',16,true);y+=2;
+  linha('Relatório: 40 exercícios de interpretação',16,true);y+=2;
   const ok=Object.values(S.res).filter(r=>r.ok).length;
   linha(`Nome: ${$('nome').value.trim()}    Turma: ${$('turma').value.trim()||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')}`,10);y+=1;
-  linha(`Respondidos: ${n} de 50    Acertos: ${ok}    Erros: ${n-ok}`,12,true,[23,112,63]);y+=3;
+  linha(`Respondidos: ${n} de 40    Acertos: ${ok}    Erros: ${n-ok}`,12,true,[23,112,63]);y+=3;
   TEMAS.forEach((tm,k)=>{const ids=E.map((e,i)=>i).filter(i=>E[i].tema===k),rs=ids.filter(i=>S.res[i]),a=rs.filter(i=>S.res[i].ok);
     linha(`${tm}: ${a.length} acertos em ${rs.length} respondidos (de ${ids.length})`,10)});y+=3;
   linha('Exercícios respondidos',12,true);y+=1;
