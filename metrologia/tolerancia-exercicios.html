@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>50 exercícios de tolerância</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<style>
+:root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--bad:#B3261E;--zone:#CFE6D8;--steel:#1D3B5C;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}}
+:root[data-theme="dark"]{--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 Barlow,'Arial Narrow',Arial,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 48px}
+h1{font:800 clamp(36px,8vw,60px)/.95 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:0 0 6px}
+h2{font:800 clamp(26px,5vw,36px)/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:34px 0 10px;letter-spacing:.01em}
+h3{font:700 22px/1.1 'Big Shoulders Display','Arial Narrow',sans-serif;margin:18px 0 6px;letter-spacing:.02em}
+.sub{color:var(--muted);margin:0 0 18px;max-width:66ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.big{font:800 clamp(48px,12vw,88px)/.9 'Big Shoulders Display','Arial Narrow',sans-serif;font-variant-numeric:tabular-nums}
+.big small{font-size:.38em;margin-left:.2em;color:var(--muted)}
+.stats{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.stats b{display:block;font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+button.act,a.act{display:inline-flex;align-items:center;justify-content:center;font:700 19px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:13px 22px;min-height:48px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;text-decoration:none}
+button.ghost,a.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabs{display:flex;margin:16px 0 12px;border:2px solid var(--ink);border-radius:4px;overflow:hidden;width:fit-content;max-width:100%}
+.tabs button{font:700 20px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:11px 18px;min-height:48px;background:transparent;color:var(--ink);border:0;cursor:pointer}
+.tabs button+button{border-left:2px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.fb{margin-top:12px;padding:12px 14px;border-left:6px solid var(--line);background:var(--bg);border-radius:0 4px 4px 0}
+.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.okc{color:var(--ok);font-weight:700}.noc{color:var(--bad);font-weight:700}
+input[type=text],input[type=number],select,textarea{font:600 18px/1.2 Barlow,Arial,sans-serif;padding:10px 12px;min-height:46px;border:2px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);max-width:100%}
+textarea{width:100%;min-height:90px;resize:vertical}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--muted);font-size:15px}
+.num{font-variant-numeric:tabular-nums}
+@media (max-width:640px){.tabs{width:100%}.tabs button{flex:1;padding:11px 6px}.row .act{flex:1 1 auto}}
+@media (prefers-reduced-motion:no-preference){.fb{animation:pop .18s ease-out}@keyframes pop{from{transform:translateY(4px);opacity:.4}}}
+@media print{.fp-rule,.noprint{display:none!important}body{background:#fff;color:#000}}
+
+/* Cabeçalho comum do site Fazenda de Projetos */
+.fp-in{max-width:1000px;margin-inline:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.fp-brand{font:800 27px/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.fp-brand b{color:var(--accent);font-weight:800}
+.fp-onde{font:600 13.5px/1.2 Barlow,'Arial Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fp-rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+.trilha{display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.trilha a{font:600 15px/1.2 Barlow,sans-serif;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:4px;padding:10px 12px;min-height:44px;display:inline-flex;align-items:center;background:var(--panel)}
+.trilha a[aria-current]{border-color:var(--accent);color:var(--accent);font-weight:700}
+.trilha .t{flex-basis:100%;font:600 13px/1 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* Página */
+.top{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 10px}
+.chips button{font:600 15px/1 Barlow,sans-serif;padding:9px 12px;min-height:40px;border:1.5px solid var(--line);border-radius:20px;background:var(--panel);color:var(--ink);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;margin-bottom:16px}
+.grade button{font:800 18px/1 'Big Shoulders Display',sans-serif;min-height:44px;border:1.5px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+.grade button.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.grade button.no{background:var(--bad);border-color:var(--bad);color:#fff}
+.grade button[aria-current="true"]{outline:3px solid var(--accent);outline-offset:1px}
+.ex{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.ex .cab{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--muted);font:600 14px/1.2 Barlow,sans-serif;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.ex h2{margin:0 0 10px;font-size:clamp(28px,5vw,40px)}
+.desenho{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px;margin:10px 0 14px}
+.desenho svg{display:block;width:100%;height:auto;max-height:46dvh;margin:0 auto;color:var(--ink)}
+.desenho text{font-family:Barlow,'Arial Narrow',Arial,sans-serif}
+.en{font-size:19px;font-weight:600;margin:0 0 12px}
+.alts{display:flex;flex-direction:column;gap:6px}
+.alt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:2px solid var(--line);border-radius:4px;background:var(--bg);cursor:pointer;min-height:46px}
+.alt input{margin-top:4px;width:18px;height:18px;flex:none}
+.alt.c{border-color:var(--ok)}.alt.x{border-color:var(--bad)}
+.resp{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.resp input{width:9ch;font-weight:800;font-size:24px}
+.placar{display:flex;gap:20px;flex-wrap:wrap;color:var(--muted)}
+.placar b{display:block;font:800 30px/1 'Big Shoulders Display',sans-serif;color:var(--ink)}
+.erro{color:var(--bad);font-weight:600}
+.s-ink{stroke:var(--ink)}.s-mut{stroke:var(--muted)}.s-acc{stroke:var(--accent)}
+.f-ink{fill:var(--ink)}.f-mut{fill:var(--muted)}.f-acc{fill:var(--accent)}.f-ok{fill:var(--ok)}.f-bad{fill:var(--bad)}
+.f-steel{fill:#C9D2DE}.f-zone{fill:var(--zone)}.f-out{fill:var(--bad);opacity:.18}.f-panel{fill:var(--panel)}.f-bg{fill:var(--bg)}
+.f-lcd{fill:#0B1620}.f-lcdtxt{fill:#9FF0C2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .f-steel{fill:#4A6178}}
+:root[data-theme="dark"] .f-steel{fill:#4A6178}
+</style>
+</head>
+<body>
+<header class="fp-top">
+  <div class="fp-in"><a class="fp-brand" href="../index.html">Fazenda <b>de Projetos</b></a><span class="fp-onde">Metrologia · Noções de tolerância</span></div>
+  <div class="fp-rule" aria-hidden="true"></div>
+</header>
+<main>
+<div class="top">
+  <div><h1>50 exercícios de interpretação</h1>
+  <p class="sub" style="margin-bottom:0">Leia o desenho ou a situação, responda e confira. Cada exercício mostra a explicação depois da resposta. Escreva os números com vírgula, como 24,5.</p></div>
+</div>
+<section class="panel" style="margin-top:14px">
+  <div class="placar" id="placar"></div>
+  <div class="chips" id="chips" role="group" aria-label="Filtrar por tema"></div>
+  <div class="grade" id="grade" aria-label="Exercícios"></div>
+</section>
+<section class="ex" id="ex" aria-live="polite" style="margin-top:14px"></section>
+<section class="panel noprint" style="margin-top:14px">
+  <h3 style="margin-top:0">Meu relatório</h3>
+  <div class="row" style="margin-top:0">
+    <label class="f" style="flex:2 1 220px">Nome<input type="text" id="nome" autocomplete="name" maxlength="60" style="width:100%"></label>
+    <label class="f" style="flex:1 1 100px">Turma<input type="text" id="turma" maxlength="20" style="width:100%"></label>
+  </div>
+  <div id="rmsg" aria-live="polite"></div>
+  <div class="row"><button class="act" id="pdf">Baixar relatório em PDF</button><button class="act ghost" id="zerar">Recomeçar do zero</button></div>
+</section>
+<nav class="trilha noprint" aria-label="Noções de tolerância"><span class="t">Noções de tolerância</span><a href="tolerancia-o-que-e.html">Leitura</a><a href="tolerancia-faixa.html">Simulador</a><a href="tolerancia-passa-nao-passa.html">Jogo</a><a href="tolerancia-regua.html">Atividade</a><a href="tolerancia-exercicios.html" aria-current="page">50 exercícios</a><a href="tolerancia-avaliacao.html">Avaliação</a><a href="../index.html#d-metrologia">Voltar à trilha de Metrologia</a></nav>
+</main>
+<script src="../vendor/jspdf.umd.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const DENTRO=['Dentro da tolerância: aprovada','Fora da tolerância: recusada'];
+
+/* ===== desenhos (SVG, viewBox 600 x 280) ===== */
+const MK=`<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 1L10 5L0 9z" fill="currentColor"/></marker></defs>`;
+const dimH=(x1,x2,y,lab,acc)=>`<line x1="${x1}" x2="${x2}" y1="${y}" y2="${y}" stroke="currentColor" stroke-width="1.6" marker-start="url(#ar)" marker-end="url(#ar)"/><text x="${(x1+x2)/2}" y="${y-9}" text-anchor="middle" font-size="20" font-weight="700" class="${acc?'f-acc':'f-ink'}">${lab}</text>`;
+const dimV=(x,y1,y2,lab,acc,anchor='start')=>`<line x1="${x}" x2="${x}" y1="${y1}" y2="${y2}" stroke="currentColor" stroke-width="1.6" marker-start="url(#ar)" marker-end="url(#ar)"/><text x="${anchor==='start'?x+10:x-10}" y="${(y1+y2)/2+7}" text-anchor="${anchor}" font-size="20" font-weight="700" class="${acc?'f-acc':'f-ink'}">${lab}</text>`;
+const ext=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="currentColor" stroke-width="1" opacity=".55"/>`;
+const centro=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="currentColor" stroke-width="1" stroke-dasharray="14 4 3 4" opacity=".6"/>`;
+const svgw=(inner,label,h=280)=>`<svg viewBox="0 0 600 ${h}" role="img" aria-label="${esc(label)}">${MK}${inner}</svg>`;
+const D={
+ pino:o=>svgw(`<rect x="130" y="85" width="300" height="110" rx="6" class="f-steel" stroke="currentColor" stroke-width="2"/>${centro(110,140,450,140)}${ext(430,85,500,85)}${ext(430,195,500,195)}${dimV(490,85,195,o.cota,true)}<text x="280" y="240" text-anchor="middle" font-size="16" class="f-mut">${o.nome||'pino'} (vista lateral)</text>`,`Desenho de ${o.nome||'pino'} com cota ${o.cota}`),
+ bloco:o=>svgw(`<rect x="110" y="110" width="380" height="${o.h||90}" class="f-steel" stroke="currentColor" stroke-width="2"/>${ext(110,105,110,55)}${ext(490,105,490,55)}${dimH(110,490,70,o.cota,true)}<text x="300" y="${135+(o.h||90)}" text-anchor="middle" font-size="16" class="f-mut">${o.nome||'bloco'}</text>`,`Desenho de ${o.nome||'bloco'} com cota ${o.cota}`),
+ bucha:o=>svgw(`<circle cx="230" cy="145" r="105" class="f-steel" stroke="currentColor" stroke-width="2"/><circle cx="230" cy="145" r="62" class="f-bg" stroke="currentColor" stroke-width="2"/>${centro(110,145,350,145)}${centro(230,25,230,265)}
+   <line x1="168" x2="292" y1="145" y2="145" stroke="currentColor" stroke-width="1.6" marker-start="url(#ar)" marker-end="url(#ar)"/>
+   <line x1="306" y1="70" x2="390" y2="70" stroke="currentColor" stroke-width="1"/><line x1="306" y1="70" x2="300" y2="74" stroke="currentColor"/>
+   <text x="396" y="76" font-size="20" font-weight="700" class="${o.hl==='ext'?'f-acc':'f-ink'}">${o.ext}</text><text x="396" y="98" font-size="15" class="f-mut">diâmetro externo</text>
+   <line x1="240" y1="150" x2="390" y2="200" stroke="currentColor" stroke-width="1"/>
+   <text x="396" y="206" font-size="20" font-weight="700" class="${o.hl==='int'?'f-acc':'f-ink'}">${o.int}</text><text x="396" y="228" font-size="15" class="f-mut">diâmetro interno (furo)</text>`,`Bucha com diâmetro externo ${o.ext} e furo ${o.int}`),
+ chapa:o=>svgw(`<rect x="60" y="80" width="430" height="140" class="f-steel" stroke="currentColor" stroke-width="2"/><circle cx="185" cy="150" r="24" class="f-bg" stroke="currentColor" stroke-width="2"/>${centro(150,150,220,150)}${centro(185,115,185,185)}
+   ${ext(60,75,60,30)}${ext(490,75,490,30)}${dimH(60,490,45,o.comp,o.hl==='comp')}
+   ${ext(495,80,560,80)}${ext(495,220,560,220)}${dimV(545,80,220,'',false)}<text x="576" y="150" font-size="19" font-weight="700" class="${o.hl==='larg'?'f-acc':'f-ink'}" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 576 150)">${o.larg}</text>
+   ${ext(60,225,60,265)}${ext(185,180,185,265)}${dimH(60,185,255,o.dist,o.hl==='dist')}
+   <line x1="203" y1="133" x2="270" y2="105" stroke="currentColor" stroke-width="1"/><text x="274" y="110" font-size="20" font-weight="700" class="${o.hl==='furo'?'f-acc':'f-ink'}">${o.furo}</text>`,`Chapa ${o.comp} por ${o.larg}, com furo ${o.furo} a ${o.dist} da borda`,290),
+ eixo2:o=>svgw(`<rect x="70" y="95" width="230" height="120" class="f-steel" stroke="currentColor" stroke-width="2"/><rect x="300" y="122" width="210" height="66" class="f-steel" stroke="currentColor" stroke-width="2"/>${centro(50,155,530,155)}
+   ${ext(70,90,70,40)}${ext(510,117,510,40)}${dimH(70,510,55,o.L,o.hl==='L')}
+   <text x="185" y="250" text-anchor="middle" font-size="20" font-weight="700" class="${o.hl==='d1'?'f-acc':'f-ink'}">${o.d1}</text><line x1="185" y1="215" x2="185" y2="232" stroke="currentColor"/>
+   <text x="405" y="250" text-anchor="middle" font-size="20" font-weight="700" class="${o.hl==='d2'?'f-acc':'f-ink'}">${o.d2}</text><line x1="405" y1="188" x2="405" y2="232" stroke="currentColor"/>
+   ${o.rol?`<rect x="340" y="104" width="70" height="18" rx="3" class="f-acc" opacity=".55"/><rect x="340" y="188" width="70" height="18" rx="3" class="f-acc" opacity=".55"/><text x="420" y="100" font-size="15" class="f-acc" font-weight="700">rolamento</text>`:''}`,`Eixo escalonado com comprimento ${o.L}, diâmetros ${o.d1} e ${o.d2}`),
+ faixa:o=>svgw(`<rect x="40" y="120" width="520" height="60" class="f-out"/><rect x="150" y="120" width="300" height="60" class="f-zone"/>
+   <text x="300" y="157" text-anchor="middle" font-size="20" font-weight="700" class="f-ok">ACEITA</text><text x="95" y="157" text-anchor="middle" font-size="17" font-weight="700" class="f-bad">FORA</text><text x="505" y="157" text-anchor="middle" font-size="17" font-weight="700" class="f-bad">FORA</text>
+   <line x1="150" x2="150" y1="105" y2="195" stroke="currentColor" stroke-width="3"/><line x1="450" x2="450" y1="105" y2="195" stroke="currentColor" stroke-width="3"/><line x1="300" x2="300" y1="105" y2="120" class="s-acc" stroke-width="3"/><line x1="300" x2="300" y1="180" y2="195" class="s-acc" stroke-width="3"/>
+   <text x="150" y="92" text-anchor="middle" font-size="26" font-weight="700" class="f-ink">${o.min}</text><text x="450" y="92" text-anchor="middle" font-size="26" font-weight="700" class="f-ink">${o.max}</text><text x="300" y="92" text-anchor="middle" font-size="26" font-weight="700" class="f-acc">?</text>
+   <text x="150" y="220" text-anchor="middle" font-size="16" class="f-mut">mínima</text><text x="300" y="220" text-anchor="middle" font-size="16" class="f-mut">nominal</text><text x="450" y="220" text-anchor="middle" font-size="16" class="f-mut">máxima</text>`,`Faixa aceita de ${o.min} a ${o.max} mm`,250),
+ lcd:o=>svgw(`<rect x="150" y="40" width="300" height="70" rx="8" class="f-panel" stroke="currentColor" stroke-width="1.5"/><text x="300" y="70" text-anchor="middle" font-size="15" class="f-mut">${o.nome?esc(o.nome)+' · ':''}cota do desenho</text><text x="300" y="98" text-anchor="middle" font-size="26" font-weight="700" class="f-ink">${o.cota}</text>
+   <rect x="130" y="130" width="340" height="110" rx="10" class="f-lcd"/><text x="300" y="160" text-anchor="middle" font-size="15" fill="#6FA88A" letter-spacing="2">MEDIDA ENCONTRADA</text><text x="300" y="220" text-anchor="middle" font-size="52" font-weight="700" class="f-lcdtxt">${o.val} mm</text>`,`Cota ${o.cota}, medida encontrada ${o.val} milímetros`,260),
+ lote:o=>{const n=o.vals.length,w=Math.min(104,520/n-8),x0=300-(n*(w+8)-8)/2;
+   return svgw(`<text x="300" y="44" text-anchor="middle" font-size="24" font-weight="700" class="f-ink">${o.nome?esc(o.nome)+': ':''}cota ${o.cota}</text>`+o.vals.map((v,i)=>`<rect x="${x0+i*(w+8)}" y="80" width="${w}" height="110" rx="8" class="f-panel" stroke="currentColor" stroke-width="1.2"/><text x="${x0+i*(w+8)+w/2}" y="112" text-anchor="middle" font-size="18" font-weight="700" class="f-acc">${String.fromCharCode(65+i)}</text><text x="${x0+i*(w+8)+w/2}" y="160" text-anchor="middle" font-size="${w<90?22:26}" font-weight="700" class="f-ink">${v}</text>`).join('')+`<text x="300" y="228" text-anchor="middle" font-size="16" class="f-mut">medidas em mm</text>`,`Lote com cota ${o.cota} e medidas ${o.vals.join(', ')}`,250)},
+ inst:o=>{const n=o.items.length,w=170,x0=300-(n*(w+14)-14)/2;
+   return svgw(`<text x="300" y="44" text-anchor="middle" font-size="24" font-weight="700" class="f-ink">cota a conferir: ${o.cota}</text>`+o.items.map((it,i)=>`<rect x="${x0+i*(w+14)}" y="75" width="${w}" height="120" rx="8" class="f-panel" stroke="currentColor" stroke-width="1.2"/><text x="${x0+i*(w+14)+w/2}" y="112" text-anchor="middle" font-size="18" font-weight="700" class="f-ink">${it[0]}</text><text x="${x0+i*(w+14)+w/2}" y="150" text-anchor="middle" font-size="15" class="f-mut">resolução</text><text x="${x0+i*(w+14)+w/2}" y="176" text-anchor="middle" font-size="20" font-weight="700" class="f-acc">${it[1]}</text>`).join(''),`Instrumentos disponíveis para a cota ${o.cota}`,220)},
+ fala:o=>svgw(`<circle cx="70" cy="190" r="34" class="f-steel" stroke="currentColor" stroke-width="2"/><circle cx="70" cy="250" r="30" class="f-steel" stroke="currentColor" stroke-width="2"/>
+   <path d="M130 30h440a14 14 0 0 1 14 14v120a14 14 0 0 1-14 14H175l-55 30 18-30h-8a14 14 0 0 1-14-14V44a14 14 0 0 1 14-14z" class="f-panel" stroke="currentColor" stroke-width="1.6"/>
+   <foreignObject x="140" y="38" width="430" height="132"><div xmlns="http://www.w3.org/1999/xhtml" style="font:italic 600 19px/1.35 Barlow,Arial,sans-serif;color:var(--ink);height:132px;display:flex;align-items:center">"${esc(o.txt)}"</div></foreignObject>`,`Fala: ${o.txt}`)
+};
+
+/* ===== banco de exercícios =====
+   tipo: num (resposta numérica, em mm salvo indicação), mc (alternativa), multi (marcar todas). */
+const TEMAS=['Ler a cota','Dentro ou fora','Lotes','Da faixa à cota','Erro e conceitos','Instrumentos','Retrabalho ou refugo','Desenhos com várias cotas'];
+const E=[
+/* Ler a cota */
+{tema:0,d:['pino',{cota:'Ø 30 ± 0,2',nome:'pino'}],en:'Qual é o diâmetro máximo aceito para este pino?',tipo:'num',r:'30,2',exp:'Máxima = nominal + tolerância = 30 + 0,2 = 30,2 mm.'},
+{tema:0,d:['bloco',{cota:'120 ± 1',nome:'bloco-guia'}],en:'Qual é o menor comprimento aceito para o bloco-guia?',tipo:'num',r:'119',exp:'Mínima = nominal − tolerância = 120 − 1 = 119 mm.'},
+{tema:0,d:['bucha',{ext:'Ø 40 ± 0,2',int:'Ø 25 ± 0,1',hl:'int'}],en:'Qual é o menor diâmetro aceito para o furo da bucha?',tipo:'num',r:'24,9',exp:'O furo tem cota Ø 25 ± 0,1. Mínima = 25 − 0,1 = 24,9 mm.'},
+{tema:0,d:['bucha',{ext:'Ø 40 ± 0,2',int:'Ø 25 ± 0,1',hl:'ext'}],en:'Qual é o maior diâmetro externo aceito para a bucha?',tipo:'num',r:'40,2',exp:'O diâmetro externo é Ø 40 ± 0,2. Máxima = 40 + 0,2 = 40,2 mm.'},
+{tema:0,d:['chapa',{comp:'200 ± 1',larg:'80 ± 0,5',furo:'Ø 10 ± 0,1',dist:'50 ± 0,2',hl:'dist'}],en:'Qual é a largura da faixa de tolerância da distância entre a borda e o centro do furo?',tipo:'num',r:'0,4',exp:'Cota 50 ± 0,2: de 49,8 a 50,2 mm. Faixa = 50,2 − 49,8 = 0,4 mm.'},
+{tema:0,d:['chapa',{comp:'200 ± 1',larg:'80 ± 0,5',furo:'Ø 10 ± 0,1',dist:'50 ± 0,2'}],en:'Qual cota desta chapa tem a faixa de tolerância mais larga?',tipo:'mc',alts:['O comprimento, 200 ± 1','A largura, 80 ± 0,5','O furo, Ø 10 ± 0,1','A distância do furo, 50 ± 0,2'],c:0,exp:'O comprimento aceita 1 mm para cada lado, uma faixa de 2 mm. As outras faixas são de 1 mm, 0,2 mm e 0,4 mm.'},
+{tema:0,d:['bloco',{cota:'75 ± 0,25',nome:'espaçador'}],en:'Qual é o comprimento máximo aceito para o espaçador?',tipo:'num',r:'75,25',exp:'Máxima = 75 + 0,25 = 75,25 mm.'},
+{tema:0,d:['pino',{cota:'Ø 12 ± 0,05',nome:'pino-guia'}],en:'Qual é a largura da faixa de tolerância do pino-guia?',tipo:'num',r:'0,1',exp:'De 11,95 a 12,05 mm. Faixa = 12,05 − 11,95 = 0,1 mm, ou seja, duas vezes a tolerância.'},
+{tema:0,d:['eixo2',{L:'150 ± 0,5',d1:'Ø 40 ± 0,3',d2:'Ø 25 ± 0,02',hl:'d2'}],en:'Qual é o menor diâmetro aceito na parte fina do eixo?',tipo:'num',r:'24,98',exp:'A parte fina tem Ø 25 ± 0,02. Mínima = 25 − 0,02 = 24,98 mm.'},
+{tema:0,d:['bloco',{cota:'8 ± 0,1',nome:'chapa de 8 mm (espessura)',h:40}],en:'Quanto a espessura da chapa pode ter a mais que a medida nominal?',tipo:'num',r:'0,1',exp:'O ± 0,1 indica que a peça pode ter até 0,1 mm a mais e até 0,1 mm a menos que os 8 mm.'},
+/* Dentro ou fora */
+{tema:1,d:['lcd',{cota:'25 ± 0,2',val:'25,15',nome:'eixo'}],en:'Este eixo está dentro ou fora da tolerância?',tipo:'mc',alts:DENTRO,c:0,exp:'Limites: 24,8 a 25,2 mm. 25,15 está entre eles.'},
+{tema:1,d:['lcd',{cota:'25 ± 0,2',val:'25,2',nome:'eixo'}],en:'Este eixo está dentro ou fora da tolerância?',tipo:'mc',alts:DENTRO,c:0,exp:'25,2 mm é exatamente a máxima. O limite faz parte da faixa, então a peça é aprovada.'},
+{tema:1,d:['lcd',{cota:'50 ± 0,5',val:'49,4',nome:'bucha'}],en:'Esta bucha está dentro ou fora da tolerância?',tipo:'mc',alts:DENTRO,c:1,exp:'Limites: 49,5 a 50,5 mm. 49,4 ficou 0,1 mm abaixo da mínima.'},
+{tema:1,d:['lcd',{cota:'100 ± 1',val:'101,1',nome:'barra'}],en:'Esta barra está dentro ou fora da tolerância?',tipo:'mc',alts:DENTRO,c:1,exp:'Limites: 99 a 101 mm. 101,1 passou da máxima em 0,1 mm.'},
+{tema:1,d:['lcd',{cota:'Ø 18 ± 0,05',val:'17,96',nome:'pino'}],en:'Este pino está dentro ou fora da tolerância?',tipo:'mc',alts:DENTRO,c:0,exp:'Limites: 17,95 a 18,05 mm. 17,96 está dentro, a 0,01 mm da mínima.'},
+{tema:1,d:['lcd',{cota:'32 ± 0,1',val:'31,9',nome:'flange'}],en:'Este flange está dentro ou fora da tolerância?',tipo:'mc',alts:DENTRO,c:0,exp:'31,9 mm é exatamente a mínima (32 − 0,1). O limite é aceito.'},
+{tema:1,d:['lcd',{cota:'64 ± 0,3',val:'64,31',nome:'espaçador'}],en:'Este espaçador está dentro ou fora da tolerância?',tipo:'mc',alts:DENTRO,c:1,exp:'A máxima é 64,3 mm. 64,31 passou dela em 0,01 mm: é pouco, mas está fora.'},
+{tema:1,d:['lcd',{cota:'10 ± 0,02',val:'9,97',nome:'pino de precisão'}],en:'Este pino está dentro ou fora da tolerância?',tipo:'mc',alts:DENTRO,c:1,exp:'Limites: 9,98 a 10,02 mm. 9,97 ficou 0,01 mm abaixo da mínima.'},
+/* Lotes */
+{tema:2,d:['lote',{cota:'80 ± 0,5',vals:['79,6','80,5','80,7','79,4'],nome:'buchas'}],en:'Marque todas as buchas aprovadas.',tipo:'multi',c:[0,1],exp:'Limites: 79,5 a 80,5. A (79,6) e B (80,5, no limite) passam. C passou da máxima e D ficou abaixo da mínima.'},
+{tema:2,d:['lote',{cota:'8 ± 0,1',vals:['8,05','7,92','8,12','7,98','8,10'],nome:'pinos'}],en:'Marque todos os pinos aprovados.',tipo:'multi',c:[0,1,3,4],exp:'Limites: 7,9 a 8,1. Só o C (8,12) passou da máxima. O E (8,10) está no limite e é aceito.'},
+{tema:2,d:['lote',{cota:'45 ± 0,2',vals:['45,25','44,85','45,00','44,79','45,19'],nome:'eixos'}],en:'Marque todos os eixos aprovados.',tipo:'multi',c:[1,2,4],exp:'Limites: 44,8 a 45,2. A (45,25) passou da máxima e D (44,79) ficou abaixo da mínima.'},
+{tema:2,d:['lote',{cota:'Ø 22 ± 0,05',vals:['22,04','21,94','22,05','21,96','22,06'],nome:'pinos'}],en:'Marque todos os pinos aprovados.',tipo:'multi',c:[0,2,3],exp:'Limites: 21,95 a 22,05. B (21,94) ficou abaixo e E (22,06) passou da máxima. C (22,05) está no limite.'},
+{tema:2,d:['lote',{cota:'150 ± 1',vals:['149,2','151,0','148,9','150,6','151,2'],nome:'barras'}],en:'Marque todas as barras aprovadas.',tipo:'multi',c:[0,1,3],exp:'Limites: 149 a 151. C (148,9) ficou abaixo e E (151,2) passou da máxima. B (151,0) está no limite.'},
+{tema:2,d:['lote',{cota:'36 ± 0,15',vals:['36,10','35,84','35,85','36,16','36,00'],nome:'buchas'}],en:'Marque todas as buchas aprovadas.',tipo:'multi',c:[0,2,4],exp:'Limites: 35,85 a 36,15. B (35,84) ficou abaixo e D (36,16) passou da máxima. C (35,85) está no limite.'},
+/* Da faixa à cota */
+{tema:3,d:['faixa',{min:'59,7',max:'60,3'}],en:'A faixa aceita vai de 59,7 a 60,3 mm. Qual é a medida nominal?',tipo:'num',r:'60',exp:'A nominal fica no meio da faixa: (59,7 + 60,3) ÷ 2 = 60 mm.'},
+{tema:3,d:['faixa',{min:'39,8',max:'40,2'}],en:'A faixa aceita vai de 39,8 a 40,2 mm. Qual é a tolerância para cada lado?',tipo:'num',r:'0,2',exp:'A nominal é 40 mm. De 40 até 40,2 há 0,2 mm, e de 40 até 39,8 também. A cota é 40 ± 0,2.'},
+{tema:3,d:['faixa',{min:'99,5',max:'100,5'}],en:'Como se escreve a cota para a faixa de 99,5 a 100,5 mm?',tipo:'mc',alts:['100 ± 0,5','100 ± 1','99,5 ± 1','100 ± 0,05'],c:0,exp:'Nominal no meio da faixa: 100. Distância até cada limite: 0,5. Cota: 100 ± 0,5.'},
+{tema:3,d:['faixa',{min:'24,95',max:'25,05'}],en:'Qual é a largura da faixa de tolerância entre 24,95 e 25,05 mm?',tipo:'num',r:'0,1',exp:'Faixa = máxima − mínima = 25,05 − 24,95 = 0,1 mm.'},
+{tema:3,d:['faixa',{min:'11,9',max:'12,1'}],en:'Como se escreve a cota para a faixa de 11,9 a 12,1 mm?',tipo:'mc',alts:['12 ± 0,2','12 ± 0,1','11,9 ± 0,2','12,1 ± 0,1'],c:1,exp:'Nominal 12, e 0,1 mm para cada lado. A largura da faixa é 0,2, mas a tolerância de cada lado é 0,1.'},
+/* Erro e conceitos */
+{tema:4,d:['fala',{txt:'A peça mediu 50,3 mm e o desenho pede 50 mm. Então ela está errada e deve ser jogada fora.'}],en:'A cota completa no desenho é 50 ± 0,5. O colega está certo?',tipo:'mc',alts:['Sim, qualquer diferença da nominal é defeito.','Não. A peça tem erro de 0,3 mm, mas está dentro da tolerância e é aprovada.','Sim, porque 50,3 é maior que 50.','Não, porque a peça deve ser medida de novo até dar 50.'],c:1,exp:'A cota aceita de 49,5 a 50,5 mm. Erro é a diferença para a nominal; tolerância é o limite aceito para essa diferença.'},
+{tema:4,d:['lcd',{cota:'40 ± 0,3',val:'40,2',nome:'eixo'}],en:'Qual é o erro desta peça em relação à medida nominal, em mm?',tipo:'num',r:'0,2',exp:'Erro = medida − nominal = 40,2 − 40 = 0,2 mm (a mais). A peça tem erro, mas está dentro da tolerância de ± 0,3.'},
+{tema:4,en:'Por que nenhuma peça sai da máquina com a medida exata do desenho?',tipo:'mc',alts:['Porque os desenhos sempre têm erros de cota.','Porque máquina, ferramenta, temperatura, material, pessoa e medição variam um pouco.','Porque os operadores não seguem o desenho.','Porque só peças caras saem exatas.'],c:1,exp:'Sempre existe alguma variação no processo. Por isso o projeto diz quanto a medida pode variar.'},
+{tema:4,en:'Uma porca de um fornecedor serve no parafuso de outro fornecedor. Esse benefício da tolerância se chama:',tipo:'mc',alts:['Rastreabilidade','Intercambiabilidade','Calibração','Paralaxe'],c:1,exp:'Intercambiabilidade é a possibilidade de trocar uma peça por outra igual, de qualquer lote ou fornecedor, sem ajuste.'},
+{tema:4,en:'Uma peça mediu exatamente a medida mínima da cota. Ela é:',tipo:'mc',alts:['Aprovada, porque o limite faz parte da faixa.','Recusada, porque não chegou na nominal.','Recusada, porque está no limite.','Aprovada só se for medida de novo.'],c:0,exp:'A faixa vai da mínima até a máxima, incluindo as duas. Só está fora o que passa desses valores.'},
+{tema:4,d:['fala',{txt:'Vamos colocar ± 0,01 mm em todas as cotas da peça. Assim ela fica melhor!'}],en:'Qual é o problema dessa ideia?',tipo:'mc',alts:['Nenhum, quanto menor a tolerância, melhor sempre.','O custo de fabricação e de inspeção sobe muito sem melhorar a função das cotas que não precisam disso.','A peça fica mais fraca.','A norma proíbe tolerâncias pequenas.'],c:1,exp:'Tolerância apertada exige máquina mais precisa, mais tempo e mais inspeção, e gera mais refugo. Ela só vale onde a função precisa.'},
+/* Instrumentos */
+{tema:5,d:['inst',{cota:'12 ± 0,1',items:[['Régua','1 mm'],['Paquímetro','0,05 mm'],['Paquímetro','0,02 mm']]}],en:'Pela regra do décimo, qual instrumento é o adequado?',tipo:'mc',alts:['Régua de 1 mm','Paquímetro de 0,05 mm','Paquímetro de 0,02 mm'],c:2,exp:'Faixa = 0,2 mm. Um décimo da faixa = 0,02 mm. O paquímetro de 0,02 mm atende.'},
+{tema:5,d:['inst',{cota:'300 ± 2',items:[['Régua','0,5 mm'],['Paquímetro','0,02 mm'],['Micrômetro','0,01 mm']]}],en:'Qual é o instrumento mais simples que atende à regra do décimo?',tipo:'mc',alts:['Régua de 0,5 mm','Paquímetro de 0,02 mm','Micrômetro de 0,01 mm'],c:1,exp:'Faixa = 4 mm. Um décimo = 0,4 mm. A régua de 0,5 mm não enxerga 0,4 mm, então o mais simples que atende é o paquímetro. O micrômetro atenderia, mas é mais do que o necessário.'},
+{tema:5,d:['inst',{cota:'Ø 20 ± 0,05',items:[['Paquímetro','0,05 mm'],['Paquímetro','0,02 mm'],['Micrômetro','0,01 mm']]}],en:'Pela regra do décimo, qual instrumento é o adequado?',tipo:'mc',alts:['Paquímetro de 0,05 mm','Paquímetro de 0,02 mm','Micrômetro de 0,01 mm'],c:2,exp:'Faixa = 0,1 mm. Um décimo = 0,01 mm. Só o micrômetro de 0,01 mm atende.'},
+{tema:5,en:'Pela regra do décimo, qual deve ser a resolução máxima do instrumento para conferir a cota 50 ± 0,25? Responda em mm.',tipo:'num',r:'0,05',exp:'Faixa = 0,5 mm. Um décimo = 0,05 mm. Um paquímetro de 0,05 mm ou melhor serve.'},
+{tema:5,en:'Uma régua graduada de 1 mm serve para conferir a cota 25 ± 0,1?',tipo:'mc',alts:['Sim, porque a régua mede até 25 mm.','Não, porque a faixa inteira é de 0,2 mm, muito menor que o menor traço da régua.','Sim, se o aluno olhar com cuidado.','Não, porque a régua só mede peças grandes.'],c:1,exp:'Com traços de 1 mm não dá para ver diferenças de décimos. Pela regra do décimo, seria preciso 0,02 mm.'},
+/* Retrabalho ou refugo */
+{tema:6,d:['lcd',{cota:'25 ± 0,2',val:'25,4',nome:'eixo'}],en:'Este eixo está fora. Qual é o destino mais provável dele?',tipo:'mc',alts:['Retrabalho: ainda há material para tirar.','Refugo: não há como corrigir.','Aprovado: está perto da nominal.'],c:0,exp:'A máxima é 25,2 mm. O eixo ficou maior: pode voltar para a máquina e ser usinado até entrar na faixa.'},
+{tema:6,d:['lcd',{cota:'25 ± 0,2',val:'24,7',nome:'eixo'}],en:'Este eixo está fora. Qual é o destino mais provável dele?',tipo:'mc',alts:['Retrabalho: ainda há material para tirar.','Refugo: não há como devolver material.','Aprovado: está perto da nominal.'],c:1,exp:'A mínima é 24,8 mm. O eixo ficou menor e não dá para colocar material de volta, então vira refugo.'},
+{tema:6,d:['bucha',{ext:'Ø 40 ± 0,2',int:'Ø 25 ± 0,1',hl:'int'}],en:'O furo desta bucha mediu 24,8 mm. Qual é o destino mais provável?',tipo:'mc',alts:['Retrabalho: o furo pode ser alargado.','Refugo: o furo não tem conserto.','Aprovada: está perto da nominal.'],c:0,exp:'No furo a lógica se inverte: um furo menor que a mínima (24,9) ainda pode ser aumentado, por exemplo com um alargador.'},
+{tema:6,d:['bucha',{ext:'Ø 40 ± 0,2',int:'Ø 25 ± 0,1',hl:'int'}],en:'O furo desta bucha mediu 25,3 mm. Qual é o destino mais provável?',tipo:'mc',alts:['Retrabalho: o furo pode ser alargado.','Refugo: não dá para diminuir um furo que ficou grande.','Aprovada: está perto da nominal.'],c:1,exp:'A máxima do furo é 25,1 mm. Um furo grande demais não volta a diminuir, então a peça vira refugo.'},
+{tema:6,d:['bloco',{cota:'120 ± 1',nome:'bloco-guia'}],en:'Um bloco-guia mediu 118,6 mm de comprimento. Qual é o destino dele?',tipo:'mc',alts:['Retrabalho','Refugo','Aprovado'],c:1,exp:'A mínima é 119 mm. O bloco ficou curto e não dá para aumentar o comprimento, então vira refugo.'},
+/* Desenhos com várias cotas */
+{tema:7,d:['eixo2',{L:'120 ± 1',d1:'Ø 30 ± 0,5',d2:'Ø 20 ± 0,05',rol:true}],en:'Neste eixo, qual cota tem a tolerância mais apertada?',tipo:'mc',alts:['O comprimento, 120 ± 1','O diâmetro maior, Ø 30 ± 0,5','O diâmetro menor, Ø 20 ± 0,05'],c:2,exp:'O Ø 20 aceita só 0,05 mm para cada lado, uma faixa de 0,1 mm. As outras faixas são de 2 mm e 1 mm.'},
+{tema:7,d:['eixo2',{L:'120 ± 1',d1:'Ø 30 ± 0,5',d2:'Ø 20 ± 0,05',rol:true,hl:'d2'}],en:'Por que o projetista apertou justamente a tolerância do Ø 20?',tipo:'mc',alts:['Porque é a parte mais barata de fabricar.','Porque ali encaixa o rolamento, que precisa da folga ou do aperto certo.','Porque diâmetros pequenos sempre têm tolerância pequena.','Porque o comprimento não pode ser medido.'],c:1,exp:'A tolerância apertada vai onde a função exige: o encaixe com o rolamento. As outras cotas não encaixam em nada com precisão.'},
+{tema:7,d:['chapa',{comp:'200 ± 1',larg:'80 ± 0,5',furo:'Ø 10 ± 0,1',dist:'50 ± 0,2',hl:'furo'}],en:'O furo desta chapa vai receber um pino. Qual é o maior diâmetro aceito para o furo?',tipo:'num',r:'10,1',exp:'Cota do furo: Ø 10 ± 0,1. Máxima = 10 + 0,1 = 10,1 mm.'},
+{tema:7,d:['bucha',{ext:'Ø 40 ± 0,2',int:'Ø 25 ± 0,1'}],en:'A faixa de tolerância do furo é quantas vezes menor que a do diâmetro externo?',tipo:'num',r:'2',un:'vezes',exp:'Faixa externa: 0,4 mm. Faixa do furo: 0,2 mm. 0,4 ÷ 0,2 = 2 vezes menor.'},
+{tema:7,d:['lcd',{cota:'35 ± 0,3',val:'35,28',nome:'primeiro eixo do lote'}],en:'O operador regulou o torno e o primeiro eixo saiu com 35,28 mm. O que ele deve fazer?',tipo:'mc',alts:['Nada: a peça está aprovada, pode seguir assim.','Regular a máquina para buscar perto de 35,00 mm, porque com o desgaste da ferramenta os eixos vão crescer e logo passar da máxima.','Recusar a peça, porque está fora.','Parar a produção e trocar o desenho.'],c:1,exp:'35,28 está dentro, mas a só 0,02 mm da máxima. Mirando o meio da faixa sobra margem para o desgaste da ferramenta.'}
+];
+/* ===== estado ===== */
+const KEY='tol-exercicios-v1';
+let S={f:-1,i:0,res:{}};  /* res[i] = {ok:bool, r:resposta} */
+try{const v=JSON.parse(localStorage.getItem(KEY)||'null');if(v&&v.res)S.res=v.res}catch(e){}
+const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify({res:S.res}))}catch(e){}};
+const parse=s=>{s=String(s).trim().replace(/\s|mm|vezes/gi,'').replace(',','.');if(!/^-?\d+(\.\d{1,3})?$/.test(s))return null;return Math.round(parseFloat(s)*1000)};
+const lista=()=>E.map((e,i)=>i).filter(i=>S.f<0||E[i].tema===S.f);
+
+function placar(){const n=Object.keys(S.res).length,ok=Object.values(S.res).filter(r=>r.ok).length;
+  $('placar').innerHTML=`<span>Respondidos<b>${n}/50</b></span><span>Acertos<b class="num">${ok}</b></span><span>Erros<b class="num">${n-ok}</b></span>`}
+function chips(){$('chips').innerHTML=[['-1','Todos']].concat(TEMAS.map((t,i)=>[i,t])).map(([v,t])=>`<button data-f="${v}" aria-pressed="${+v===S.f}">${t}</button>`).join('')}
+function grade(){$('grade').innerHTML=lista().map(i=>{const r=S.res[i];return `<button data-i="${i}" class="${r?(r.ok?'ok':'no'):''}" aria-current="${i===S.i}" aria-label="Exercício ${i+1}${r?(r.ok?', acertou':', errou'):''}">${i+1}</button>`}).join('')}
+
+function render(){const e=E[S.i],r=S.res[S.i],done=!!r;placar();grade();
+  let corpo='';
+  if(e.tipo==='num')corpo=`<div class="resp"><input type="text" id="ans" inputmode="decimal" maxlength="10" value="${done?esc(r.r):''}" ${done?'disabled':''} aria-label="Sua resposta"><span>${e.un||'mm'}</span></div>`;
+  else corpo=`<div class="alts">${e.alts.map((a,j)=>{const sel=done&&(e.tipo==='multi'?r.r.includes(j):r.r===j);const cls=done?((e.tipo==='multi'?e.c.includes(j):j===e.c)?'c':(sel?'x':'')):'';
+    return `<label class="alt ${cls}"><input type="${e.tipo==='multi'?'checkbox':'radio'}" name="alt" value="${j}" ${sel?'checked':''} ${done?'disabled':''}><span>${e.tipo==='multi'?'Peça ':''}${esc(a)}</span></label>`}).join('')}</div>`;
+  const certo=e.tipo==='num'?`${e.r} ${e.un||'mm'}`:e.tipo==='multi'?e.c.map(j=>e.alts[j]).join(', '):e.alts[e.c];
+  const L=lista(),pos=L.indexOf(S.i);
+  $('ex').innerHTML=`<div class="cab"><span>Exercício ${S.i+1} de 50</span><span>${TEMAS[e.tema]}</span></div>
+   ${e.d?`<div class="desenho">${D[e.d[0]](e.d[1])}</div>`:''}
+   <p class="en">${esc(e.en)}</p>${corpo}
+   ${done?`<div class="fb ${r.ok?'ok':'no'}"><b>${r.ok?'Certo!':'Não foi dessa vez.'}</b> ${r.ok?'':'Resposta: <b>'+esc(certo)+'</b>. '}${esc(e.exp)}</div>`:'<div id="emsg"></div>'}
+   <div class="row">${done?`<button class="act ghost" id="refazer">Refazer este</button>`:`<button class="act" id="conf">Conferir</button>`}
+   <button class="act ghost" id="ant" ${pos<=0?'disabled':''}>Anterior</button><button class="act ${done?'':'ghost'}" id="prox" ${pos>=L.length-1?'disabled':''}>Próximo</button></div>`;
+  if(!done)$('conf').onclick=conferir;else $('refazer').onclick=()=>{delete S.res[S.i];salvar();render()};
+  $('ant').onclick=()=>ir(L[pos-1]);$('prox').onclick=()=>ir(L[pos+1])}
+function ir(i){if(i===undefined)return;S.i=i;render();$('ex').scrollIntoView({behavior:'smooth',block:'start'})}
+
+function conferir(){const e=E[S.i];let r,ok;
+  if(e.tipo==='num'){r=$('ans').value.trim();const v=parse(r);if(v===null){$('emsg').innerHTML='<p class="erro">Digite um número, como 24,5.</p>';$('ans').focus();return}ok=v===parse(e.r)}
+  else if(e.tipo==='mc'){const s=document.querySelector('input[name=alt]:checked');if(!s){$('emsg').innerHTML='<p class="erro">Escolha uma alternativa.</p>';return}r=+s.value;ok=r===e.c}
+  else{r=[...document.querySelectorAll('input[name=alt]:checked')].map(x=>+x.value);if(!r.length){$('emsg').innerHTML='<p class="erro">Marque pelo menos uma peça.</p>';return}ok=r.length===e.c.length&&e.c.every(j=>r.includes(j))}
+  S.res[S.i]={ok,r};salvar();render()}
+
+$('chips').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;S.f=+b.dataset.f;chips();const L=lista();if(!L.includes(S.i))S.i=L[0];render()});
+$('grade').addEventListener('click',ev=>{const b=ev.target.closest('button');if(b)ir(+b.dataset.i)});
+$('zerar').onclick=()=>{if(confirm('Apagar todas as respostas e começar de novo?')){S.res={};salvar();S.i=lista()[0];render()}};
+
+/* letras nas alternativas dos lotes */
+E.forEach(e=>{if(e.tipo==='multi')e.alts=e.d[1].vals.map((v,j)=>`${String.fromCharCode(65+j)} (${v} mm)`)});
+
+$('pdf').onclick=()=>{
+  if(!window.jspdf||!window.jspdf.jsPDF){$('rmsg').innerHTML='<p class="erro">O gerador de PDF não carregou. Confira a internet e recarregue a página.</p>';return}
+  if(!$('nome').value.trim()){$('rmsg').innerHTML='<p class="erro">Escreva o seu nome antes de baixar.</p>';$('nome').focus();return}
+  const n=Object.keys(S.res).length;if(!n){$('rmsg').innerHTML='<p class="erro">Responda pelo menos um exercício.</p>';return}
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),L=15,W=180;let y=18;
+  const t=s=>String(s).replace(/−/g,'-').replace(/÷/g,'/');
+  const linha=(s,sz=10.5,b=false,c=[20,32,43],ind=0)=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...c);doc.splitTextToSize(t(s),W-ind).forEach(l=>{if(y>282){doc.addPage();y=18}doc.text(l,L+ind,y);y+=sz*.45})};
+  doc.setFillColor(168,84,0);doc.rect(0,0,210,6,'F');
+  linha('FAZENDA DE PROJETOS · Metrologia · Noções de tolerância',9,true,[79,95,108]);y+=1;
+  linha('Relatório: 50 exercícios de interpretação',16,true);y+=2;
+  const ok=Object.values(S.res).filter(r=>r.ok).length;
+  linha(`Nome: ${$('nome').value.trim()}    Turma: ${$('turma').value.trim()||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')}`,10);y+=1;
+  linha(`Respondidos: ${n} de 50    Acertos: ${ok}    Erros: ${n-ok}`,12,true,[23,112,63]);y+=3;
+  TEMAS.forEach((tm,k)=>{const ids=E.map((e,i)=>i).filter(i=>E[i].tema===k),rs=ids.filter(i=>S.res[i]),a=rs.filter(i=>S.res[i].ok);
+    linha(`${tm}: ${a.length} acertos em ${rs.length} respondidos (de ${ids.length})`,10)});y+=3;
+  linha('Exercícios respondidos',12,true);y+=1;
+  E.forEach((e,i)=>{const r=S.res[i];if(!r)return;if(y>270){doc.addPage();y=18}
+    const resp=e.tipo==='num'?`${r.r} ${e.un||'mm'}`:e.tipo==='multi'?r.r.map(j=>String.fromCharCode(65+j)).join(', '):e.alts[r.r];
+    linha(`${i+1}. ${e.en}`,10,true);linha(`Resposta: ${resp}  —  ${r.ok?'certo':'errado'}`,9.5,false,r.ok?[23,112,63]:[179,38,30],4);y+=1.5});
+  const nm=$('nome').value.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  doc.save(`exercicios-tolerancia-${nm||'aluno'}.pdf`);$('rmsg').innerHTML='<p class="okc">PDF gerado. Confira nos downloads.</p>'};
+
+chips();render();
+</script>
+</body>
+</html>
