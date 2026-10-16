@@ -114,6 +114,13 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
  .rtab td.n{grid-row:span 5}
  .rtab td[data-l]::before{content:attr(data-l) ': ';font-weight:600;color:var(--muted)}
 }
+.aluno{display:flex;justify-content:space-between;align-items:center;gap:8px 16px;flex-wrap:wrap;margin-bottom:10px;font-size:16px}
+.aluno b{font-size:18px}
+.aluno button{font:600 14px/1 Barlow,sans-serif;background:none;border:0;color:var(--accent);text-decoration:underline;cursor:pointer;padding:6px 0}
+.inicio{max-width:620px}
+.inicio input{width:100%}
+.inicio ul{padding-left:20px;margin:6px 0 14px}.inicio li{margin-bottom:4px}
+[hidden]{display:none!important}
 </style>
 </head>
 <body>
@@ -124,24 +131,36 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
 <main>
 <div class="top">
   <div><h1>40 exercícios de interpretação</h1>
-  <p class="sub" style="margin-bottom:0">Leia o desenho ou a situação, responda e confira. Os exercícios aparecem numa ordem sorteada só para você, e o tempo de cada um é marcado. Escreva os números com vírgula, como 24,5. No fim, baixe o relatório e entregue ao professor.</p></div>
+  <p class="sub" style="margin-bottom:0">Leia o desenho ou a situação, responda e confira. Os exercícios aparecem numa ordem sorteada só para você, e o tempo de cada um é marcado. Escreva os números com vírgula, como 24,5. O relatório aparece quando você terminar os 40.</p></div>
 </div>
-<section class="panel" style="margin-top:14px">
+<section class="panel inicio" id="inicio" style="margin-top:14px">
+  <h2 style="margin-top:0">Antes de começar</h2>
+  <ul>
+    <li>São 40 exercícios, numa ordem sorteada só para você.</li>
+    <li>Depois de responder, você confere na hora se acertou e vê a explicação.</li>
+    <li>O tempo de cada exercício é marcado.</li>
+    <li>Cada exercício vale a primeira resposta: não dá para refazer.</li>
+    <li>O relatório aparece quando você terminar todos.</li>
+  </ul>
+  <label class="f">Nome completo<input type="text" id="nome" autocomplete="name" maxlength="60"></label>
+  <label class="f" style="margin-top:10px">Turma<input type="text" id="turma" maxlength="20"></label>
+  <div id="imsg" aria-live="polite"></div>
+  <div class="row"><button class="act" id="comecar">Começar os exercícios</button></div>
+</section>
+<section class="panel" id="painel" style="margin-top:14px" hidden>
+  <div class="aluno"><span>Aluno: <b id="anome"></b> <span id="aturma" style="color:var(--muted)"></span></span><button id="trocar">Não é você? Trocar de aluno</button></div>
   <div class="placar" id="placar"></div>
   <div class="chips" id="chips" role="group" aria-label="Filtrar por tema"></div>
   <div class="grade" id="grade" aria-label="Exercícios"></div>
 </section>
-<section class="ex" id="ex" aria-live="polite" style="margin-top:14px"></section>
-<section class="panel" id="relpanel" style="margin-top:14px">
+<section class="ex" id="ex" aria-live="polite" style="margin-top:14px" hidden></section>
+<section class="panel" id="relpanel" style="margin-top:14px" hidden>
   <h2 style="margin-top:0">Relatório</h2>
-  <div class="row noprint" style="margin-top:0">
-    <label class="f" style="flex:2 1 220px">Nome<input type="text" id="nome" autocomplete="name" maxlength="60" style="width:100%"></label>
-    <label class="f" style="flex:1 1 100px">Turma<input type="text" id="turma" maxlength="20" style="width:100%"></label>
-  </div>
+  <p id="rcab" style="margin:0 0 4px"></p>
   <div id="rel"></div>
   <div id="rmsg" aria-live="polite"></div>
-  <div class="row noprint"><button class="act" id="pdf">Baixar relatório em PDF</button><button class="act ghost" id="zerar">Recomeçar do zero</button></div>
-  <p class="noprint" style="color:var(--muted);font-size:15px;margin:10px 0 0">Recomeçar do zero apaga as respostas e os tempos e sorteia uma nova ordem.</p>
+  <div class="row noprint"><button class="act" id="pdf">Baixar relatório em PDF</button><button class="act ghost" id="zerar">Fazer de novo</button></div>
+  <p class="noprint" style="color:var(--muted);font-size:15px;margin:10px 0 0">Fazer de novo apaga as respostas e os tempos e sorteia uma nova ordem.</p>
 </section>
 <nav class="trilha noprint" aria-label="Noções de tolerância"><span class="t">Noções de tolerância</span><a href="tolerancia-o-que-e.html">Leitura</a><a href="tolerancia-faixa.html">Simulador</a><a href="tolerancia-passa-nao-passa.html">Jogo</a><a href="tolerancia-regua.html">Atividade</a><a href="tolerancia-exercicios.html" aria-current="page">40 exercícios</a><a href="tolerancia-avaliacao.html">Avaliação</a><a href="../index.html#d-metrologia">Voltar à trilha de Metrologia</a></nav>
 </main>
@@ -253,9 +272,10 @@ const embaralhar=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(M
 let S={f:-1,i:0,ord:[],res:{},t:{}};
 try{const v=JSON.parse(localStorage.getItem(KEY)||'null');
   if(v&&Array.isArray(v.ord)&&v.ord.length===N&&new Set(v.ord).size===N){S.ord=v.ord;S.res=v.res||{};S.t=v.t||{};S.nome=v.nome||'';S.turma=v.turma||''}}catch(e){}
+S.nome=S.nome||'';S.turma=S.turma||'';
 if(!S.ord.length)S.ord=embaralhar(E.map((e,i)=>i));
 S.i=S.ord.find(i=>!S.res[i])??S.ord[0];
-const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify({ord:S.ord,res:S.res,t:S.t,nome:$('nome').value,turma:$('turma').value}))}catch(e){}};
+const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify({ord:S.ord,res:S.res,t:S.t,nome:S.nome,turma:S.turma}))}catch(e){}};
 const parse=s=>{s=String(s).trim().replace(/\s|mm|vezes/gi,'').replace(',','.');if(!/^-?\d+(\.\d{1,3})?$/.test(s))return null;return Math.round(parseFloat(s)*1000)};
 const lista=()=>S.ord.filter(i=>S.f<0||E[i].tema===S.f);
 const num=i=>S.ord.indexOf(i)+1;
@@ -264,7 +284,7 @@ const fnum=v=>(v/1000).toFixed(3).replace(/0+$/,'').replace(/\.$/,'').replace('.
 
 /* ===== tempo em cada exercício: conta só com a página aberta na frente e antes de responder ===== */
 let t0=null,tId=null;
-const iniciar=()=>{if(t0!==null||S.res[S.i]||document.hidden)return;t0=performance.now();tId=S.i};
+const iniciar=()=>{if(t0!==null||!S.nome||S.res[S.i]||document.hidden)return;t0=performance.now();tId=S.i};
 const parar=()=>{if(t0===null)return;S.t[tId]=(S.t[tId]||0)+(performance.now()-t0);t0=null;salvar()};
 const gasto=i=>(S.t[i]||0)+(t0!==null&&tId===i?performance.now()-t0:0);
 const ftempo=ms=>{const s=Math.round(ms/1000);if(s<60)return s+' s';const m=Math.floor(s/60),r=s%60;if(m<60)return m+' min'+(r?' '+String(r).padStart(2,'0')+' s':'');return Math.floor(m/60)+' h '+String(m%60).padStart(2,'0')+' min'};
@@ -278,7 +298,7 @@ const txtCerta=e=>e.tipo==='num'?e.r+' '+(e.un||'mm'):e.tipo==='multi'?e.c.map(L
 const ctx=e=>{if(!e.d)return '';const [k,o]=e.d;return k==='pino'||k==='bloco'?`${o.nome}: ${o.cota}`:k==='bucha'?`bucha: externo ${o.ext}, furo ${o.int}`:k==='chapa'?`chapa: ${o.comp} × ${o.larg}, furo ${o.furo} a ${o.dist} da borda`:k==='eixo2'?`eixo: ${o.L}, ${o.d1} e ${o.d2}`:k==='faixa'?`faixa de ${o.min} a ${o.max} mm`:k==='lcd'?`${o.nome}: cota ${o.cota}, mediu ${o.val} mm`:k==='lote'?`${o.nome}, cota ${o.cota}: `+o.vals.map((v,j)=>L1(j)+' = '+v).join('; '):k==='inst'?`cota ${o.cota}`:k==='fala'?`fala: "${o.txt}"`:''};
 
 function placar(){const n=Object.keys(S.res).length,ok=Object.values(S.res).filter(r=>r.ok).length;
-  $('placar').innerHTML=`<span>Respondidos<b>${n}/${N}</b></span><span>Acertos<b class="num">${ok}</b></span><span>Erros<b class="num">${n-ok}</b></span>`}
+  $('placar').innerHTML=`<span>Respondidos<b>${n}/${N}</b></span><span>Faltam<b class="num">${N-n}</b></span>`}
 function chips(){$('chips').innerHTML=[['-1','Todos']].concat(TEMAS.map((t,i)=>[i,t])).map(([v,t])=>`<button data-f="${v}" aria-pressed="${+v===S.f}">${t}</button>`).join('')}
 function grade(){$('grade').innerHTML=lista().map(i=>{const r=S.res[i];return `<button data-i="${i}" class="${r?(r.ok?'ok':'no'):''}" aria-current="${i===S.i}" aria-label="Exercício ${num(i)}${r?(r.ok?', acertou':', errou'):''}">${num(i)}</button>`}).join('')}
 
@@ -295,11 +315,11 @@ function render(){const e=E[S.i],r=S.res[S.i],done=!!r;placar();grade();
      <div class="par"><div><span>Sua resposta</span><b class="${r.ok?'okc':'noc'}">${esc(txtResp(e,r.r))}</b></div><div><span>Resposta correta</span><b>${esc(txtCerta(e))}</b></div></div></div>`:'<div id="emsg"></div>'}
    <div class="row">${done?'':`<button class="act" id="conf">Conferir</button>`}
    <button class="act ghost" id="ant" ${pos<=0?'disabled':''}>Anterior</button><button class="act ${done?'':'ghost'}" id="prox" ${pos>=L.length-1?'disabled':''}>Próximo</button></div>
-   ${todos?`<div class="fim"><b>Você respondeu os ${N} exercícios.</b> O relatório completo está logo abaixo. Escreva seu nome e baixe o PDF para entregar. <button class="act" id="verrel" style="margin-top:10px">Ver relatório</button></div>`:''}`;
+   ${todos?`<div class="fim"><b>Você respondeu os ${N} exercícios.</b> O seu relatório já está pronto logo abaixo. Baixe o PDF e entregue ao professor. <button class="act" id="verrel" style="margin-top:10px">Ver relatório</button></div>`:''}`;
   if(!done)$('conf').onclick=conferir;
   if(todos)$('verrel').onclick=()=>$('relpanel').scrollIntoView({behavior:'smooth',block:'start'});
   $('ant').onclick=()=>ir(L[pos-1]);$('prox').onclick=()=>ir(L[pos+1]);
-  relatorio();iniciar()}
+  $('relpanel').hidden=!todos;if(todos)relatorio();iniciar()}
 function ir(i){if(i===undefined)return;parar();S.i=i;render();$('ex').scrollIntoView({behavior:'smooth',block:'start'})}
 
 function conferir(){const e=E[S.i];let r,ok;
@@ -312,7 +332,7 @@ function conferir(){const e=E[S.i];let r,ok;
 function dados(){const resp=S.ord.filter(i=>S.res[i]),ok=resp.filter(i=>S.res[i].ok),err=resp.filter(i=>!S.res[i].ok);
   const tt=S.ord.reduce((a,i)=>a+gasto(i),0),tr=resp.reduce((a,i)=>a+gasto(i),0);
   return {resp,ok,err,tt,med:resp.length?tr/resp.length:0,pct:resp.length?Math.round(ok.length/resp.length*100):0}}
-function relatorio(){const d=dados();
+function relatorio(){const d=dados();$('rcab').innerHTML=`<b>${esc(S.nome)}</b>${S.turma?' · Turma '+esc(S.turma):''} · ${new Date().toLocaleDateString('pt-BR')}`;
   const nums=a=>a.length?a.map(num).sort((x,y)=>x-y).join(', '):'nenhum';
   $('rel').innerHTML=`<div class="resumo">
      <div>Respondidos<b>${d.resp.length}/${N}</b></div><div>Acertos<b style="color:var(--ok)">${d.ok.length}</b></div><div>Erros<b style="color:var(--bad)">${d.err.length}</b></div>
@@ -328,8 +348,18 @@ $('rel').addEventListener('click',ev=>{const b=ev.target.closest('[data-ir]');if
 
 $('chips').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;S.f=+b.dataset.f;chips();const L=lista();if(!L.includes(S.i)){parar();S.i=L[0]}render()});
 $('grade').addEventListener('click',ev=>{const b=ev.target.closest('button');if(b)ir(+b.dataset.i)});
-$('zerar').onclick=()=>{if(confirm('Apagar todas as respostas e os tempos e sortear uma nova ordem?')){t0=null;S.res={};S.t={};S.ord=embaralhar(E.map((e,i)=>i));S.f=-1;S.i=S.ord[0];salvar();chips();render();window.scrollTo(0,0)}};
-['nome','turma'].forEach(k=>$(k).addEventListener('input',salvar));
+const novo=()=>{t0=null;S.res={};S.t={};S.ord=embaralhar(E.map((e,i)=>i));S.f=-1;S.i=S.ord[0]};
+$('zerar').onclick=()=>{if(confirm('Apagar todas as respostas e os tempos e começar de novo, com outra ordem?')){novo();salvar();chips();render();window.scrollTo(0,0)}};
+$('trocar').onclick=()=>{if(confirm('Trocar de aluno apaga tudo o que foi respondido neste aparelho. Continuar?')){novo();S.nome='';S.turma='';salvar();tela();window.scrollTo(0,0)}};
+function tela(){const ok=!!S.nome;$('inicio').hidden=ok;$('painel').hidden=!ok;$('ex').hidden=!ok;
+  if(!ok){$('relpanel').hidden=true;$('nome').value='';$('turma').value='';return}
+  $('anome').textContent=S.nome;$('aturma').textContent=S.turma?'· Turma '+S.turma:'';chips();render()}
+$('comecar').onclick=()=>{const n=$('nome').value.trim().replace(/\s+/g,' '),t=$('turma').value.trim();
+  if(n.length<3||!/\s/.test(n)){$('imsg').innerHTML='<p class="erro">Escreva o seu nome completo (nome e sobrenome).</p>';$('nome').focus();return}
+  if(!t){$('imsg').innerHTML='<p class="erro">Escreva a sua turma.</p>';$('turma').focus();return}
+  S.nome=n;S.turma=t;salvar();tela();window.scrollTo(0,0)};
+$('nome').addEventListener('keydown',e=>{if(e.key==='Enter')$('turma').focus()});
+$('turma').addEventListener('keydown',e=>{if(e.key==='Enter')$('comecar').click()});
 
 /* letras nas alternativas dos lotes */
 E.forEach(e=>{if(e.tipo==='multi')e.alts=e.d[1].vals.map((v,j)=>`${L1(j)} (${v} mm)`)});
@@ -337,7 +367,7 @@ E.forEach(e=>{if(e.tipo==='multi')e.alts=e.d[1].vals.map((v,j)=>`${L1(j)} (${v} 
 /* ===== relatório em PDF ===== */
 $('pdf').onclick=()=>{
   if(!window.jspdf||!window.jspdf.jsPDF){$('rmsg').innerHTML='<p class="erro">O gerador de PDF não carregou. Confira a internet e recarregue a página.</p>';return}
-  if(!$('nome').value.trim()){$('rmsg').innerHTML='<p class="erro">Escreva o seu nome antes de baixar.</p>';$('nome').focus();return}
+  if(Object.keys(S.res).length<N){$('rmsg').innerHTML='<p class="erro">Termine todos os exercícios antes de baixar o relatório.</p>';return}
   parar();iniciar();
   const d=dados();if(!d.resp.length){$('rmsg').innerHTML='<p class="erro">Responda pelo menos um exercício.</p>';return}
   const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),X=15,W=180;let y=18;
@@ -347,7 +377,7 @@ $('pdf').onclick=()=>{
   doc.setFillColor(168,84,0);doc.rect(0,0,210,6,'F');
   linha('FAZENDA DE PROJETOS · Metrologia · Noções de tolerância',9,true,[79,95,108]);y+=1;
   linha(`Relatório: ${N} exercícios de interpretação`,16,true);y+=2;
-  linha(`Nome: ${$('nome').value.trim()}    Turma: ${$('turma').value.trim()||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`,10);y+=2;
+  linha(`Nome: ${S.nome}    Turma: ${S.turma||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`,10);y+=2;
   linha(`Respondidos: ${d.resp.length} de ${N}    Acertos: ${d.ok.length}    Erros: ${d.err.length}    Aproveitamento: ${d.pct}%`,12,true,[23,112,63]);
   linha(`Tempo total: ${ftempo(d.tt)}    Tempo médio por exercício: ${ftempo(d.med)}`,10.5);y+=2;
   linha(`Acertou: ${nums(d.ok)}`,10,true,[23,112,63]);
@@ -368,11 +398,10 @@ $('pdf').onclick=()=>{
     let x=X+1.5;ls.forEach((l,j)=>{const cor=j===4&&r?(r.ok?[23,112,63]:[179,38,30]):j===2&&r&&!r.ok?[179,38,30]:[20,32,43];
       doc.setFont('helvetica',j===0||j===4?'bold':'normal');doc.setTextColor(...cor);doc.text(l,x,y);x+=cols[j][1]});
     y+=h});
-  const nm=$('nome').value.trim().toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  const nm=S.nome.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   doc.save(`exercicios-tolerancia-${nm||'aluno'}.pdf`);$('rmsg').innerHTML='<p class="okc">PDF gerado. Confira nos downloads.</p>'};
 
-$('nome').value=S.nome||'';$('turma').value=S.turma||'';
-chips();render();salvar();
+tela();salvar();
 </script>
 </body>
 </html>
