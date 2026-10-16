@@ -121,6 +121,9 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
 .inicio input{width:100%}
 .inicio ul{padding-left:20px;margin:6px 0 14px}.inicio li{margin-bottom:4px}
 [hidden]{display:none!important}
+.dica{background:var(--zone);border-radius:4px;padding:8px 12px;margin:0 0 10px;font-size:16px}
+.dica b{font-weight:700}
+.nivel{display:inline-block;font:700 14px/1 Barlow,sans-serif;letter-spacing:.08em;text-transform:uppercase;background:var(--accent);color:var(--accent-ink);padding:6px 10px;border-radius:3px;margin-bottom:8px}
 </style>
 </head>
 <body>
@@ -130,7 +133,7 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
 </header>
 <main>
 <div class="top">
-  <div><h1>40 exercícios de interpretação</h1>
+  <div><span class="nivel">Nível complexo</span><h1>40 exercícios de interpretação</h1>
   <p class="sub" style="margin-bottom:0">Leia o desenho ou a situação, responda e confira. Os exercícios aparecem numa ordem sorteada só para você, e o tempo de cada um é marcado. Escreva os números com vírgula, como 24,5. O relatório aparece quando você terminar os 40.</p></div>
 </div>
 <section class="panel inicio" id="inicio" style="margin-top:14px">
@@ -162,7 +165,7 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
   <div class="row noprint"><button class="act" id="pdf">Baixar relatório em PDF</button><button class="act ghost" id="zerar">Fazer de novo</button></div>
   <p class="noprint" style="color:var(--muted);font-size:15px;margin:10px 0 0">Fazer de novo apaga as respostas e os tempos e sorteia uma nova ordem.</p>
 </section>
-<nav class="trilha noprint" aria-label="Noções de tolerância"><span class="t">Noções de tolerância</span><a href="tolerancia-o-que-e.html">Leitura</a><a href="tolerancia-faixa.html">Simulador</a><a href="tolerancia-passa-nao-passa.html">Jogo</a><a href="tolerancia-regua.html">Atividade</a><a href="tolerancia-exercicios.html" aria-current="page">40 exercícios</a><a href="tolerancia-avaliacao.html">Avaliação</a><a href="../index.html#d-metrologia">Voltar à trilha de Metrologia</a></nav>
+<nav class="trilha noprint" aria-label="Noções de tolerância"><span class="t">Noções de tolerância</span><a href="tolerancia-o-que-e.html">Leitura</a><a href="tolerancia-faixa.html">Simulador</a><a href="tolerancia-passa-nao-passa.html">Jogo</a><a href="tolerancia-regua.html">Atividade</a><a href="tolerancia-basico.html">Básico</a><a href="tolerancia-medio.html">Médio</a><a href="tolerancia-exercicios.html" aria-current="page">Complexo</a><a href="tolerancia-avaliacao.html">Avaliação</a><a href="../index.html#d-metrologia">Voltar à trilha de Metrologia</a></nav>
 </main>
 <script src="../vendor/jspdf.umd.min.js"></script>
 <script>
@@ -196,10 +199,11 @@ const D={
    <text x="185" y="250" text-anchor="middle" font-size="20" font-weight="700" class="${o.hl==='d1'?'f-acc':'f-ink'}">${o.d1}</text><line x1="185" y1="215" x2="185" y2="232" stroke="currentColor"/>
    <text x="405" y="250" text-anchor="middle" font-size="20" font-weight="700" class="${o.hl==='d2'?'f-acc':'f-ink'}">${o.d2}</text><line x1="405" y1="188" x2="405" y2="232" stroke="currentColor"/>
    ${o.rol?`<rect x="340" y="104" width="70" height="18" rx="3" class="f-acc" opacity=".55"/><rect x="340" y="188" width="70" height="18" rx="3" class="f-acc" opacity=".55"/><text x="420" y="100" font-size="15" class="f-acc" font-weight="700">rolamento</text>`:''}`,`Eixo escalonado com comprimento ${o.L}, diâmetros ${o.d1} e ${o.d2}`),
+ cota:o=>svgw(`<rect x="120" y="45" width="360" height="170" rx="14" class="f-panel" stroke="currentColor" stroke-width="1.6"/><text x="300" y="92" text-anchor="middle" font-size="18" class="f-mut">${esc(o.nome||'cota do desenho')}</text><text x="300" y="172" text-anchor="middle" font-size="60" font-weight="700" class="f-ink">${o.cota}</text>`,`Cota ${o.cota}`,260),
  faixa:o=>svgw(`<rect x="40" y="120" width="520" height="60" class="f-out"/><rect x="150" y="120" width="300" height="60" class="f-zone"/>
    <text x="300" y="157" text-anchor="middle" font-size="20" font-weight="700" class="f-ok">ACEITA</text><text x="95" y="157" text-anchor="middle" font-size="17" font-weight="700" class="f-bad">FORA</text><text x="505" y="157" text-anchor="middle" font-size="17" font-weight="700" class="f-bad">FORA</text>
    <line x1="150" x2="150" y1="105" y2="195" stroke="currentColor" stroke-width="3"/><line x1="450" x2="450" y1="105" y2="195" stroke="currentColor" stroke-width="3"/><line x1="300" x2="300" y1="105" y2="120" class="s-acc" stroke-width="3"/><line x1="300" x2="300" y1="180" y2="195" class="s-acc" stroke-width="3"/>
-   <text x="150" y="92" text-anchor="middle" font-size="26" font-weight="700" class="f-ink">${o.min}</text><text x="450" y="92" text-anchor="middle" font-size="26" font-weight="700" class="f-ink">${o.max}</text><text x="300" y="92" text-anchor="middle" font-size="26" font-weight="700" class="f-acc">?</text>
+   <text x="150" y="92" text-anchor="middle" font-size="26" font-weight="700" class="f-ink">${o.min}</text><text x="450" y="92" text-anchor="middle" font-size="26" font-weight="700" class="f-ink">${o.max}</text><text x="300" y="92" text-anchor="middle" font-size="26" font-weight="700" class="f-acc">${o.nom||'?'}</text>
    <text x="150" y="220" text-anchor="middle" font-size="16" class="f-mut">mínima</text><text x="300" y="220" text-anchor="middle" font-size="16" class="f-mut">nominal</text><text x="450" y="220" text-anchor="middle" font-size="16" class="f-mut">máxima</text>`,`Faixa aceita de ${o.min} a ${o.max} mm`,250),
  lcd:o=>svgw(`<rect x="150" y="40" width="300" height="70" rx="8" class="f-panel" stroke="currentColor" stroke-width="1.5"/><text x="300" y="70" text-anchor="middle" font-size="15" class="f-mut">${o.nome?esc(o.nome)+' · ':''}cota do desenho</text><text x="300" y="98" text-anchor="middle" font-size="26" font-weight="700" class="f-ink">${o.cota}</text>
    <rect x="130" y="130" width="340" height="110" rx="10" class="f-lcd"/><text x="300" y="160" text-anchor="middle" font-size="15" fill="#6FA88A" letter-spacing="2">MEDIDA ENCONTRADA</text><text x="300" y="220" text-anchor="middle" font-size="52" font-weight="700" class="f-lcdtxt">${o.val} mm</text>`,`Cota ${o.cota}, medida encontrada ${o.val} milímetros`,260),
@@ -267,6 +271,7 @@ const E=[
 ];
 /* ===== estado ===== */
 const KEY='tol-exercicios-v3',N=E.length;
+const DICA='',NIVEL='Complexo: interpretação';
 const embaralhar=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 /* ord = ordem sorteada para esta pessoa (ids do banco); res[id] = {ok, r}; t[id] = milissegundos no exercício */
 let S={f:-1,i:0,ord:[],res:{},t:{}};
@@ -295,7 +300,7 @@ setInterval(()=>{if(t0!==null){parar();iniciar()}const el=$('tvivo');if(el)el.te
 /* ===== respostas por extenso ===== */
 const txtResp=(e,r)=>e.tipo==='num'?(parse(r)===null?String(r):fnum(parse(r)))+' '+(e.un||'mm'):e.tipo==='multi'?(r.length?[...r].sort((a,b)=>a-b).map(L1).join(', '):'nenhuma'):e.alts[r];
 const txtCerta=e=>e.tipo==='num'?e.r+' '+(e.un||'mm'):e.tipo==='multi'?e.c.map(L1).join(', '):e.alts[e.c];
-const ctx=e=>{if(!e.d)return '';const [k,o]=e.d;return k==='pino'||k==='bloco'?`${o.nome}: ${o.cota}`:k==='bucha'?`bucha: externo ${o.ext}, furo ${o.int}`:k==='chapa'?`chapa: ${o.comp} × ${o.larg}, furo ${o.furo} a ${o.dist} da borda`:k==='eixo2'?`eixo: ${o.L}, ${o.d1} e ${o.d2}`:k==='faixa'?`faixa de ${o.min} a ${o.max} mm`:k==='lcd'?`${o.nome}: cota ${o.cota}, mediu ${o.val} mm`:k==='lote'?`${o.nome}, cota ${o.cota}: `+o.vals.map((v,j)=>L1(j)+' = '+v).join('; '):k==='inst'?`cota ${o.cota}`:k==='fala'?`fala: "${o.txt}"`:''};
+const ctx=e=>{if(!e.d)return '';const [k,o]=e.d;return k==='cota'?`${o.nome?o.nome+': ':''}cota ${o.cota}`:k==='pino'||k==='bloco'?`${o.nome}: ${o.cota}`:k==='bucha'?`bucha: externo ${o.ext}, furo ${o.int}`:k==='chapa'?`chapa: ${o.comp} × ${o.larg}, furo ${o.furo} a ${o.dist} da borda`:k==='eixo2'?`eixo: ${o.L}, ${o.d1} e ${o.d2}`:k==='faixa'?`faixa de ${o.min} a ${o.max} mm`:k==='lcd'?`${o.nome}: cota ${o.cota}, mediu ${o.val} mm`:k==='lote'?`${o.nome}, cota ${o.cota}: `+o.vals.map((v,j)=>L1(j)+' = '+v).join('; '):k==='inst'?`cota ${o.cota}`:k==='fala'?`fala: "${o.txt}"`:''};
 
 function placar(){const n=Object.keys(S.res).length,ok=Object.values(S.res).filter(r=>r.ok).length;
   $('placar').innerHTML=`<span>Respondidos<b>${n}/${N}</b></span><span>Faltam<b class="num">${N-n}</b></span>`}
@@ -310,7 +315,7 @@ function render(){const e=E[S.i],r=S.res[S.i],done=!!r;placar();grade();
   const L=lista(),pos=L.indexOf(S.i),todos=Object.keys(S.res).length===N;
   $('ex').innerHTML=`<div class="cab"><span>Exercício ${num(S.i)} de ${N}</span><span>${TEMAS[e.tema]}</span><span>Tempo: <span class="tempo" id="${done?'':'tvivo'}">${ftempo(gasto(S.i))}</span></span></div>
    ${e.d?`<div class="desenho">${D[e.d[0]](e.d[1])}</div>`:''}
-   <p class="en">${esc(e.en)}</p>${corpo}
+   ${DICA?`<p class="dica">${DICA}</p>`:''}<p class="en">${esc(e.en)}</p>${corpo}
    ${done?`<div class="fb ${r.ok?'ok':'no'}"><b>${r.ok?'Certo!':'Não foi dessa vez.'}</b> ${esc(e.exp)}
      <div class="par"><div><span>Sua resposta</span><b class="${r.ok?'okc':'noc'}">${esc(txtResp(e,r.r))}</b></div><div><span>Resposta correta</span><b>${esc(txtCerta(e))}</b></div></div></div>`:'<div id="emsg"></div>'}
    <div class="row">${done?'':`<button class="act" id="conf">Conferir</button>`}
@@ -376,7 +381,7 @@ $('pdf').onclick=()=>{
   const nums=a=>a.length?a.map(num).sort((x,y)=>x-y).join(', '):'nenhum';
   doc.setFillColor(168,84,0);doc.rect(0,0,210,6,'F');
   linha('FAZENDA DE PROJETOS · Metrologia · Noções de tolerância',9,true,[79,95,108]);y+=1;
-  linha(`Relatório: ${N} exercícios de interpretação`,16,true);y+=2;
+  linha(`Relatório: ${NIVEL} (${N} exercícios)`,16,true);y+=2;
   linha(`Nome: ${S.nome}    Turma: ${S.turma||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`,10);y+=2;
   linha(`Respondidos: ${d.resp.length} de ${N}    Acertos: ${d.ok.length}    Erros: ${d.err.length}    Aproveitamento: ${d.pct}%`,12,true,[23,112,63]);
   linha(`Tempo total: ${ftempo(d.tt)}    Tempo médio por exercício: ${ftempo(d.med)}`,10.5);y+=2;
@@ -399,7 +404,7 @@ $('pdf').onclick=()=>{
       doc.setFont('helvetica',j===0||j===4?'bold':'normal');doc.setTextColor(...cor);doc.text(l,x,y);x+=cols[j][1]});
     y+=h});
   const nm=S.nome.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-  doc.save(`exercicios-tolerancia-${nm||'aluno'}.pdf`);$('rmsg').innerHTML='<p class="okc">PDF gerado. Confira nos downloads.</p>'};
+  doc.save(`tolerancia-${NIVEL.split(':')[0].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}-${nm||'aluno'}.pdf`);$('rmsg').innerHTML='<p class="okc">PDF gerado. Confira nos downloads.</p>'};
 
 tela();salvar();
 </script>

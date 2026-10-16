@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Faixa de tolerância · 20 exercícios</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<style>
+:root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--bad:#B3261E;--zone:#CFE6D8;--steel:#1D3B5C;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}}
+:root[data-theme="dark"]{--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 Barlow,'Arial Narrow',Arial,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 48px}
+h1{font:800 clamp(36px,8vw,60px)/.95 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:0 0 6px}
+h2{font:800 clamp(26px,5vw,36px)/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:34px 0 10px;letter-spacing:.01em}
+h3{font:700 22px/1.1 'Big Shoulders Display','Arial Narrow',sans-serif;margin:18px 0 6px;letter-spacing:.02em}
+.sub{color:var(--muted);margin:0 0 18px;max-width:66ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.big{font:800 clamp(48px,12vw,88px)/.9 'Big Shoulders Display','Arial Narrow',sans-serif;font-variant-numeric:tabular-nums}
+.big small{font-size:.38em;margin-left:.2em;color:var(--muted)}
+.stats{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.stats b{display:block;font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+button.act,a.act{display:inline-flex;align-items:center;justify-content:center;font:700 19px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:13px 22px;min-height:48px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;text-decoration:none}
+button.ghost,a.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabs{display:flex;margin:16px 0 12px;border:2px solid var(--ink);border-radius:4px;overflow:hidden;width:fit-content;max-width:100%}
+.tabs button{font:700 20px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:11px 18px;min-height:48px;background:transparent;color:var(--ink);border:0;cursor:pointer}
+.tabs button+button{border-left:2px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.fb{margin-top:12px;padding:12px 14px;border-left:6px solid var(--line);background:var(--bg);border-radius:0 4px 4px 0}
+.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.okc{color:var(--ok);font-weight:700}.noc{color:var(--bad);font-weight:700}
+input[type=text],input[type=number],select,textarea{font:600 18px/1.2 Barlow,Arial,sans-serif;padding:10px 12px;min-height:46px;border:2px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);max-width:100%}
+textarea{width:100%;min-height:90px;resize:vertical}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--muted);font-size:15px}
+.num{font-variant-numeric:tabular-nums}
+@media (max-width:640px){.tabs{width:100%}.tabs button{flex:1;padding:11px 6px}.row .act{flex:1 1 auto}}
+@media (prefers-reduced-motion:no-preference){.fb{animation:pop .18s ease-out}@keyframes pop{from{transform:translateY(4px);opacity:.4}}}
+@media print{.fp-rule,.noprint{display:none!important}body{background:#fff;color:#000}}
+
+/* Cabeçalho comum do site Fazenda de Projetos */
+.fp-in{max-width:1000px;margin-inline:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.fp-brand{font:800 27px/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.fp-brand b{color:var(--accent);font-weight:800}
+.fp-onde{font:600 13.5px/1.2 Barlow,'Arial Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fp-rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+.trilha{display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.trilha a{font:600 15px/1.2 Barlow,sans-serif;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:4px;padding:10px 12px;min-height:44px;display:inline-flex;align-items:center;background:var(--panel)}
+.trilha a[aria-current]{border-color:var(--accent);color:var(--accent);font-weight:700}
+.trilha .t{flex-basis:100%;font:600 13px/1 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* Página */
+.top{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 10px}
+.chips button{font:600 15px/1 Barlow,sans-serif;padding:9px 12px;min-height:40px;border:1.5px solid var(--line);border-radius:20px;background:var(--panel);color:var(--ink);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;margin-bottom:16px}
+.grade button{font:800 18px/1 'Big Shoulders Display',sans-serif;min-height:44px;border:1.5px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+.grade button.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.grade button.no{background:var(--bad);border-color:var(--bad);color:#fff}
+.grade button[aria-current="true"]{outline:3px solid var(--accent);outline-offset:1px}
+.ex{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.ex .cab{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--muted);font:600 14px/1.2 Barlow,sans-serif;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.ex h2{margin:0 0 10px;font-size:clamp(28px,5vw,40px)}
+.desenho{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px;margin:10px 0 14px}
+.desenho svg{display:block;width:100%;height:auto;max-height:46dvh;margin:0 auto;color:var(--ink)}
+.desenho text{font-family:Barlow,'Arial Narrow',Arial,sans-serif}
+.en{font-size:19px;font-weight:600;margin:0 0 12px}
+.alts{display:flex;flex-direction:column;gap:6px}
+.alt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:2px solid var(--line);border-radius:4px;background:var(--bg);cursor:pointer;min-height:46px}
+.alt input{margin-top:4px;width:18px;height:18px;flex:none}
+.alt.c{border-color:var(--ok)}.alt.x{border-color:var(--bad)}
+.resp{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.resp input{width:9ch;font-weight:800;font-size:24px}
+.placar{display:flex;gap:20px;flex-wrap:wrap;color:var(--muted)}
+.placar b{display:block;font:800 30px/1 'Big Shoulders Display',sans-serif;color:var(--ink)}
+.erro{color:var(--bad);font-weight:600}
+.s-ink{stroke:var(--ink)}.s-mut{stroke:var(--muted)}.s-acc{stroke:var(--accent)}
+.f-ink{fill:var(--ink)}.f-mut{fill:var(--muted)}.f-acc{fill:var(--accent)}.f-ok{fill:var(--ok)}.f-bad{fill:var(--bad)}
+.f-steel{fill:#C9D2DE}.f-zone{fill:var(--zone)}.f-out{fill:var(--bad);opacity:.18}.f-panel{fill:var(--panel)}.f-bg{fill:var(--bg)}
+.f-lcd{fill:#0B1620}.f-lcdtxt{fill:#9FF0C2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .f-steel{fill:#4A6178}}
+:root[data-theme="dark"] .f-steel{fill:#4A6178}
+.tempo{font-variant-numeric:tabular-nums}
+.par{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 0}
+.par div{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+.par span{display:block;font:600 13px/1.2 Barlow,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.par b{font-weight:700}
+.fim{background:var(--ink);color:var(--bg);border-radius:6px;padding:16px 18px;margin-top:12px}
+.fim a{color:var(--bg)}
+.resumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:12px 0}
+.resumo div{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;color:var(--muted);font-size:14px}
+.resumo b{display:block;font:800 30px/1.05 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.listas p{margin:6px 0}
+.rtab{width:100%;border-collapse:collapse;font-size:15px;margin-top:10px}
+.rtab th{text-align:left;font:600 13px/1.2 Barlow,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px;border-bottom:2px solid var(--line)}
+.rtab td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+.rtab td.n{font:800 20px/1 'Big Shoulders Display',sans-serif;white-space:nowrap}
+.rtab .ctx{display:block;color:var(--muted);font-size:13.5px;margin-top:2px}
+.rtab tr.no td.res{color:var(--bad);font-weight:700}.rtab tr.ok td.res{color:var(--ok);font-weight:700}
+.rtab tr.nr td{color:var(--muted)}
+.rtab button.link{font:inherit;text-align:left;background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer}
+@media (max-width:720px){
+ .par{grid-template-columns:1fr}
+ .rtab thead{display:none}
+ .rtab tr{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;padding:10px 0;border-bottom:1px solid var(--line)}
+ .rtab td{border:0;padding:2px 0}
+ .rtab td.n{grid-row:span 5}
+ .rtab td[data-l]::before{content:attr(data-l) ': ';font-weight:600;color:var(--muted)}
+}
+.aluno{display:flex;justify-content:space-between;align-items:center;gap:8px 16px;flex-wrap:wrap;margin-bottom:10px;font-size:16px}
+.aluno b{font-size:18px}
+.aluno button{font:600 14px/1 Barlow,sans-serif;background:none;border:0;color:var(--accent);text-decoration:underline;cursor:pointer;padding:6px 0}
+.inicio{max-width:620px}
+.inicio input{width:100%}
+.inicio ul{padding-left:20px;margin:6px 0 14px}.inicio li{margin-bottom:4px}
+[hidden]{display:none!important}
+.dica{background:var(--zone);border-radius:4px;padding:8px 12px;margin:0 0 10px;font-size:16px}
+.dica b{font-weight:700}
+.nivel{display:inline-block;font:700 14px/1 Barlow,sans-serif;letter-spacing:.08em;text-transform:uppercase;background:var(--accent);color:var(--accent-ink);padding:6px 10px;border-radius:3px;margin-bottom:8px}
+</style>
+</head>
+<body>
+<header class="fp-top">
+  <div class="fp-in"><a class="fp-brand" href="../index.html">Fazenda <b>de Projetos</b></a><span class="fp-onde">Metrologia · Noções de tolerância</span></div>
+  <div class="fp-rule" aria-hidden="true"></div>
+</header>
+<main>
+<div class="top">
+  <div><span class="nivel">Nível médio</span><h1>Faixa de tolerância</h1>
+  <p class="sub" style="margin-bottom:0">Encontre a faixa de tolerância: a largura e os limites. Os exercícios aparecem numa ordem sorteada só para você, e o tempo de cada um é marcado. Escreva os números com vírgula, como 0,4. O relatório aparece quando você terminar os 20.</p></div>
+</div>
+<section class="panel inicio" id="inicio" style="margin-top:14px">
+  <h2 style="margin-top:0">Antes de começar</h2>
+  <ul>
+    <li>São 20 exercícios, numa ordem sorteada só para você.</li>
+    <li>Depois de responder, você confere na hora se acertou e vê a explicação.</li>
+    <li>O tempo de cada exercício é marcado.</li>
+    <li>Cada exercício vale a primeira resposta: não dá para refazer.</li>
+    <li>O relatório aparece quando você terminar todos.</li>
+  </ul>
+  <label class="f">Nome completo<input type="text" id="nome" autocomplete="name" maxlength="60"></label>
+  <label class="f" style="margin-top:10px">Turma<input type="text" id="turma" maxlength="20"></label>
+  <div id="imsg" aria-live="polite"></div>
+  <div class="row"><button class="act" id="comecar">Começar os exercícios</button></div>
+</section>
+<section class="panel" id="painel" style="margin-top:14px" hidden>
+  <div class="aluno"><span>Aluno: <b id="anome"></b> <span id="aturma" style="color:var(--muted)"></span></span><button id="trocar">Não é você? Trocar de aluno</button></div>
+  <div class="placar" id="placar"></div>
+  <div class="chips" id="chips" role="group" aria-label="Filtrar por tema"></div>
+  <div class="grade" id="grade" aria-label="Exercícios"></div>
+</section>
+<section class="ex" id="ex" aria-live="polite" style="margin-top:14px" hidden></section>
+<section class="panel" id="relpanel" style="margin-top:14px" hidden>
+  <h2 style="margin-top:0">Relatório</h2>
+  <p id="rcab" style="margin:0 0 4px"></p>
+  <div id="rel"></div>
+  <div id="rmsg" aria-live="polite"></div>
+  <div class="row noprint"><button class="act" id="pdf">Baixar relatório em PDF</button><button class="act ghost" id="zerar">Fazer de novo</button></div>
+  <p class="noprint" style="color:var(--muted);font-size:15px;margin:10px 0 0">Fazer de novo apaga as respostas e os tempos e sorteia uma nova ordem.</p>
+</section>
+<nav class="trilha noprint" aria-label="Noções de tolerância"><span class="t">Noções de tolerância</span><a href="tolerancia-o-que-e.html">Leitura</a><a href="tolerancia-faixa.html">Simulador</a><a href="tolerancia-passa-nao-passa.html">Jogo</a><a href="tolerancia-regua.html">Atividade</a><a href="tolerancia-basico.html">Básico</a><a href="tolerancia-medio.html" aria-current="page">Médio</a><a href="tolerancia-exercicios.html">Complexo</a><a href="tolerancia-avaliacao.html">Avaliação</a><a href="../index.html#d-metrologia">Voltar à trilha de Metrologia</a></nav>
+</main>
+<script src="../vendor/jspdf.umd.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const DENTRO=['Dentro da tolerância: aprovada','Fora da tolerância: recusada'];
+
+/* ===== desenhos (SVG, viewBox 600 x 280) ===== */
+const MK=`<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 1L10 5L0 9z" fill="currentColor"/></marker></defs>`;
+const dimH=(x1,x2,y,lab,acc)=>`<line x1="${x1}" x2="${x2}" y1="${y}" y2="${y}" stroke="currentColor" stroke-width="1.6" marker-start="url(#ar)" marker-end="url(#ar)"/><text x="${(x1+x2)/2}" y="${y-9}" text-anchor="middle" font-size="20" font-weight="700" class="${acc?'f-acc':'f-ink'}">${lab}</text>`;
+const dimV=(x,y1,y2,lab,acc,anchor='start')=>`<line x1="${x}" x2="${x}" y1="${y1}" y2="${y2}" stroke="currentColor" stroke-width="1.6" marker-start="url(#ar)" marker-end="url(#ar)"/><text x="${anchor==='start'?x+10:x-10}" y="${(y1+y2)/2+7}" text-anchor="${anchor}" font-size="20" font-weight="700" class="${acc?'f-acc':'f-ink'}">${lab}</text>`;
+const ext=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="currentColor" stroke-width="1" opacity=".55"/>`;
+const centro=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="currentColor" stroke-width="1" stroke-dasharray="14 4 3 4" opacity=".6"/>`;
+const svgw=(inner,label,h=280)=>`<svg viewBox="0 0 600 ${h}" role="img" aria-label="${esc(label)}">${MK}${inner}</svg>`;
+const D={
+ pino:o=>svgw(`<rect x="130" y="85" width="300" height="110" rx="6" class="f-steel" stroke="currentColor" stroke-width="2"/>${centro(110,140,450,140)}${ext(430,85,500,85)}${ext(430,195,500,195)}${dimV(490,85,195,o.cota,true)}<text x="280" y="240" text-anchor="middle" font-size="16" class="f-mut">${o.nome||'pino'} (vista lateral)</text>`,`Desenho de ${o.nome||'pino'} com cota ${o.cota}`),
+ bloco:o=>svgw(`<rect x="110" y="110" width="380" height="${o.h||90}" class="f-steel" stroke="currentColor" stroke-width="2"/>${ext(110,105,110,55)}${ext(490,105,490,55)}${dimH(110,490,70,o.cota,true)}<text x="300" y="${135+(o.h||90)}" text-anchor="middle" font-size="16" class="f-mut">${o.nome||'bloco'}</text>`,`Desenho de ${o.nome||'bloco'} com cota ${o.cota}`),
+ bucha:o=>svgw(`<circle cx="230" cy="145" r="105" class="f-steel" stroke="currentColor" stroke-width="2"/><circle cx="230" cy="145" r="62" class="f-bg" stroke="currentColor" stroke-width="2"/>${centro(110,145,350,145)}${centro(230,25,230,265)}
+   <line x1="168" x2="292" y1="145" y2="145" stroke="currentColor" stroke-width="1.6" marker-start="url(#ar)" marker-end="url(#ar)"/>
+   <line x1="306" y1="70" x2="390" y2="70" stroke="currentColor" stroke-width="1"/><line x1="306" y1="70" x2="300" y2="74" stroke="currentColor"/>
+   <text x="396" y="76" font-size="20" font-weight="700" class="${o.hl==='ext'?'f-acc':'f-ink'}">${o.ext}</text><text x="396" y="98" font-size="15" class="f-mut">diâmetro externo</text>
+   <line x1="240" y1="150" x2="390" y2="200" stroke="currentColor" stroke-width="1"/>
+   <text x="396" y="206" font-size="20" font-weight="700" class="${o.hl==='int'?'f-acc':'f-ink'}">${o.int}</text><text x="396" y="228" font-size="15" class="f-mut">diâmetro interno (furo)</text>`,`Bucha com diâmetro externo ${o.ext} e furo ${o.int}`),
+ chapa:o=>svgw(`<rect x="60" y="80" width="430" height="140" class="f-steel" stroke="currentColor" stroke-width="2"/><circle cx="185" cy="150" r="24" class="f-bg" stroke="currentColor" stroke-width="2"/>${centro(150,150,220,150)}${centro(185,115,185,185)}
+   ${ext(60,75,60,30)}${ext(490,75,490,30)}${dimH(60,490,45,o.comp,o.hl==='comp')}
+   ${ext(495,80,560,80)}${ext(495,220,560,220)}${dimV(545,80,220,'',false)}<text x="576" y="150" font-size="19" font-weight="700" class="${o.hl==='larg'?'f-acc':'f-ink'}" text-anchor="middle" dominant-baseline="middle" transform="rotate(-90 576 150)">${o.larg}</text>
+   ${ext(60,225,60,265)}${ext(185,180,185,265)}${dimH(60,185,255,o.dist,o.hl==='dist')}
+   <line x1="203" y1="133" x2="270" y2="105" stroke="currentColor" stroke-width="1"/><text x="274" y="110" font-size="20" font-weight="700" class="${o.hl==='furo'?'f-acc':'f-ink'}">${o.furo}</text>`,`Chapa ${o.comp} por ${o.larg}, com furo ${o.furo} a ${o.dist} da borda`,290),
+ eixo2:o=>svgw(`<rect x="70" y="95" width="230" height="120" class="f-steel" stroke="currentColor" stroke-width="2"/><rect x="300" y="122" width="210" height="66" class="f-steel" stroke="currentColor" stroke-width="2"/>${centro(50,155,530,155)}
+   ${ext(70,90,70,40)}${ext(510,117,510,40)}${dimH(70,510,55,o.L,o.hl==='L')}
+   <text x="185" y="250" text-anchor="middle" font-size="20" font-weight="700" class="${o.hl==='d1'?'f-acc':'f-ink'}">${o.d1}</text><line x1="185" y1="215" x2="185" y2="232" stroke="currentColor"/>
+   <text x="405" y="250" text-anchor="middle" font-size="20" font-weight="700" class="${o.hl==='d2'?'f-acc':'f-ink'}">${o.d2}</text><line x1="405" y1="188" x2="405" y2="232" stroke="currentColor"/>
+   ${o.rol?`<rect x="340" y="104" width="70" height="18" rx="3" class="f-acc" opacity=".55"/><rect x="340" y="188" width="70" height="18" rx="3" class="f-acc" opacity=".55"/><text x="420" y="100" font-size="15" class="f-acc" font-weight="700">rolamento</text>`:''}`,`Eixo escalonado com comprimento ${o.L}, diâmetros ${o.d1} e ${o.d2}`),
+ cota:o=>svgw(`<rect x="120" y="45" width="360" height="170" rx="14" class="f-panel" stroke="currentColor" stroke-width="1.6"/><text x="300" y="92" text-anchor="middle" font-size="18" class="f-mut">${esc(o.nome||'cota do desenho')}</text><text x="300" y="172" text-anchor="middle" font-size="60" font-weight="700" class="f-ink">${o.cota}</text>`,`Cota ${o.cota}`,260),
+ faixa:o=>svgw(`<rect x="40" y="120" width="520" height="60" class="f-out"/><rect x="150" y="120" width="300" height="60" class="f-zone"/>
+   <text x="300" y="157" text-anchor="middle" font-size="20" font-weight="700" class="f-ok">ACEITA</text><text x="95" y="157" text-anchor="middle" font-size="17" font-weight="700" class="f-bad">FORA</text><text x="505" y="157" text-anchor="middle" font-size="17" font-weight="700" class="f-bad">FORA</text>
+   <line x1="150" x2="150" y1="105" y2="195" stroke="currentColor" stroke-width="3"/><line x1="450" x2="450" y1="105" y2="195" stroke="currentColor" stroke-width="3"/><line x1="300" x2="300" y1="105" y2="120" class="s-acc" stroke-width="3"/><line x1="300" x2="300" y1="180" y2="195" class="s-acc" stroke-width="3"/>
+   <text x="150" y="92" text-anchor="middle" font-size="26" font-weight="700" class="f-ink">${o.min}</text><text x="450" y="92" text-anchor="middle" font-size="26" font-weight="700" class="f-ink">${o.max}</text><text x="300" y="92" text-anchor="middle" font-size="26" font-weight="700" class="f-acc">${o.nom||'?'}</text>
+   <text x="150" y="220" text-anchor="middle" font-size="16" class="f-mut">mínima</text><text x="300" y="220" text-anchor="middle" font-size="16" class="f-mut">nominal</text><text x="450" y="220" text-anchor="middle" font-size="16" class="f-mut">máxima</text>`,`Faixa aceita de ${o.min} a ${o.max} mm`,250),
+ lcd:o=>svgw(`<rect x="150" y="40" width="300" height="70" rx="8" class="f-panel" stroke="currentColor" stroke-width="1.5"/><text x="300" y="70" text-anchor="middle" font-size="15" class="f-mut">${o.nome?esc(o.nome)+' · ':''}cota do desenho</text><text x="300" y="98" text-anchor="middle" font-size="26" font-weight="700" class="f-ink">${o.cota}</text>
+   <rect x="130" y="130" width="340" height="110" rx="10" class="f-lcd"/><text x="300" y="160" text-anchor="middle" font-size="15" fill="#6FA88A" letter-spacing="2">MEDIDA ENCONTRADA</text><text x="300" y="220" text-anchor="middle" font-size="52" font-weight="700" class="f-lcdtxt">${o.val} mm</text>`,`Cota ${o.cota}, medida encontrada ${o.val} milímetros`,260),
+ lote:o=>{const n=o.vals.length,w=Math.min(104,520/n-8),x0=300-(n*(w+8)-8)/2;
+   return svgw(`<text x="300" y="44" text-anchor="middle" font-size="24" font-weight="700" class="f-ink">${o.nome?esc(o.nome)+': ':''}cota ${o.cota}</text>`+o.vals.map((v,i)=>`<rect x="${x0+i*(w+8)}" y="80" width="${w}" height="110" rx="8" class="f-panel" stroke="currentColor" stroke-width="1.2"/><text x="${x0+i*(w+8)+w/2}" y="112" text-anchor="middle" font-size="18" font-weight="700" class="f-acc">${String.fromCharCode(65+i)}</text><text x="${x0+i*(w+8)+w/2}" y="160" text-anchor="middle" font-size="${w<90?22:26}" font-weight="700" class="f-ink">${v}</text>`).join('')+`<text x="300" y="228" text-anchor="middle" font-size="16" class="f-mut">medidas em mm</text>`,`Lote com cota ${o.cota} e medidas ${o.vals.join(', ')}`,250)},
+ inst:o=>{const n=o.items.length,w=170,x0=300-(n*(w+14)-14)/2;
+   return svgw(`<text x="300" y="44" text-anchor="middle" font-size="24" font-weight="700" class="f-ink">cota a conferir: ${o.cota}</text>`+o.items.map((it,i)=>`<rect x="${x0+i*(w+14)}" y="75" width="${w}" height="120" rx="8" class="f-panel" stroke="currentColor" stroke-width="1.2"/><text x="${x0+i*(w+14)+w/2}" y="112" text-anchor="middle" font-size="18" font-weight="700" class="f-ink">${it[0]}</text><text x="${x0+i*(w+14)+w/2}" y="150" text-anchor="middle" font-size="15" class="f-mut">resolução</text><text x="${x0+i*(w+14)+w/2}" y="176" text-anchor="middle" font-size="20" font-weight="700" class="f-acc">${it[1]}</text>`).join(''),`Instrumentos disponíveis para a cota ${o.cota}`,220)},
+ fala:o=>svgw(`<circle cx="70" cy="190" r="34" class="f-steel" stroke="currentColor" stroke-width="2"/><circle cx="70" cy="250" r="30" class="f-steel" stroke="currentColor" stroke-width="2"/>
+   <path d="M130 30h440a14 14 0 0 1 14 14v120a14 14 0 0 1-14 14H175l-55 30 18-30h-8a14 14 0 0 1-14-14V44a14 14 0 0 1 14-14z" class="f-panel" stroke="currentColor" stroke-width="1.6"/>
+   <foreignObject x="140" y="38" width="430" height="132"><div xmlns="http://www.w3.org/1999/xhtml" style="font:italic 600 19px/1.35 Barlow,Arial,sans-serif;color:var(--ink);height:132px;display:flex;align-items:center">"${esc(o.txt)}"</div></foreignObject>`,`Fala: ${o.txt}`)
+};
+
+/* ===== banco de exercícios =====
+   tipo: num (resposta numérica, em mm salvo indicação), mc (alternativa), multi (marcar todas). */
+const TEMAS=["Largura da faixa", "Limites da faixa", "Faixa pelos limites"];
+const E=[{"tema": 0,"d": ["pino",{"nome": "pino","cota": "Ø 30 ± 0,2"}],"en": "Qual é a largura da faixa de tolerância do diâmetro do pino?","tipo": "num","r": "0,4","exp": "Máxima 30,2 − mínima 29,8 = 0,4 mm. É o mesmo que 2 × 0,2."},{"tema": 0,"d": ["bloco",{"nome": "bloco-guia","cota": "120 ± 1"}],"en": "Qual é a largura da faixa de tolerância do comprimento do bloco-guia?","tipo": "num","r": "2","exp": "Máxima 121 − mínima 119 = 2 mm. É o mesmo que 2 × 1."},{"tema": 0,"d": ["cota",{"nome": "comprimento de uma barra","cota": "50 ± 0,5"}],"en": "Qual é a largura da faixa de tolerância desta cota?","tipo": "num","r": "1","exp": "Máxima 50,5 − mínima 49,5 = 1 mm. É o mesmo que 2 × 0,5."},{"tema": 0,"d": ["bucha",{"hl": "int","ext": "Ø 40 ± 0,2","int": "Ø 25 ± 0,1"}],"en": "Qual é a largura da faixa de tolerância do furo da bucha?","tipo": "num","r": "0,2","exp": "Máxima 25,1 − mínima 24,9 = 0,2 mm. É o mesmo que 2 × 0,1."},{"tema": 0,"d": ["cota",{"nome": "diâmetro de um pino-guia","cota": "Ø 12 ± 0,05"}],"en": "Qual é a largura da faixa de tolerância desta cota?","tipo": "num","r": "0,1","exp": "Máxima 12,05 − mínima 11,95 = 0,1 mm. É o mesmo que 2 × 0,05."},{"tema": 0,"d": ["eixo2",{"hl": "d2","L": "150 ± 0,5","d1": "Ø 40 ± 0,3","d2": "Ø 25 ± 0,02"}],"en": "Qual é a largura da faixa de tolerância do diâmetro menor do eixo?","tipo": "num","r": "0,04","exp": "Máxima 25,02 − mínima 24,98 = 0,04 mm. É o mesmo que 2 × 0,02."},{"tema": 0,"d": ["chapa",{"hl": "dist","comp": "200 ± 1","larg": "80 ± 0,5","furo": "Ø 10 ± 0,1","dist": "50 ± 0,2"}],"en": "Qual é a largura da faixa de tolerância da distância da borda ao furo?","tipo": "num","r": "0,4","exp": "Máxima 50,2 − mínima 49,8 = 0,4 mm. É o mesmo que 2 × 0,2."},{"tema": 0,"d": ["bloco",{"nome": "espaçador","cota": "75 ± 0,25"}],"en": "Qual é a largura da faixa de tolerância do comprimento do espaçador?","tipo": "num","r": "0,5","exp": "Máxima 75,25 − mínima 74,75 = 0,5 mm. É o mesmo que 2 × 0,25."},{"tema": 1,"d": ["cota",{"nome": "comprimento de um eixo","cota": "40 ± 0,3"}],"en": "A faixa de tolerância desta cota vai de quanto a quanto?","tipo": "mc","alts": ["De 39,7 a 40 mm","De 40 a 40,3 mm","De 39,7 a 40,3 mm","De 39,4 a 40,6 mm"],"c": 2,"exp": "Mínima = 40 − 0,3 = 39,7 e máxima = 40 + 0,3 = 40,3. A faixa vai de uma até a outra."},{"tema": 1,"d": ["pino",{"nome": "pino","cota": "Ø 18 ± 0,05"}],"en": "A faixa de tolerância desta cota vai de quanto a quanto?","tipo": "mc","alts": ["De 18 a 18,05 mm","De 17,9 a 18,1 mm","De 17,95 a 18 mm","De 17,95 a 18,05 mm"],"c": 3,"exp": "Mínima = 18 − 0,05 = 17,95 e máxima = 18 + 0,05 = 18,05. A faixa vai de uma até a outra."},{"tema": 1,"d": ["bloco",{"nome": "barra","cota": "100 ± 1"}],"en": "A faixa de tolerância desta cota vai de quanto a quanto?","tipo": "mc","alts": ["De 100 a 101 mm","De 99 a 101 mm","De 99 a 100 mm","De 98 a 102 mm"],"c": 1,"exp": "Mínima = 100 − 1 = 99 e máxima = 100 + 1 = 101. A faixa vai de uma até a outra."},{"tema": 1,"d": ["cota",{"nome": "largura de uma guia","cota": "64 ± 0,2"}],"en": "A faixa de tolerância desta cota vai de quanto a quanto?","tipo": "mc","alts": ["De 63,8 a 64 mm","De 63,6 a 64,4 mm","De 63,8 a 64,2 mm","De 64 a 64,2 mm"],"c": 2,"exp": "Mínima = 64 − 0,2 = 63,8 e máxima = 64 + 0,2 = 64,2. A faixa vai de uma até a outra."},{"tema": 1,"d": ["bucha",{"hl": "ext","int": "Ø 25 ± 0,1","ext": "Ø 40 ± 0,2"}],"en": "A faixa de tolerância desta cota vai de quanto a quanto?","tipo": "mc","alts": ["De 39,6 a 40,4 mm","De 39,8 a 40,2 mm","De 40 a 40,2 mm","De 39,8 a 40 mm"],"c": 1,"exp": "Mínima = 40 − 0,2 = 39,8 e máxima = 40 + 0,2 = 40,2. A faixa vai de uma até a outra."},{"tema": 1,"d": ["cota",{"nome": "espessura de uma chapa","cota": "8 ± 0,1"}],"en": "A faixa de tolerância desta cota vai de quanto a quanto?","tipo": "mc","alts": ["De 7,8 a 8,2 mm","De 7,9 a 8 mm","De 7,9 a 8,1 mm","De 8 a 8,1 mm"],"c": 2,"exp": "Mínima = 8 − 0,1 = 7,9 e máxima = 8 + 0,1 = 8,1. A faixa vai de uma até a outra."},{"tema": 2,"d": ["faixa",{"min": "59,7","max": "60,3","nom": "60"}],"en": "A peça é aceita de 59,7 a 60,3 mm. Qual é a largura da faixa de tolerância?","tipo": "num","r": "0,6","exp": "Largura = máxima − mínima = 60,3 − 59,7 = 0,6 mm."},{"tema": 2,"d": ["faixa",{"min": "39,8","max": "40,2","nom": "40"}],"en": "A peça é aceita de 39,8 a 40,2 mm. Qual é a largura da faixa de tolerância?","tipo": "num","r": "0,4","exp": "Largura = máxima − mínima = 40,2 − 39,8 = 0,4 mm."},{"tema": 2,"d": ["faixa",{"min": "99,5","max": "100,5","nom": "100"}],"en": "A peça é aceita de 99,5 a 100,5 mm. Qual é a largura da faixa de tolerância?","tipo": "num","r": "1","exp": "Largura = máxima − mínima = 100,5 − 99,5 = 1 mm."},{"tema": 2,"d": ["faixa",{"min": "24,95","max": "25,05","nom": "25"}],"en": "A peça é aceita de 24,95 a 25,05 mm. Qual é a largura da faixa de tolerância?","tipo": "num","r": "0,1","exp": "Largura = máxima − mínima = 25,05 − 24,95 = 0,1 mm."},{"tema": 2,"d": ["faixa",{"min": "11,9","max": "12,1","nom": "12"}],"en": "A peça é aceita de 11,9 a 12,1 mm. Qual é a largura da faixa de tolerância?","tipo": "num","r": "0,2","exp": "Largura = máxima − mínima = 12,1 − 11,9 = 0,2 mm."},{"tema": 2,"d": ["faixa",{"min": "149","max": "151","nom": "150"}],"en": "A peça é aceita de 149 a 151 mm. Qual é a largura da faixa de tolerância?","tipo": "num","r": "2","exp": "Largura = máxima − mínima = 151 − 149 = 2 mm."}];
+/* ===== estado ===== */
+const KEY='tol-medio-v1',N=E.length;
+const DICA="<b>Faixa</b> = máxima − mínima = 2 × tolerância · vai da <b>mínima</b> até a <b>máxima</b>",NIVEL="Médio: faixa de tolerância";
+const embaralhar=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+/* ord = ordem sorteada para esta pessoa (ids do banco); res[id] = {ok, r}; t[id] = milissegundos no exercício */
+let S={f:-1,i:0,ord:[],res:{},t:{}};
+try{const v=JSON.parse(localStorage.getItem(KEY)||'null');
+  if(v&&Array.isArray(v.ord)&&v.ord.length===N&&new Set(v.ord).size===N){S.ord=v.ord;S.res=v.res||{};S.t=v.t||{};S.nome=v.nome||'';S.turma=v.turma||''}}catch(e){}
+S.nome=S.nome||'';S.turma=S.turma||'';
+if(!S.ord.length)S.ord=embaralhar(E.map((e,i)=>i));
+S.i=S.ord.find(i=>!S.res[i])??S.ord[0];
+const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify({ord:S.ord,res:S.res,t:S.t,nome:S.nome,turma:S.turma}))}catch(e){}};
+const parse=s=>{s=String(s).trim().replace(/\s|mm|vezes/gi,'').replace(',','.');if(!/^-?\d+(\.\d{1,3})?$/.test(s))return null;return Math.round(parseFloat(s)*1000)};
+const lista=()=>S.ord.filter(i=>S.f<0||E[i].tema===S.f);
+const num=i=>S.ord.indexOf(i)+1;
+const L1=j=>String.fromCharCode(65+j);
+const fnum=v=>(v/1000).toFixed(3).replace(/0+$/,'').replace(/\.$/,'').replace('.',',');
+
+/* ===== tempo em cada exercício: conta só com a página aberta na frente e antes de responder ===== */
+let t0=null,tId=null;
+const iniciar=()=>{if(t0!==null||!S.nome||S.res[S.i]||document.hidden)return;t0=performance.now();tId=S.i};
+const parar=()=>{if(t0===null)return;S.t[tId]=(S.t[tId]||0)+(performance.now()-t0);t0=null;salvar()};
+const gasto=i=>(S.t[i]||0)+(t0!==null&&tId===i?performance.now()-t0:0);
+const ftempo=ms=>{const s=Math.round(ms/1000);if(s<60)return s+' s';const m=Math.floor(s/60),r=s%60;if(m<60)return m+' min'+(r?' '+String(r).padStart(2,'0')+' s':'');return Math.floor(m/60)+' h '+String(m%60).padStart(2,'0')+' min'};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)parar();else iniciar()});
+window.addEventListener('pagehide',parar);
+setInterval(()=>{if(t0!==null){parar();iniciar()}const el=$('tvivo');if(el)el.textContent=ftempo(gasto(S.i))},1000);
+
+/* ===== respostas por extenso ===== */
+const txtResp=(e,r)=>e.tipo==='num'?(parse(r)===null?String(r):fnum(parse(r)))+' '+(e.un||'mm'):e.tipo==='multi'?(r.length?[...r].sort((a,b)=>a-b).map(L1).join(', '):'nenhuma'):e.alts[r];
+const txtCerta=e=>e.tipo==='num'?e.r+' '+(e.un||'mm'):e.tipo==='multi'?e.c.map(L1).join(', '):e.alts[e.c];
+const ctx=e=>{if(!e.d)return '';const [k,o]=e.d;return k==='cota'?`${o.nome?o.nome+': ':''}cota ${o.cota}`:k==='pino'||k==='bloco'?`${o.nome}: ${o.cota}`:k==='bucha'?`bucha: externo ${o.ext}, furo ${o.int}`:k==='chapa'?`chapa: ${o.comp} × ${o.larg}, furo ${o.furo} a ${o.dist} da borda`:k==='eixo2'?`eixo: ${o.L}, ${o.d1} e ${o.d2}`:k==='faixa'?`faixa de ${o.min} a ${o.max} mm`:k==='lcd'?`${o.nome}: cota ${o.cota}, mediu ${o.val} mm`:k==='lote'?`${o.nome}, cota ${o.cota}: `+o.vals.map((v,j)=>L1(j)+' = '+v).join('; '):k==='inst'?`cota ${o.cota}`:k==='fala'?`fala: "${o.txt}"`:''};
+
+function placar(){const n=Object.keys(S.res).length,ok=Object.values(S.res).filter(r=>r.ok).length;
+  $('placar').innerHTML=`<span>Respondidos<b>${n}/${N}</b></span><span>Faltam<b class="num">${N-n}</b></span>`}
+function chips(){$('chips').innerHTML=[['-1','Todos']].concat(TEMAS.map((t,i)=>[i,t])).map(([v,t])=>`<button data-f="${v}" aria-pressed="${+v===S.f}">${t}</button>`).join('')}
+function grade(){$('grade').innerHTML=lista().map(i=>{const r=S.res[i];return `<button data-i="${i}" class="${r?(r.ok?'ok':'no'):''}" aria-current="${i===S.i}" aria-label="Exercício ${num(i)}${r?(r.ok?', acertou':', errou'):''}">${num(i)}</button>`}).join('')}
+
+function render(){const e=E[S.i],r=S.res[S.i],done=!!r;placar();grade();
+  let corpo='';
+  if(e.tipo==='num')corpo=`<div class="resp"><input type="text" id="ans" inputmode="decimal" maxlength="10" value="${done?esc(r.r):''}" ${done?'disabled':''} aria-label="Sua resposta"><span>${e.un||'mm'}</span></div>`;
+  else corpo=`<div class="alts">${e.alts.map((a,j)=>{const sel=done&&(e.tipo==='multi'?r.r.includes(j):r.r===j);const cls=done?((e.tipo==='multi'?e.c.includes(j):j===e.c)?'c':(sel?'x':'')):'';
+    return `<label class="alt ${cls}"><input type="${e.tipo==='multi'?'checkbox':'radio'}" name="alt" value="${j}" ${sel?'checked':''} ${done?'disabled':''}><span>${e.tipo==='multi'?'Peça ':''}${esc(a)}</span></label>`}).join('')}</div>`;
+  const L=lista(),pos=L.indexOf(S.i),todos=Object.keys(S.res).length===N;
+  $('ex').innerHTML=`<div class="cab"><span>Exercício ${num(S.i)} de ${N}</span><span>${TEMAS[e.tema]}</span><span>Tempo: <span class="tempo" id="${done?'':'tvivo'}">${ftempo(gasto(S.i))}</span></span></div>
+   ${e.d?`<div class="desenho">${D[e.d[0]](e.d[1])}</div>`:''}
+   ${DICA?`<p class="dica">${DICA}</p>`:''}<p class="en">${esc(e.en)}</p>${corpo}
+   ${done?`<div class="fb ${r.ok?'ok':'no'}"><b>${r.ok?'Certo!':'Não foi dessa vez.'}</b> ${esc(e.exp)}
+     <div class="par"><div><span>Sua resposta</span><b class="${r.ok?'okc':'noc'}">${esc(txtResp(e,r.r))}</b></div><div><span>Resposta correta</span><b>${esc(txtCerta(e))}</b></div></div></div>`:'<div id="emsg"></div>'}
+   <div class="row">${done?'':`<button class="act" id="conf">Conferir</button>`}
+   <button class="act ghost" id="ant" ${pos<=0?'disabled':''}>Anterior</button><button class="act ${done?'':'ghost'}" id="prox" ${pos>=L.length-1?'disabled':''}>Próximo</button></div>
+   ${todos?`<div class="fim"><b>Você respondeu os ${N} exercícios.</b> O seu relatório já está pronto logo abaixo. Baixe o PDF e entregue ao professor. <button class="act" id="verrel" style="margin-top:10px">Ver relatório</button></div>`:''}`;
+  if(!done)$('conf').onclick=conferir;
+  if(todos)$('verrel').onclick=()=>$('relpanel').scrollIntoView({behavior:'smooth',block:'start'});
+  $('ant').onclick=()=>ir(L[pos-1]);$('prox').onclick=()=>ir(L[pos+1]);
+  $('relpanel').hidden=!todos;if(todos)relatorio();iniciar()}
+function ir(i){if(i===undefined)return;parar();S.i=i;render();$('ex').scrollIntoView({behavior:'smooth',block:'start'})}
+
+function conferir(){const e=E[S.i];let r,ok;
+  if(e.tipo==='num'){r=$('ans').value.trim();const v=parse(r);if(v===null){$('emsg').innerHTML='<p class="erro">Digite um número, como 24,5.</p>';$('ans').focus();return}ok=v===parse(e.r)}
+  else if(e.tipo==='mc'){const s=document.querySelector('input[name=alt]:checked');if(!s){$('emsg').innerHTML='<p class="erro">Escolha uma alternativa.</p>';return}r=+s.value;ok=r===e.c}
+  else{r=[...document.querySelectorAll('input[name=alt]:checked')].map(x=>+x.value);if(!r.length){$('emsg').innerHTML='<p class="erro">Marque pelo menos uma peça.</p>';return}ok=r.length===e.c.length&&e.c.every(j=>r.includes(j))}
+  parar();S.res[S.i]={ok,r};salvar();render()}
+
+/* ===== relatório na tela ===== */
+function dados(){const resp=S.ord.filter(i=>S.res[i]),ok=resp.filter(i=>S.res[i].ok),err=resp.filter(i=>!S.res[i].ok);
+  const tt=S.ord.reduce((a,i)=>a+gasto(i),0),tr=resp.reduce((a,i)=>a+gasto(i),0);
+  return {resp,ok,err,tt,med:resp.length?tr/resp.length:0,pct:resp.length?Math.round(ok.length/resp.length*100):0}}
+function relatorio(){const d=dados();$('rcab').innerHTML=`<b>${esc(S.nome)}</b>${S.turma?' · Turma '+esc(S.turma):''} · ${new Date().toLocaleDateString('pt-BR')}`;
+  const nums=a=>a.length?a.map(num).sort((x,y)=>x-y).join(', '):'nenhum';
+  $('rel').innerHTML=`<div class="resumo">
+     <div>Respondidos<b>${d.resp.length}/${N}</b></div><div>Acertos<b style="color:var(--ok)">${d.ok.length}</b></div><div>Erros<b style="color:var(--bad)">${d.err.length}</b></div>
+     <div>Aproveitamento<b>${d.pct}%</b></div><div>Tempo total<b>${ftempo(d.tt)}</b></div><div>Média por exercício<b>${ftempo(d.med)}</b></div></div>
+   <div class="listas"><p><b class="okc">Acertou:</b> ${nums(d.ok)}</p><p><b class="noc">Errou:</b> ${nums(d.err)}</p>${d.resp.length<N?`<p><b>Falta responder:</b> ${nums(S.ord.filter(i=>!S.res[i]))}</p>`:''}</div>
+   <table class="rtab"><thead><tr><th>Nº</th><th>Exercício</th><th>Sua resposta</th><th>Resposta correta</th><th>Resultado</th><th>Tempo</th></tr></thead><tbody>
+   ${S.ord.map(i=>{const e=E[i],r=S.res[i];
+     return `<tr class="${r?(r.ok?'ok':'no'):'nr'}"><td class="n">${num(i)}</td><td><button class="link" data-ir="${i}">${esc(e.en)}</button><span class="ctx">${esc(ctx(e))}</span></td>
+       <td data-l="Sua resposta">${r?esc(txtResp(e,r.r)):'—'}</td><td data-l="Correta">${r?esc(txtCerta(e)):'—'}</td>
+       <td class="res" data-l="Resultado">${r?(r.ok?'Acertou':'Errou'):'Não respondido'}</td><td data-l="Tempo" class="tempo">${ftempo(gasto(i))}</td></tr>`}).join('')}
+   </tbody></table>`}
+$('rel').addEventListener('click',ev=>{const b=ev.target.closest('[data-ir]');if(!b)return;S.f=-1;chips();ir(+b.dataset.ir)});
+
+$('chips').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;S.f=+b.dataset.f;chips();const L=lista();if(!L.includes(S.i)){parar();S.i=L[0]}render()});
+$('grade').addEventListener('click',ev=>{const b=ev.target.closest('button');if(b)ir(+b.dataset.i)});
+const novo=()=>{t0=null;S.res={};S.t={};S.ord=embaralhar(E.map((e,i)=>i));S.f=-1;S.i=S.ord[0]};
+$('zerar').onclick=()=>{if(confirm('Apagar todas as respostas e os tempos e começar de novo, com outra ordem?')){novo();salvar();chips();render();window.scrollTo(0,0)}};
+$('trocar').onclick=()=>{if(confirm('Trocar de aluno apaga tudo o que foi respondido neste aparelho. Continuar?')){novo();S.nome='';S.turma='';salvar();tela();window.scrollTo(0,0)}};
+function tela(){const ok=!!S.nome;$('inicio').hidden=ok;$('painel').hidden=!ok;$('ex').hidden=!ok;
+  if(!ok){$('relpanel').hidden=true;$('nome').value='';$('turma').value='';return}
+  $('anome').textContent=S.nome;$('aturma').textContent=S.turma?'· Turma '+S.turma:'';chips();render()}
+$('comecar').onclick=()=>{const n=$('nome').value.trim().replace(/\s+/g,' '),t=$('turma').value.trim();
+  if(n.length<3||!/\s/.test(n)){$('imsg').innerHTML='<p class="erro">Escreva o seu nome completo (nome e sobrenome).</p>';$('nome').focus();return}
+  if(!t){$('imsg').innerHTML='<p class="erro">Escreva a sua turma.</p>';$('turma').focus();return}
+  S.nome=n;S.turma=t;salvar();tela();window.scrollTo(0,0)};
+$('nome').addEventListener('keydown',e=>{if(e.key==='Enter')$('turma').focus()});
+$('turma').addEventListener('keydown',e=>{if(e.key==='Enter')$('comecar').click()});
+
+/* letras nas alternativas dos lotes */
+E.forEach(e=>{if(e.tipo==='multi')e.alts=e.d[1].vals.map((v,j)=>`${L1(j)} (${v} mm)`)});
+
+/* ===== relatório em PDF ===== */
+$('pdf').onclick=()=>{
+  if(!window.jspdf||!window.jspdf.jsPDF){$('rmsg').innerHTML='<p class="erro">O gerador de PDF não carregou. Confira a internet e recarregue a página.</p>';return}
+  if(Object.keys(S.res).length<N){$('rmsg').innerHTML='<p class="erro">Termine todos os exercícios antes de baixar o relatório.</p>';return}
+  parar();iniciar();
+  const d=dados();if(!d.resp.length){$('rmsg').innerHTML='<p class="erro">Responda pelo menos um exercício.</p>';return}
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),X=15,W=180;let y=18;
+  const t=s=>String(s).replace(/−/g,'-').replace(/÷/g,'/').replace(/×/g,'x');
+  const linha=(s,sz=10.5,b=false,c=[20,32,43],ind=0)=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...c);doc.splitTextToSize(t(s),W-ind).forEach(l=>{if(y>284){doc.addPage();y=18}doc.text(l,X+ind,y);y+=sz*.45})};
+  const nums=a=>a.length?a.map(num).sort((x,y)=>x-y).join(', '):'nenhum';
+  doc.setFillColor(168,84,0);doc.rect(0,0,210,6,'F');
+  linha('FAZENDA DE PROJETOS · Metrologia · Noções de tolerância',9,true,[79,95,108]);y+=1;
+  linha(`Relatório: ${NIVEL} (${N} exercícios)`,16,true);y+=2;
+  linha(`Nome: ${S.nome}    Turma: ${S.turma||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`,10);y+=2;
+  linha(`Respondidos: ${d.resp.length} de ${N}    Acertos: ${d.ok.length}    Erros: ${d.err.length}    Aproveitamento: ${d.pct}%`,12,true,[23,112,63]);
+  linha(`Tempo total: ${ftempo(d.tt)}    Tempo médio por exercício: ${ftempo(d.med)}`,10.5);y+=2;
+  linha(`Acertou: ${nums(d.ok)}`,10,true,[23,112,63]);
+  linha(`Errou: ${nums(d.err)}`,10,true,[179,38,30]);
+  if(d.resp.length<N)linha(`Não respondeu: ${nums(S.ord.filter(i=>!S.res[i]))}`,10,true,[79,95,108]);
+  y+=2;TEMAS.forEach((tm,k)=>{const ids=S.ord.filter(i=>E[i].tema===k),rs=ids.filter(i=>S.res[i]),a=rs.filter(i=>S.res[i].ok);
+    linha(`${tm}: ${a.length} de ${rs.length} respondidos (${ids.length} no tema)`,9.5)});
+  y+=4;
+  /* tabela */
+  const cols=[['Nº',9],['Exercício',63],['Sua resposta',34],['Resposta correta',34],['Resultado',20],['Tempo',20]],FS=8.5,LH=3.7;
+  const cab=()=>{doc.setFillColor(29,59,92);doc.rect(X,y-4.3,W,6.4,'F');doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(255,255,255);let x=X+1.5;cols.forEach(([n,w])=>{doc.text(n,x,y);x+=w});y+=5};
+  if(y>250){doc.addPage();y=18}cab();
+  S.ord.forEach((i,k)=>{const e=E[i],r=S.res[i];
+    const cel=[String(num(i)),e.en+(ctx(e)?' ('+ctx(e)+')':''),r?txtResp(e,r.r):'—',r?txtCerta(e):'—',r?(r.ok?'Acertou':'Errou'):'Não respondido',ftempo(gasto(i))];
+    doc.setFontSize(FS);const ls=cel.map((c,j)=>doc.splitTextToSize(t(c),cols[j][1]-3));const h=Math.max(...ls.map(l=>l.length))*LH+2.4;
+    if(y+h>288){doc.addPage();y=18;cab()}
+    if(k%2){doc.setFillColor(238,242,245);doc.rect(X,y-3.6,W,h,'F')}
+    let x=X+1.5;ls.forEach((l,j)=>{const cor=j===4&&r?(r.ok?[23,112,63]:[179,38,30]):j===2&&r&&!r.ok?[179,38,30]:[20,32,43];
+      doc.setFont('helvetica',j===0||j===4?'bold':'normal');doc.setTextColor(...cor);doc.text(l,x,y);x+=cols[j][1]});
+    y+=h});
+  const nm=S.nome.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  doc.save(`tolerancia-${NIVEL.split(':')[0].toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'')}-${nm||'aluno'}.pdf`);$('rmsg').innerHTML='<p class="okc">PDF gerado. Confira nos downloads.</p>'};
+
+tela();salvar();
+</script>
+</body>
+</html>
