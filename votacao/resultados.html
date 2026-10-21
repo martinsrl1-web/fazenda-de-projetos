@@ -82,7 +82,7 @@ input{font:inherit; padding:12px 14px; border-radius:12px; border:1.5px solid va
 </div>
 <div class="toast" id="toast" hidden></div>
 <script>
-const API = '';   // endereço do app da planilha (preenchido na configuração)
+const API = 'https://script.google.com/macros/s/AKfycbyYkOqf199Lw0YoN3N_-sUERjQw6vYAPhdtA77xvZRuo6uAyIJ4qzQ3KeqTW3EPcUvc/exec';   // endereço do app da planilha (preenchido na configuração)
 const app = document.getElementById('app');
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ls = { get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
