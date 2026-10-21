@@ -321,7 +321,7 @@ function telaInicio(){
       <label class="check"><input type="checkbox" id="aud" ${state.gravarAudio?'checked':''}> <span>Gravar o áudio também, para ouvir depois.<br><span class="muted">Em alguns celulares isso atrapalha o reconhecimento de fala. Se as leituras vierem vazias, desligue.</span></span></label>
       <div class="row"><button id="texto">Trocar o texto</button><button class="danger" id="limpar" ${state.alunos.length?'':'disabled'}>Apagar todas as leituras</button></div>
       <div id="conf"></div>
-      <p class="muted" style="margin:0">Versão 3. Precisa de internet durante a leitura. As leituras ficam guardadas neste celular.</p>
+      <p class="muted" style="margin:0">Versão 4. Precisa de internet durante a leitura. As leituras ficam guardadas neste celular.</p>
     </div>
   </div>`;
   $('#novo').onclick=telaNome;
@@ -365,7 +365,7 @@ function telaNome(){
   const inp=$('#nome'), seg=$('#seg'), mic=$('#mic'), st=$('#st');
   inp.oninput=()=>seg.disabled=!inp.value.trim();
   $('#volta').onclick=telaInicio;
-  seg.onclick=()=>telaLeitura(inp.value.trim());
+  seg.onclick=()=>{ if(recNome){ try{recNome.abort();}catch(e){} recNome=null; } telaLeitura(inp.value.trim()); };
   mic.onclick=()=>{
     if(recNome){ recNome.stop(); return; }
     recNome=new SR(); recNome.lang='pt-BR'; recNome.interimResults=true; recNome.continuous=false;
@@ -390,7 +390,7 @@ function telaLeitura(nome){
   app.innerHTML=head('Passo 2 de 2')+`
   <div class="stack" style="text-align:center">
     <h2>${esc(nome)}</h2>
-    <div class="eyebrow">versão 3</div>
+    <div class="eyebrow">versão 4</div>
     <p class="muted" id="inst" style="margin:0">Segure o celular perto da boca. Toque em <b>Começar</b> e leia a folha em voz alta, do começo ao fim.</p>
     <div class="clock" id="clock">0:00</div>
     <div class="status" id="st">&nbsp;</div>
@@ -413,6 +413,7 @@ const ERROS_SR={
 function diag(S,msg){ S.log=(S.log||[]); S.log.push(msg); const d=$('#diag'); if(d&&L===S) d.textContent=S.log.slice(-6).join(' · '); }
 function novaSessao(){
   const S=L; if(!S) return;
+  if(S.rec){ try{ S.rec.onend=null; S.rec.onerror=null; S.rec.onresult=null; S.rec.abort(); }catch(e){} }
   const rec=new SR(); rec.lang='pt-BR'; rec.continuous=S.cont!==false; rec.interimResults=true; rec.maxAlternatives=1;
   S.sess=''; S.interim=''; S.reinicios=(S.reinicios||0)+1;
   const live=()=>(S.committed+' '+S.sess+' '+S.interim).trim();
@@ -439,6 +440,14 @@ function novaSessao(){
   };
   rec.onerror=e=>{
     if(e.error==='no-speech'){ S.semFala=(S.semFala||0)+1; return; }
+    if(e.error==='aborted'){
+      if(S.abortProprio){ S.abortProprio=false; return; }
+      S.abortos=(S.abortos||0)+1; S.esperar=900;
+      diag(S,'interrompido '+S.abortos+'x');
+      if(S.abortos>=2 && S.mr){ try{ if(S.mr.state!=='inactive') S.mr.stop(); }catch(_){} if(S.stream) S.stream.getTracks().forEach(t=>t.stop()); S.mr=null; S.stream=null; state.gravarAudio=false; save(); diag(S,'gravação de áudio desligada'); }
+      if(S.abortos>=6 && !S.times.length) setSt('<span style="color:var(--bad)">O celular está interrompendo o reconhecimento de voz. Feche outros apps que usam o microfone (gravador, WhatsApp, assistente) e tente de novo.</span>');
+      return;
+    }
     diag(S,'erro: '+e.error);
     if(['not-allowed','service-not-allowed','language-not-supported','audio-capture'].includes(e.error)) S.ativo=false;
     S.erro=ERROS_SR[e.error]||('O reconhecimento de voz falhou ('+e.error+').');
@@ -447,7 +456,7 @@ function novaSessao(){
   rec.onend=()=>{
     const pend=S.interim && !S.sess.endsWith(S.interim) ? S.interim : '';
     S.committed=(S.committed+' '+S.sess+' '+pend).trim(); S.sess=''; S.interim='';
-    if(S.ativo){ setTimeout(()=>{ if(S.ativo && L===S) novaSessao(); }, 150); }
+    if(S.ativo){ const w=S.esperar||250; S.esperar=0; setTimeout(()=>{ if(S.ativo && L===S) novaSessao(); }, w); }
     else if(S.onDone){ S.onDone(); }
   };
   S.rec=rec;
@@ -459,7 +468,7 @@ function vigia(S){
     if(!S.ativo || L!==S){ clearInterval(S.vigia); return; }
     const seg=(Date.now()-S.t0)/1000;
     if(S.times.length){ clearInterval(S.vigia); return; }
-    if(seg>6 && S.cont!==false){ S.cont=false; diag(S,'modo alternativo'); try{S.rec.abort();}catch(e){} }
+    if(seg>6 && S.cont!==false){ S.cont=false; diag(S,'modo alternativo'); S.abortProprio=true; try{S.rec.abort();}catch(e){} }
     if(seg>14){
       const st=$('#st');
       if(st && !S.erro) st.innerHTML='<span style="color:var(--bad)">Ainda não ouvi nenhuma palavra. '+(S.mr?'Desligue “Gravar o áudio também” na tela inicial e tente de novo.':(S.ouviuVoz?'A voz chega, mas o texto não. Confira a internet.':'O microfone não está captando a voz. Feche outros apps que usam o microfone e confira a permissão do Chrome.'))+'</span>';
@@ -477,6 +486,9 @@ async function comecar(nome){
   }
   keepAwake(true);
   diag(L,'iniciando');
+  if(recNome){ try{recNome.abort();}catch(e){} recNome=null; }
+  await new Promise(r=>setTimeout(r,500));
+  if(!L||L.id!==id) return;
   novaSessao();
   vigia(L);
   const S0=L; setTimeout(()=>{ if(S0.ativo && L===S0 && !S0.log.includes('microfone ligado')){ diag(S0,'sem resposta do reconhecimento'); const st=$('#st'); if(st&&!S0.erro) st.innerHTML='<span style="color:var(--bad)">O reconhecimento de voz deste celular não respondeu. Veja se o app Google está instalado e atualizado, ou teste no Chrome de um computador.</span>'; } },4000);
