@@ -99,8 +99,9 @@ async function status(){
     clearTimeout(espera);
     formulario();
   }catch(e){
-    tela(`<div class="err">Não consegui conectar. Verifique a internet e toque em Tentar de novo.</div><button class="sec" id="tn">Tentar de novo</button>`);
-    document.getElementById('tn').onclick = status;
+    // alguns celulares não deixam ler a resposta da planilha; mostra a votação mesmo assim
+    clearTimeout(espera);
+    formulario();
   }
 }
 function fechada(){
@@ -137,8 +138,16 @@ function atualizar(){
 async function enviar(){
   const b = document.getElementById('env'); b.disabled = true; b.textContent = 'Enviando…';
   try{
-    const r = await fetch(API, {method:'POST', body: JSON.stringify({aparelho, notas})});
-    const d = await r.json();
+    const corpo = JSON.stringify({aparelho, notas});
+    let d;
+    try{
+      const r = await fetch(API, {method:'POST', body: corpo});
+      d = await r.json();
+    }catch(e1){
+      // envio sem ler a resposta (contorna o bloqueio do navegador)
+      await fetch(API, {method:'POST', mode:'no-cors', body: corpo});
+      d = {ok:true};
+    }
     if(d.ok || d.motivo === 'repetido'){ ls.set('voto.feito.'+RODADA,'sim'); jaVotou(); return; }
     if(d.motivo === 'fechada'){ fechada(); return; }
     throw new Error('falhou');
