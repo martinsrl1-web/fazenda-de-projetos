@@ -321,7 +321,7 @@ function telaInicio(){
       <label class="check"><input type="checkbox" id="aud" ${state.gravarAudio?'checked':''}> <span>Gravar o áudio também, para ouvir depois.<br><span class="muted">Em alguns celulares isso atrapalha o reconhecimento de fala. Se as leituras vierem vazias, desligue.</span></span></label>
       <div class="row"><button id="texto">Trocar o texto</button><button class="danger" id="limpar" ${state.alunos.length?'':'disabled'}>Apagar todas as leituras</button></div>
       <div id="conf"></div>
-      <p class="muted" style="margin:0">Precisa de internet durante a leitura. As leituras ficam guardadas neste celular.</p>
+      <p class="muted" style="margin:0">Versão 3. Precisa de internet durante a leitura. As leituras ficam guardadas neste celular.</p>
     </div>
   </div>`;
   $('#novo').onclick=telaNome;
@@ -390,6 +390,7 @@ function telaLeitura(nome){
   app.innerHTML=head('Passo 2 de 2')+`
   <div class="stack" style="text-align:center">
     <h2>${esc(nome)}</h2>
+    <div class="eyebrow">versão 3</div>
     <p class="muted" id="inst" style="margin:0">Segure o celular perto da boca. Toque em <b>Começar</b> e leia a folha em voz alta, do começo ao fim.</p>
     <div class="clock" id="clock">0:00</div>
     <div class="status" id="st">&nbsp;</div>
@@ -475,8 +476,10 @@ async function comecar(nome){
     }catch(e){}
   }
   keepAwake(true);
+  diag(L,'iniciando');
   novaSessao();
   vigia(L);
+  const S0=L; setTimeout(()=>{ if(S0.ativo && L===S0 && !S0.log.includes('microfone ligado')){ diag(S0,'sem resposta do reconhecimento'); const st=$('#st'); if(st&&!S0.erro) st.innerHTML='<span style="color:var(--bad)">O reconhecimento de voz deste celular não respondeu. Veja se o app Google está instalado e atualizado, ou teste no Chrome de um computador.</span>'; } },4000);
   $('#inst').textContent='Pode ler. Quando terminar a última palavra, toque em Terminei.';
   const go=$('#go'); go.textContent='Terminei'; go.classList.remove('primary'); go.style.background='var(--bad)'; go.style.borderColor='var(--bad)'; go.style.color='#fff';
   go.onclick=terminar;
