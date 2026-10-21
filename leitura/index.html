@@ -309,8 +309,7 @@ function telaInicio(){
   }).join('');
   app.innerHTML = head('Avaliação de fluência')+`
   <div class="stack">
-    ${SR?'':`<div class="err">Este navegador não reconhece fala. Abra a página no <b>Google Chrome</b> (Android ou computador) ou no Safari do iPhone.</div>`}
-    <button class="primary big" id="novo" ${SR?'':'disabled'}>${MIC_SVG.replace('<svg','<svg style="width:26px;height:26px"')} Novo aluno</button>
+    <button class="primary big" id="novo">${MIC_SVG.replace('<svg','<svg style="width:26px;height:26px"')} Novo aluno</button>
     <div class="row" style="justify-content:space-between">
       <h2>Leituras de hoje <span class="muted small">(${state.alunos.length})</span></h2>
       <button id="rel" ${state.alunos.length?'':'disabled'}>Relatório da turma</button>
@@ -321,7 +320,7 @@ function telaInicio(){
       <label class="check"><input type="checkbox" id="aud" ${state.gravarAudio?'checked':''}> <span>Gravar o áudio também, para ouvir depois.<br><span class="muted">Em alguns celulares isso atrapalha o reconhecimento de fala. Se as leituras vierem vazias, desligue.</span></span></label>
       <div class="row"><button id="texto">Trocar o texto</button><button class="danger" id="limpar" ${state.alunos.length?'':'disabled'}>Apagar todas as leituras</button></div>
       <div id="conf"></div>
-      <p class="muted" style="margin:0">Versão 4. Precisa de internet durante a leitura. As leituras ficam guardadas neste celular.</p>
+      <p class="muted" style="margin:0">Versão 5. Precisa de internet durante a leitura. As leituras ficam guardadas neste celular.</p>
     </div>
   </div>`;
   $('#novo').onclick=telaNome;
@@ -355,8 +354,8 @@ function telaNome(){
   app.innerHTML=head('Passo 1 de 2')+`
   <div class="stack" style="text-align:center">
     <h2>Diga seu nome</h2>
-    <p class="muted" style="margin:0">Toque no microfone e fale seu nome completo.</p>
-    <button class="mic" id="mic" aria-label="Gravar o nome">${MIC_SVG}</button>
+    <p class="muted" style="margin:0">${SR?'Toque no microfone e fale seu nome completo, ou digite.':'Digite o nome ou use o microfone do teclado.'}</p>
+    <button class="mic" id="mic" aria-label="Gravar o nome" ${SR?'':'hidden'}>${MIC_SVG}</button>
     <div class="status" id="st">&nbsp;</div>
     <input type="text" id="nome" placeholder="Nome do aluno" autocomplete="off">
     <button class="primary big" id="seg" disabled>Continuar para a leitura</button>
@@ -383,24 +382,74 @@ function telaNome(){
 /* ===== LEITURA ===== */
 let L=null;  // sessão de leitura em andamento
 function stopAll(){
+  if(K){ clearInterval(K.tick); K=null; keepAwake(false); }
   if(recNome){ try{recNome.abort();}catch(e){} recNome=null; }
   if(L){ L.ativo=false; try{L.rec&&L.rec.abort();}catch(e){} if(L.mr&&L.mr.state!=='inactive') try{L.mr.stop();}catch(e){} if(L.stream) L.stream.getTracks().forEach(t=>t.stop()); clearInterval(L.tick); L=null; keepAwake(false); }
 }
 function telaLeitura(nome){
+  const modo=state.modo||'teclado';
   app.innerHTML=head('Passo 2 de 2')+`
   <div class="stack" style="text-align:center">
     <h2>${esc(nome)}</h2>
-    <div class="eyebrow">versão 4</div>
+    <div class="eyebrow">versão 5</div>
+    <div class="row" style="justify-content:center" role="group" aria-label="Como reconhecer a leitura">
+      <button id="mTec" class="${modo==='teclado'?'primary':''}">Microfone do teclado</button>
+      <button id="mAuto" class="${modo==='auto'?'primary':''}" ${SR?'':'disabled'}>Automático</button>
+    </div>
+    <p class="muted small" style="margin:0">${modo==='teclado'
+      ?'Usa o microfone do teclado do celular. Funciona na maioria dos celulares, mas não mede as pausas.'
+      :'Reconhece direto pela página e mede as pausas. Não funciona em alguns celulares.'}</p>
+    <div id="area"></div>
+    <button class="ghost" id="volta">Cancelar</button>
+  </div>`;
+  $('#mTec').onclick=()=>{ state.modo='teclado'; save(); telaLeitura(nome); };
+  $('#mAuto').onclick=()=>{ state.modo='auto'; save(); telaLeitura(nome); };
+  $('#volta').onclick=telaInicio;
+  if(modo==='teclado') areaTeclado(nome); else areaAuto(nome);
+}
+function areaAuto(nome){
+  $('#area').innerHTML=`<div class="stack">
     <p class="muted" id="inst" style="margin:0">Segure o celular perto da boca. Toque em <b>Começar</b> e leia a folha em voz alta, do começo ao fim.</p>
     <div class="clock" id="clock">0:00</div>
     <div class="status" id="st">&nbsp;</div>
     <div class="live" id="live"></div>
     <div class="muted small" id="diag" style="font-family:var(--f-mono);min-height:1.4em"></div>
-    <button class="primary big" id="go">Começar a leitura</button>
-    <button class="ghost" id="volta">Cancelar</button>
-  </div>`;
-  $('#volta').onclick=telaInicio;
-  $('#go').onclick=()=>comecar(nome);
+    <button class="primary big" id="go">Começar a leitura</button></div>`;
+  $('#go').onclick=()=>{ $('#mTec').disabled=true; $('#mAuto').disabled=true; comecar(nome); };
+}
+
+/* ===== MODO TECLADO DE VOZ ===== */
+let K=null;
+function areaTeclado(nome){
+  $('#area').innerHTML=`<div class="stack" style="text-align:left">
+    <ol class="small" style="margin:0;padding-left:1.2em">
+      <li>Toque em <b>Começar</b>. O teclado vai abrir.</li>
+      <li>Toque no <b>microfone do teclado</b> e leia a folha em voz alta.</li>
+      <li>Se o microfone do teclado desligar no meio, toque nele de novo e continue de onde parou.</li>
+      <li>No fim, toque em <b>Terminei</b>.</li>
+    </ol>
+    <div class="clock" id="clock">0:00</div>
+    <div class="status" id="st" style="text-align:center">&nbsp;</div>
+    <textarea id="dit" placeholder="O texto falado aparece aqui" autocomplete="off" autocorrect="off" spellcheck="false" style="min-height:150px" disabled></textarea>
+    <button class="primary big" id="go">Começar a leitura</button></div>`;
+  const go=$('#go'), dit=$('#dit');
+  go.onclick=()=>{
+    if(!K){
+      K={nome, t0:Date.now()};
+      $('#mTec').disabled=true; $('#mAuto').disabled=true;
+      dit.disabled=false; dit.focus();
+      keepAwake(true);
+      K.tick=setInterval(()=>{ const c=$('#clock'); if(c&&K) c.textContent=fmtT((Date.now()-K.t0)/1000); },250);
+      go.textContent='Terminei'; go.classList.remove('primary'); go.style.background='var(--bad)'; go.style.borderColor='var(--bad)'; go.style.color='#fff';
+      $('#st').textContent='Toque no microfone do teclado e leia.';
+      dit.oninput=()=>{ const n=tokenizeHyp(dit.value).length; $('#st').textContent=n+' palavras ouvidas'; dit.scrollTop=dit.scrollHeight; };
+      return;
+    }
+    clearInterval(K.tick); keepAwake(false);
+    const id='a'+Date.now().toString(36);
+    const aluno={id, nome:K.nome, data:new Date(K.t0).toISOString(), durTotal:Date.now()-K.t0, hypText:dit.value.trim(), hypTimes:[], overrides:{}, modo:'teclado'};
+    K=null; state.alunos.push(aluno); save(); telaResultado(id);
+  };
 }
 const ERROS_SR={
   'not-allowed':'O microfone está bloqueado para esta página. Toque no ícone ao lado do endereço → Permissões → Microfone → Permitir.',
@@ -548,7 +597,7 @@ function telaResultado(id){
       <div class="metric"><b>${r.pcpm}</b><span>palavras certas por minuto</span></div>
       <div class="metric"><b>${r.cnt.sub}</b><span>palavras trocadas</span></div>
       <div class="metric"><b>${r.cnt.del}</b><span>palavras puladas</span></div>
-      <div class="metric"><b>${r.nPausas}</b><span>pausas acima de ${PAUSA_S}s</span></div>
+      <div class="metric"><b>${a.modo==='teclado'?'—':r.nPausas}</b><span>pausas acima de ${PAUSA_S}s</span></div>
     </div>
     ${r.completou?'':`<div class="note">Leu até a palavra ${r.lidas} de ${r.total}. As ${r.cnt.gone} palavras finais aparecem em cinza e não contam como erro.</div>`}
     ${audios[a.id]?`<div class="panel stack"><h3>Áudio da leitura</h3><audio controls src="${audios[a.id]}"></audio></div>`:''}
@@ -611,7 +660,7 @@ function telaRelatorio(){
   const media=f=>Math.round(linhas.reduce((s,x)=>s+f(x.r),0)/n);
   const tab=linhas.map(({a,r})=>`<tr>
     <td>${esc(a.nome)}</td><td class="num">${fmtT(r.tTotal)}</td><td class="num">${r.ppm}</td><td class="num">${r.pcpm}</td>
-    <td class="num">${r.precisao}%</td><td class="num">${r.cnt.sub}</td><td class="num">${r.cnt.del}</td><td class="num">${r.nPausas}</td><td>${r.completou?'sim':'não ('+r.lidas+'/'+r.total+')'}</td></tr>`).join('');
+    <td class="num">${r.precisao}%</td><td class="num">${r.cnt.sub}</td><td class="num">${r.cnt.del}</td><td class="num">${a.modo==='teclado'?'—':r.nPausas}</td><td>${r.completou?'sim':'não ('+r.lidas+'/'+r.total+')'}</td></tr>`).join('');
   const det=linhas.map(({a,r})=>{ const e=listaErros(r,true); return `<div class="detail"><h3>${esc(a.nome)}</h3><p class="small" style="margin:.3em 0 0">${e?esc(e):'Sem erros marcados.'}</p></div>`; }).join('');
   app.innerHTML=head('Relatório da turma')+`
   <div class="stack">
