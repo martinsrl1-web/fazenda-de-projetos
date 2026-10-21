@@ -18,6 +18,7 @@ O site começa por Metrologia. Desenho Mecânico entra em seguida.
 | `metrologia/paquimetro-polegada-milesimal.html` | Simulador Paquímetro Polegada Milesimal (.001"): explorar, básico, médio e avançado |
 | `metrologia/paquimetro-avaliacao.html` | Avaliação de paquímetro: 60 leituras e 10 questões, 50 pontos |
 | `metrologia/paquimetro-polegada-avaliacao.html` | Avaliação Paquímetro Polegada Milesimal: 20 exercícios sorteados, relatório em PDF |
+| `metrologia/slides/paquimetro-polegada-milesimal.pdf` e `.pptx` | Slides da aula Paquímetro Polegada Milesimal (modelo CEEP), em PDF e PowerPoint |
 | `vendor/jspdf.umd.min.js` | Biblioteca jsPDF 2.5.1 (licença MIT), usada para gerar os PDFs |
 
 São arquivos HTML comuns, sem etapa de montagem: o que está aqui é o que o navegador abre.
