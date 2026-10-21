@@ -1,0 +1,615 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Leitura do Juramento</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: uma coluna de bancada, telas trocadas como etapas; régua graduada como fio condutor */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --ink:#18212b; --muted:#5b6876; --line:#d6dde4;
+  --accent:#1f5fa8; --accent-ink:#ffffff; --accent-soft:#e3edf8;
+  --ok:#1d7a4a; --ok-soft:#e2f3ea;
+  --bad:#b3261e; --bad-soft:#fbe4e2;
+  --skip:#b25a00; --skip-soft:#fdeedb;
+  --near:#8a6d00; --near-soft:#fbf3cf;
+  --gone:#8b95a0; --gone-soft:#eceff2;
+  --f-display:"Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", Roboto, Arial, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11161c; --surface:#1a2129; --ink:#e7edf3; --muted:#9aa7b4; --line:#2c3743;
+  --accent:#6aa6ec; --accent-ink:#0b1622; --accent-soft:#1d2d40;
+  --ok:#5fc890; --ok-soft:#16301f;
+  --bad:#ff8a80; --bad-soft:#3a1c1a;
+  --skip:#f3a54f; --skip-soft:#3a2810;
+  --near:#e5c64a; --near-soft:#352e0e;
+  --gone:#7c8792; --gone-soft:#222a33;
+  color-scheme:dark;
+}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{
+  background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:17px; line-height:1.5;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px);
+}
+.wrap{max-width:760px; margin:0 auto; padding-block:20px 48px;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px));}
+header.top{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap; margin-bottom:6px}
+h1,h2,h3{font-family:var(--f-display); text-wrap:balance; margin:0; letter-spacing:-.01em}
+h1{font-size:1.65rem; font-weight:800}
+h2{font-size:1.3rem; font-weight:800}
+h3{font-size:1.02rem; font-weight:700}
+.eyebrow{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+.ruler{height:14px; margin:10px 0 18px; color:var(--line);
+  background:
+    repeating-linear-gradient(90deg, currentColor 0 1.5px, transparent 1.5px 50px) bottom/100% 14px no-repeat,
+    repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 10px) bottom/100% 7px no-repeat;
+  border-bottom:1.5px solid currentColor;}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+.stack{display:flex; flex-direction:column; gap:14px}
+.row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px}
+button,.btn{font:inherit; font-weight:700; border-radius:12px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink);
+  padding:12px 18px; cursor:pointer; min-height:48px; display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none}
+button:focus-visible,input:focus-visible,textarea:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+button.primary{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+button.big{font-size:1.15rem; padding:18px 22px; width:100%}
+button.danger{color:var(--bad); border-color:var(--bad-soft)}
+button.ghost{border-color:transparent; background:transparent; color:var(--accent); padding-inline:8px}
+button:disabled{opacity:.5; cursor:not-allowed}
+input[type=text],textarea{font:inherit; width:100%; padding:12px 14px; border-radius:12px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink)}
+textarea{min-height:260px; line-height:1.5}
+label.check{display:flex; gap:10px; align-items:flex-start; font-size:.95rem}
+label.check input{width:20px; height:20px; margin-top:2px; flex:none}
+
+/* lista de alunos */
+.students{display:flex; flex-direction:column; gap:8px; list-style:none; margin:0; padding:0}
+.student{display:grid; grid-template-columns:1fr auto; gap:4px 12px; align-items:center; padding:14px 16px; background:var(--surface);
+  border:1px solid var(--line); border-radius:12px; cursor:pointer; text-align:left; width:100%; font-weight:400}
+.student .nm{font-weight:700; min-width:0; overflow-wrap:anywhere}
+.student .meta{grid-column:1/-1; display:flex; gap:12px; flex-wrap:wrap; font-family:var(--f-mono); font-size:.8rem; color:var(--muted)}
+.pill{font-family:var(--f-mono); font-size:.78rem; font-weight:700; padding:3px 9px; border-radius:99px; white-space:nowrap}
+.pill.ok{background:var(--ok-soft); color:var(--ok)}
+.pill.mid{background:var(--near-soft); color:var(--near)}
+.pill.low{background:var(--bad-soft); color:var(--bad)}
+.empty{padding:22px; text-align:center; border:1.5px dashed var(--line); border-radius:12px; color:var(--muted)}
+
+/* leitura ao vivo */
+.mic{width:132px; height:132px; border-radius:50%; margin:6px auto; display:grid; place-items:center; background:var(--accent-soft); color:var(--accent); border:none}
+.mic svg{width:54px; height:54px}
+.mic.on{background:var(--bad); color:#fff; animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 0 color-mix(in srgb, var(--bad) 45%, transparent)}50%{box-shadow:0 0 0 18px transparent}}
+@media (prefers-reduced-motion: reduce){.mic.on{animation:none}}
+.clock{font-family:var(--f-mono); font-weight:700; font-size:3.4rem; text-align:center; letter-spacing:.02em; font-variant-numeric:tabular-nums; line-height:1.1}
+.live{font-size:.95rem; color:var(--muted); min-height:3em; text-align:center; overflow-wrap:anywhere}
+.status{text-align:center; font-weight:700}
+.err{background:var(--bad-soft); color:var(--bad); border-radius:12px; padding:12px 14px; font-size:.95rem}
+.note{background:var(--accent-soft); border-radius:12px; padding:12px 14px; font-size:.95rem}
+
+/* resultado */
+.metrics{display:grid; grid-template-columns:repeat(auto-fit, minmax(140px,1fr)); gap:10px}
+.metric{background:var(--surface); border:1px solid var(--line); border-radius:12px; padding:12px 14px}
+.metric b{display:block; font-family:var(--f-mono); font-size:1.5rem; font-variant-numeric:tabular-nums; line-height:1.2}
+.metric span{font-size:.82rem; color:var(--muted)}
+.legend{display:flex; flex-wrap:wrap; gap:8px 14px; font-size:.85rem}
+.legend i{font-style:normal}
+.reading{font-size:1.06rem; line-height:2; background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px}
+.reading p{margin:0 0 .8em}
+.w{border-radius:4px; padding:1px 2px; cursor:pointer}
+.w.sub{background:var(--bad-soft); color:var(--bad); font-weight:700; text-decoration:underline wavy; text-underline-offset:4px}
+.w.del{background:var(--skip-soft); color:var(--skip); text-decoration:line-through; text-decoration-thickness:2px}
+.w.near{background:var(--near-soft); color:var(--near); text-decoration:underline dotted; text-underline-offset:4px}
+.w.gone{color:var(--gone)}
+.w.okfix{box-shadow:inset 0 -2px 0 var(--ok)}
+.said{font-family:var(--f-mono); font-size:.72rem; vertical-align:super; color:var(--bad); margin-left:1px}
+.ins{font-family:var(--f-mono); font-size:.72rem; background:var(--gone-soft); color:var(--muted); border-radius:4px; padding:0 4px; margin:0 2px; vertical-align:super}
+.pause{display:inline-block; font-family:var(--f-mono); font-size:.72rem; font-weight:700; color:var(--accent); background:var(--accent-soft); border-radius:4px; padding:0 4px; margin:0 3px; vertical-align:super}
+.errlist{margin:0; padding-left:1.2em}
+.errlist li{margin:4px 0}
+.tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:var(--surface)}
+table{border-collapse:collapse; width:100%; font-size:.9rem}
+th,td{padding:10px 12px; text-align:left; border-bottom:1px solid var(--line); white-space:nowrap}
+td.num,th.num{text-align:right; font-family:var(--f-mono); font-variant-numeric:tabular-nums}
+th{font-family:var(--f-display); font-size:.8rem; color:var(--muted); text-transform:uppercase; letter-spacing:.06em}
+tr:last-child td{border-bottom:none}
+.detail{border-top:1px solid var(--line); padding-top:12px}
+.toast{position:fixed; left:50%; transform:translateX(-50%); bottom:calc(20px + env(safe-area-inset-bottom,0px)); background:var(--ink); color:var(--bg);
+  padding:10px 16px; border-radius:99px; font-weight:700; font-size:.9rem; z-index:20}
+audio{width:100%}
+.confirm{display:flex; gap:8px; flex-wrap:wrap; align-items:center; background:var(--bad-soft); padding:10px 12px; border-radius:12px}
+</style>
+</head>
+<body>
+<div class="wrap" id="app"></div>
+<div class="toast" id="toast" hidden></div>
+
+<script>
+/* ===== TEXTO PADRÃO ===== */
+const TEXTO_PADRAO = `Nós, formandos, reunidos neste momento tão especial de nossas vidas, assumimos o compromisso de levar conosco todos os conhecimentos, valores e aprendizados construídos ao longo de nossa trajetória escolar e profissional.
+
+Hoje, encerramos uma etapa marcada por desafios, conquistas, dificuldades e superações. Uma caminhada que exigiu de nós dedicação, esforço, responsabilidade e, acima de tudo, coragem para continuar mesmo diante dos obstáculos. Cada aula, cada atividade, cada trabalho realizado e cada experiência vivida contribuíram para a nossa formação e para o desenvolvimento das pessoas que somos hoje.
+
+Prometemos exercer nossas futuras profissões com ética, honestidade, respeito e comprometimento, reconhecendo que o conhecimento adquirido não deve servir apenas ao nosso crescimento individual, mas também ao bem coletivo. Comprometemo-nos a valorizar o trabalho em equipe, respeitar as diferenças, agir com responsabilidade e compreender que cada atitude nossa pode fazer a diferença na vida de outras pessoas.
+
+Assumimos o compromisso de continuar aprendendo, buscando novos conhecimentos e aprimorando nossas habilidades, pois sabemos que a formação não termina com a conclusão de um curso. Que possamos enfrentar os desafios do futuro com determinação, transformar dificuldades em oportunidades de crescimento e nunca perder a vontade de evoluir, tanto profissionalmente quanto pessoalmente.
+
+Prometemos honrar os ensinamentos de nossos professores, o apoio de nossas famílias e a dedicação de todos aqueles que estiveram ao nosso lado durante essa caminhada. Reconhecemos que não chegamos até aqui sozinhos e que cada palavra de incentivo, cada gesto de apoio e cada oportunidade recebida contribuíram para que este momento se tornasse possível.
+
+Levaremos conosco as amizades construídas, os momentos compartilhados, as risadas, os aprendizados e até mesmo os desafios que, de alguma forma, nos ensinaram a amadurecer. As experiências vividas durante essa etapa permanecerão em nossa memória como parte de uma história que sempre fará parte de quem somos.
+
+Ao concluirmos esta fase, reconhecemos que novos caminhos se abrirão diante de nós. Alguns seguirão direções diferentes, enfrentarão novos desafios e buscarão sonhos distintos, mas todos levarão consigo uma parte da história que construímos juntos. Que nunca nos falte coragem para recomeçar, humildade para aprender, sabedoria para fazer escolhas e perseverança para lutar por nossos objetivos.
+
+Comprometemo-nos a utilizar os conhecimentos adquiridos com consciência e responsabilidade, contribuindo para uma sociedade mais justa, humana e solidária. Que nossas atitudes sejam guiadas pelo respeito, que nossas escolhas sejam feitas com responsabilidade e que nossos sonhos sejam acompanhados de dedicação e propósito.
+
+Neste dia, não celebramos apenas a conclusão de uma etapa, mas também tudo aquilo que fomos capazes de superar para chegar até aqui. Olhamos para o passado com gratidão, vivemos o presente com orgulho e seguimos em direção ao futuro com esperança e determinação.
+
+Assim, prometemos honrar nossa formação, valorizar tudo o que aprendemos e carregar conosco os princípios que nos trouxeram até este momento. Que sejamos profissionais comprometidos, cidadãos conscientes e pessoas dispostas a fazer a diferença por onde passarmos. Diante de nossos colegas, professores, familiares e de todos aqueles que fizeram parte desta trajetória, assumimos solenemente este compromisso.`;
+
+/* ===== ANÁLISE (funções puras) ===== */
+const PAUSA_S = 2.0;           // silêncio que conta como pausa longa
+function norm(w){
+  return w.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]/g,'');
+}
+function lev(a,b){
+  if(a===b) return 0;
+  const m=a.length,n=b.length; if(!m) return n; if(!n) return m;
+  let prev=new Array(n+1), cur=new Array(n+1);
+  for(let j=0;j<=n;j++) prev[j]=j;
+  for(let i=1;i<=m;i++){
+    cur[0]=i;
+    for(let j=1;j<=n;j++){
+      cur[j]=Math.min(prev[j]+1, cur[j-1]+1, prev[j-1]+(a[i-1]===b[j-1]?0:1));
+    }
+    [prev,cur]=[cur,prev];
+  }
+  return prev[n];
+}
+function wordCost(r,h){
+  if(r===h) return 0;
+  const L=Math.max(r.length,h.length);
+  if(L>=4){ const sim=1-lev(r,h)/L; if(sim>=0.75) return 0.4; }
+  return 1;
+}
+// Divide o texto em parágrafos e palavras (mantendo a pontuação para exibir)
+function tokenizeRef(texto){
+  const paras=[]; const words=[];
+  texto.split(/\n\s*\n/).forEach(p=>{
+    const idx=[];
+    p.split(/\s+/).filter(Boolean).forEach(t=>{
+      const n=norm(t); if(!n) return;
+      idx.push(words.length); words.push({disp:t, n});
+    });
+    if(idx.length) paras.push(idx);
+  });
+  return {paras, words};
+}
+function tokenizeHyp(s){ return s.split(/\s+/).filter(Boolean).map(t=>({disp:t, n:norm(t)})).filter(t=>t.n); }
+
+// Alinha a leitura (hyp) com o texto (ref) — distância de edição por palavra
+function align(ref, hyp){
+  const R=ref.length, H=hyp.length;
+  const D=new Float32Array((R+1)*(H+1)); const B=new Uint8Array((R+1)*(H+1)); // 1 diag,2 del(ref),3 ins(hyp)
+  const W=H+1;
+  for(let i=1;i<=R;i++){D[i*W]=i;B[i*W]=2;}
+  for(let j=1;j<=H;j++){D[j]=j;B[j]=3;}
+  for(let i=1;i<=R;i++){
+    const rn=ref[i-1].n;
+    for(let j=1;j<=H;j++){
+      const d=D[(i-1)*W+j-1]+wordCost(rn,hyp[j-1].n);
+      const del=D[(i-1)*W+j]+1, ins=D[i*W+j-1]+1;
+      let best=d,bk=1; if(del<best){best=del;bk=2;} if(ins<best){best=ins;bk=3;}
+      D[i*W+j]=best; B[i*W+j]=bk;
+    }
+  }
+  const ops=[]; let i=R,j=H;
+  while(i>0||j>0){
+    const bk=B[i*W+j];
+    if(bk===1){ const c=wordCost(ref[i-1].n,hyp[j-1].n); ops.push({t:c===0?'ok':c<1?'near':'sub', r:i-1, h:j-1}); i--;j--; }
+    else if(bk===2){ ops.push({t:'del', r:i-1}); i--; }
+    else { ops.push({t:'ins', h:j-1}); j--; }
+  }
+  return ops.reverse();
+}
+
+function analisar(texto, aluno){
+  const {paras, words}=tokenizeRef(texto);
+  const hyp=tokenizeHyp(aluno.hypText||'');
+  const times=aluno.hypTimes||[];
+  const ops=align(words, hyp);
+  const status=new Array(words.length).fill('ok');
+  const said=new Array(words.length).fill(null);
+  const insAfter={};            // r -> [palavras a mais]
+  const refOfHyp=new Array(hyp.length).fill(-1);
+  let lastRef=-1;
+  ops.forEach(o=>{
+    if(o.t==='ins'){ (insAfter[lastRef]=insAfter[lastRef]||[]).push(hyp[o.h].disp); refOfHyp[o.h]=lastRef; return; }
+    status[o.r]=o.t; if(o.h!=null){ said[o.r]=hyp[o.h].disp; refOfHyp[o.h]=o.r; }
+    lastRef=o.r;
+  });
+  // O que ficou sem ler no fim do texto não conta como "pulada"
+  let lastRead=-1; for(let k=status.length-1;k>=0;k--){ if(status[k]!=='del'){lastRead=k;break;} }
+  for(let k=lastRead+1;k<status.length;k++) status[k]='gone';
+  // Correções do professor
+  const ov=aluno.overrides||{};
+  Object.keys(ov).forEach(k=>{ status[+k]=ov[k]; });
+  // Pausas longas
+  const pauses={};              // r -> segundos
+  for(let h=1;h<hyp.length;h++){
+    if(times[h]==null||times[h-1]==null) continue;
+    const gap=(times[h]-times[h-1])/1000;
+    if(gap>=PAUSA_S){ const r=refOfHyp[h-1]; if(r>=0) pauses[r]=Math.max(pauses[r]||0,gap); }
+  }
+  // Trechos pulados (4+ palavras seguidas)
+  const trechos=[]; let run=[];
+  status.forEach((s,k)=>{ if(s==='del') run.push(k); else { if(run.length>=4) trechos.push(run); run=[]; } });
+  if(run.length>=4) trechos.push(run);
+
+  const cnt={ok:0,near:0,sub:0,del:0,gone:0};
+  status.forEach(s=>cnt[s]++);
+  const nIns=Object.values(insAfter).reduce((a,b)=>a+b.length,0);
+  const lidas=words.length-cnt.gone;                       // palavras do texto que ele percorreu
+  const corretas=cnt.ok+cnt.near;
+  const tLeitura = (times.length>1 && times[0]!=null) ? (times[times.length-1]-times[0])/1000 : null;
+  const tTotal = aluno.durTotal!=null ? aluno.durTotal/1000 : null;
+  const tBase = tTotal||tLeitura||0;
+  const min = tBase/60;
+  return {
+    paras, words, status, said, insAfter, pauses, trechos, cnt, nIns,
+    total:words.length, lidas, corretas, tTotal, tLeitura,
+    ppm: min? Math.round(hyp.length/min):0,
+    pcpm: min? Math.round(corretas/min):0,
+    precisao: lidas? Math.round(100*corretas/lidas):0,
+    completou: cnt.gone===0,
+    nPausas:Object.keys(pauses).length
+  };
+}
+/* ===== FIM DA ANÁLISE ===== */
+
+/* ===== ESTADO ===== */
+const KEY='leituraJuramento.v1';
+let state={texto:TEXTO_PADRAO, alunos:[], gravarAudio:false};
+try{ const s=JSON.parse(localStorage.getItem(KEY)||'null'); if(s&&s.alunos) state=Object.assign(state,s); }catch(e){}
+function save(){ try{ localStorage.setItem(KEY, JSON.stringify(state)); }catch(e){} }
+const audios={};   // id -> URL do áudio (só enquanto a página está aberta)
+
+const $=s=>document.querySelector(s);
+const app=$('#app');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+function fmtT(s){ if(s==null) return '—'; s=Math.round(s); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
+function toast(msg){ const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>t.hidden=true,2200); }
+function nivel(p){ return p>=95?'ok':p>=85?'mid':'low'; }
+const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
+const MIC_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v4"/><path d="M8 21h8"/></svg>';
+let wakeLock=null;
+async function keepAwake(on){
+  try{ if(on && navigator.wakeLock){ wakeLock=await navigator.wakeLock.request('screen'); } else if(!on && wakeLock){ await wakeLock.release(); wakeLock=null; } }catch(e){}
+}
+function head(sub){
+  return `<header class="top"><div><div class="eyebrow">${esc(sub)}</div><h1>Leitura do Juramento</h1></div></header><div class="ruler" aria-hidden="true"></div>`;
+}
+
+/* ===== TELA INICIAL ===== */
+function telaInicio(){
+  stopAll();
+  const lista = state.alunos.map(a=>{
+    const r=analisar(state.texto,a);
+    return `<li><button class="student" data-id="${a.id}">
+      <span class="nm">${esc(a.nome||'Sem nome')}</span>
+      <span class="pill ${nivel(r.precisao)}">${r.precisao}% certas</span>
+      <span class="meta"><span>⏱ ${fmtT(r.tTotal)}</span><span>${r.ppm} palavras/min</span><span>${r.cnt.sub+r.cnt.del} erros</span>${r.completou?'':'<span>não terminou</span>'}</span>
+    </button></li>`;
+  }).join('');
+  app.innerHTML = head('Avaliação de fluência')+`
+  <div class="stack">
+    ${SR?'':`<div class="err">Este navegador não reconhece fala. Abra a página no <b>Google Chrome</b> (Android ou computador) ou no Safari do iPhone.</div>`}
+    <button class="primary big" id="novo" ${SR?'':'disabled'}>${MIC_SVG.replace('<svg','<svg style="width:26px;height:26px"')} Novo aluno</button>
+    <div class="row" style="justify-content:space-between">
+      <h2>Leituras de hoje <span class="muted small">(${state.alunos.length})</span></h2>
+      <button id="rel" ${state.alunos.length?'':'disabled'}>Relatório da turma</button>
+    </div>
+    ${state.alunos.length?`<ul class="students">${lista}</ul>`:`<div class="empty">Nenhuma leitura ainda. Toque em <b>Novo aluno</b>, entregue o celular e peça para o aluno dizer o nome e ler a folha.</div>`}
+    <div class="panel stack small">
+      <h3>Ajustes</h3>
+      <label class="check"><input type="checkbox" id="aud" ${state.gravarAudio?'checked':''}> <span>Gravar o áudio também, para ouvir depois.<br><span class="muted">Em alguns celulares isso atrapalha o reconhecimento de fala. Se as leituras vierem vazias, desligue.</span></span></label>
+      <div class="row"><button id="texto">Trocar o texto</button><button class="danger" id="limpar" ${state.alunos.length?'':'disabled'}>Apagar todas as leituras</button></div>
+      <div id="conf"></div>
+      <p class="muted" style="margin:0">Precisa de internet durante a leitura. As leituras ficam guardadas neste celular.</p>
+    </div>
+  </div>`;
+  $('#novo').onclick=telaNome;
+  $('#rel').onclick=telaRelatorio;
+  $('#texto').onclick=telaTexto;
+  $('#aud').onchange=e=>{state.gravarAudio=e.target.checked; save();};
+  $('#limpar').onclick=()=>{
+    $('#conf').innerHTML=`<div class="confirm"><span>Apagar as ${state.alunos.length} leituras?</span><button class="danger" id="sim">Apagar</button><button id="nao">Cancelar</button></div>`;
+    $('#sim').onclick=()=>{state.alunos=[]; save(); telaInicio(); toast('Leituras apagadas');};
+    $('#nao').onclick=()=>$('#conf').innerHTML='';
+  };
+  app.querySelectorAll('.student').forEach(b=>b.onclick=()=>telaResultado(b.dataset.id));
+}
+
+/* ===== TROCAR TEXTO ===== */
+function telaTexto(){
+  app.innerHTML=head('Texto da leitura')+`
+  <div class="stack">
+    <p class="muted" style="margin:0">Cole o texto que os alunos vão ler. Deixe uma linha em branco entre os parágrafos.</p>
+    <textarea id="tx">${esc(state.texto)}</textarea>
+    <div class="row"><button class="primary" id="ok">Salvar texto</button><button id="pad">Voltar ao juramento</button><button class="ghost" id="volta">Cancelar</button></div>
+  </div>`;
+  $('#ok').onclick=()=>{ const v=$('#tx').value.trim(); if(v){state.texto=v; save(); toast('Texto salvo');} telaInicio(); };
+  $('#pad').onclick=()=>{ $('#tx').value=TEXTO_PADRAO; };
+  $('#volta').onclick=telaInicio;
+}
+
+/* ===== NOME ===== */
+let recNome=null;
+function telaNome(){
+  app.innerHTML=head('Passo 1 de 2')+`
+  <div class="stack" style="text-align:center">
+    <h2>Diga seu nome</h2>
+    <p class="muted" style="margin:0">Toque no microfone e fale seu nome completo.</p>
+    <button class="mic" id="mic" aria-label="Gravar o nome">${MIC_SVG}</button>
+    <div class="status" id="st">&nbsp;</div>
+    <input type="text" id="nome" placeholder="Nome do aluno" autocomplete="off">
+    <button class="primary big" id="seg" disabled>Continuar para a leitura</button>
+    <button class="ghost" id="volta">Voltar</button>
+  </div>`;
+  const inp=$('#nome'), seg=$('#seg'), mic=$('#mic'), st=$('#st');
+  inp.oninput=()=>seg.disabled=!inp.value.trim();
+  $('#volta').onclick=telaInicio;
+  seg.onclick=()=>telaLeitura(inp.value.trim());
+  mic.onclick=()=>{
+    if(recNome){ recNome.stop(); return; }
+    recNome=new SR(); recNome.lang='pt-BR'; recNome.interimResults=true; recNome.continuous=false;
+    mic.classList.add('on'); st.textContent='Ouvindo…';
+    recNome.onresult=e=>{
+      let t=''; for(const r of e.results) t+=r[0].transcript;
+      inp.value=t.trim().replace(/\b\p{L}/gu,c=>c.toUpperCase()); seg.disabled=!inp.value.trim();
+    };
+    recNome.onerror=e=>{ st.textContent = e.error==='not-allowed'?'Permita o uso do microfone para continuar.':e.error==='no-speech'?'Não ouvi nada. Toque e fale de novo.':'Não deu certo. Tente de novo ou digite o nome.'; };
+    recNome.onend=()=>{ mic.classList.remove('on'); recNome=null; if(st.textContent==='Ouvindo…') st.textContent=inp.value?'Confira o nome e toque em Continuar.':'Não ouvi nada. Toque e fale de novo.'; };
+    try{ recNome.start(); }catch(e){ st.textContent='Não deu certo. Digite o nome.'; }
+  };
+}
+
+/* ===== LEITURA ===== */
+let L=null;  // sessão de leitura em andamento
+function stopAll(){
+  if(recNome){ try{recNome.abort();}catch(e){} recNome=null; }
+  if(L){ L.ativo=false; try{L.rec&&L.rec.abort();}catch(e){} if(L.mr&&L.mr.state!=='inactive') try{L.mr.stop();}catch(e){} if(L.stream) L.stream.getTracks().forEach(t=>t.stop()); clearInterval(L.tick); L=null; keepAwake(false); }
+}
+function telaLeitura(nome){
+  app.innerHTML=head('Passo 2 de 2')+`
+  <div class="stack" style="text-align:center">
+    <h2>${esc(nome)}</h2>
+    <p class="muted" id="inst" style="margin:0">Segure o celular perto da boca. Toque em <b>Começar</b> e leia a folha em voz alta, do começo ao fim.</p>
+    <div class="clock" id="clock">0:00</div>
+    <div class="status" id="st">&nbsp;</div>
+    <div class="live" id="live"></div>
+    <button class="primary big" id="go">Começar a leitura</button>
+    <button class="ghost" id="volta">Cancelar</button>
+  </div>`;
+  $('#volta').onclick=telaInicio;
+  $('#go').onclick=()=>comecar(nome);
+}
+function novaSessao(){
+  const S=L; if(!S) return;
+  const rec=new SR(); rec.lang='pt-BR'; rec.continuous=true; rec.interimResults=true; rec.maxAlternatives=1;
+  S.sess=''; S.interim='';
+  const live=()=>(S.committed+' '+S.sess+' '+S.interim).trim();
+  rec.onresult=e=>{
+    let fin='', inter='';
+    for(let i=0;i<e.results.length;i++){
+      const t=e.results[i][0].transcript.trim(); if(!t) continue;
+      if(e.results[i].isFinal){
+        // alguns celulares repetem o texto anterior dentro do novo resultado
+        if(fin && norm(t).startsWith(norm(fin))) fin=t; else fin=(fin+' '+t).trim();
+      } else {
+        inter=(inter+' '+t).trim();
+      }
+    }
+    if(fin && inter && norm(inter).startsWith(norm(fin))) inter=inter.split(/\s+/).slice(fin.split(/\s+/).length).join(' ');
+    S.sess=fin; S.interim=inter;
+    const n=tokenizeHyp(live()).length, now=Date.now();
+    for(let k=S.times.length;k<n;k++) S.times.push(now);
+    if(S.ativo){
+      const lv=$('#live'), st=$('#st');
+      if(lv) lv.textContent='… '+live().split(/\s+/).slice(-10).join(' ');
+      if(st) st.textContent=n+' palavras ouvidas';
+    }
+  };
+  rec.onerror=e=>{
+    if(e.error==='not-allowed'||e.error==='service-not-allowed'){ S.erro='O microfone foi bloqueado. Permita o microfone para esta página e tente de novo.'; S.ativo=false; }
+    else if(e.error==='network'){ S.erro='Sem internet. O reconhecimento de fala precisa de conexão.'; }
+    else if(e.error==='audio-capture'){ S.erro='O microfone está ocupado. Desligue “Gravar o áudio também” na tela inicial.'; S.ativo=false; }
+    const st=$('#st'); if(S.erro && st && L===S) st.innerHTML='<span style="color:var(--bad)">'+esc(S.erro)+'</span>';
+  };
+  rec.onend=()=>{
+    const pend=S.interim && !S.sess.endsWith(S.interim) ? S.interim : '';
+    S.committed=(S.committed+' '+S.sess+' '+pend).trim(); S.sess=''; S.interim='';
+    if(S.ativo){ setTimeout(()=>{ if(S.ativo && L===S) novaSessao(); },60); }
+    else if(S.onDone){ S.onDone(); }
+  };
+  S.rec=rec;
+  try{ rec.start(); }catch(e){}
+}
+async function comecar(nome){
+  const id='a'+Date.now().toString(36);
+  L={id, nome, ativo:true, committed:'', sess:'', interim:'', times:[], t0:Date.now(), chunks:[]};
+  if(state.gravarAudio && navigator.mediaDevices && window.MediaRecorder){
+    try{
+      L.stream=await navigator.mediaDevices.getUserMedia({audio:true});
+      L.mr=new MediaRecorder(L.stream); L.mr.ondataavailable=e=>e.data.size&&L&&L.chunks.push(e.data); L.mr.start(1000);
+    }catch(e){}
+  }
+  keepAwake(true);
+  novaSessao();
+  $('#inst').textContent='Pode ler. Quando terminar a última palavra, toque em Terminei.';
+  const go=$('#go'); go.textContent='Terminei'; go.classList.remove('primary'); go.style.background='var(--bad)'; go.style.borderColor='var(--bad)'; go.style.color='#fff';
+  go.onclick=terminar;
+  $('#volta').textContent='Cancelar esta leitura';
+  L.tick=setInterval(()=>{ if(L) $('#clock').textContent=fmtT((Date.now()-L.t0)/1000); },250);
+}
+function terminar(){
+  if(!L) return;
+  const s=L; s.ativo=false; s.tFim=Date.now(); clearInterval(s.tick);
+  const go=$('#go'); go.disabled=true; go.textContent='Analisando…';
+  let feito=false;
+  const finalizar=()=>{
+    if(feito) return; feito=true;
+    const hypText=(s.committed+' '+s.sess+' '+s.interim).trim();
+    const n=tokenizeHyp(hypText).length;
+    const aluno={id:s.id, nome:s.nome, data:new Date(s.t0).toISOString(), durTotal:s.tFim-s.t0,
+      hypText, hypTimes:s.times.slice(0,n).map(t=>t-s.t0), overrides:{}};
+    if(s.mr && s.mr.state!=='inactive'){
+      s.mr.onstop=()=>{ try{ audios[aluno.id]=URL.createObjectURL(new Blob(s.chunks,{type:s.mr.mimeType||'audio/webm'})); }catch(e){} if(s.stream) s.stream.getTracks().forEach(t=>t.stop()); if(document.querySelector('#rd')||document.querySelector('#go')) telaResultado(aluno.id); };
+      try{s.mr.stop();}catch(e){}
+    } else if(s.stream){ s.stream.getTracks().forEach(t=>t.stop()); }
+    state.alunos.push(aluno); save();
+    L=null; keepAwake(false);
+    if(!s.mr || s.mr.state==='inactive') telaResultado(aluno.id);
+  };
+  s.onDone=finalizar;
+  try{ s.rec.stop(); }catch(e){ finalizar(); }
+  setTimeout(finalizar,2500);   // se o reconhecimento não responder
+}
+
+/* ===== RESULTADO DE UM ALUNO ===== */
+const CICLO=['ok','sub','del'];
+function telaResultado(id){
+  const a=state.alunos.find(x=>x.id===id); if(!a){ telaInicio(); return; }
+  const r=analisar(state.texto,a);
+  const vazio=!a.hypText;
+  const texto=r.paras.map(p=>'<p>'+p.map(k=>{
+    const s=r.status[k], w=r.words[k];
+    const fix=(a.overrides&&a.overrides[k]!=null)?' okfix':'';
+    let h=`<span class="w ${s==='ok'?'':s}${fix}" data-k="${k}">${esc(w.disp)}</span>`;
+    if((s==='sub'||s==='near') && r.said[k]) h+=`<span class="said">${esc(r.said[k])}</span>`;
+    if(r.insAfter[k]) h+=`<span class="ins">+${esc(r.insAfter[k].join(' '))}</span>`;
+    if(r.pauses[k]) h+=`<span class="pause">‖ ${r.pauses[k].toFixed(1)}s</span>`;
+    return h;
+  }).join(' ')+'</p>').join('');
+  const erros=listaErros(r);
+  app.innerHTML=head(new Date(a.data).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}))+`
+  <div class="stack">
+    <div class="row" style="justify-content:space-between"><h2>${esc(a.nome)}</h2><span class="pill ${nivel(r.precisao)}">${r.precisao}% de palavras certas</span></div>
+    ${vazio?`<div class="err">Nenhuma palavra foi reconhecida. Verifique a internet e a permissão do microfone. Se “Gravar o áudio também” estiver ligado, desligue e repita a leitura.</div>`:''}
+    <div class="metrics">
+      <div class="metric"><b>${fmtT(r.tTotal)}</b><span>tempo total</span></div>
+      <div class="metric"><b>${r.ppm}</b><span>palavras por minuto</span></div>
+      <div class="metric"><b>${r.pcpm}</b><span>palavras certas por minuto</span></div>
+      <div class="metric"><b>${r.cnt.sub}</b><span>palavras trocadas</span></div>
+      <div class="metric"><b>${r.cnt.del}</b><span>palavras puladas</span></div>
+      <div class="metric"><b>${r.nPausas}</b><span>pausas acima de ${PAUSA_S}s</span></div>
+    </div>
+    ${r.completou?'':`<div class="note">Leu até a palavra ${r.lidas} de ${r.total}. As ${r.cnt.gone} palavras finais aparecem em cinza e não contam como erro.</div>`}
+    ${audios[a.id]?`<div class="panel stack"><h3>Áudio da leitura</h3><audio controls src="${audios[a.id]}"></audio></div>`:''}
+    <div class="stack">
+      <h3>O que foi lido</h3>
+      <div class="legend">
+        <i><span class="w sub">vermelho</span> trocou a palavra (em cima, o que ele disse)</i>
+        <i><span class="w del">laranja</span> pulou</i>
+        <i><span class="w near">amarelo</span> parecida, confira</i>
+        <i><span class="ins">+palavra</span> falou a mais</i>
+        <i><span class="pause">‖ 3s</span> pausa longa</i>
+      </div>
+      <p class="muted small" style="margin:0">Toque numa palavra para corrigir a marcação: certa → trocada → pulada. O reconhecimento de voz pode errar, então confira as marcações antes de dar a nota.</p>
+      <div class="reading" id="rd">${texto}</div>
+    </div>
+    ${erros?`<div class="panel stack"><h3>Lista de erros</h3>${erros}</div>`:''}
+    <div class="row">
+      <button class="primary" id="prox">Próximo aluno</button>
+      <button id="inicio">Ver todos</button>
+      <button class="danger" id="del">Excluir esta leitura</button>
+    </div>
+    <div id="conf"></div>
+  </div>`;
+  $('#rd').onclick=e=>{
+    const el=e.target.closest('.w'); if(!el) return;
+    const k=+el.dataset.k; const cur=r.status[k]==='near'?'ok':r.status[k]==='gone'?'ok':r.status[k];
+    const nxt=CICLO[(CICLO.indexOf(cur)+1)%CICLO.length];
+    a.overrides=a.overrides||{}; a.overrides[k]=nxt; save();
+    const y=window.scrollY; telaResultado(id); window.scrollTo(0,y);
+  };
+  $('#prox').onclick=telaNome;
+  $('#inicio').onclick=telaInicio;
+  $('#del').onclick=()=>{
+    $('#conf').innerHTML=`<div class="confirm"><span>Excluir a leitura de ${esc(a.nome)}?</span><button class="danger" id="sim">Excluir</button><button id="nao">Cancelar</button></div>`;
+    $('#sim').onclick=()=>{ state.alunos=state.alunos.filter(x=>x.id!==id); save(); telaInicio(); toast('Leitura excluída'); };
+    $('#nao').onclick=()=>$('#conf').innerHTML='';
+  };
+  window.scrollTo(0,0);
+}
+function listaErros(r, texto){
+  const it=[];
+  r.status.forEach((s,k)=>{
+    const w=r.words[k].disp.replace(/[.,;:!?]+$/,'');
+    if(s==='sub') it.push(texto?`trocou "${w}" por "${r.said[k]||'?'}"`:`<li>Trocou <b>${esc(w)}</b> por <b>${esc(r.said[k]||'?')}</b></li>`);
+  });
+  r.trechos.forEach(run=>{
+    const tr=run.map(k=>r.words[k].disp).join(' ');
+    it.push(texto?`pulou o trecho "${tr}"`:`<li>Pulou o trecho <b>“${esc(tr)}”</b></li>`);
+  });
+  const emTrecho=new Set(r.trechos.flat());
+  r.status.forEach((s,k)=>{ if(s==='del'&&!emTrecho.has(k)){ const w=r.words[k].disp.replace(/[.,;:!?]+$/,''); it.push(texto?`pulou "${w}"`:`<li>Pulou <b>${esc(w)}</b></li>`);} });
+  if(texto) return it.join('; ');
+  return it.length?`<ul class="errlist">${it.join('')}</ul>`:'';
+}
+
+/* ===== RELATÓRIO DA TURMA ===== */
+function telaRelatorio(){
+  const linhas=state.alunos.map(a=>({a, r:analisar(state.texto,a)}));
+  const n=linhas.length||1;
+  const media=f=>Math.round(linhas.reduce((s,x)=>s+f(x.r),0)/n);
+  const tab=linhas.map(({a,r})=>`<tr>
+    <td>${esc(a.nome)}</td><td class="num">${fmtT(r.tTotal)}</td><td class="num">${r.ppm}</td><td class="num">${r.pcpm}</td>
+    <td class="num">${r.precisao}%</td><td class="num">${r.cnt.sub}</td><td class="num">${r.cnt.del}</td><td class="num">${r.nPausas}</td><td>${r.completou?'sim':'não ('+r.lidas+'/'+r.total+')'}</td></tr>`).join('');
+  const det=linhas.map(({a,r})=>{ const e=listaErros(r,true); return `<div class="detail"><h3>${esc(a.nome)}</h3><p class="small" style="margin:.3em 0 0">${e?esc(e):'Sem erros marcados.'}</p></div>`; }).join('');
+  app.innerHTML=head('Relatório da turma')+`
+  <div class="stack">
+    <div class="metrics">
+      <div class="metric"><b>${linhas.length}</b><span>alunos avaliados</span></div>
+      <div class="metric"><b>${fmtT(linhas.reduce((s,x)=>s+(x.r.tTotal||0),0)/n)}</b><span>tempo médio</span></div>
+      <div class="metric"><b>${media(r=>r.pcpm)}</b><span>palavras certas/min (média)</span></div>
+      <div class="metric"><b>${media(r=>r.precisao)}%</b><span>precisão média</span></div>
+    </div>
+    <div class="tablewrap"><table>
+      <thead><tr><th>Aluno</th><th class="num">Tempo</th><th class="num">Pal./min</th><th class="num">Certas/min</th><th class="num">Precisão</th><th class="num">Trocas</th><th class="num">Puladas</th><th class="num">Pausas</th><th>Terminou</th></tr></thead>
+      <tbody>${tab}</tbody></table></div>
+    <div class="row"><button class="primary" id="csv">Baixar planilha (CSV)</button><button id="copiar">Copiar relatório</button><button class="ghost" id="volta">Voltar</button></div>
+    <div class="panel stack"><h3>Erros de cada aluno</h3>${det}</div>
+    <p class="muted small" style="margin:0">O texto tem ${linhas[0]?linhas[0].r.total:0} palavras. “Certas por minuto” conta só as palavras lidas corretamente, dividido pelo tempo total.</p>
+  </div>`;
+  $('#volta').onclick=telaInicio;
+  $('#copiar').onclick=()=>{
+    const txt=['RELATÓRIO DE LEITURA — '+new Date().toLocaleDateString('pt-BR'),''].concat(linhas.map(({a,r})=>
+      `${a.nome}\n  Tempo: ${fmtT(r.tTotal)} | ${r.ppm} palavras/min | ${r.pcpm} certas/min | precisão ${r.precisao}%\n  Trocadas: ${r.cnt.sub} | Puladas: ${r.cnt.del} | Pausas longas: ${r.nPausas} | Terminou: ${r.completou?'sim':'não'}\n  Erros: ${listaErros(r,true)||'nenhum'}\n`)).join('\n');
+    copiar(txt);
+  };
+  $('#csv').onclick=()=>{
+    const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
+    const rows=[['Aluno','Data','Tempo total (s)','Palavras por minuto','Certas por minuto','Precisão (%)','Trocadas','Puladas','Pausas longas','Terminou','Erros']]
+      .concat(linhas.map(({a,r})=>[a.nome,new Date(a.data).toLocaleString('pt-BR'),Math.round(r.tTotal||0),r.ppm,r.pcpm,r.precisao,r.cnt.sub,r.cnt.del,r.nPausas,r.completou?'sim':'não',listaErros(r,true)]));
+    const csv='﻿'+rows.map(l=>l.map(q).join(';')).join('\r\n');
+    const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
+    const link=document.createElement('a'); link.href=url; link.download='leitura-juramento-'+new Date().toISOString().slice(0,10)+'.csv';
+    document.body.appendChild(link); link.click(); link.remove(); setTimeout(()=>URL.revokeObjectURL(url),4000);
+  };
+}
+function copiar(txt){
+  const fallback=()=>{ const t=document.createElement('textarea'); t.value=txt; document.body.appendChild(t); t.select(); try{document.execCommand('copy'); toast('Relatório copiado');}catch(e){toast('Não consegui copiar');} t.remove(); };
+  if(navigator.clipboard) navigator.clipboard.writeText(txt).then(()=>toast('Relatório copiado'),fallback); else fallback();
+}
+
+telaInicio();
+</script>
+</body>
+</html>
