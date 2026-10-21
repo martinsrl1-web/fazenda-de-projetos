@@ -73,14 +73,15 @@ button.sec{font:inherit; font-weight:700; border-radius:12px; border:1.5px solid
 </div>
 <script>
 const API = 'https://script.google.com/macros/s/AKfycbyYkOqf199Lw0YoN3N_-sUERjQw6vYAPhdtA77xvZRuo6uAyIJ4qzQ3KeqTW3EPcUvc/exec';   // endereço do app da planilha (preenchido na configuração)
+const RODADA = '2';   // trocar a rodada libera todos os celulares para votar de novo
 const PADRAO = ['Sibele','Ana Roik','Mariane','Sophia','Nicolly','Yasmim'];
 const ROTULOS = ['','Fraca','Regular','Boa','Muito boa','Excelente'];
 const STAR = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"/></svg>';
 const app = document.getElementById('app');
 const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const ls = { get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
-let aparelho = ls.get('voto.aparelho');
-if(!aparelho){ aparelho = 'd' + Math.random().toString(36).slice(2,10) + Date.now().toString(36); ls.set('voto.aparelho', aparelho); }
+let aparelho = ls.get('voto.aparelho.'+RODADA);
+if(!aparelho){ aparelho = 'd' + Math.random().toString(36).slice(2,10) + Date.now().toString(36); ls.set('voto.aparelho.'+RODADA, aparelho); }
 let candidatas = PADRAO, notas = [], espera = null;
 
 function tela(html){ app.innerHTML = html; }
@@ -89,7 +90,7 @@ function jaVotou(){
 }
 async function status(){
   if(!API){ tela(`<div class="box"><h2>Votação em preparação</h2><p class="muted" style="margin:0">O link ainda está sendo configurado pelo professor.</p></div>`); return; }
-  if(ls.get('voto.feito')==='sim'){ jaVotou(); return; }
+  if(ls.get('voto.feito.'+RODADA)==='sim'){ jaVotou(); return; }
   try{
     const r = await fetch(API + '?acao=status', {cache:'no-store'});
     const d = await r.json();
@@ -138,7 +139,7 @@ async function enviar(){
   try{
     const r = await fetch(API, {method:'POST', body: JSON.stringify({aparelho, notas})});
     const d = await r.json();
-    if(d.ok || d.motivo === 'repetido'){ ls.set('voto.feito','sim'); jaVotou(); return; }
+    if(d.ok || d.motivo === 'repetido'){ ls.set('voto.feito.'+RODADA,'sim'); jaVotou(); return; }
     if(d.motivo === 'fechada'){ fechada(); return; }
     throw new Error('falhou');
   }catch(e){
