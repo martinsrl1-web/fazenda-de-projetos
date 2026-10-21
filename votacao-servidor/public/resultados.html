@@ -1,0 +1,167 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Resultado do Juramentista</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: painel do professor; controle da votação no topo, ranking em réguas abaixo */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --ink:#18212b; --muted:#5b6876; --line:#d6dde4;
+  --accent:#1f5fa8; --accent-ink:#ffffff; --accent-soft:#e3edf8;
+  --star:#e0a100; --star-soft:#fbf1cf;
+  --ok:#1d7a4a; --ok-soft:#e2f3ea; --bad:#b3261e; --bad-soft:#fbe4e2;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",Roboto,Arial,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11161c; --surface:#1a2129; --ink:#e7edf3; --muted:#9aa7b4; --line:#2c3743;
+  --accent:#6aa6ec; --accent-ink:#0b1622; --accent-soft:#1d2d40;
+  --star:#f5c242; --star-soft:#352e0e;
+  --ok:#5fc890; --ok-soft:#16301f; --bad:#ff8a80; --bad-soft:#3a1c1a;
+  color-scheme:dark;
+}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:17px; line-height:1.5;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px)}
+.wrap{max-width:680px; margin:0 auto; padding-block:20px 48px;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-display); margin:0; text-wrap:balance; letter-spacing:-.01em}
+h1{font-size:1.65rem; font-weight:800}
+h2{font-size:1.2rem; font-weight:800}
+.eyebrow{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+.ruler{height:14px; margin:10px 0 18px; color:var(--line);
+  background:repeating-linear-gradient(90deg,currentColor 0 1.5px,transparent 1.5px 50px) bottom/100% 14px no-repeat,
+             repeating-linear-gradient(90deg,currentColor 0 1px,transparent 1px 10px) bottom/100% 7px no-repeat;
+  border-bottom:1.5px solid currentColor}
+.stack{display:flex; flex-direction:column; gap:14px}
+.row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+.muted{color:var(--muted)}
+.small{font-size:.88rem}
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:16px}
+button{font:inherit; font-weight:700; border-radius:12px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink); padding:12px 18px; min-height:48px; cursor:pointer}
+button.primary{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+button.danger{color:var(--bad); border-color:var(--bad-soft)}
+button:disabled{opacity:.5}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+input{font:inherit; padding:12px 14px; border-radius:12px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink); width:100%}
+.pill{font-family:var(--f-mono); font-size:.8rem; font-weight:700; padding:4px 10px; border-radius:99px}
+.pill.on{background:var(--ok-soft); color:var(--ok)}
+.pill.off{background:var(--bad-soft); color:var(--bad)}
+.count{font-family:var(--f-mono); font-weight:700; font-size:2.4rem; line-height:1; font-variant-numeric:tabular-nums}
+.rank{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px}
+.item{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; display:grid; grid-template-columns:auto 1fr auto; gap:4px 12px; align-items:center}
+.item.first{border-color:var(--star); box-shadow:inset 0 0 0 1px var(--star)}
+.pos{font-family:var(--f-mono); font-weight:700; font-size:1.3rem; color:var(--muted); width:2ch; text-align:center}
+.item.first .pos{color:var(--star)}
+.nm{font-family:var(--f-display); font-weight:700; font-size:1.12rem; min-width:0; overflow-wrap:anywhere}
+.score{text-align:right; font-family:var(--f-mono); font-variant-numeric:tabular-nums}
+.score b{font-size:1.5rem; display:block; line-height:1.1}
+.score span{font-size:.75rem; color:var(--muted)}
+.bar{grid-column:2/-1; height:10px; background:var(--star-soft); border-radius:99px; overflow:hidden}
+.bar i{display:block; height:100%; background:var(--star); border-radius:99px}
+.dist{grid-column:2/-1; font-family:var(--f-mono); font-size:.78rem; color:var(--muted); display:flex; gap:10px; flex-wrap:wrap}
+.err{background:var(--bad-soft); color:var(--bad); border-radius:12px; padding:12px 14px}
+.confirm{display:flex; gap:8px; flex-wrap:wrap; align-items:center; background:var(--bad-soft); padding:10px 12px; border-radius:12px}
+.toast{position:fixed; left:50%; transform:translateX(-50%); bottom:calc(20px + env(safe-area-inset-bottom,0px)); background:var(--ink); color:var(--bg); padding:10px 16px; border-radius:99px; font-weight:700; font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Painel do professor</div>
+  <h1>Resultado do Juramentista</h1>
+  <div class="ruler" aria-hidden="true"></div>
+  <div id="app" class="stack"><p class="muted">Carregando…</p></div>
+</div>
+<div class="toast" id="toast" hidden></div>
+<script>
+const API = '/api';   // endereço do app da planilha (preenchido na configuração)
+const app = document.getElementById('app');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ls = { get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+function toast(m){ const t=document.getElementById('toast'); t.textContent=m; t.hidden=false; clearTimeout(toast.t); toast.t=setTimeout(()=>t.hidden=true,2200); }
+const q = new URLSearchParams(location.search).get('s');
+if(q) ls.set('voto.senha', q);
+let senha = ls.get('voto.senha') || '';
+let dados = null, timer = null, ocupado = false;
+
+function pedirSenha(erro){
+  app.innerHTML = `<div class="panel stack"><label for="sn"><b>Senha do painel</b></label>
+    <input id="sn" type="text" autocomplete="off" placeholder="Digite a senha">
+    ${erro?'<div class="err">Senha incorreta.</div>':''}
+    <button class="primary" id="ok">Entrar</button></div>`;
+  document.getElementById('ok').onclick = () => { senha = document.getElementById('sn').value.trim(); ls.set('voto.senha', senha); carregar(); };
+}
+async function carregar(acao){
+  if(!API){ app.innerHTML = '<div class="panel">A votação ainda não foi ligada à planilha. Termine a configuração e me mande o endereço do app.</div>'; return; }
+  if(!senha){ pedirSenha(); return; }
+  if(ocupado) return; ocupado = true;
+  try{
+    const r = await fetch(API + '?senha=' + encodeURIComponent(senha) + (acao ? '&acao=' + acao : '') + '&t=' + Date.now(), {cache:'no-store'});
+    const d = await r.json();
+    if(d.erro === 'senha'){ clearInterval(timer); pedirSenha(true); return; }
+    dados = d; render();
+    if(acao === 'abrir') toast('Votação aberta');
+    if(acao === 'fechar') toast('Votação encerrada');
+    if(acao === 'zerar') toast('Votos apagados');
+  }catch(e){
+    if(!dados) app.innerHTML = '<div class="err">Não consegui buscar os votos. Verifique a internet.</div><button id="tn">Tentar de novo</button>', document.getElementById('tn').onclick = () => carregar();
+  }finally{ ocupado = false; }
+}
+function calcular(){
+  const c = dados.candidatas, vs = dados.votos || [];
+  return c.map((nome, i) => {
+    const ns = vs.map(v => Number(v.notas[i])).filter(n => n >= 1 && n <= 5);
+    const soma = ns.reduce((a,b) => a+b, 0);
+    const dist = [1,2,3,4,5].map(k => ns.filter(n => n === k).length);
+    return { nome, media: ns.length ? soma/ns.length : 0, n: ns.length, dist };
+  }).sort((a,b) => b.media - a.media || b.n - a.n);
+}
+function render(){
+  const lista = calcular(), total = (dados.votos||[]).length;
+  const fmt = x => x.toFixed(2).replace('.', ',');
+  app.innerHTML = `
+    <div class="panel row" style="justify-content:space-between">
+      <div><div class="count">${total}</div><div class="small muted">voto${total===1?'':'s'} recebido${total===1?'':'s'}</div></div>
+      <div class="stack" style="gap:8px; align-items:flex-end">
+        <span class="pill ${dados.aberta?'on':'off'}">${dados.aberta?'Votação aberta':'Votação fechada'}</span>
+        <button class="${dados.aberta?'':'primary'}" id="tg">${dados.aberta?'Encerrar votação':'Abrir votação'}</button>
+      </div>
+    </div>
+    <h2>Classificação</h2>
+    <ol class="rank">${lista.map((c, p) => `
+      <li class="item${p===0 && c.n ? ' first' : ''}">
+        <span class="pos">${p+1}</span>
+        <span class="nm">${esc(c.nome)}</span>
+        <span class="score"><b>${c.n ? fmt(c.media) : '—'}</b><span>${c.n ? Math.round(c.media*20) + ' de 100' : 'sem votos'}</span></span>
+        <div class="bar" aria-hidden="true"><i style="width:${(c.media/5*100).toFixed(1)}%"></i></div>
+        <div class="dist">${[5,4,3,2,1].map(k => `<span>${k}★ ${c.dist[k-1]}</span>`).join('')}</div>
+      </li>`).join('')}
+    </ol>
+    <p class="small muted" style="margin:0">Média de estrelas de 1 a 5. A nota de 0 a 100 é a média vezes 20. A tela atualiza sozinha a cada 5 segundos.</p>
+    <div class="row"><button id="cp">Copiar resultado</button><button class="danger" id="zr">Apagar todos os votos</button></div>
+    <div id="conf"></div>`;
+  document.getElementById('tg').onclick = () => carregar(dados.aberta ? 'fechar' : 'abrir');
+  document.getElementById('cp').onclick = () => {
+    const txt = 'ESCOLHA DO JURAMENTISTA — ' + total + ' votos\n' + lista.map((c,p) => `${p+1}º ${c.nome}: ${c.n ? fmt(c.media) + ' estrelas (' + Math.round(c.media*20) + '/100), ' + c.n + ' votos' : 'sem votos'}`).join('\n');
+    const fb = () => { const t=document.createElement('textarea'); t.value=txt; document.body.appendChild(t); t.select(); try{ document.execCommand('copy'); toast('Resultado copiado'); }catch(e){} t.remove(); };
+    navigator.clipboard ? navigator.clipboard.writeText(txt).then(() => toast('Resultado copiado'), fb) : fb();
+  };
+  document.getElementById('zr').onclick = () => {
+    document.getElementById('conf').innerHTML = `<div class="confirm"><span>Apagar os ${total} votos? Não dá para desfazer.</span><button class="danger" id="sim">Apagar</button><button id="nao">Cancelar</button></div>`;
+    document.getElementById('sim').onclick = () => carregar('zerar');
+    document.getElementById('nao').onclick = () => document.getElementById('conf').innerHTML = '';
+  };
+}
+carregar();
+timer = setInterval(() => { if(dados && !document.getElementById('sim')) carregar(); }, 5000);
+</script>
+</body>
+</html>

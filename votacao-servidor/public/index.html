@@ -1,0 +1,162 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Escolha do Juramentista</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Atkinson+Hyperlegible:wght@400;700&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+/* Layout: uma coluna; cada candidata é uma linha de régua com cinco estrelas */
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --ink:#18212b; --muted:#5b6876; --line:#d6dde4;
+  --accent:#1f5fa8; --accent-ink:#ffffff; --accent-soft:#e3edf8;
+  --star:#e0a100; --star-off:#cfd6dd;
+  --ok:#1d7a4a; --ok-soft:#e2f3ea; --bad:#b3261e; --bad-soft:#fbe4e2;
+  --f-display:"Archivo","Helvetica Neue",Arial,sans-serif;
+  --f-body:"Atkinson Hyperlegible","Segoe UI",Roboto,Arial,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,Menlo,Consolas,monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11161c; --surface:#1a2129; --ink:#e7edf3; --muted:#9aa7b4; --line:#2c3743;
+  --accent:#6aa6ec; --accent-ink:#0b1622; --accent-soft:#1d2d40;
+  --star:#f5c242; --star-off:#3a4552;
+  --ok:#5fc890; --ok-soft:#16301f; --bad:#ff8a80; --bad-soft:#3a1c1a;
+  color-scheme:dark;
+}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:17px; line-height:1.5;
+  padding-top:env(safe-area-inset-top,0px); padding-bottom:env(safe-area-inset-bottom,0px)}
+.wrap{max-width:620px; margin:0 auto; padding-block:20px 48px;
+  padding-left:max(16px, env(safe-area-inset-left,0px)); padding-right:max(16px, env(safe-area-inset-right,0px))}
+h1,h2{font-family:var(--f-display); margin:0; text-wrap:balance; letter-spacing:-.01em}
+h1{font-size:1.65rem; font-weight:800}
+h2{font-size:1.25rem; font-weight:800}
+.eyebrow{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+.ruler{height:14px; margin:10px 0 18px; color:var(--line);
+  background:repeating-linear-gradient(90deg,currentColor 0 1.5px,transparent 1.5px 50px) bottom/100% 14px no-repeat,
+             repeating-linear-gradient(90deg,currentColor 0 1px,transparent 1px 10px) bottom/100% 7px no-repeat;
+  border-bottom:1.5px solid currentColor}
+.stack{display:flex; flex-direction:column; gap:14px}
+.muted{color:var(--muted)}
+.cands{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:10px}
+.cand{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:14px 16px; display:flex; flex-direction:column; gap:6px}
+.cand .top{display:flex; justify-content:space-between; align-items:baseline; gap:10px}
+.cand .nm{font-family:var(--f-display); font-weight:700; font-size:1.15rem}
+.cand .val{font-family:var(--f-mono); font-size:.85rem; color:var(--muted)}
+.stars{display:flex; gap:4px}
+.star{background:none; border:none; padding:4px; cursor:pointer; color:var(--star-off); width:50px; height:50px; display:grid; place-items:center; border-radius:10px}
+.star svg{width:38px; height:38px}
+.star.on{color:var(--star)}
+.star:focus-visible{outline:3px solid var(--accent); outline-offset:1px}
+@media (max-width:360px){ .star{width:44px;height:44px} .star svg{width:32px;height:32px} }
+button.primary{font:inherit; font-weight:700; font-size:1.15rem; border-radius:12px; border:none; background:var(--accent); color:var(--accent-ink);
+  padding:18px; width:100%; min-height:56px; cursor:pointer}
+button.primary:disabled{opacity:.45; cursor:not-allowed}
+button.sec{font:inherit; font-weight:700; border-radius:12px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink); padding:12px 18px; min-height:48px; cursor:pointer}
+.box{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:24px 18px; text-align:center; display:flex; flex-direction:column; gap:10px; align-items:center}
+.big{font-size:3rem; line-height:1}
+.err{background:var(--bad-soft); color:var(--bad); border-radius:12px; padding:12px 14px}
+.hint{text-align:center; font-size:.9rem}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">Formatura · votação da turma</div>
+  <h1>Escolha do Juramentista</h1>
+  <div class="ruler" aria-hidden="true"></div>
+  <div id="app" class="stack"><p class="muted">Carregando…</p></div>
+</div>
+<script>
+const API = '/api';   // endereço do app da planilha (preenchido na configuração)
+const RODADA = (new URLSearchParams(location.search).get('r') || '3').replace(/[^a-z0-9]/gi,'').slice(0,10) || '3';   // trocar a rodada libera todos os celulares para votar de novo
+const PADRAO = ['Sibele','Ana Roik','Mariane','Sophia','Nicolly','Yasmim'];
+const ROTULOS = ['','Fraca','Regular','Boa','Muito boa','Excelente'];
+const STAR = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"/></svg>';
+const app = document.getElementById('app');
+const esc = s => String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const ls = { get(k){ try{ return localStorage.getItem(k); }catch(e){ return null; } }, set(k,v){ try{ localStorage.setItem(k,v); }catch(e){} } };
+let aparelho = ls.get('voto.aparelho.'+RODADA);
+if(!aparelho){ aparelho = 'd' + Math.random().toString(36).slice(2,10) + Date.now().toString(36); ls.set('voto.aparelho.'+RODADA, aparelho); }
+let candidatas = PADRAO, notas = [], espera = null;
+
+function tela(html){ app.innerHTML = html; }
+function jaVotou(){
+  tela(`<div class="box"><div class="big" aria-hidden="true">✓</div><h2>Voto registrado</h2><p class="muted" style="margin:0">Obrigado! Cada celular vota uma vez só. O resultado será anunciado pelo professor.</p></div>`);
+}
+async function status(){
+  if(!API){ tela(`<div class="box"><h2>Votação em preparação</h2><p class="muted" style="margin:0">O link ainda está sendo configurado pelo professor.</p></div>`); return; }
+  if(ls.get('voto.feito.'+RODADA)==='sim'){ jaVotou(); return; }
+  try{
+    const r = await fetch(API + '?acao=status', {cache:'no-store'});
+    const d = await r.json();
+    if(d.candidatas && d.candidatas.length) candidatas = d.candidatas;
+    if(!d.aberta){ fechada(); return; }
+    clearTimeout(espera);
+    formulario();
+  }catch(e){
+    // alguns celulares não deixam ler a resposta da planilha; mostra a votação mesmo assim
+    clearTimeout(espera);
+    formulario();
+  }
+}
+function fechada(){
+  tela(`<div class="box"><h2>A votação ainda não começou</h2><p class="muted" style="margin:0">Assista às leituras. Quando o professor abrir a votação, esta tela muda sozinha.</p><button class="sec" id="at">Atualizar</button></div>`);
+  document.getElementById('at').onclick = status;
+  clearTimeout(espera); espera = setTimeout(status, 5000);
+}
+function formulario(){
+  if(notas.length !== candidatas.length) notas = candidatas.map(() => 0);
+  tela(`<p style="margin:0">Dê de <b>1 a 5 estrelas</b> para a leitura de cada candidata. Seu voto é anônimo.</p>
+    <ul class="cands">${candidatas.map((n,i) => `
+      <li class="cand"><div class="top"><span class="nm">${esc(n)}</span><span class="val" id="v${i}">${notas[i]?ROTULOS[notas[i]]:'sem nota'}</span></div>
+        <div class="stars" role="radiogroup" aria-label="Nota para ${esc(n)}">${[1,2,3,4,5].map(k =>
+          `<button class="star${notas[i]>=k?' on':''}" role="radio" aria-checked="${notas[i]===k}" aria-label="${k} estrela${k>1?'s':''}" data-i="${i}" data-k="${k}">${STAR}</button>`).join('')}</div>
+      </li>`).join('')}
+    </ul>
+    <p class="hint muted" id="falta"></p>
+    <button class="primary" id="env">Enviar voto</button>
+    <div id="msg"></div>`);
+  app.querySelectorAll('.star').forEach(b => b.onclick = () => {
+    const i = +b.dataset.i, k = +b.dataset.k; notas[i] = k;
+    b.parentNode.querySelectorAll('.star').forEach(s => { const on = +s.dataset.k <= k; s.classList.toggle('on', on); s.setAttribute('aria-checked', +s.dataset.k === k); });
+    document.getElementById('v'+i).textContent = ROTULOS[k];
+    atualizar();
+  });
+  document.getElementById('env').onclick = enviar;
+  atualizar();
+}
+function atualizar(){
+  const falta = notas.filter(n => !n).length;
+  document.getElementById('env').disabled = falta > 0;
+  document.getElementById('falta').textContent = falta ? `Falta dar nota para ${falta} candidata${falta>1?'s':''}.` : 'Tudo certo. Confira e envie.';
+}
+async function enviar(){
+  const b = document.getElementById('env'); b.disabled = true; b.textContent = 'Enviando…';
+  try{
+    const corpo = JSON.stringify({aparelho, notas});
+    let d;
+    try{
+      const r = await fetch(API, {method:'POST', body: corpo});
+      d = await r.json();
+    }catch(e1){
+      // envio sem ler a resposta (contorna o bloqueio do navegador)
+      await fetch(API, {method:'POST', mode:'no-cors', body: corpo});
+      d = {ok:true};
+    }
+    if(d.ok || d.motivo === 'repetido'){ ls.set('voto.feito.'+RODADA,'sim'); jaVotou(); return; }
+    if(d.motivo === 'fechada'){ fechada(); return; }
+    throw new Error('falhou');
+  }catch(e){
+    b.disabled = false; b.textContent = 'Enviar voto';
+    document.getElementById('msg').innerHTML = '<div class="err">O voto não foi enviado. Verifique a internet e toque em Enviar voto de novo.</div>';
+  }
+}
+status();
+</script>
+</body>
+</html>
