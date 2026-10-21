@@ -123,10 +123,12 @@ details.how ol{margin:6px 0 0;padding-left:22px}
 <script>
 /* Polegada milesimal: escala fixa .025" (25 milésimos), nônio de 25 divisões -> resolução .001".
    A posição do cursor (S.p) é sempre um número inteiro de milésimos de polegada. */
-const FD=25,ND=25,PPU=2.4,MAX=5500,ZX=300,MARG=145,ROUNDS=10,LINE=330,W=2000;
+const FD=25,ND=25,PPU=2.4,MAX=5500,ZX=300,MARG=145,LINE=330,W=2000;
 const BX0=22,BX1=1978;           /* limites internos da escala fixa */
 const $=id=>document.getElementById(id),P=$('panel'),Z=$('zoom');
 const S={mode:'explore',p:1721,cam:0,target:0,task:'read',round:1,score:0,correct:0,streak:0,best:0,done:false,answered:false,hint:false,guide:true,last:null};
+/* rodadas por nível: básico 50, médio 20, avançado 10 */
+const RN=()=>({basic:50,medio:20,avancado:10})[S.mode]||10;
 const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
 
 /* ---------- formatação ---------- */
@@ -213,18 +215,18 @@ function panelExplore(){
 /* ---------- jogo ---------- */
 function genValue(){let lo,hi;
   if(S.mode==='basic'){lo=1;hi=999}else if(S.mode==='medio'){lo=FD;hi=4000}else{lo=500;hi=MAX-10}
-  let u;do{u=rnd(lo,hi)}while(u===S.p||(S.mode!=='basic'&&u%FD===0&&Math.random()<.8));return u}
+  let u,tries=0;do{u=rnd(lo,hi);tries++}while(tries<500&&(S.used&&S.used.has(u))||u===S.p||(S.mode!=='basic'&&u%FD===0&&Math.random()<.8));if(S.used)S.used.add(u);return u}
 function newRound(){S.answered=false;S.hint=false;S.last=null;
   S.task=S.mode==='avancado'?(S.round%2?'adjust':'convert'):'read';
   if(S.task==='adjust'){S.target=genValue();S.p=rnd(0,300)}else S.p=genValue();
   centerCam();draw()}
-function startGame(){S.round=1;S.score=0;S.correct=0;S.streak=0;S.done=false;newRound();panelGame()}
+function startGame(){S.used=new Set();S.played=0;S.round=1;S.score=0;S.correct=0;S.streak=0;S.done=false;newRound();panelGame()}
 const key=()=>`paqpol-ml-${S.mode}`;
 function loadBest(){try{S.best=+localStorage.getItem(key())||0}catch(e){S.best=0}}
-const stats=()=>`<div class="stats"><span>Rodada<b>${Math.min(S.round,ROUNDS)}/${ROUNDS}</b></span><span>Pontos<b>${S.score}</b></span><span>Sequência<b>${S.streak}</b></span><span>Recorde<b>${S.best}</b></span></div>`;
+const stats=()=>`<div class="stats"><span>Rodada<b>${Math.min(S.round,RN())}/${RN()}</b></span><span>Pontos<b>${S.score}</b></span><span>Sequência<b>${S.streak}</b></span><span>Recorde<b>${S.best}</b></span></div>`;
 const levelName={basic:'Básico',medio:'Médio',avancado:'Avançado'};
 
-function record(pts,ok,last){S.answered=true;S.score+=pts;S.streak=ok?S.streak+1:0;if(ok)S.correct++;S.last=last;draw();panelGame();const n=$('next');if(n)n.focus()}
+function record(pts,ok,last){S.answered=true;S.played=(S.played||0)+1;S.score+=pts;S.streak=ok?S.streak+1:0;if(ok)S.correct++;S.last=last;draw();panelGame();const n=$('next');if(n)n.focus()}
 function checkRead(){const a=readIn('am');if(!a){$('am').focus();return}
   const d=Math.abs(a.u-S.p),exact=d<1e-6,near=!exact&&d<=1+1e-6;
   let pts=exact?10:near?3:0;if(S.hint&&pts)pts=Math.max(0,pts-3);
@@ -246,11 +248,12 @@ function checkConvert(){const a=readIn('am'),m=readMm();if(!a){$('am').focus();r
 
 function panelGame(){
   if(S.done){const nb=S.score>S.best;if(nb){S.best=S.score;try{localStorage.setItem(key(),S.best)}catch(e){}}
-    const msg=S.score>=90?'Mão de metrologista.':S.score>=70?'Leitura firme. Falta pouco para a precisão total.':S.score>=40?'Bom caminho. Reveja a escala fixa e qual traço do nônio coincide.':'Volte ao modo Explorar com as guias ligadas e tente de novo.';
-    P.innerHTML=`<div class="big">${S.score}<small>de 100 pontos</small></div><p>${levelName[S.mode]} · polegada milesimal. ${S.correct}/${ROUNDS} acertos. ${msg}${nb&&S.score>0?' Novo recorde.':''}</p>
+    const jog=S.played||1,max=jog*10,pc=S.score/max*100;
+    const msg=pc>=90?'Mão de metrologista.':pc>=70?'Leitura firme. Falta pouco para a precisão total.':pc>=40?'Bom caminho. Reveja a escala fixa e qual traço do nônio coincide.':'Volte ao modo Explorar com as guias ligadas e tente de novo.';
+    P.innerHTML=`<div class="big">${S.score}<small>de ${max} pontos</small></div><p>${levelName[S.mode]} · polegada milesimal. ${S.correct}/${jog} acertos. ${msg}${nb&&S.score>0?' Novo recorde.':''}</p>
     <div class="row"><button class="act" id="again">Jogar de novo</button><button class="act ghost" id="copyres">Copiar resultado</button><span id="copied" class="copied" style="display:none">Copiado!</span></div>`;
     $('again').onclick=startGame;
-    $('copyres').onclick=()=>{const t=`Paquímetro em polegada milesimal — ${levelName[S.mode]}: ${S.score}/100 pontos — ${S.correct}/${ROUNDS} acertos — ${new Date().toLocaleDateString('pt-BR')}`;
+    $('copyres').onclick=()=>{const t=`Paquímetro em polegada milesimal — ${levelName[S.mode]}: ${S.score}/${max} pontos — ${S.correct}/${jog} acertos — ${new Date().toLocaleDateString('pt-BR')}`;
       (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}ta.remove()})
       .finally(()=>{const c=$('copied');c.style.display='inline';setTimeout(()=>c.style.display='none',1800)})};
     return}
@@ -277,7 +280,7 @@ function panelGame(){
     else if(S.task==='read')body=`${contas([{t:'Sua resposta',tot:l.txt,totOk:l.exact},certa(S.p)])}<p class="eq" style="margin-top:10px">${explain(S.p)}</p>`;
     else if(S.task==='adjust')body=(l.exact?`O paquímetro marca exatamente ${inTxt(S.target)}.`:`Você deixou em ${l.txt}; o pedido era <b>${inTxt(S.target)}</b>.`)+`<br>${explain(S.p)}`;
     else body=`Leitura: ${l.exact?'certa':`você escreveu ${l.txt}, o correto era <b>${inTxt(S.p)}</b>`}. Milímetros: ${l.mmOk?'certo':`você escreveu ${l.mmTxt} mm, o correto era <b>${mmTxt(mm(S.p))}</b>`}.<br>${explain(S.p)}<br>Conversão: ${(S.p/1000).toFixed(3)} × 25,4 = <b>${mmTxt(mm(S.p))}</b>`;
-    h+=`<div class="fb ${ok?'ok':'no'}"><strong>${ok?'Certo!':l.pts?'Quase.':'Não foi dessa vez.'} +${l.pts}</strong><br>${body}</div><div class="row"><button class="act" id="next">${S.round>=ROUNDS?'Ver resultado':'Próxima'}</button></div>`}
+    h+=`<div class="fb ${ok?'ok':'no'}"><strong>${ok?'Certo!':l.pts?'Quase.':'Não foi dessa vez.'} +${l.pts}</strong><br>${body}</div><div class="row"><button class="act" id="next">${S.round>=RN()?'Ver resultado':'Próxima'}</button>${S.round<RN()?'<button class="act ghost" id="stop">Terminar agora e ver resultado</button>':''}</div>`}
   h+=howTo;
   P.innerHTML=h;
   const ok=$('ok');
@@ -285,7 +288,8 @@ function panelGame(){
     P.querySelectorAll('input.n').forEach(i=>{i.onkeydown=e=>{if(e.key==='Enter')ok.click()};i.oninput=updSum});
     const f=P.querySelector('input.n');if(f)f.focus({preventScroll:true})}
   if($('hint'))$('hint').onclick=()=>{S.hint=true;draw();panelGame()};
-  if($('next'))$('next').onclick=()=>{if(S.round>=ROUNDS){S.done=true;draw();panelGame()}else{S.round++;newRound();panelGame()}}}
+  if($('stop'))$('stop').onclick=()=>{S.done=true;draw();panelGame()};
+  if($('next'))$('next').onclick=()=>{if(S.round>=RN()){S.done=true;draw();panelGame()}else{S.round++;newRound();panelGame()}}}
 
 /* ---------- abas ---------- */
 const mtabs=[...document.querySelectorAll('.tabs button')];
