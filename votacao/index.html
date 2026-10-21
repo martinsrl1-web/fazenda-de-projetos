@@ -73,7 +73,7 @@ button.sec{font:inherit; font-weight:700; border-radius:12px; border:1.5px solid
 </div>
 <script>
 const API = 'https://script.google.com/macros/s/AKfycbyYkOqf199Lw0YoN3N_-sUERjQw6vYAPhdtA77xvZRuo6uAyIJ4qzQ3KeqTW3EPcUvc/exec';   // endereço do app da planilha (preenchido na configuração)
-const RODADA = '3';   // trocar a rodada libera todos os celulares para votar de novo
+const RODADA = (new URLSearchParams(location.search).get('r') || '3').replace(/[^a-z0-9]/gi,'').slice(0,10) || '3';   // trocar a rodada libera todos os celulares para votar de novo
 const PADRAO = ['Sibele','Ana Roik','Mariane','Sophia','Nicolly','Yasmim'];
 const ROTULOS = ['','Fraca','Regular','Boa','Muito boa','Excelente'];
 const STAR = '<svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2.5l2.9 6.1 6.6.8-4.9 4.6 1.3 6.6L12 17.3 6.1 20.6l1.3-6.6L2.5 9.4l6.6-.8z"/></svg>';
