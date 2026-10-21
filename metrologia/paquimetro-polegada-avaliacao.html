@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Avaliação: Paquímetro Polegada Milesimal</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<style>
+:root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--bad:#B3261E;--zone:#CFE6D8;--steel:#1D3B5C;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}}
+:root[data-theme="dark"]{--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 Barlow,'Arial Narrow',Arial,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 48px}
+h1{font:800 clamp(36px,8vw,60px)/.95 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:0 0 6px}
+h2{font:800 clamp(26px,5vw,36px)/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:34px 0 10px;letter-spacing:.01em}
+h3{font:700 22px/1.1 'Big Shoulders Display','Arial Narrow',sans-serif;margin:18px 0 6px;letter-spacing:.02em}
+.sub{color:var(--muted);margin:0 0 18px;max-width:66ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.big{font:800 clamp(48px,12vw,88px)/.9 'Big Shoulders Display','Arial Narrow',sans-serif;font-variant-numeric:tabular-nums}
+.big small{font-size:.38em;margin-left:.2em;color:var(--muted)}
+.stats{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.stats b{display:block;font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+button.act,a.act{display:inline-flex;align-items:center;justify-content:center;font:700 19px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:13px 22px;min-height:48px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;text-decoration:none}
+button.ghost,a.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabs{display:flex;margin:16px 0 12px;border:2px solid var(--ink);border-radius:4px;overflow:hidden;width:fit-content;max-width:100%}
+.tabs button{font:700 20px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:11px 18px;min-height:48px;background:transparent;color:var(--ink);border:0;cursor:pointer}
+.tabs button+button{border-left:2px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.fb{margin-top:12px;padding:12px 14px;border-left:6px solid var(--line);background:var(--bg);border-radius:0 4px 4px 0}
+.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.okc{color:var(--ok);font-weight:700}.noc{color:var(--bad);font-weight:700}
+input[type=text],input[type=number],select,textarea{font:600 18px/1.2 Barlow,Arial,sans-serif;padding:10px 12px;min-height:46px;border:2px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);max-width:100%}
+textarea{width:100%;min-height:90px;resize:vertical}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--muted);font-size:15px}
+.num{font-variant-numeric:tabular-nums}
+@media (max-width:640px){.tabs{width:100%}.tabs button{flex:1;padding:11px 6px}.row .act{flex:1 1 auto}}
+@media (prefers-reduced-motion:no-preference){.fb{animation:pop .18s ease-out}@keyframes pop{from{transform:translateY(4px);opacity:.4}}}
+@media print{.fp-rule,.noprint{display:none!important}body{background:#fff;color:#000}}
+
+/* Cabeçalho comum do site Fazenda de Projetos */
+.fp-in{max-width:1000px;margin-inline:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.fp-brand{font:800 27px/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.fp-brand b{color:var(--accent);font-weight:800}
+.fp-onde{font:600 13.5px/1.2 Barlow,'Arial Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fp-rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+.trilha{display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.trilha a{font:600 15px/1.2 Barlow,sans-serif;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:4px;padding:10px 12px;min-height:44px;display:inline-flex;align-items:center;background:var(--panel)}
+.trilha a[aria-current]{border-color:var(--accent);color:var(--accent);font-weight:700}
+.trilha .t{flex-basis:100%;font:600 13px/1 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* Página */
+.top{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 10px}
+.chips button{font:600 15px/1 Barlow,sans-serif;padding:9px 12px;min-height:40px;border:1.5px solid var(--line);border-radius:20px;background:var(--panel);color:var(--ink);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;margin-bottom:16px}
+.grade button{font:800 18px/1 'Big Shoulders Display',sans-serif;min-height:44px;border:1.5px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+.grade button.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.grade button.no{background:var(--bad);border-color:var(--bad);color:#fff}
+.grade button[aria-current="true"]{outline:3px solid var(--accent);outline-offset:1px}
+.ex{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.ex .cab{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--muted);font:600 14px/1.2 Barlow,sans-serif;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.ex h2{margin:0 0 10px;font-size:clamp(28px,5vw,40px)}
+.desenho{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px;margin:10px 0 14px}
+.desenho svg{display:block;width:100%;height:auto;max-height:46dvh;margin:0 auto;color:var(--ink)}
+.desenho text{font-family:Barlow,'Arial Narrow',Arial,sans-serif}
+.en{font-size:19px;font-weight:600;margin:0 0 12px}
+.alts{display:flex;flex-direction:column;gap:6px}
+.alt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:2px solid var(--line);border-radius:4px;background:var(--bg);cursor:pointer;min-height:46px}
+.alt input{margin-top:4px;width:18px;height:18px;flex:none}
+.alt.c{border-color:var(--ok)}.alt.x{border-color:var(--bad)}
+.resp{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.resp input{width:9ch;font-weight:800;font-size:24px}
+.placar{display:flex;gap:20px;flex-wrap:wrap;color:var(--muted)}
+.placar b{display:block;font:800 30px/1 'Big Shoulders Display',sans-serif;color:var(--ink)}
+.erro{color:var(--bad);font-weight:600}
+.s-ink{stroke:var(--ink)}.s-mut{stroke:var(--muted)}.s-acc{stroke:var(--accent)}
+.f-ink{fill:var(--ink)}.f-mut{fill:var(--muted)}.f-acc{fill:var(--accent)}.f-ok{fill:var(--ok)}.f-bad{fill:var(--bad)}
+.f-steel{fill:#C9D2DE}.f-zone{fill:var(--zone)}.f-out{fill:var(--bad);opacity:.18}.f-panel{fill:var(--panel)}.f-bg{fill:var(--bg)}
+.f-lcd{fill:#0B1620}.f-lcdtxt{fill:#9FF0C2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .f-steel{fill:#4A6178}}
+:root[data-theme="dark"] .f-steel{fill:#4A6178}
+.tempo{font-variant-numeric:tabular-nums}
+.par{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 0}
+.par div{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+.par span{display:block;font:600 13px/1.2 Barlow,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.par b{font-weight:700}
+.fim{background:var(--ink);color:var(--bg);border-radius:6px;padding:16px 18px;margin-top:12px}
+.fim a{color:var(--bg)}
+.resumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:12px 0}
+.resumo div{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;color:var(--muted);font-size:14px}
+.resumo b{display:block;font:800 30px/1.05 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.listas p{margin:6px 0}
+.rtab{width:100%;border-collapse:collapse;font-size:15px;margin-top:10px}
+.rtab th{text-align:left;font:600 13px/1.2 Barlow,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px;border-bottom:2px solid var(--line)}
+.rtab td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+.rtab td.n{font:800 20px/1 'Big Shoulders Display',sans-serif;white-space:nowrap}
+.rtab .ctx{display:block;color:var(--muted);font-size:13.5px;margin-top:2px}
+.rtab tr.no td.res{color:var(--bad);font-weight:700}.rtab tr.ok td.res{color:var(--ok);font-weight:700}
+.rtab tr.nr td{color:var(--muted)}
+.rtab button.link{font:inherit;text-align:left;background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer}
+@media (max-width:720px){
+ .par{grid-template-columns:1fr}
+ .rtab thead{display:none}
+ .rtab tr{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;padding:10px 0;border-bottom:1px solid var(--line)}
+ .rtab td{border:0;padding:2px 0}
+ .rtab td.n{grid-row:span 5}
+ .rtab td[data-l]::before{content:attr(data-l) ': ';font-weight:600;color:var(--muted)}
+}
+.aluno{display:flex;justify-content:space-between;align-items:center;gap:8px 16px;flex-wrap:wrap;margin-bottom:10px;font-size:16px}
+.aluno b{font-size:18px}
+.aluno button{font:600 14px/1 Barlow,sans-serif;background:none;border:0;color:var(--accent);text-decoration:underline;cursor:pointer;padding:6px 0}
+.inicio{max-width:620px}
+.inicio input{width:100%}
+.inicio ul{padding-left:20px;margin:6px 0 14px}.inicio li{margin-bottom:4px}
+[hidden]{display:none!important}
+.dica{background:var(--zone);border-radius:4px;padding:8px 12px;margin:0 0 10px;font-size:16px}
+.dica b{font-weight:700}
+.nivel{display:inline-block;font:700 14px/1 Barlow,sans-serif;letter-spacing:.08em;text-transform:uppercase;background:var(--accent);color:var(--accent-ink);padding:6px 10px;border-radius:3px;margin-bottom:8px}
+
+/* Paquímetro em polegada */
+.desenho.paq{background:#1D3B5C;border-color:#1D3B5C;padding:8px 4px}
+.desenho.paq svg{max-height:40dvh}
+.resp .un{font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--muted)}
+.conta{display:inline-grid;grid-template-columns:auto auto auto;gap:2px 10px;align-items:baseline;padding:10px 16px;border-radius:6px;background:var(--panel);border:1px solid var(--line);margin-top:10px}
+.conta .tt{grid-column:1/-1;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.conta .op{font:800 26px/1.1 'Big Shoulders Display',sans-serif;color:var(--muted);text-align:right}
+.conta .v{font:800 30px/1.1 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums;text-align:right}
+.conta .lb{font-size:14px;color:var(--muted)}
+.conta hr{grid-column:1/-1;width:100%;border:0;border-top:3px solid var(--ink);margin:2px 0}
+</style>
+</head>
+<body>
+<header class="fp-top">
+  <div class="fp-in"><a class="fp-brand" href="../index.html">Fazenda <b>de Projetos</b></a><span class="fp-onde">Metrologia · Paquímetro</span></div>
+  <div class="fp-rule" aria-hidden="true"></div>
+</header>
+<main>
+<div class="top">
+  <div><span class="nivel">Avaliação</span><h1>Paquímetro Polegada Milesimal</h1>
+  <p class="sub" style="margin-bottom:0">Leia o paquímetro em polegada milesimal, separe a escala fixa e o nônio e converta para milímetro. As medidas e a ordem dos exercícios são sorteadas só para você, e o tempo de cada um é marcado. Escreva as polegadas com ponto ou vírgula, como .347 ou 1,238. O relatório aparece quando você terminar os 20.</p></div>
+</div>
+<section class="panel inicio" id="inicio" style="margin-top:14px">
+  <h2 style="margin-top:0">Antes de começar</h2>
+  <ul>
+    <li>São 20 exercícios, com medidas e ordem sorteadas só para você.</li>
+    <li>Depois de responder, você confere na hora se acertou e vê a explicação.</li>
+    <li>O tempo de cada exercício é marcado.</li>
+    <li>Cada exercício vale a primeira resposta: não dá para refazer.</li>
+    <li>O relatório aparece quando você terminar todos. Baixe o PDF e entregue ao professor.</li>
+  </ul>
+  <label class="f">Nome completo<input type="text" id="nome" autocomplete="name" maxlength="60"></label>
+  <label class="f" style="margin-top:10px">Turma<input type="text" id="turma" maxlength="20"></label>
+  <div id="imsg" aria-live="polite"></div>
+  <div class="row"><button class="act" id="comecar">Começar a avaliação</button></div>
+</section>
+<section class="panel" id="painel" style="margin-top:14px" hidden>
+  <div class="aluno"><span>Aluno: <b id="anome"></b> <span id="aturma" style="color:var(--muted)"></span></span><button id="trocar">Não é você? Trocar de aluno</button></div>
+  <div class="placar" id="placar"></div>
+  <div class="chips" id="chips" role="group" aria-label="Filtrar por tema"></div>
+  <div class="grade" id="grade" aria-label="Exercícios"></div>
+</section>
+<section class="ex" id="ex" aria-live="polite" style="margin-top:14px" hidden></section>
+<section class="panel" id="relpanel" style="margin-top:14px" hidden>
+  <h2 style="margin-top:0">Relatório</h2>
+  <p id="rcab" style="margin:0 0 4px"></p>
+  <div id="rel"></div>
+  <div id="rmsg" aria-live="polite"></div>
+  <div class="row noprint"><button class="act" id="pdf">Baixar relatório em PDF</button><button class="act ghost" id="zerar">Fazer de novo</button></div>
+  <p class="noprint" style="color:var(--muted);font-size:15px;margin:10px 0 0">Fazer de novo apaga as respostas e os tempos e sorteia novas medidas e uma nova ordem.</p>
+</section>
+<nav class="trilha noprint" aria-label="Paquímetro em polegada"><span class="t">Paquímetro em polegada milesimal</span><a href="paquimetro-polegada-milesimal.html">Simulador</a><a href="paquimetro-polegada-avaliacao.html" aria-current="page">Avaliação</a><a href="../index.html#d-metrologia">Voltar à trilha de Metrologia</a></nav>
+</main>
+<script src="../vendor/jspdf.umd.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const embaralhar=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const L1=j=>String.fromCharCode(65+j);
+
+/* ===== polegada milesimal: valores em milésimos de polegada (inteiros) ===== */
+const FD=25,PPU=2.4,LINE=330,W=2000,BX0=22,BX1=1978,VD=(FD-1)*PPU,VL=25*VD;
+const inTxt=u=>{const s=(u/1000).toFixed(3);return (u<1000?s.slice(1):s)+'"'};
+const mmTxt=u=>(u/1000*25.4).toFixed(2).replace('.',',')+' mm';
+function decomp(fx){const w=Math.floor(fx/1000),t=Math.floor(fx%1000/100),q=Math.floor(fx%100/25);
+  const p=[];if(w)p.push(w+'"');if(t)p.push(inTxt(t*100));if(q)p.push(q+' × .025"');
+  return p.length>1?p.join(' + ')+' = '+inTxt(fx):inTxt(fx)}
+function explica(u){const fx=Math.floor(u/FD)*FD,r=u%FD;
+  return `Escala fixa: ${decomp(fx)}. Nônio: ${r?r+'º traço = '+inTxt(r):'o zero coincide = .000"'}. Leitura = ${inTxt(fx)} + ${inTxt(r)} = ${inTxt(u)}.`}
+
+/* desenho igual ao do simulador: escala fixa em cima, nônio embaixo */
+function paq(u,rosa){const cam=u-300/PPU,z=(u-cam)*PPU;let h='';
+  h+=`<rect x="20" y="20" width="1960" height="310" rx="6" fill="#C9CBCD" stroke="#373435" stroke-width="5"/><g clip-path="url(#cb${u})">`;
+  const first=Math.max(0,Math.floor(cam/FD)-1),last=Math.ceil((cam+W/PPU)/FD)+1;
+  for(let m=first;m<=last;m++){const x=(m*FD-cam)*PPU;if(x<BX0||x>BX1)continue;let L,lab='',fs=0;
+    if(m%40===0){L=225;lab=m/40;fs=66}else if(m%4===0){L=185;lab=(m%40)/4;fs=40}else if(m%2===0)L=120;else L=85;
+    h+=`<line x1="${x}" x2="${x}" y1="${LINE-L}" y2="${LINE}" stroke="#2A2829" stroke-width="${m%40===0?5:3.2}"/>`;
+    const half=fs*0.32*String(lab).length+4;
+    if(lab!==''&&x-half>BX0+6&&x+half<BX1-6)h+=m%40===0
+      ?`<text x="${x}" y="${LINE-L-10}" text-anchor="middle" font-size="${fs}" font-weight="900" font-family="'Arial Black',Arial,Helvetica,sans-serif" fill="#14202B">${lab}</text>`
+      :`<text x="${x}" y="${LINE-L-10}" text-anchor="middle" font-size="${fs}" font-style="italic" font-weight="400" font-family="Georgia,'Times New Roman',serif" fill="#26303A">${lab}</text>`}
+  const inch=Math.floor(cam/1000),xi=(inch*1000-cam)*PPU;
+  if(cam>0&&xi<BX0+40)h+=`<rect x="${BX0+8}" y="${BX0+8}" width="150" height="54" rx="6" fill="#14202B" opacity=".85"/><text x="${BX0+83}" y="${BX0+46}" text-anchor="middle" font-size="34" font-weight="700" font-family="Arial,Helvetica,sans-serif" fill="#F2A93B">◂ ${inch}"</text>`;
+  h+='</g>';
+  const x0=z-110,x1=z+VL+110,yb=LINE+230;
+  h+=`<rect x="${x0}" y="${LINE}" width="${x1-x0}" height="230" fill="#E6E7E8"/><path d="M${x0} ${LINE} V${yb-6} Q${x0} ${yb} ${x0+6} ${yb} H${x1-6} Q${x1} ${yb} ${x1} ${yb-6} V${LINE}" fill="none" stroke="#373435" stroke-width="5"/>`;
+  for(let k=0;k<=25;k++){const x=z+k*VD,lb=k%5===0;
+    h+=`<line x1="${x}" x2="${x}" y1="${LINE}" y2="${LINE+(lb?120:80)}" stroke="#2A2829" stroke-width="${k===0?5:3.2}"/>`;
+    if(lb)h+=`<text x="${x}" y="${LINE+170}" text-anchor="middle" font-size="40" font-weight="700" font-family="Arial,Helvetica,sans-serif" fill="#2A2829">${k}</text>`}
+  h+=`<text x="${x1-14}" y="${LINE+214}" text-anchor="end" font-size="26" font-family="Arial,Helvetica,sans-serif" fill="#4A4849">.001 in</text>`;
+  if(rosa){const xa=z+(u%FD)*VD;h+=`<line x1="${xa}" x2="${xa}" y1="${LINE-200}" y2="${LINE+118}" stroke="#FF2E93" stroke-width="7" opacity=".6"/><circle cx="${xa}" cy="${LINE+132}" r="11" fill="#FF2E93"/>`}
+  return `<svg viewBox="0 0 2000 600" role="img" aria-label="Paquímetro em polegada milesimal${rosa?', com o traço do nônio que coincide marcado em rosa':''}"><defs><clipPath id="cb${u}"><rect x="22" y="22" width="1956" height="306"/></clipPath></defs>${h}</svg>`}
+
+/* ===== banco de exercícios (as medidas são sorteadas para cada aluno e ficam guardadas) =====
+   tipo: in (resposta em polegada), mm (resposta em milímetro, 2 casas), mc (alternativa) */
+const TEMAS=['Leitura completa','Escala fixa e nônio','Conceitos e conversão'];
+function sortearValores(){const v=[],usado=new Set();
+  const novo=(a,b,zero)=>{let u;do{u=rnd(a,b);if(zero)u=Math.floor(u/FD)*FD}while(usado.has(u)||(!zero&&u%FD===0));usado.add(u);return u};
+  /* 12 leituras completas: 4 abaixo de 1", 4 de 1" a 3", 3 de 3" a 5" e 1 com o zero do nônio coincidindo */
+  for(let i=0;i<4;i++)v.push(novo(30,990));for(let i=0;i<4;i++)v.push(novo(1010,2990));for(let i=0;i<3;i++)v.push(novo(3010,4990));v.push(novo(500,4500,true));
+  /* 4 de escala fixa e nônio separados */
+  for(let i=0;i<4;i++)v.push(novo(100,3990));
+  /* 2 conversões */
+  v.push(novo(200,2990));v.push(novo(200,2990));
+  return v}
+function montar(v){const E=[];
+  for(let i=0;i<12;i++){const u=v[i];E.push({tema:0,u,en:'Qual é a leitura do paquímetro, em polegadas?',tipo:'in',r:u,exp:explica(u)})}
+  for(let i=0;i<4;i++){const u=v[12+i],fx=Math.floor(u/FD)*FD,r=u%FD;
+    E.push(i<2?{tema:1,u,en:'Quanto marca a escala fixa, até o zero do nônio, em polegadas?',tipo:'in',r:fx,exp:`Escala fixa: ${decomp(fx)}. Os milésimos do nônio não entram nesta parte.`}
+              :{tema:1,u,rosa:true,en:'A linha rosa mostra o traço do nônio que coincide. Quanto vale a leitura do nônio, em polegadas?',tipo:'in',r,exp:`É o ${r}º traço do nônio. Cada traço vale .001", então o nônio marca ${inTxt(r)}.`})}
+  for(let i=0;i<2;i++){const u=v[16+i];E.push({tema:2,en:`Converta ${inTxt(u)} para milímetros (duas casas decimais).`,tipo:'mm',r:Math.round(u*2.54),exp:`${(u/1000).toFixed(3)} × 25,4 = ${(u/1000*25.4).toFixed(4).replace('.',',')} ≈ ${mmTxt(u)}.`})}
+  E.push({tema:2,en:'Qual é a resolução do paquímetro em polegada milesimal?',tipo:'mc',alts:['.001"','.025"','.010"','.100"'],c:0,exp:'Resolução = escala fixa ÷ divisões do nônio = .025" ÷ 25 = .001".'});
+  E.push({tema:2,en:'Na escala fixa, quanto vale cada tracinho entre os números?',tipo:'mc',alts:['.025"','.001"','.100"','.250"'],c:0,exp:'A polegada é dividida em 40 partes: 1" ÷ 40 = .025". São 4 tracinhos entre dois números pequenos.'});
+  return E}
+
+/* ===== estado ===== */
+const KEY='paq-pol-aval-v1',N=20;
+let S={f:-1,i:0,ord:[],res:{},t:{},v:[]},E=[];
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');
+  if(s&&Array.isArray(s.ord)&&s.ord.length===N&&Array.isArray(s.v)&&s.v.length===18){S.ord=s.ord;S.res=s.res||{};S.t=s.t||{};S.v=s.v;S.nome=s.nome||'';S.turma=s.turma||''}}catch(e){}
+S.nome=S.nome||'';S.turma=S.turma||'';
+if(!S.v.length){S.v=sortearValores();S.ord=embaralhar([...Array(N).keys()])}
+E=montar(S.v);
+S.i=S.ord.find(i=>!S.res[i])??S.ord[0];
+const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify({ord:S.ord,res:S.res,t:S.t,v:S.v,nome:S.nome,turma:S.turma}))}catch(e){}};
+/* polegada: aceita .347, 0.347, 0,347 e 1.238" -> milésimos */
+const parseIn=s=>{s=String(s).trim().replace(/["”″\s]|pol/gi,'').replace(',','.');if(!/^\d*\.?\d{0,4}$/.test(s)||s===''||s==='.')return null;return Math.round(parseFloat(s)*1000)};
+/* milímetro -> centésimos */
+const parseMm=s=>{s=String(s).trim().replace(/\s|mm/gi,'').replace(',','.');if(!/^\d+(\.\d{1,4})?$/.test(s))return null;return Math.round(parseFloat(s)*100)};
+const lista=()=>S.ord.filter(i=>S.f<0||E[i].tema===S.f);
+const num=i=>S.ord.indexOf(i)+1;
+
+/* ===== tempo em cada exercício: conta só com a página aberta na frente e antes de responder ===== */
+let t0=null,tId=null;
+const iniciar=()=>{if(t0!==null||!S.nome||S.res[S.i]||document.hidden)return;t0=performance.now();tId=S.i};
+const parar=()=>{if(t0===null)return;S.t[tId]=(S.t[tId]||0)+(performance.now()-t0);t0=null;salvar()};
+const gasto=i=>(S.t[i]||0)+(t0!==null&&tId===i?performance.now()-t0:0);
+const ftempo=ms=>{const s=Math.round(ms/1000);if(s<60)return s+' s';const m=Math.floor(s/60),r=s%60;if(m<60)return m+' min'+(r?' '+String(r).padStart(2,'0')+' s':'');return Math.floor(m/60)+' h '+String(m%60).padStart(2,'0')+' min'};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)parar();else iniciar()});
+window.addEventListener('pagehide',parar);
+setInterval(()=>{if(t0!==null){parar();iniciar()}const el=$('tvivo');if(el)el.textContent=ftempo(gasto(S.i))},1000);
+
+/* ===== respostas por extenso ===== */
+const txtResp=(e,r)=>e.tipo==='in'?(parseIn(r)===null?String(r):inTxt(parseIn(r))):e.tipo==='mm'?(parseMm(r)===null?String(r):(parseMm(r)/100).toFixed(2).replace('.',',')+' mm'):e.alts[r];
+const txtCerta=e=>e.tipo==='in'?inTxt(e.r):e.tipo==='mm'?(e.r/100).toFixed(2).replace('.',',')+' mm':e.alts[e.c];
+const ctx=e=>e.tema===0?'paquímetro em '+inTxt(e.u):e.tema===1?'paquímetro em '+inTxt(e.u):'';
+
+/* conta armada da resposta certa: escala fixa + nônio = leitura */
+function armada(u){const fx=Math.floor(u/FD)*FD;return `<div class="conta"><span class="tt">Conta armada</span><span class="op"></span><span class="v">${inTxt(fx)}</span><span class="lb">escala fixa</span><span class="op">+</span><span class="v">${inTxt(u%FD)}</span><span class="lb">nônio</span><hr><span class="op">=</span><span class="v">${inTxt(u)}</span><span class="lb">leitura</span></div>`}
+
+function placar(){const n=Object.keys(S.res).length;$('placar').innerHTML=`<span>Respondidos<b>${n}/${N}</b></span><span>Faltam<b class="num">${N-n}</b></span>`}
+function chips(){$('chips').innerHTML=[['-1','Todos']].concat(TEMAS.map((t,i)=>[i,t])).map(([v,t])=>`<button data-f="${v}" aria-pressed="${+v===S.f}">${t}</button>`).join('')}
+function grade(){$('grade').innerHTML=lista().map(i=>{const r=S.res[i];return `<button data-i="${i}" class="${r?(r.ok?'ok':'no'):''}" aria-current="${i===S.i}" aria-label="Exercício ${num(i)}${r?(r.ok?', acertou':', errou'):''}">${num(i)}</button>`}).join('')}
+
+function render(){const e=E[S.i],r=S.res[S.i],done=!!r;placar();grade();
+  let corpo='';
+  if(e.tipo==='in')corpo=`<div class="resp"><input type="text" id="ans" inputmode="decimal" maxlength="10" placeholder=".000" value="${done?esc(r.r):''}" ${done?'disabled':''} aria-label="Sua resposta em polegadas"><span class="un">"</span></div>`;
+  else if(e.tipo==='mm')corpo=`<div class="resp"><input type="text" id="ans" inputmode="decimal" maxlength="10" value="${done?esc(r.r):''}" ${done?'disabled':''} aria-label="Sua resposta em milímetros"><span>mm</span></div>`;
+  else corpo=`<div class="alts">${e.alts.map((a,j)=>{const sel=done&&r.r===j,cls=done?(j===e.c?'c':(sel?'x':'')):'';
+    return `<label class="alt ${cls}"><input type="radio" name="alt" value="${j}" ${sel?'checked':''} ${done?'disabled':''}><span>${L1(j)}) ${esc(a)}</span></label>`}).join('')}</div>`;
+  const L=lista(),pos=L.indexOf(S.i),todos=Object.keys(S.res).length===N;
+  $('ex').innerHTML=`<div class="cab"><span>Exercício ${num(S.i)} de ${N}</span><span>${TEMAS[e.tema]}</span><span>Tempo: <span class="tempo" id="${done?'':'tvivo'}">${ftempo(gasto(S.i))}</span></span></div>
+   ${e.u!==undefined?`<div class="desenho paq">${paq(e.u,e.rosa)}</div>`:''}
+   <p class="dica"><b>Leitura</b> = escala fixa (até o zero do nônio) + traço do nônio que coincide × .001"</p><p class="en">${esc(e.en)}</p>${corpo}
+   ${done?`<div class="fb ${r.ok?'ok':'no'}"><b>${r.ok?'Certo!':'Não foi dessa vez.'}</b> ${esc(e.exp)}
+     <div class="par"><div><span>Sua resposta</span><b class="${r.ok?'okc':'noc'}">${esc(txtResp(e,r.r))}</b></div><div><span>Resposta correta</span><b>${esc(txtCerta(e))}</b></div></div>
+     ${e.u!==undefined?armada(e.u):''}</div>`:'<div id="emsg"></div>'}
+   <div class="row">${done?'':`<button class="act" id="conf">Conferir</button>`}
+   <button class="act ghost" id="ant" ${pos<=0?'disabled':''}>Anterior</button><button class="act ${done?'':'ghost'}" id="prox" ${pos>=L.length-1?'disabled':''}>Próximo</button></div>
+   ${todos?`<div class="fim"><b>Você respondeu os ${N} exercícios.</b> O seu relatório já está pronto logo abaixo. Baixe o PDF e entregue ao professor. <button class="act" id="verrel" style="margin-top:10px">Ver relatório</button></div>`:''}`;
+  if(!done){$('conf').onclick=conferir;const a=$('ans');if(a)a.onkeydown=ev=>{if(ev.key==='Enter')conferir()}}
+  if(todos)$('verrel').onclick=()=>$('relpanel').scrollIntoView({behavior:'smooth',block:'start'});
+  $('ant').onclick=()=>ir(L[pos-1]);$('prox').onclick=()=>ir(L[pos+1]);
+  $('relpanel').hidden=!todos;if(todos)relatorio();iniciar()}
+function ir(i){if(i===undefined)return;parar();S.i=i;render();$('ex').scrollIntoView({behavior:'smooth',block:'start'})}
+
+function conferir(){const e=E[S.i];let r,ok;
+  if(e.tipo==='in'){r=$('ans').value.trim();const v=parseIn(r);if(v===null){$('emsg').innerHTML='<p class="erro">Digite a medida em polegadas, como .347 ou 1.238.</p>';$('ans').focus();return}ok=v===e.r}
+  else if(e.tipo==='mm'){r=$('ans').value.trim();const v=parseMm(r);if(v===null){$('emsg').innerHTML='<p class="erro">Digite um número, como 24,51.</p>';$('ans').focus();return}ok=Math.abs(v-e.r)<=1}
+  else{const s=document.querySelector('input[name=alt]:checked');if(!s){$('emsg').innerHTML='<p class="erro">Escolha uma alternativa.</p>';return}r=+s.value;ok=r===e.c}
+  parar();S.res[S.i]={ok,r};salvar();render()}
+
+/* ===== relatório na tela ===== */
+function dados(){const resp=S.ord.filter(i=>S.res[i]),ok=resp.filter(i=>S.res[i].ok),err=resp.filter(i=>!S.res[i].ok);
+  const tt=S.ord.reduce((a,i)=>a+gasto(i),0),tr=resp.reduce((a,i)=>a+gasto(i),0);
+  return {resp,ok,err,tt,med:resp.length?tr/resp.length:0,pct:resp.length?Math.round(ok.length/resp.length*100):0}}
+function relatorio(){const d=dados();$('rcab').innerHTML=`<b>${esc(S.nome)}</b>${S.turma?' · Turma '+esc(S.turma):''} · ${new Date().toLocaleDateString('pt-BR')}`;
+  const nums=a=>a.length?a.map(num).sort((x,y)=>x-y).join(', '):'nenhum';
+  $('rel').innerHTML=`<div class="resumo">
+     <div>Nota<b>${d.ok.length}/${N}</b></div><div>Acertos<b style="color:var(--ok)">${d.ok.length}</b></div><div>Erros<b style="color:var(--bad)">${d.err.length}</b></div>
+     <div>Aproveitamento<b>${d.pct}%</b></div><div>Tempo total<b>${ftempo(d.tt)}</b></div><div>Média por exercício<b>${ftempo(d.med)}</b></div></div>
+   <div class="listas"><p><b class="okc">Acertou:</b> ${nums(d.ok)}</p><p><b class="noc">Errou:</b> ${nums(d.err)}</p>${d.resp.length<N?`<p><b>Falta responder:</b> ${nums(S.ord.filter(i=>!S.res[i]))}</p>`:''}</div>
+   <table class="rtab"><thead><tr><th>Nº</th><th>Exercício</th><th>Sua resposta</th><th>Resposta correta</th><th>Resultado</th><th>Tempo</th></tr></thead><tbody>
+   ${S.ord.map(i=>{const e=E[i],r=S.res[i];
+     return `<tr class="${r?(r.ok?'ok':'no'):'nr'}"><td class="n">${num(i)}</td><td><button class="link" data-ir="${i}">${esc(e.en)}</button><span class="ctx">${esc(ctx(e))}</span></td>
+       <td data-l="Sua resposta">${r?esc(txtResp(e,r.r)):'—'}</td><td data-l="Correta">${r?esc(txtCerta(e)):'—'}</td>
+       <td class="res" data-l="Resultado">${r?(r.ok?'Acertou':'Errou'):'Não respondido'}</td><td data-l="Tempo" class="tempo">${ftempo(gasto(i))}</td></tr>`}).join('')}
+   </tbody></table>`}
+$('rel').addEventListener('click',ev=>{const b=ev.target.closest('[data-ir]');if(!b)return;S.f=-1;chips();ir(+b.dataset.ir)});
+
+$('chips').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;S.f=+b.dataset.f;chips();const L=lista();if(!L.includes(S.i)){parar();S.i=L[0]}render()});
+$('grade').addEventListener('click',ev=>{const b=ev.target.closest('button');if(b)ir(+b.dataset.i)});
+const novo=()=>{t0=null;S.res={};S.t={};S.v=sortearValores();E=montar(S.v);S.ord=embaralhar([...Array(N).keys()]);S.f=-1;S.i=S.ord[0]};
+$('zerar').onclick=()=>{if(confirm('Apagar todas as respostas e os tempos e começar de novo, com novas medidas e outra ordem?')){novo();salvar();chips();render();window.scrollTo(0,0)}};
+$('trocar').onclick=()=>{if(confirm('Trocar de aluno apaga tudo o que foi respondido neste aparelho. Continuar?')){novo();S.nome='';S.turma='';salvar();tela();window.scrollTo(0,0)}};
+function tela(){const ok=!!S.nome;$('inicio').hidden=ok;$('painel').hidden=!ok;$('ex').hidden=!ok;
+  if(!ok){$('relpanel').hidden=true;$('nome').value='';$('turma').value='';return}
+  $('anome').textContent=S.nome;$('aturma').textContent=S.turma?'· Turma '+S.turma:'';chips();render()}
+$('comecar').onclick=()=>{const n=$('nome').value.trim().replace(/\s+/g,' '),t=$('turma').value.trim();
+  if(n.length<3||!/\s/.test(n)){$('imsg').innerHTML='<p class="erro">Escreva o seu nome completo (nome e sobrenome).</p>';$('nome').focus();return}
+  if(!t){$('imsg').innerHTML='<p class="erro">Escreva a sua turma.</p>';$('turma').focus();return}
+  S.nome=n;S.turma=t;salvar();tela();window.scrollTo(0,0)};
+$('nome').addEventListener('keydown',e=>{if(e.key==='Enter')$('turma').focus()});
+$('turma').addEventListener('keydown',e=>{if(e.key==='Enter')$('comecar').click()});
+
+/* ===== relatório em PDF ===== */
+$('pdf').onclick=()=>{
+  if(!window.jspdf||!window.jspdf.jsPDF){$('rmsg').innerHTML='<p class="erro">O gerador de PDF não carregou. Confira a internet e recarregue a página.</p>';return}
+  if(Object.keys(S.res).length<N){$('rmsg').innerHTML='<p class="erro">Termine todos os exercícios antes de baixar o relatório.</p>';return}
+  parar();iniciar();
+  const d=dados();
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),X=15,W=180;let y=18;
+  const t=s=>String(s).replace(/−/g,'-').replace(/÷/g,'/').replace(/×/g,'x').replace(/≈/g,'~');
+  const linha=(s,sz=10.5,b=false,c=[20,32,43],ind=0)=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...c);doc.splitTextToSize(t(s),W-ind).forEach(l=>{if(y>284){doc.addPage();y=18}doc.text(l,X+ind,y);y+=sz*.45})};
+  const nums=a=>a.length?a.map(num).sort((x,y)=>x-y).join(', '):'nenhum';
+  doc.setFillColor(168,84,0);doc.rect(0,0,210,6,'F');
+  linha('FAZENDA DE PROJETOS · Metrologia · Paquímetro',9,true,[79,95,108]);y+=1;
+  linha(`Avaliação: Paquímetro Polegada Milesimal (${N} exercícios)`,16,true);y+=2;
+  linha(`Nome: ${S.nome}    Turma: ${S.turma||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`,10);y+=2;
+  linha(`Nota: ${d.ok.length} de ${N}    Acertos: ${d.ok.length}    Erros: ${d.err.length}    Aproveitamento: ${d.pct}%`,12,true,d.pct>=70?[23,112,63]:[179,38,30]);
+  linha(`Tempo total: ${ftempo(d.tt)}    Tempo médio por exercício: ${ftempo(d.med)}`,10.5);y+=2;
+  linha(`Acertou: ${nums(d.ok)}`,10,true,[23,112,63]);
+  linha(`Errou: ${nums(d.err)}`,10,true,[179,38,30]);
+  y+=2;TEMAS.forEach((tm,k)=>{const ids=S.ord.filter(i=>E[i].tema===k),a=ids.filter(i=>S.res[i]&&S.res[i].ok);linha(`${tm}: ${a.length} de ${ids.length}`,9.5)});
+  y+=4;
+  const cols=[['Nº',9],['Exercício',63],['Sua resposta',34],['Resposta correta',34],['Resultado',20],['Tempo',20]],FS=8.5,LH=3.7;
+  const cab=()=>{doc.setFillColor(29,59,92);doc.rect(X,y-4.3,W,6.4,'F');doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(255,255,255);let x=X+1.5;cols.forEach(([n,w])=>{doc.text(n,x,y);x+=w});y+=5};
+  if(y>250){doc.addPage();y=18}cab();
+  S.ord.forEach((i,k)=>{const e=E[i],r=S.res[i];
+    const cel=[String(num(i)),e.en+(ctx(e)?' ('+ctx(e)+')':''),r?txtResp(e,r.r):'—',r?txtCerta(e):'—',r?(r.ok?'Acertou':'Errou'):'Não respondido',ftempo(gasto(i))];
+    doc.setFontSize(FS);const ls=cel.map((c,j)=>doc.splitTextToSize(t(c),cols[j][1]-3));const h=Math.max(...ls.map(l=>l.length))*LH+2.4;
+    if(y+h>288){doc.addPage();y=18;cab()}
+    if(k%2){doc.setFillColor(238,242,245);doc.rect(X,y-3.6,W,h,'F')}
+    let x=X+1.5;ls.forEach((l,j)=>{const cor=j===4&&r?(r.ok?[23,112,63]:[179,38,30]):j===2&&r&&!r.ok?[179,38,30]:[20,32,43];
+      doc.setFont('helvetica',j===0||j===4?'bold':'normal');doc.setTextColor(...cor);doc.text(l,x,y);x+=cols[j][1]});
+    y+=h});
+  const nm=S.nome.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  doc.save(`avaliacao-paquimetro-polegada-${nm||'aluno'}.pdf`);$('rmsg').innerHTML='<p class="okc">PDF gerado. Confira nos downloads.</p>'};
+
+tela();salvar();
+</script>
+</body>
+</html>

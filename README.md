@@ -15,7 +15,9 @@ O site começa por Metrologia. Desenho Mecânico entra em seguida.
 | `metrologia/paquimetro-nonio-50.html` | Simulador de leitura, nônio de 50 divisões (0,02 mm) |
 | `metrologia/paquimetro-jogo-fases.html` | Jogo "Domine o Paquímetro", em 5 fases |
 | `metrologia/aula-pratica-medicao.html` | Aula prática: folha de medição com régua e paquímetro, sem nota |
+| `metrologia/paquimetro-polegada-milesimal.html` | Simulador Paquímetro Polegada Milesimal (.001"): explorar, básico, médio e avançado |
 | `metrologia/paquimetro-avaliacao.html` | Avaliação de paquímetro: 60 leituras e 10 questões, 50 pontos |
+| `metrologia/paquimetro-polegada-avaliacao.html` | Avaliação Paquímetro Polegada Milesimal: 20 exercícios sorteados, relatório em PDF |
 | `vendor/jspdf.umd.min.js` | Biblioteca jsPDF 2.5.1 (licença MIT), usada para gerar os PDFs |
 
 São arquivos HTML comuns, sem etapa de montagem: o que está aqui é o que o navegador abre.

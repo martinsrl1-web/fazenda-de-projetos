@@ -1,0 +1,299 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Paquímetro Polegada Milesimal</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<style>
+:root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--bad:#B3261E;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80}}
+:root[data-theme="dark"]{--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.5 Barlow,'Arial Narrow',Arial,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 40px}
+h1{font:800 clamp(36px,8vw,60px)/.95 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 14px;max-width:66ch}
+.stage{background:#1D3B5C;border-radius:6px;padding:10px 4px 4px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+.stage svg{display:block;width:100%;height:auto;margin:0 auto}
+#zoom{cursor:grab;max-height:50dvh}#zoom.fixed{cursor:default}#zoom.drag{cursor:grabbing}
+.ctl{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:8px 0 4px}
+.ctl button{font:700 18px/1 'Big Shoulders Display','Arial Narrow',sans-serif;min-width:62px;min-height:44px;padding:0 8px;border-radius:4px;border:1px solid #4E6E8E;background:#24486E;color:#E8EEF3;cursor:pointer;font-variant-numeric:tabular-nums}
+.ctl button:disabled{opacity:.35;cursor:default}
+.ctl i{width:12px}
+.rot{display:none;color:#BFD3E6;font-size:14px;text-align:center;margin:2px 0 0}
+.tabs{display:flex;margin:14px 0 12px;border:2px solid var(--ink);border-radius:4px;overflow:hidden;width:fit-content;max-width:100%}
+.tabs button{font:700 20px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:11px 18px;min-height:48px;background:transparent;color:var(--ink);border:0;cursor:pointer}
+.tabs button+button{border-left:2px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.big{font:800 clamp(48px,12vw,88px)/.95 'Big Shoulders Display','Arial Narrow',sans-serif;font-variant-numeric:tabular-nums}
+.big small{font-size:.38em;margin-left:.2em;color:var(--muted)}
+.stats{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.stats b{display:block;font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+button.act{font:700 19px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:13px 22px;min-height:48px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+input.n{font:800 40px/1 'Big Shoulders Display',sans-serif;min-height:54px;padding:4px 8px;border:2px solid var(--ink);border-radius:4px;background:var(--bg);color:var(--ink);text-align:right;width:6.5ch}
+.fin{display:inline-flex;align-items:center;gap:8px}
+.unit{font:800 30px/1 'Big Shoulders Display',sans-serif;color:var(--muted)}
+.soma{display:grid;grid-template-columns:auto auto auto;gap:8px 12px;align-items:center;justify-content:start;margin-top:10px}
+.soma .op{font:800 34px/1 'Big Shoulders Display',sans-serif;color:var(--muted);text-align:right}
+.soma .lb{font-size:15px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.soma hr{grid-column:1/-1;width:100%;border:0;border-top:3px solid var(--ink);margin:2px 0}
+.soma output{font:800 44px/1 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums;text-align:right;padding-right:10px}
+.contas{display:flex;gap:16px 36px;flex-wrap:wrap;margin-top:10px}
+.conta{display:grid;grid-template-columns:auto auto auto;gap:2px 10px;align-items:baseline;padding:10px 16px;border-radius:6px;background:var(--panel);border:1px solid var(--line)}
+.conta .tt{grid-column:1/-1;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.conta .op{font:800 30px/1.1 'Big Shoulders Display',sans-serif;color:var(--muted);text-align:right}
+.conta .v{font:800 34px/1.1 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums;text-align:right}
+.conta .m{font-size:14px;font-weight:700}
+.conta .m.ok{color:var(--ok)}.conta .m.no{color:var(--bad)}
+.conta .v.no{color:var(--bad);text-decoration:line-through;text-decoration-thickness:2px}
+.conta hr{grid-column:1/-1;width:100%;border:0;border-top:3px solid var(--ink);margin:2px 0}
+.lbl{font-size:14px;color:var(--muted);display:block;margin-bottom:2px;letter-spacing:.06em;text-transform:uppercase}
+.fb{margin-top:12px;padding:12px 14px;border-left:6px solid var(--line);background:var(--bg);border-radius:0 4px 4px 0}
+.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.eq{color:var(--muted);margin:8px 0 0}.eq b{color:var(--ink)}
+label.chk{display:flex;gap:8px;align-items:center;cursor:pointer}
+details.how{margin-top:12px;border-top:1px solid var(--line);padding-top:8px;color:var(--muted)}
+details.how summary{cursor:pointer;font-weight:600;color:var(--ink)}
+details.how ol{margin:6px 0 0;padding-left:22px}
+.copied{color:var(--ok);font-weight:700;margin-left:8px}
+.task{display:inline-block;font:700 14px/1 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:var(--bg);padding:5px 8px;border-radius:3px;margin-bottom:8px}
+@media (max-width:640px){.tabs{width:100%}.tabs button{flex:1;padding:11px 4px;font-size:17px}.row .act{flex:1 1 auto}.ctl button{min-width:56px;font-size:16px}.ctl i{display:none}}
+@media (orientation:portrait) and (max-width:640px){.rot{display:block}}
+@media (orientation:landscape) and (max-height:820px){
+ main{padding:10px 18px 18px;max-width:1200px}h1{font-size:34px;margin:0 0 6px}.sub{display:none}
+ #zoom{max-height:44dvh}.tabs{margin:8px 0}.tabs button{padding:8px 16px;min-height:42px;font-size:18px}
+ .panel{padding:12px 16px}.stats{margin-bottom:6px}.stats b{font-size:24px}.big{font-size:54px}.row{margin-top:8px}.fb{margin-top:8px;padding:8px 12px}
+}
+@media (prefers-reduced-motion:no-preference){.fb{animation:pop .18s ease-out}@keyframes pop{from{transform:translateY(4px);opacity:.4}}}
+
+/* Cabeçalho comum do site Fazenda de Projetos */
+.fp-in{max-width:1000px;margin-inline:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.fp-brand{font:800 27px/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.fp-brand b{color:var(--accent);font-weight:800}
+.fp-onde{font:600 13.5px/1.2 Barlow,'Arial Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fp-rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+</style>
+</head>
+<body>
+<header class="fp-top">
+  <div class="fp-in"><a class="fp-brand" href="../index.html">Fazenda <b>de Projetos</b></a><span class="fp-onde">Metrologia · Paquímetro</span></div>
+  <div class="fp-rule" aria-hidden="true"></div>
+</header>
+<main>
+<h1>Paquímetro Polegada Milesimal</h1>
+<p class="sub">Escala fixa com divisões de .025" (40 por polegada) e nônio de 25 divisões: resolução de .001". Arraste a escala, ou use os botões, e encontre o traço do nônio que coincide com a escala fixa.</p>
+<div class="stage">
+  <svg id="zoom" viewBox="0 0 2000 600" xmlns="http://www.w3.org/2000/svg" role="slider" tabindex="0" aria-label="Escala fixa e nônio: arraste para mover o cursor">
+    <defs><clipPath id="cb"><rect x="22" y="22" width="1956" height="306"/></clipPath></defs>
+    <rect x="20" y="20" width="1960" height="310" rx="6" fill="#C9CBCD" stroke="#373435" stroke-width="5"/>
+    <g id="beam" clip-path="url(#cb)"></g>
+    <g id="plate"></g>
+    <g id="guide" stroke-linecap="round"></g>
+  </svg>
+  <div class="ctl" id="ctl">
+    <button data-d="-1000" aria-label="Fechar 1 polegada">−1"</button>
+    <button data-d="-100" aria-label="Fechar .100 polegada">−.100</button>
+    <button data-d="-25" aria-label="Fechar .025 polegada">−.025</button>
+    <button data-d="-1" aria-label="Fechar .001 polegada">−.001</button>
+    <i></i>
+    <button data-d="1" aria-label="Abrir .001 polegada">+.001</button>
+    <button data-d="25" aria-label="Abrir .025 polegada">+.025</button>
+    <button data-d="100" aria-label="Abrir .100 polegada">+.100</button>
+    <button data-d="1000" aria-label="Abrir 1 polegada">+1"</button>
+  </div>
+  <p class="rot">Gire o celular para ver a escala maior.</p>
+</div>
+<div class="tabs" role="tablist" aria-label="Modo">
+  <button role="tab" data-m="explore">Explorar</button>
+  <button role="tab" data-m="basic">Básico</button>
+  <button role="tab" data-m="medio">Médio</button>
+  <button role="tab" data-m="avancado">Avançado</button>
+</div>
+<section class="panel" id="panel" aria-live="polite"></section>
+</main>
+<script>
+/* Polegada milesimal: escala fixa .025" (25 milésimos), nônio de 25 divisões -> resolução .001".
+   A posição do cursor (S.p) é sempre um número inteiro de milésimos de polegada. */
+const FD=25,ND=25,PPU=2.4,MAX=5500,ZX=300,MARG=145,ROUNDS=10,LINE=330,W=2000;
+const BX0=22,BX1=1978;           /* limites internos da escala fixa */
+const $=id=>document.getElementById(id),P=$('panel'),Z=$('zoom');
+const S={mode:'explore',p:1721,cam:0,target:0,task:'read',round:1,score:0,correct:0,streak:0,best:0,done:false,answered:false,hint:false,guide:true,last:null};
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+
+/* ---------- formatação ---------- */
+function inTxt(u){const s=(u/1000).toFixed(3);return (u<1000?s.slice(1):s)+'"'}
+const mm=u=>u/1000*25.4;
+const mmTxt=v=>v.toFixed(2).replace('.',',')+' mm';
+function explain(u){const n=Math.floor(u/FD),r=u%FD;
+  return `Escala fixa: <b>${n}</b> divisões de .025" = <b>${inTxt(n*FD)}</b>. Nônio: ${r?`${r}º traço coincide = <b>${inTxt(r)}</b>`:'o zero coincide, nada a somar'}. Leitura = ${inTxt(n*FD)} + ${inTxt(r)} = <b>${inTxt(u)}</b>`}
+
+/* ---------- desenho ---------- */
+const VD=(FD-1)*PPU,VL=ND*VD;   /* distância entre traços do nônio e comprimento do nônio */
+const zeroX=()=>(S.p-S.cam)*PPU;
+function follow(){const x=zeroX();if(x<MARG)S.cam=S.p-MARG/PPU;else if(x>W-VL-MARG)S.cam=S.p-(W-VL-MARG)/PPU}
+const centerCam=()=>{S.cam=S.p-ZX/PPU};
+
+function drawBeam(){let h='';
+  const first=Math.max(0,Math.floor(S.cam/FD)-1),last=Math.ceil((S.cam+W/PPU)/FD)+1,maxm=Math.round(6.5*1000/FD);
+  for(let m=first;m<=Math.min(last,maxm);m++){const x=(m*FD-S.cam)*PPU;if(x<BX0||x>BX1)continue;
+    let L,lab='',fs=0;
+    if(m%40===0){L=225;lab=m/40;fs=66}else if(m%4===0){L=185;lab=(m%40)/4;fs=40}else if(m%2===0)L=120;else L=85;
+    h+=`<line x1="${x}" x2="${x}" y1="${LINE-L}" y2="${LINE}" stroke="#2A2829" stroke-width="${m%40===0?5:3.2}"/>`;
+    /* número só aparece se couber inteiro dentro da escala fixa */
+    const half=fs*0.32*String(lab).length+4;
+    if(lab!==''&&x-half>BX0+6&&x+half<BX1-6)h+=m%40===0
+      ?`<text x="${x}" y="${LINE-L-10}" text-anchor="middle" font-size="${fs}" font-weight="900" font-family="'Arial Black',Arial,Helvetica,sans-serif" fill="#14202B">${lab}</text>`
+      :`<text x="${x}" y="${LINE-L-10}" text-anchor="middle" font-size="${fs}" font-style="italic" font-weight="400" font-family="Georgia,'Times New Roman',serif" fill="#26303A">${lab}</text>`}
+  /* a polegada inteira ficou fora da área visível? mostra uma etiqueta no canto da escala fixa */
+  const inch=Math.floor(S.cam/1000),xi=(inch*1000-S.cam)*PPU;
+  if(S.cam>0&&xi<BX0+40)h+=`<rect x="${BX0+8}" y="${BX0+8}" width="150" height="54" rx="6" fill="#14202B" opacity=".85"/><text x="${BX0+83}" y="${BX0+46}" text-anchor="middle" font-size="34" font-weight="700" font-family="Arial,Helvetica,sans-serif" fill="#F2A93B">◂ ${inch}"</text>`;
+  $('beam').innerHTML=h}
+
+function drawPlate(){const z=zeroX(),x0=z-110,x1=z+VL+110;
+  const yb=LINE+230;
+  let h=`<rect x="${x0}" y="${LINE}" width="${x1-x0}" height="230" fill="#E6E7E8"/>`;
+  h+=`<path d="M${x0} ${LINE} V${yb-6} Q${x0} ${yb} ${x0+6} ${yb} H${x1-6} Q${x1} ${yb} ${x1} ${yb-6} V${LINE}" fill="none" stroke="#373435" stroke-width="5"/>`;
+  for(let k=0;k<=ND;k++){const x=z+k*VD,lab=k%5===0;
+    h+=`<line x1="${x}" x2="${x}" y1="${LINE}" y2="${LINE+(lab?120:80)}" stroke="#2A2829" stroke-width="${k===0?5:3.2}"/>`;
+    if(lab)h+=`<text x="${x}" y="${LINE+170}" text-anchor="middle" font-size="40" font-weight="700" font-family="Arial,Helvetica,sans-serif" fill="#2A2829">${k}</text>`}
+  h+=`<text x="${x1-14}" y="${LINE+214}" text-anchor="end" font-size="26" font-family="Arial,Helvetica,sans-serif" fill="#4A4849">.001 in</text>`;
+  $('plate').innerHTML=h}
+
+/* guias: tracejado = último traço da escala fixa antes do zero; linha cheia = traço do nônio que coincide.
+   Ficam sempre dentro da escala fixa e do nônio. */
+function drawGuide(){const n=Math.floor(S.p/FD),r=S.p%FD,z=zeroX();let g='';
+  const full=S.mode==='explore'?S.guide:S.answered,showHint=S.hint&&!S.answered,pink=S.mode==='basic'&&!S.answered&&S.task==='read';
+  if(full||showHint){const xm=(n*FD-S.cam)*PPU;if(xm>BX0&&xm<BX1)g+=`<line x1="${xm}" x2="${xm}" y1="${LINE-240}" y2="${LINE-4}" stroke="#E07B00" stroke-width="7" stroke-dasharray="20 14" opacity=".85"/>`}
+  if(full||pink){const xa=z+r*VD,col=pink?'#FF2E93':'#E07B00';
+    g+=`<line x1="${xa}" x2="${xa}" y1="${LINE-200}" y2="${LINE+118}" stroke="${col}" stroke-width="7" opacity=".6"/><circle cx="${xa}" cy="${LINE+132}" r="11" fill="${col}"/>`}
+  $('guide').innerHTML=g}
+
+function draw(){drawBeam();drawPlate();drawGuide();
+  const can=canMove();Z.classList.toggle('fixed',!can);
+  document.querySelectorAll('#ctl button').forEach(b=>b.disabled=!can);
+  Z.setAttribute('aria-valuetext',can?inTxt(S.p):'cursor fixo')}
+
+/* ---------- movimento ---------- */
+const canMove=()=>S.mode==='explore'||(S.task==='adjust'&&!S.answered&&!S.done);
+function setP(p){p=Math.max(0,Math.min(MAX,Math.round(p)));if(p===S.p)return;S.p=p;follow();draw();if(S.mode==='explore')panelExplore()}
+const svgX=e=>{const pt=Z.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;return pt.matrixTransform(Z.getScreenCTM().inverse()).x};
+let drag=null;
+Z.addEventListener('pointerdown',e=>{if(!canMove())return;drag={x:svgX(e),p:S.p};Z.setPointerCapture(e.pointerId);Z.classList.add('drag');Z.focus()});
+Z.addEventListener('pointermove',e=>{if(drag)setP(drag.p+(svgX(e)-drag.x)/PPU)});
+['pointerup','pointercancel'].forEach(v=>Z.addEventListener(v,()=>{drag=null;Z.classList.remove('drag')}));
+Z.addEventListener('keydown',e=>{if(!canMove())return;const d={ArrowLeft:-1,ArrowDown:-1,ArrowRight:1,ArrowUp:1,PageUp:FD,PageDown:-FD}[e.key];if(d){e.preventDefault();setP(S.p+d)}});
+document.querySelectorAll('#ctl button').forEach(b=>b.onclick=()=>setP(S.p+ +b.dataset.d));
+
+/* ---------- respostas ---------- */
+function readIn(id){const s=($(id).value||'').trim().replace(',','.').replace(/"$/,'');if(s===''||!/^\d*\.?\d*$/.test(s))return null;const v=parseFloat(s);return isNaN(v)?null:{u:v*1000,txt:inTxt(Math.round(v*1000))}}
+function readMm(){const v=parseFloat(($('amm').value||'').trim().replace(',','.'));return isNaN(v)?null:v}
+const ansHTML=`<span class="fin"><input class="n" id="am" inputmode="decimal" autocomplete="off" aria-label="Leitura em polegadas" placeholder=".000"><span class="unit">"</span></span>`;
+const howTo=`<details class="how"><summary>Como ler (passo a passo)</summary><ol>
+<li>Leia a escala fixa até o zero do nônio: polegada inteira (número grande), décimos (números pequenos, cada um vale .100") e quantos tracinhos de .025" passaram depois do último número.</li>
+<li>Ache o traço do nônio que coincide com um traço da escala fixa. Cada traço do nônio vale .001".</li>
+<li>Some as duas leituras. Ex.: 1.700" + .021" = 1.721".</li></ol></details>`;
+
+/* ---------- Explorar ---------- */
+function panelExplore(){
+  P.innerHTML=`<div class="big">${inTxt(S.p)}</div><p class="eq">${explain(S.p)}</p>
+  <p class="eq">Em milímetros: <b>${mmTxt(mm(S.p))}</b> (× 25,4)</p>
+  <div class="row"><label class="chk"><input type="checkbox" id="g" ${S.guide?'checked':''}> Mostrar guias</label><button class="act ghost" id="rz">Fechar (zerar)</button></div>${howTo}`;
+  $('g').onchange=e=>{S.guide=e.target.checked;draw()};
+  $('rz').onclick=()=>{S.p=0;S.cam=-MARG/PPU;draw();panelExplore()}}
+
+/* ---------- jogo ---------- */
+function genValue(){let lo,hi;
+  if(S.mode==='basic'){lo=1;hi=999}else if(S.mode==='medio'){lo=FD;hi=4000}else{lo=500;hi=MAX-10}
+  let u;do{u=rnd(lo,hi)}while(u===S.p||(S.mode!=='basic'&&u%FD===0&&Math.random()<.8));return u}
+function newRound(){S.answered=false;S.hint=false;S.last=null;
+  S.task=S.mode==='avancado'?(S.round%2?'adjust':'convert'):'read';
+  if(S.task==='adjust'){S.target=genValue();S.p=rnd(0,300)}else S.p=genValue();
+  centerCam();draw()}
+function startGame(){S.round=1;S.score=0;S.correct=0;S.streak=0;S.done=false;newRound();panelGame()}
+const key=()=>`paqpol-ml-${S.mode}`;
+function loadBest(){try{S.best=+localStorage.getItem(key())||0}catch(e){S.best=0}}
+const stats=()=>`<div class="stats"><span>Rodada<b>${Math.min(S.round,ROUNDS)}/${ROUNDS}</b></span><span>Pontos<b>${S.score}</b></span><span>Sequência<b>${S.streak}</b></span><span>Recorde<b>${S.best}</b></span></div>`;
+const levelName={basic:'Básico',medio:'Médio',avancado:'Avançado'};
+
+function record(pts,ok,last){S.answered=true;S.score+=pts;S.streak=ok?S.streak+1:0;if(ok)S.correct++;S.last=last;draw();panelGame();const n=$('next');if(n)n.focus()}
+function checkRead(){const a=readIn('am');if(!a){$('am').focus();return}
+  const d=Math.abs(a.u-S.p),exact=d<1e-6,near=!exact&&d<=1+1e-6;
+  let pts=exact?10:near?3:0;if(S.hint&&pts)pts=Math.max(0,pts-3);
+  record(pts,exact,{exact,txt:a.txt,pts})}
+/* conta armada: escala fixa + nônio = leitura, uma embaixo da outra */
+function certa(u){const fx=Math.floor(u/FD)*FD;return{t:'Resposta certa',f:inTxt(fx),n:inTxt(u%FD),tot:inTxt(u)}}
+function contas(list){const mk=ok=>ok===undefined?'<span></span>':`<span class="m ${ok?'ok':'no'}">${ok?'✓ certo':'✗ errado'}</span>`;
+  const v=(x,ok)=>`<span class="v${ok===false?' no':''}">${x}</span>`;
+  return `<div class="contas">${list.map(c=>`<div class="conta"><span class="tt">${c.t}</span>${c.f!==undefined?`<span class="op"></span>${v(c.f,c.fOk)}${mk(c.fOk)}<span class="op">+</span>${v(c.n,c.nOk)}${mk(c.nOk)}<hr>`:''}<span class="op">${c.f!==undefined?'=':''}</span>${v(c.tot,c.totOk)}${mk(c.totOk)}</div>`).join('')}</div>`}
+function checkBasic(){const f=readIn('af'),n=readIn('an');if(!f){$('af').focus();return}if(!n){$('an').focus();return}
+  const fx=Math.floor(S.p/FD)*FD,r=S.p%FD,fOk=Math.abs(f.u-fx)<1e-6,nOk=Math.abs(n.u-r)<1e-6,pts=(fOk?5:0)+(nOk?5:0);
+  record(pts,fOk&&nOk,{basic:true,fOk,nOk,fTxt:f.txt,nTxt:n.txt,txt:inTxt(Math.round(f.u+n.u)),exact:fOk&&nOk,pts})}
+function updSum(){if(!$('af'))return;const f=readIn('af'),n=readIn('an'),o=$('asum');if(o)o.textContent=f&&n?inTxt(Math.round(f.u+n.u)):'—'}
+function checkAdjust(){const d=S.p-S.target,ok=d===0;record(ok?10:Math.abs(d)===1?3:0,ok,{exact:ok,txt:inTxt(S.p),pts:ok?10:Math.abs(d)===1?3:0})}
+function checkConvert(){const a=readIn('am'),m=readMm();if(!a){$('am').focus();return}if(m===null){$('amm').focus();return}
+  const exact=Math.abs(a.u-S.p)<1e-6,mmOk=Math.abs(m-mm(S.p))<=0.011,mmNear=!mmOk&&Math.abs(m-mm(S.p))<=0.06;
+  let pr=exact?5:0,pm=mmOk?5:mmNear?2:0;if(S.hint)pr=Math.max(0,pr-3);
+  record(pr+pm,exact&&mmOk,{exact,txt:a.txt,mmOk,mmTxt:m.toFixed(2).replace('.',','),pts:pr+pm})}
+
+function panelGame(){
+  if(S.done){const nb=S.score>S.best;if(nb){S.best=S.score;try{localStorage.setItem(key(),S.best)}catch(e){}}
+    const msg=S.score>=90?'Mão de metrologista.':S.score>=70?'Leitura firme. Falta pouco para a precisão total.':S.score>=40?'Bom caminho. Reveja a escala fixa e qual traço do nônio coincide.':'Volte ao modo Explorar com as guias ligadas e tente de novo.';
+    P.innerHTML=`<div class="big">${S.score}<small>de 100 pontos</small></div><p>${levelName[S.mode]} · polegada milesimal. ${S.correct}/${ROUNDS} acertos. ${msg}${nb&&S.score>0?' Novo recorde.':''}</p>
+    <div class="row"><button class="act" id="again">Jogar de novo</button><button class="act ghost" id="copyres">Copiar resultado</button><span id="copied" class="copied" style="display:none">Copiado!</span></div>`;
+    $('again').onclick=startGame;
+    $('copyres').onclick=()=>{const t=`Paquímetro em polegada milesimal — ${levelName[S.mode]}: ${S.score}/100 pontos — ${S.correct}/${ROUNDS} acertos — ${new Date().toLocaleDateString('pt-BR')}`;
+      (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}ta.remove()})
+      .finally(()=>{const c=$('copied');c.style.display='inline';setTimeout(()=>c.style.display='none',1800)})};
+    return}
+  const l=S.last;let h=stats();
+  h+=`<span class="task">${{read:'Leitura',adjust:'Abrir na medida',convert:'Ler e converter'}[S.task]}</span>`;
+  if(S.task==='read'){
+    h+=`<p style="margin:0 0 6px">Qual é a leitura do paquímetro?${S.mode==='medio'?' Some a escala fixa com o nônio e escreva o resultado.':''}${S.mode==='basic'?' A <b style="color:#FF2E93">linha rosa</b> mostra o traço do nônio que coincide. Escreva a leitura da escala fixa e a do nônio: a soma é feita automaticamente.':''}</p>`;
+    if(!S.answered&&S.mode==='basic')h+=`<div class="soma">
+      <span class="op"></span><span class="fin"><input class="n" id="af" inputmode="decimal" autocomplete="off" aria-label="Leitura da escala fixa" placeholder=".000"><span class="unit">"</span></span><span class="lb">Escala fixa</span>
+      <span class="op">+</span><span class="fin"><input class="n" id="an" inputmode="decimal" autocomplete="off" aria-label="Leitura do nônio" placeholder=".000"><span class="unit">"</span></span><span class="lb">Nônio</span>
+      <hr><span class="op">=</span><output id="asum" aria-live="polite">—</output><span class="lb">Soma automática</span></div>
+      <div class="row"><button class="act" id="ok">Conferir</button></div>`;
+    else if(!S.answered)h+=`<div class="row">${ansHTML}<button class="act" id="ok">Conferir</button>${S.mode!=='basic'?`<button class="act ghost" id="hint" ${S.hint?'disabled':''}>Dica (−3)</button>`:''}</div>`;
+  }else if(S.task==='adjust'){
+    h+=`<p style="margin:0 0 6px">Abra o paquímetro na medida abaixo. Arraste a escala ou use os botões e confira.</p><div class="big">${inTxt(S.target)}</div>`;
+    if(!S.answered)h+=`<div class="row"><button class="act" id="ok">Conferir</button></div>`;
+  }else{
+    h+=`<p style="margin:0 0 6px">Leia a medida em polegada e converta para milímetro (× 25,4, duas casas decimais).</p>`;
+    if(!S.answered)h+=`<div class="row" style="align-items:flex-end"><div><span class="lbl">Leitura</span>${ansHTML}</div><div><span class="lbl">Em milímetros</span><span class="fin"><input class="n" id="amm" inputmode="decimal" autocomplete="off" aria-label="Medida em milímetros"><span class="unit">mm</span></span></div><button class="act" id="ok">Conferir</button><button class="act ghost" id="hint" ${S.hint?'disabled':''}>Dica (−3)</button></div>`;
+  }
+  if(S.hint&&!S.answered)h+=`<p class="eq">Dica: a escala fixa marca <b>${inTxt(Math.floor(S.p/FD)*FD)}</b> (linha tracejada). Falta achar o traço do nônio que coincide.</p>`;
+  if(S.answered){const ok=l.pts>=10;let body='';
+    if(l.basic)body=`${contas([{t:'Sua resposta',f:l.fTxt,n:l.nTxt,tot:l.txt,fOk:l.fOk,nOk:l.nOk,totOk:l.fOk&&l.nOk},certa(S.p)])}<p class="eq" style="margin-top:10px">${explain(S.p)}</p>`;
+    else if(S.task==='read')body=`${contas([{t:'Sua resposta',tot:l.txt,totOk:l.exact},certa(S.p)])}<p class="eq" style="margin-top:10px">${explain(S.p)}</p>`;
+    else if(S.task==='adjust')body=(l.exact?`O paquímetro marca exatamente ${inTxt(S.target)}.`:`Você deixou em ${l.txt}; o pedido era <b>${inTxt(S.target)}</b>.`)+`<br>${explain(S.p)}`;
+    else body=`Leitura: ${l.exact?'certa':`você escreveu ${l.txt}, o correto era <b>${inTxt(S.p)}</b>`}. Milímetros: ${l.mmOk?'certo':`você escreveu ${l.mmTxt} mm, o correto era <b>${mmTxt(mm(S.p))}</b>`}.<br>${explain(S.p)}<br>Conversão: ${(S.p/1000).toFixed(3)} × 25,4 = <b>${mmTxt(mm(S.p))}</b>`;
+    h+=`<div class="fb ${ok?'ok':'no'}"><strong>${ok?'Certo!':l.pts?'Quase.':'Não foi dessa vez.'} +${l.pts}</strong><br>${body}</div><div class="row"><button class="act" id="next">${S.round>=ROUNDS?'Ver resultado':'Próxima'}</button></div>`}
+  h+=howTo;
+  P.innerHTML=h;
+  const ok=$('ok');
+  if(ok){ok.onclick=S.task==='read'?(S.mode==='basic'?checkBasic:checkRead):S.task==='adjust'?checkAdjust:checkConvert;
+    P.querySelectorAll('input.n').forEach(i=>{i.onkeydown=e=>{if(e.key==='Enter')ok.click()};i.oninput=updSum});
+    const f=P.querySelector('input.n');if(f)f.focus({preventScroll:true})}
+  if($('hint'))$('hint').onclick=()=>{S.hint=true;draw();panelGame()};
+  if($('next'))$('next').onclick=()=>{if(S.round>=ROUNDS){S.done=true;draw();panelGame()}else{S.round++;newRound();panelGame()}}}
+
+/* ---------- abas ---------- */
+const mtabs=[...document.querySelectorAll('.tabs button')];
+function setMode(m){S.mode=m;S.done=false;S.answered=false;S.hint=false;S.task='read';
+  mtabs.forEach(b=>b.setAttribute('aria-selected',b.dataset.m===m));loadBest();
+  if(m==='explore'){centerCam();draw();panelExplore()}else startGame()}
+mtabs.forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+setMode('explore');
+</script>
+</body>
+</html>
