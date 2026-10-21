@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Minha HQ: Mistério dos 5 Estrelas</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Big+Shoulders+Display:wght@700;800&family=Comic+Neue:wght@700&display=swap">
+<style>
+/* Layout: editor em duas colunas (quadro com balões ao vivo | campos de escrita) e, no fim, a página da HQ montada em linhas de 3 quadros */
+:root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--ok-bg:#DCEFE3;
+  --display:'Big Shoulders Display','Arial Narrow',Impact,sans-serif;--body:Barlow,'Arial Narrow',Arial,sans-serif;--balao:'Comic Neue','Comic Sans MS','Chalkboard SE',sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--ok-bg:#12382A}}
+:root[data-theme="dark"]{--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--ok-bg:#12382A}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 var(--body)}
+main{max-width:1100px;margin:0 auto;padding-block:20px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1{font:800 clamp(36px,8vw,60px)/.95 var(--display);margin:0 0 6px;text-wrap:balance}
+h2{font:800 clamp(24px,4.5vw,32px)/1 var(--display);margin:0;letter-spacing:.01em}
+.sub{color:var(--muted);margin:0 0 18px;max-width:66ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+button.act,a.act{display:inline-flex;align-items:center;justify-content:center;font:700 19px/1 var(--display);letter-spacing:.03em;padding:13px 22px;min-height:48px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;text-decoration:none}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,textarea:focus-visible,a:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+input[type=text],textarea{font:600 18px/1.3 var(--body);padding:10px 12px;min-height:46px;border:2px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);max-width:100%;width:100%}
+textarea{min-height:84px;resize:vertical}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--muted);font-size:15px}
+.num{font-variant-numeric:tabular-nums}
+
+.fp-in{max-width:1100px;margin-inline:auto;padding-block:14px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.fp-brand{font:800 27px/1 var(--display);letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.fp-brand b{color:var(--accent);font-weight:800}
+.fp-onde{font:600 13.5px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fp-rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+
+/* Quadro com balões */
+.quadro{position:relative;line-height:0;border:3px solid #111;border-radius:3px;background:#111;max-width:100%}
+.quadro img{display:block;width:100%;height:auto}
+.bt{position:absolute;display:flex;align-items:center;justify-content:center;text-align:center;overflow:hidden;
+  font-family:var(--balao);font-weight:700;color:#111;line-height:1.08;white-space:pre-wrap;overflow-wrap:anywhere;hyphens:auto}
+.bt.foco{outline:3px dashed var(--accent);outline-offset:2px;border-radius:10px}
+
+/* Início */
+.inicio{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:20px;align-items:center}
+.inicio .campos{display:flex;flex-direction:column;gap:12px}
+.amostra{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
+.amostra img{width:100%;border:2px solid #111;border-radius:2px;display:block}
+@media (max-width:760px){.inicio{grid-template-columns:1fr}}
+.erro{color:#B3261E;font-weight:700;margin:0}
+:root[data-theme="dark"] .erro{color:#FF8A80}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .erro{color:#FF8A80}}
+
+/* Editor */
+.editor{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:20px;align-items:start}
+@media (max-width:820px){.editor{grid-template-columns:1fr}}
+.lado{display:flex;flex-direction:column;gap:14px;min-width:0}
+.eyebrow{font:600 13.5px/1.2 var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.campo{display:flex;flex-direction:column;gap:6px}
+.campo .rot{font:700 20px/1 var(--display);letter-spacing:.02em}
+.campo .pista{margin:0;color:var(--muted);font-size:15.5px}
+.campo .cont{font-size:13.5px;color:var(--muted);text-align:right}
+.tira{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:6px}
+@media (max-width:640px){.tira{grid-template-columns:repeat(6,minmax(0,1fr))}}
+.mini{position:relative;padding:0;border:3px solid var(--line);border-radius:4px;overflow:hidden;background:#111;cursor:pointer;aspect-ratio:4/3;max-width:100%}
+.mini img{width:100%;height:100%;object-fit:cover;display:block;opacity:.85}
+.mini.ok{border-color:var(--ok)}
+.mini.atual{border-color:var(--accent)}
+.mini .tick{position:absolute;right:2px;bottom:2px;width:18px;height:18px;border-radius:50%;background:var(--ok);color:#fff;font:700 12px/18px var(--body);text-align:center}
+.prog{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap;color:var(--muted);font-size:15px}
+
+/* Página da HQ */
+.hq-acoes{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin-bottom:16px}
+.hq-acoes p{margin:4px 0 0;color:var(--muted);max-width:60ch}
+.folha{background:#fff;color:#111;padding:clamp(12px,3vw,32px);border-radius:4px;box-shadow:0 1px 0 var(--line);display:flex;flex-direction:column;gap:clamp(8px,1.4vw,14px)}
+.folha header{text-align:center;padding-bottom:4px}
+.folha .tit{font:800 clamp(30px,6vw,64px)/.95 var(--display);letter-spacing:.03em;text-transform:uppercase;margin:0}
+.folha .aut{font:600 clamp(15px,2vw,20px)/1.3 var(--body);margin:6px 0 0;color:#333}
+.linha{display:flex;gap:clamp(8px,1.4vw,14px)}
+.linha .quadro{flex:var(--ar) 1 0;min-width:0}
+.folha footer{display:flex;justify-content:space-between;font:600 13px/1.2 var(--body);letter-spacing:.08em;text-transform:uppercase;color:#555;padding-top:4px}
+@media (max-width:560px){.linha{flex-direction:column}}
+.aviso{margin:14px 0 0;color:var(--muted);font-size:15px}
+
+@media print{
+  @page{size:A4 portrait;margin:8mm}
+  body{background:#fff}
+  .fp-top,.hq-acoes,.aviso,#inicio,#editor{display:none!important}
+  main{padding:0;max-width:none}
+  .folha{box-shadow:none;padding:0}
+  .linha{flex-direction:row!important}
+  .quadro{break-inside:avoid}
+}
+@media (prefers-reduced-motion:no-preference){.bt{transition:outline-color .15s}}
+</style>
+</head>
+<body>
+<header class="fp-top">
+  <div class="fp-in"><a class="fp-brand" href="../../index.html">Fazenda <b>de Projetos</b></a><span class="fp-onde">Recursos · Leitura e escrita</span></div>
+  <div class="fp-rule" aria-hidden="true"></div>
+</header>
+<main>
+
+<section id="inicio">
+  <h1>Minha HQ: Mistério dos 5 Estrelas</h1>
+  <p class="sub">Você vai escrever as falas desta história em quadrinhos. São 12 quadros. O que você digitar aparece dentro dos balões, e no final a sua HQ fica pronta para baixar e entregar.</p>
+  <div class="inicio">
+    <div class="panel campos">
+      <label class="f" for="nome">Seu nome completo<input id="nome" type="text" autocomplete="name"></label>
+      <label class="f" for="turma">Turma<input id="turma" type="text" placeholder="Ex.: 1º PCP A"></label>
+      <p class="erro" id="erroIni" hidden>Preencha o nome e a turma para começar.</p>
+      <div class="row"><button class="act" id="comecar" type="button">Começar minha HQ</button></div>
+      <p class="aviso" style="margin:0">O que você escrever fica salvo neste aparelho. Para continuar depois, abra esta página no mesmo aparelho e digite o mesmo nome e turma.</p>
+    </div>
+    <div class="amostra" aria-hidden="true" id="amostra"></div>
+  </div>
+</section>
+
+<section id="editor" hidden>
+  <div class="editor">
+    <div class="quadro" id="palco"><img id="palcoImg" alt=""></div>
+    <div class="lado">
+      <div>
+        <div class="eyebrow" id="qual"></div>
+        <h2>Escreva as falas</h2>
+      </div>
+      <div id="campos" style="display:flex;flex-direction:column;gap:16px"></div>
+      <div class="row">
+        <button class="act ghost" id="ant" type="button">← Anterior</button>
+        <button class="act" id="prox" type="button" style="flex:1">Próximo →</button>
+      </div>
+    </div>
+  </div>
+  <div style="display:flex;flex-direction:column;gap:8px;margin-top:22px">
+    <div class="prog"><span id="quem"></span><span class="num" id="feitos"></span></div>
+    <div class="tira" id="tira"></div>
+    <div class="row" style="margin-top:8px"><button class="act ghost" id="verHQ" type="button">Ver minha HQ montada</button></div>
+  </div>
+</section>
+
+<section id="pagina" hidden>
+  <div class="hq-acoes">
+    <div><h2>Sua HQ está pronta</h2><p id="faltam"></p></div>
+    <div class="row">
+      <button class="act ghost" id="editar" type="button">← Voltar a escrever</button>
+      <button class="act ghost" id="imprimir" type="button">Imprimir ou salvar PDF</button>
+      <button class="act" id="baixar" type="button">Baixar imagem</button>
+    </div>
+  </div>
+  <div class="folha" id="folha"></div>
+  <p class="aviso">Para entregar ao professor, baixe a imagem e envie pelo Classroom ou pelo canal que ele indicar.</p>
+</section>
+
+</main>
+<script>
+const QUADROS=[
+ {ar:1.3509,b:[[0.1205,0.0275,0.8506,0.133],[0.5552,0.6307,0.3379,0.2248]],rot:["Caixa de narração","Balão de baixo"],
+  pista:["Onde e quando a história começa? Apresente o lugar e o personagem.","Alguém fala na entrada do hotel. O que é dito?"]},
+ {ar:1.0986,b:[[0.6555,0.0528,0.2756,0.1904]],rot:["Balão"],pista:["O menino chega ao quarto 222. O que ele diz ao bater na porta?"]},
+ {ar:1.4251,b:[[0.2176,0.0348,0.6848,0.2086]],rot:["Balão"],pista:["O que ele vê embaixo da cama? O que ele pensa ou fala?"]},
+ {ar:1.4412,b:[[0.5714,0.0615,0.3692,0.2406]],rot:["Balão"],pista:["Ele encontra uma mancha na cama. Como ele reage?"]},
+ {ar:1.0642,b:[[0.2814,0.0374,0.4497,0.2246]],rot:["Balão"],pista:["Ele corre até o segurança. O que ele conta?"]},
+ {ar:1.5,b:[[0.16,0.0428,0.34,0.19],[0.5437,0.0428,0.4207,0.246]],rot:["Balão da esquerda","Balão da direita"],
+  pista:["O gerente aponta para o menino. O que ele diz?","O que o menino responde?"]},
+ {ar:1.3803,b:[[0.3796,0.0426,0.5857,0.1702]],rot:["Balão"],pista:["O menino sai carregando uma caixa. O que o gerente diz?"]},
+ {ar:1.4282,b:[[0.1806,0.0346,0.3389,0.2101],[0.6127,0.0372,0.3445,0.2181]],rot:["Balão da esquerda","Balão da direita"],
+  pista:["O que o menino conta para os amigos?","O que a amiga sugere fazer?"]},
+ {ar:1.5475,b:[[0.5289,0.0391,0.4242,0.2402]],rot:["Balão"],pista:["Ele persegue alguém pela rua à noite. O que ele grita ou pensa?"]},
+ {ar:1.1361,b:[[0.2315,0.0317,0.7086,0.1474]],rot:["Balão"],pista:["Os amigos juntam as pistas: o jornal, a placa 222 e a chave. O que eles descobrem?"]},
+ {ar:1.0567,b:[[0.2253,0.0317,0.7189,0.1361]],rot:["Balão"],pista:["Quem está sendo preso? O que é dito nesse momento?"]},
+ {ar:1.1497,b:[[0.4339,0.0385,0.5049,0.1927]],rot:["Balão"],pista:["Como a história termina? O que os amigos dizem?"]}
+];
+const N=QUADROS.length;
+const img=i=>"hq/"+String(i+1).padStart(2,"0")+".jpg";
+const IN={x:.06,y:.07}; // margem interna do balão
+const maxCar=b=>Math.min(150,Math.round(60+420*b[2]*b[3]));
+const $=id=>document.getElementById(id);
+const PREF="fp-misterio5-hq:";
+const slug=s=>s.trim().toLowerCase().normalize("NFD").replace(/[̀-ͯ]/g,"").replace(/\s+/g," ");
+const ls={get(k){try{return JSON.parse(localStorage.getItem(k)||"null")}catch(e){return null}},set(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}};
+
+let st=null, atual=0;
+const chave=()=>PREF+slug(st.nome)+"|"+slug(st.turma);
+const salvar=()=>{ls.set(chave(),st);ls.set(PREF+"ultimo",{nome:st.nome,turma:st.turma});};
+const txt=(q,k)=>(st.t[q+"-"+k]||"");
+const feito=q=>QUADROS[q].b.every((_,k)=>txt(q,k).trim());
+
+/* ---- Balões no HTML ---- */
+function montarQuadro(q,el){
+  el.style.setProperty("--ar",QUADROS[q].ar);
+  el.innerHTML="";
+  const im=document.createElement("img"); im.src=img(q); im.alt="Quadro "+(q+1); el.appendChild(im);
+  QUADROS[q].b.forEach((b,k)=>{
+    const d=document.createElement("div"); d.className="bt"; d.dataset.k=k;
+    d.style.left=((b[0]+b[2]*IN.x)*100)+"%"; d.style.top=((b[1]+b[3]*IN.y)*100)+"%";
+    d.style.width=(b[2]*(1-2*IN.x)*100)+"%"; d.style.height=(b[3]*(1-2*IN.y)*100)+"%";
+    d.textContent=txt(q,k); el.appendChild(d);
+  });
+  im.addEventListener("load",()=>ajustar(el));
+  ajustar(el);
+}
+function caber(d){
+  const h=d.clientHeight; if(!h) return;
+  let s=Math.max(8,Math.floor(h*.48)); d.style.fontSize=s+"px";
+  while(s>6&&(d.scrollHeight>d.clientHeight+1||d.scrollWidth>d.clientWidth+1)){s-=.5;d.style.fontSize=s+"px";}
+}
+const ajustar=el=>el.querySelectorAll(".bt").forEach(caber);
+const ro=new ResizeObserver(es=>es.forEach(e=>ajustar(e.target)));
+
+/* ---- Início ---- */
+[0,3,11].forEach(q=>{const i=document.createElement("img");i.src=img(q);i.alt="";$("amostra").appendChild(i);});
+const ult=ls.get(PREF+"ultimo"); if(ult){$("nome").value=ult.nome||"";$("turma").value=ult.turma||"";}
+$("comecar").onclick=()=>{
+  const nome=$("nome").value.trim(), turma=$("turma").value.trim();
+  if(!nome||!turma){$("erroIni").hidden=false;return;}
+  $("erroIni").hidden=true;
+  st={nome,turma,t:{}}; const s=ls.get(chave()); if(s&&s.t) st.t=s.t;
+  salvar(); atual=0;
+  $("quem").textContent=nome+" · "+turma;
+  montarTira(); mostrar("editor"); abrir(0);
+};
+
+/* ---- Editor ---- */
+function montarTira(){
+  const t=$("tira"); t.innerHTML="";
+  QUADROS.forEach((_,q)=>{
+    const b=document.createElement("button"); b.type="button"; b.className="mini"; b.dataset.q=q;
+    b.setAttribute("aria-label","Ir para o quadro "+(q+1));
+    b.innerHTML='<img src="'+img(q)+'" alt="">'; b.onclick=()=>abrir(q); t.appendChild(b);
+  });
+}
+function atualizarTira(){
+  let n=0;
+  document.querySelectorAll(".mini").forEach(b=>{const q=+b.dataset.q,ok=feito(q); if(ok)n++;
+    b.classList.toggle("ok",ok); b.classList.toggle("atual",q===atual);
+    let tk=b.querySelector(".tick"); if(ok&&!tk){tk=document.createElement("span");tk.className="tick";tk.textContent="✓";b.appendChild(tk);} if(!ok&&tk)tk.remove();});
+  $("feitos").textContent=n+" de "+N+" quadros prontos";
+}
+function abrir(q){
+  atual=q; const Q=QUADROS[q];
+  $("qual").textContent="Quadro "+(q+1)+" de "+N;
+  const palco=$("palco"); montarQuadro(q,palco); ro.disconnect(); ro.observe(palco);
+  const c=$("campos"); c.innerHTML="";
+  Q.b.forEach((b,k)=>{
+    const id="fala-"+q+"-"+k, m=maxCar(b);
+    const w=document.createElement("div"); w.className="campo";
+    w.innerHTML='<label class="rot" for="'+id+'"></label><p class="pista"></p><textarea id="'+id+'" maxlength="'+m+'"></textarea><div class="cont num"></div>';
+    w.querySelector("label").textContent=Q.rot[k];
+    w.querySelector(".pista").textContent="Pista: "+Q.pista[k];
+    const ta=w.querySelector("textarea"), ct=w.querySelector(".cont"), bal=palco.querySelector('.bt[data-k="'+k+'"]');
+    ta.value=txt(q,k);
+    const conta=()=>{ct.textContent=ta.value.length+" / "+m+" letras";};
+    conta();
+    ta.addEventListener("input",()=>{st.t[q+"-"+k]=ta.value;salvar();bal.textContent=ta.value;caber(bal);conta();atualizarTira();});
+    ta.addEventListener("focus",()=>bal.classList.add("foco"));
+    ta.addEventListener("blur",()=>bal.classList.remove("foco"));
+    c.appendChild(w);
+  });
+  $("ant").disabled=q===0;
+  $("prox").textContent=q===N-1?"Ver minha HQ →":"Próximo →";
+  atualizarTira();
+}
+$("ant").onclick=()=>{if(atual>0){abrir(atual-1);topo();}};
+$("prox").onclick=()=>{if(atual<N-1){abrir(atual+1);topo();}else verHQ();};
+$("verHQ").onclick=verHQ;
+$("editar").onclick=()=>{mostrar("editor");abrir(atual);topo();};
+const topo=()=>window.scrollTo({top:0,behavior:matchMedia("(prefers-reduced-motion: reduce)").matches?"auto":"smooth"});
+function mostrar(s){["inicio","editor","pagina"].forEach(x=>$(x).hidden=x!==s);}
+
+/* ---- Página da HQ ---- */
+function verHQ(){
+  const f=$("folha"); f.innerHTML="";
+  const h=document.createElement("header");
+  h.innerHTML='<p class="tit">Mistério dos 5 Estrelas</p><p class="aut"></p>';
+  h.querySelector(".aut").textContent="Uma história em quadrinhos de "+st.nome+" · "+st.turma;
+  f.appendChild(h);
+  for(let r=0;r<N;r+=3){
+    const l=document.createElement("div"); l.className="linha";
+    for(let q=r;q<Math.min(r+3,N);q++){const d=document.createElement("div");d.className="quadro";l.appendChild(d);montarQuadro(q,d);ro.observe(d);}
+    f.appendChild(l);
+  }
+  const ft=document.createElement("footer"); ft.innerHTML="<span>Fazenda de Projetos</span><span></span>";
+  ft.lastChild.textContent=new Date().toLocaleDateString("pt-BR"); f.appendChild(ft);
+  const falta=QUADROS.map((_,q)=>q).filter(q=>!feito(q)).map(q=>q+1);
+  $("faltam").textContent=falta.length?"Ainda faltam falas nos quadros "+falta.join(", ")+". Você pode voltar e completar antes de entregar.":"Todos os 12 quadros estão com falas. Baixe a imagem para entregar.";
+  mostrar("pagina"); topo();
+  requestAnimationFrame(()=>f.querySelectorAll(".quadro").forEach(ajustar));
+}
+$("imprimir").onclick=()=>window.print();
+
+/* ---- Imagem PNG ---- */
+function carregar(src){return new Promise((ok,erro)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=erro;i.src=src;});}
+function quebrar(ctx,t,maxW){
+  const linhas=[];
+  t.split("\n").forEach(par=>{
+    let l=""; par.split(/\s+/).filter(Boolean).forEach(p=>{const tt=l?l+" "+p:p; if(ctx.measureText(tt).width<=maxW||!l)l=tt; else{linhas.push(l);l=p;}});
+    linhas.push(l);
+  });
+  return linhas;
+}
+function escreverBalao(ctx,t,x,y,w,h){
+  t=t.trim(); if(!t) return;
+  let s=Math.floor(h*.48), linhas;
+  for(;s>8;s-=1){ctx.font="700 "+s+"px 'Comic Neue','Comic Sans MS',sans-serif";linhas=quebrar(ctx,t,w);
+    if(linhas.length*s*1.15<=h&&linhas.every(l=>ctx.measureText(l).width<=w))break;}
+  ctx.fillStyle="#111";ctx.textAlign="center";ctx.textBaseline="middle";
+  const lh=s*1.08, y0=y+h/2-(linhas.length-1)*lh/2;
+  linhas.forEach((l,i)=>ctx.fillText(l,x+w/2,y0+i*lh));
+}
+$("baixar").onclick=async()=>{
+  const btn=$("baixar"); btn.disabled=true; btn.textContent="Gerando…";
+  try{
+    await Promise.all([document.fonts.load("700 40px 'Comic Neue'"),document.fonts.load("800 90px 'Big Shoulders Display'"),document.fonts.load("600 36px Barlow")]);
+    const imgs=await Promise.all(QUADROS.map((_,q)=>carregar(img(q))));
+    const W=2400,M=70,G=26,B=6,topoH=230,rodape=80;
+    const linhas=[];for(let r=0;r<N;r+=3)linhas.push([r,r+1,r+2].filter(q=>q<N));
+    const alts=linhas.map(l=>(W-2*M-G*(l.length-1)-2*B*l.length)/l.reduce((a,q)=>a+QUADROS[q].ar,0));
+    const H=M+topoH+alts.reduce((a,h)=>a+h+2*B,0)+G*(linhas.length-1)+rodape+M/2;
+    const cv=document.createElement("canvas");cv.width=W;cv.height=Math.round(H);
+    const ctx=cv.getContext("2d");
+    ctx.fillStyle="#fff";ctx.fillRect(0,0,W,cv.height);
+    ctx.fillStyle="#111";ctx.textAlign="center";ctx.textBaseline="alphabetic";
+    ctx.font="800 120px 'Big Shoulders Display','Arial Narrow',Impact,sans-serif";
+    ctx.fillText("MISTÉRIO DOS 5 ESTRELAS",W/2,M+110);
+    ctx.font="600 44px Barlow,Arial,sans-serif";ctx.fillStyle="#333";
+    ctx.fillText("Uma história em quadrinhos de "+st.nome+" · "+st.turma,W/2,M+180);
+    let y=M+topoH;
+    linhas.forEach((l,ri)=>{
+      const h=alts[ri];let x=M;
+      l.forEach(q=>{
+        const w=QUADROS[q].ar*h;
+        ctx.fillStyle="#111";ctx.fillRect(x,y,w+2*B,h+2*B);
+        ctx.drawImage(imgs[q],x+B,y+B,w,h);
+        QUADROS[q].b.forEach((b,k)=>escreverBalao(ctx,txt(q,k),x+B+(b[0]+b[2]*IN.x)*w,y+B+(b[1]+b[3]*IN.y)*h,b[2]*(1-2*IN.x)*w,b[3]*(1-2*IN.y)*h));
+        x+=w+2*B+G;
+      });
+      y+=h+2*B+G;
+    });
+    ctx.font="600 26px Barlow,Arial,sans-serif";ctx.fillStyle="#555";
+    ctx.textAlign="left";ctx.fillText("FAZENDA DE PROJETOS",M,cv.height-M/2-10);
+    ctx.textAlign="right";ctx.fillText(new Date().toLocaleDateString("pt-BR"),W-M,cv.height-M/2-10);
+    const blob=await new Promise(r=>cv.toBlob(r,"image/png"));
+    const a=document.createElement("a");a.href=URL.createObjectURL(blob);
+    a.download="HQ - Misterio dos 5 Estrelas - "+st.nome.replace(/[\\/:*?"<>|]/g,"")+".png";
+    document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(a.href),4000);
+    btn.textContent="Imagem baixada";
+  }catch(e){btn.textContent="Não deu para gerar. Tente de novo";}
+  setTimeout(()=>{btn.disabled=false;btn.textContent="Baixar imagem";},2500);
+};
+</script>
+</body>
+</html>
