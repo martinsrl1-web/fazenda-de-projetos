@@ -394,52 +394,76 @@ function telaLeitura(nome){
     <div class="clock" id="clock">0:00</div>
     <div class="status" id="st">&nbsp;</div>
     <div class="live" id="live"></div>
+    <div class="muted small" id="diag" style="font-family:var(--f-mono);min-height:1.4em"></div>
     <button class="primary big" id="go">Começar a leitura</button>
     <button class="ghost" id="volta">Cancelar</button>
   </div>`;
   $('#volta').onclick=telaInicio;
   $('#go').onclick=()=>comecar(nome);
 }
+const ERROS_SR={
+  'not-allowed':'O microfone está bloqueado para esta página. Toque no ícone ao lado do endereço → Permissões → Microfone → Permitir.',
+  'service-not-allowed':'O celular não liberou o reconhecimento de voz. Verifique se o app Google está instalado e atualizado.',
+  'language-not-supported':'O reconhecimento de voz deste celular não aceita português. Abra o app Google → Configurações → Voz → Idiomas e adicione Português (Brasil).',
+  'network':'Sem internet. O reconhecimento de fala precisa de conexão.',
+  'audio-capture':'O microfone está ocupado por outro app ou pela gravação de áudio. Desligue “Gravar o áudio também” na tela inicial.',
+  'aborted':'O reconhecimento foi interrompido pelo celular.'
+};
+function diag(S,msg){ S.log=(S.log||[]); S.log.push(msg); const d=$('#diag'); if(d&&L===S) d.textContent=S.log.slice(-6).join(' · '); }
 function novaSessao(){
   const S=L; if(!S) return;
-  const rec=new SR(); rec.lang='pt-BR'; rec.continuous=true; rec.interimResults=true; rec.maxAlternatives=1;
-  S.sess=''; S.interim='';
+  const rec=new SR(); rec.lang='pt-BR'; rec.continuous=S.cont!==false; rec.interimResults=true; rec.maxAlternatives=1;
+  S.sess=''; S.interim=''; S.reinicios=(S.reinicios||0)+1;
   const live=()=>(S.committed+' '+S.sess+' '+S.interim).trim();
+  const setSt=(html)=>{ const st=$('#st'); if(st&&L===S) st.innerHTML=html; };
+  rec.onstart=()=>{ if(S.reinicios===1) diag(S,'microfone ligado'); if(!S.times.length) setSt('Ouvindo… pode ler'); };
+  rec.onspeechstart=()=>{ if(!S.ouviuVoz){ S.ouviuVoz=true; diag(S,'voz detectada'); } };
   rec.onresult=e=>{
     let fin='', inter='';
     for(let i=0;i<e.results.length;i++){
       const t=e.results[i][0].transcript.trim(); if(!t) continue;
       if(e.results[i].isFinal){
-        // alguns celulares repetem o texto anterior dentro do novo resultado
         if(fin && norm(t).startsWith(norm(fin))) fin=t; else fin=(fin+' '+t).trim();
-      } else {
-        inter=(inter+' '+t).trim();
-      }
+      } else { inter=(inter+' '+t).trim(); }
     }
     if(fin && inter && norm(inter).startsWith(norm(fin))) inter=inter.split(/\s+/).slice(fin.split(/\s+/).length).join(' ');
     S.sess=fin; S.interim=inter;
     const n=tokenizeHyp(live()).length, now=Date.now();
     for(let k=S.times.length;k<n;k++) S.times.push(now);
+    if(n && !S.temTexto){ S.temTexto=true; diag(S,'texto chegando'); }
     if(S.ativo){
-      const lv=$('#live'), st=$('#st');
-      if(lv) lv.textContent='… '+live().split(/\s+/).slice(-10).join(' ');
-      if(st) st.textContent=n+' palavras ouvidas';
+      const lv=$('#live'); if(lv&&L===S) lv.textContent='… '+live().split(/\s+/).slice(-10).join(' ');
+      setSt(n+' palavras ouvidas');
     }
   };
   rec.onerror=e=>{
-    if(e.error==='not-allowed'||e.error==='service-not-allowed'){ S.erro='O microfone foi bloqueado. Permita o microfone para esta página e tente de novo.'; S.ativo=false; }
-    else if(e.error==='network'){ S.erro='Sem internet. O reconhecimento de fala precisa de conexão.'; }
-    else if(e.error==='audio-capture'){ S.erro='O microfone está ocupado. Desligue “Gravar o áudio também” na tela inicial.'; S.ativo=false; }
-    const st=$('#st'); if(S.erro && st && L===S) st.innerHTML='<span style="color:var(--bad)">'+esc(S.erro)+'</span>';
+    if(e.error==='no-speech'){ S.semFala=(S.semFala||0)+1; return; }
+    diag(S,'erro: '+e.error);
+    if(['not-allowed','service-not-allowed','language-not-supported','audio-capture'].includes(e.error)) S.ativo=false;
+    S.erro=ERROS_SR[e.error]||('O reconhecimento de voz falhou ('+e.error+').');
+    setSt('<span style="color:var(--bad)">'+esc(S.erro)+'</span>');
   };
   rec.onend=()=>{
     const pend=S.interim && !S.sess.endsWith(S.interim) ? S.interim : '';
     S.committed=(S.committed+' '+S.sess+' '+pend).trim(); S.sess=''; S.interim='';
-    if(S.ativo){ setTimeout(()=>{ if(S.ativo && L===S) novaSessao(); },60); }
+    if(S.ativo){ setTimeout(()=>{ if(S.ativo && L===S) novaSessao(); }, 150); }
     else if(S.onDone){ S.onDone(); }
   };
   S.rec=rec;
-  try{ rec.start(); }catch(e){}
+  try{ rec.start(); }catch(err){ diag(S,'não iniciou: '+err.name); setTimeout(()=>{ if(S.ativo && L===S) novaSessao(); },400); }
+}
+// Se nada chegar, troca para o modo de frases curtas, que funciona em mais celulares
+function vigia(S){
+  S.vigia=setInterval(()=>{
+    if(!S.ativo || L!==S){ clearInterval(S.vigia); return; }
+    const seg=(Date.now()-S.t0)/1000;
+    if(S.times.length){ clearInterval(S.vigia); return; }
+    if(seg>6 && S.cont!==false){ S.cont=false; diag(S,'modo alternativo'); try{S.rec.abort();}catch(e){} }
+    if(seg>14){
+      const st=$('#st');
+      if(st && !S.erro) st.innerHTML='<span style="color:var(--bad)">Ainda não ouvi nenhuma palavra. '+(S.mr?'Desligue “Gravar o áudio também” na tela inicial e tente de novo.':(S.ouviuVoz?'A voz chega, mas o texto não. Confira a internet.':'O microfone não está captando a voz. Feche outros apps que usam o microfone e confira a permissão do Chrome.'))+'</span>';
+    }
+  },1000);
 }
 async function comecar(nome){
   const id='a'+Date.now().toString(36);
@@ -452,6 +476,7 @@ async function comecar(nome){
   }
   keepAwake(true);
   novaSessao();
+  vigia(L);
   $('#inst').textContent='Pode ler. Quando terminar a última palavra, toque em Terminei.';
   const go=$('#go'); go.textContent='Terminei'; go.classList.remove('primary'); go.style.background='var(--bad)'; go.style.borderColor='var(--bad)'; go.style.color='#fff';
   go.onclick=terminar;
