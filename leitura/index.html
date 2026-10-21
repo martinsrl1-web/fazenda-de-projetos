@@ -271,6 +271,14 @@ function analisar(texto, aluno){
     nPausas:Object.keys(pauses).length
   };
 }
+// Nota de 0 a 100: 80 pontos pela leitura (−1 por erro, proporcional ao quanto leu) + 20 pelo ritmo
+function nota(r){
+  const meta=(typeof state!=='undefined'&&state.metaPpm)||120;
+  const erros=r.cnt.sub+r.cnt.del;
+  const ptsTexto=Math.max(0, 80*r.lidas/(r.total||1) - erros);   // cada palavra trocada ou pulada tira 1 ponto
+  const ptsRitmo=20*Math.min(1,(r.pcpm||0)/meta);
+  return {total:Math.round(ptsTexto+ptsRitmo), texto:Math.round(ptsTexto), ritmo:Math.round(ptsRitmo), meta};
+}
 /* ===== FIM DA ANÁLISE ===== */
 
 /* ===== ESTADO ===== */
@@ -285,6 +293,7 @@ const app=$('#app');
 const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function fmtT(s){ if(s==null) return '—'; s=Math.round(s); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); }
 function toast(msg){ const t=$('#toast'); t.textContent=msg; t.hidden=false; clearTimeout(toast._t); toast._t=setTimeout(()=>t.hidden=true,2200); }
+function nivelNota(n){ return n>=80?'ok':n>=60?'mid':'low'; }
 function nivel(p){ return p>=95?'ok':p>=85?'mid':'low'; }
 const SR = window.SpeechRecognition||window.webkitSpeechRecognition;
 const MIC_SVG='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0"/><path d="M12 17v4"/><path d="M8 21h8"/></svg>';
@@ -303,7 +312,7 @@ function telaInicio(){
     const r=analisar(state.texto,a);
     return `<li><button class="student" data-id="${a.id}">
       <span class="nm">${esc(a.nome||'Sem nome')}</span>
-      <span class="pill ${nivel(r.precisao)}">${r.precisao}% certas</span>
+      <span class="pill ${nivelNota(nota(r).total)}">nota ${nota(r).total}</span>
       <span class="meta"><span>⏱ ${fmtT(r.tTotal)}</span><span>${r.ppm} palavras/min</span><span>${r.cnt.sub+r.cnt.del} erros</span>${r.completou?'':'<span>não terminou</span>'}</span>
     </button></li>`;
   }).join('');
@@ -318,14 +327,16 @@ function telaInicio(){
     <div class="panel stack small">
       <h3>Ajustes</h3>
       <label class="check"><input type="checkbox" id="aud" ${state.gravarAudio?'checked':''}> <span>Gravar o áudio também, para ouvir depois.<br><span class="muted">Em alguns celulares isso atrapalha o reconhecimento de fala. Se as leituras vierem vazias, desligue.</span></span></label>
+      <label class="small" for="meta" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap">Meta de ritmo para a nota: <input type="number" id="meta" min="40" max="250" step="5" value="${state.metaPpm||120}" style="width:90px;font:inherit;padding:8px 10px;border-radius:10px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink)"> palavras certas por minuto</label>
       <div class="row"><button id="texto">Trocar o texto</button><button class="danger" id="limpar" ${state.alunos.length?'':'disabled'}>Apagar todas as leituras</button></div>
       <div id="conf"></div>
-      <p class="muted" style="margin:0">Versão 5. Precisa de internet durante a leitura. As leituras ficam guardadas neste celular.</p>
+      <p class="muted" style="margin:0">Versão 6. Precisa de internet durante a leitura. As leituras ficam guardadas neste celular.</p>
     </div>
   </div>`;
   $('#novo').onclick=telaNome;
   $('#rel').onclick=telaRelatorio;
   $('#texto').onclick=telaTexto;
+  $('#meta').onchange=e=>{ const v=+e.target.value; if(v>=40&&v<=250){ state.metaPpm=v; save(); telaInicio(); toast('Meta salva'); } };
   $('#aud').onchange=e=>{state.gravarAudio=e.target.checked; save();};
   $('#limpar').onclick=()=>{
     $('#conf').innerHTML=`<div class="confirm"><span>Apagar as ${state.alunos.length} leituras?</span><button class="danger" id="sim">Apagar</button><button id="nao">Cancelar</button></div>`;
@@ -391,7 +402,7 @@ function telaLeitura(nome){
   app.innerHTML=head('Passo 2 de 2')+`
   <div class="stack" style="text-align:center">
     <h2>${esc(nome)}</h2>
-    <div class="eyebrow">versão 5</div>
+    <div class="eyebrow">versão 6</div>
     <div class="row" style="justify-content:center" role="group" aria-label="Como reconhecer a leitura">
       <button id="mTec" class="${modo==='teclado'?'primary':''}">Microfone do teclado</button>
       <button id="mAuto" class="${modo==='auto'?'primary':''}" ${SR?'':'disabled'}>Automático</button>
@@ -587,9 +598,14 @@ function telaResultado(id){
     return h;
   }).join(' ')+'</p>').join('');
   const erros=listaErros(r);
+  const nt=nota(r);
   app.innerHTML=head(new Date(a.data).toLocaleString('pt-BR',{dateStyle:'short',timeStyle:'short'}))+`
   <div class="stack">
     <div class="row" style="justify-content:space-between"><h2>${esc(a.nome)}</h2><span class="pill ${nivel(r.precisao)}">${r.precisao}% de palavras certas</span></div>
+    <div class="panel row" style="justify-content:space-between">
+      <div><div class="eyebrow">Nota</div><div style="font-family:var(--f-mono);font-weight:700;font-size:3rem;line-height:1">${nt.total}<span class="muted" style="font-size:1.1rem"> /100</span></div></div>
+      <div class="small muted" style="text-align:right">${nt.texto} de 80 pela leitura (cada erro tira 1 ponto)<br>${nt.ritmo} de 20 pelo ritmo (meta ${nt.meta} certas/min)</div>
+    </div>
     ${vazio?`<div class="err">Nenhuma palavra foi reconhecida. Verifique a internet e a permissão do microfone. Se “Gravar o áudio também” estiver ligado, desligue e repita a leitura.</div>`:''}
     <div class="metrics">
       <div class="metric"><b>${fmtT(r.tTotal)}</b><span>tempo total</span></div>
@@ -659,7 +675,7 @@ function telaRelatorio(){
   const n=linhas.length||1;
   const media=f=>Math.round(linhas.reduce((s,x)=>s+f(x.r),0)/n);
   const tab=linhas.map(({a,r})=>`<tr>
-    <td>${esc(a.nome)}</td><td class="num">${fmtT(r.tTotal)}</td><td class="num">${r.ppm}</td><td class="num">${r.pcpm}</td>
+    <td>${esc(a.nome)}</td><td class="num"><b>${nota(r).total}</b></td><td class="num">${fmtT(r.tTotal)}</td><td class="num">${r.ppm}</td><td class="num">${r.pcpm}</td>
     <td class="num">${r.precisao}%</td><td class="num">${r.cnt.sub}</td><td class="num">${r.cnt.del}</td><td class="num">${a.modo==='teclado'?'—':r.nPausas}</td><td>${r.completou?'sim':'não ('+r.lidas+'/'+r.total+')'}</td></tr>`).join('');
   const det=linhas.map(({a,r})=>{ const e=listaErros(r,true); return `<div class="detail"><h3>${esc(a.nome)}</h3><p class="small" style="margin:.3em 0 0">${e?esc(e):'Sem erros marcados.'}</p></div>`; }).join('');
   app.innerHTML=head('Relatório da turma')+`
@@ -668,10 +684,10 @@ function telaRelatorio(){
       <div class="metric"><b>${linhas.length}</b><span>alunos avaliados</span></div>
       <div class="metric"><b>${fmtT(linhas.reduce((s,x)=>s+(x.r.tTotal||0),0)/n)}</b><span>tempo médio</span></div>
       <div class="metric"><b>${media(r=>r.pcpm)}</b><span>palavras certas/min (média)</span></div>
-      <div class="metric"><b>${media(r=>r.precisao)}%</b><span>precisão média</span></div>
+      <div class="metric"><b>${media(r=>nota(r).total)}</b><span>nota média</span></div>
     </div>
     <div class="tablewrap"><table>
-      <thead><tr><th>Aluno</th><th class="num">Tempo</th><th class="num">Pal./min</th><th class="num">Certas/min</th><th class="num">Precisão</th><th class="num">Trocas</th><th class="num">Puladas</th><th class="num">Pausas</th><th>Terminou</th></tr></thead>
+      <thead><tr><th>Aluno</th><th class="num">Nota</th><th class="num">Tempo</th><th class="num">Pal./min</th><th class="num">Certas/min</th><th class="num">Precisão</th><th class="num">Trocas</th><th class="num">Puladas</th><th class="num">Pausas</th><th>Terminou</th></tr></thead>
       <tbody>${tab}</tbody></table></div>
     <div class="row"><button class="primary" id="csv">Baixar planilha (CSV)</button><button id="copiar">Copiar relatório</button><button class="ghost" id="volta">Voltar</button></div>
     <div class="panel stack"><h3>Erros de cada aluno</h3>${det}</div>
@@ -680,13 +696,13 @@ function telaRelatorio(){
   $('#volta').onclick=telaInicio;
   $('#copiar').onclick=()=>{
     const txt=['RELATÓRIO DE LEITURA — '+new Date().toLocaleDateString('pt-BR'),''].concat(linhas.map(({a,r})=>
-      `${a.nome}\n  Tempo: ${fmtT(r.tTotal)} | ${r.ppm} palavras/min | ${r.pcpm} certas/min | precisão ${r.precisao}%\n  Trocadas: ${r.cnt.sub} | Puladas: ${r.cnt.del} | Pausas longas: ${r.nPausas} | Terminou: ${r.completou?'sim':'não'}\n  Erros: ${listaErros(r,true)||'nenhum'}\n`)).join('\n');
+      `${a.nome} — nota ${nota(r).total}\n  Tempo: ${fmtT(r.tTotal)} | ${r.ppm} palavras/min | ${r.pcpm} certas/min | precisão ${r.precisao}%\n  Trocadas: ${r.cnt.sub} | Puladas: ${r.cnt.del} | Pausas longas: ${r.nPausas} | Terminou: ${r.completou?'sim':'não'}\n  Erros: ${listaErros(r,true)||'nenhum'}\n`)).join('\n');
     copiar(txt);
   };
   $('#csv').onclick=()=>{
     const q=v=>'"'+String(v).replace(/"/g,'""')+'"';
-    const rows=[['Aluno','Data','Tempo total (s)','Palavras por minuto','Certas por minuto','Precisão (%)','Trocadas','Puladas','Pausas longas','Terminou','Erros']]
-      .concat(linhas.map(({a,r})=>[a.nome,new Date(a.data).toLocaleString('pt-BR'),Math.round(r.tTotal||0),r.ppm,r.pcpm,r.precisao,r.cnt.sub,r.cnt.del,r.nPausas,r.completou?'sim':'não',listaErros(r,true)]));
+    const rows=[['Aluno','Nota','Data','Tempo total (s)','Palavras por minuto','Certas por minuto','Precisão (%)','Trocadas','Puladas','Pausas longas','Terminou','Erros']]
+      .concat(linhas.map(({a,r})=>[a.nome,nota(r).total,new Date(a.data).toLocaleString('pt-BR'),Math.round(r.tTotal||0),r.ppm,r.pcpm,r.precisao,r.cnt.sub,r.cnt.del,r.nPausas,r.completou?'sim':'não',listaErros(r,true)]));
     const csv='﻿'+rows.map(l=>l.map(q).join(';')).join('\r\n');
     const url=URL.createObjectURL(new Blob([csv],{type:'text/csv;charset=utf-8'}));
     const link=document.createElement('a'); link.href=url; link.download='leitura-juramento-'+new Date().toISOString().slice(0,10)+'.csv';
