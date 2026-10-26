@@ -278,7 +278,7 @@ function parseInch(s){s=String(s||'').trim().replace(',','.').replace(/["'”″
 function genU(lo,hi){let u;do{u=rnd(lo,hi)}while(u%FD===0);return u}
 
 function Caliper(host,opt){
-  const C={p:opt.p||0,cam:0,zoom:1,fixedGuide:!!opt.fixedGuide,coinc:false,sel:null,zeroMark:!!opt.zeroMark,mode:opt.mode||'view',onTap:opt.onTap,onMove:opt.onMove};
+  const C={hl:opt.hl||null,p:opt.p||0,cam:0,zoom:1,fixedGuide:!!opt.fixedGuide,coinc:false,sel:null,zeroMark:!!opt.zeroMark,mode:opt.mode||'view',onTap:opt.onTap,onMove:opt.onMove};
   const cls=C.mode==='drag'?'drag':C.mode==='tap'?'tap':'';
   host.innerHTML=`<div class="stage"><div class="stage-scroll"><svg class="${cls}" viewBox="0 0 ${VW} 585" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Escala do paquímetro em polegada milesimal">
     <defs><clipPath id="cbm"><rect x="22" y="22" width="${VW-44}" height="306"/></clipPath></defs>
@@ -314,6 +314,7 @@ function Caliper(host,opt){
     if(C.fixedGuide){const xm=(n*FD-C.cam)*PPU;if(xm>BX0&&xm<BX1)g+=`<line x1="${xm}" x2="${xm}" y1="${LINE-240}" y2="${LINE-4}" stroke="#E07B00" stroke-width="7" stroke-dasharray="20 14" opacity=".9"/>`}
     if(C.sel!==null){const xs=z+C.sel*VD;g+=`<line x1="${xs}" x2="${xs}" y1="${LINE-60}" y2="${LINE+124}" stroke="#5B3FD1" stroke-width="10" opacity=".55"/><circle cx="${xs}" cy="${LINE+140}" r="14" fill="#5B3FD1"/>`}
     if(C.coinc){const xa=z+r*VD;g+=`<line x1="${xa}" x2="${xa}" y1="${LINE-200}" y2="${LINE+118}" stroke="#17A04F" stroke-width="8" opacity=".7"/><circle cx="${xa}" cy="${LINE+132}" r="12" fill="#17A04F"/>`}
+    if(C.hl)g+=hlSVG(C,z);
     gG.innerHTML=g}
   C.draw=()=>{beam();plate();guide()};
   C.set=p=>{p=Math.max(0,Math.min(5500,Math.round(p)));if(p===C.p)return;C.p=p;follow();C.draw();if(!drag)C.focusZero();C.onMove&&C.onMove(p)};
@@ -332,9 +333,52 @@ function Caliper(host,opt){
     drag=null});
   svg.addEventListener('pointercancel',()=>{drag=null});
   C.setMode=m=>{C.mode=m;svg.classList.toggle('drag',m==='drag');svg.classList.toggle('tap',m==='tap')};
+  const CROP={fixDiv:'0 0 1000 585',vernDiv:'40 0 960 585',quatro:'0 0 1000 585'};if(C.hl&&CROP[C.hl])svg.setAttribute('viewBox',CROP[C.hl]);
   C.center();C.draw();
-  if(window.matchMedia&&matchMedia('(max-width:560px) and (orientation:portrait)').matches)requestAnimationFrame(()=>setZoom(2));
+  if(!C.hl&&window.matchMedia&&matchMedia('(max-width:560px) and (orientation:portrait)').matches)requestAnimationFrame(()=>setZoom(2));
   return C}
+
+/* figuras de destaque sobre o paquímetro: mostram ao aluno do que a pergunta está falando */
+const PINK='#FF2E93',VIO='#5B3FD1';
+function tag(x,y,t,fs){fs=fs||38;const w=Math.max(60,t.length*fs*.56+34);return `<rect x="${x-w/2}" y="${y-fs*.95}" width="${w}" height="${fs*1.35}" rx="${fs*.35}" fill="${VIO}"/><text x="${x}" y="${y}" text-anchor="middle" font-size="${fs}" font-weight="800" font-family="Arial,Helvetica,sans-serif" fill="#fff">${t}</text>`}
+function hlSVG(C,z){const xm=m=>(m*FD-C.cam)*PPU;let g='';const m1=Math.ceil((C.cam+(z+40)/PPU)/FD);
+  switch(C.hl){
+  case 'fixDiv':{let m=m1;while(m%4===0||m%4===3)m++;const a=xm(m),b=xm(m+1);
+    g+=`<rect x="${a}" y="${LINE-122}" width="${b-a}" height="120" fill="${PINK}" opacity=".35" stroke="${PINK}" stroke-width="4"/>${tag((a+b)/2,LINE-140,'?')}`;break}
+  case 'quatro':{let m=m1;while(m%4!==0||m%40===0)m++;const a=xm(m),b=xm(m+4);
+    g+=`<rect x="${a}" y="${LINE-190}" width="${b-a}" height="188" fill="${PINK}" opacity=".22" stroke="${PINK}" stroke-width="4"/>`;
+    for(let k=0;k<4;k++)g+=`<path d="M${xm(m+k)+6} ${LINE-60} H${xm(m+k+1)-6}" stroke="${VIO}" stroke-width="6"/>`;
+    g+=tag((a+b)/2,LINE-215,'quantas cabem?',32);break}
+  case 'tenth':{const last=Math.ceil((C.cam+VW/PPU)/FD);for(let m=Math.max(1,m1-12);m<=last;m++){if(m%4||m%40===0)continue;const x=xm(m);if(x<BX0+40||x>BX1-40)continue;
+    g+=`<circle cx="${x}" cy="${LINE-208}" r="34" fill="none" stroke="${PINK}" stroke-width="6"/>`}break}
+  case 'vernDiv':{const a=z+7*VD,b=z+8*VD;g+=`<rect x="${a}" y="${LINE+2}" width="${b-a}" height="88" fill="${PINK}" opacity=".35" stroke="${PINK}" stroke-width="4"/>${tag((a+b)/2,LINE+180,'?')}`;break}
+  case 'vernAll':g+=`<rect x="${z}" y="${LINE+2}" width="${VL}" height="124" fill="${PINK}" opacity=".18" stroke="${PINK}" stroke-width="4"/>${tag(z+VL/2,LINE+212,'quantas divisões?',32)}`;break;
+  case 'res':{const x1=z+VL+110;g+=`<ellipse cx="${x1-66}" cy="${LINE+205}" rx="84" ry="30" fill="none" stroke="${PINK}" stroke-width="6"/>`;break}
+  case 'soma':{const n=Math.floor(C.p/FD),r=C.p%FD,xf=xm(n),xa=z+r*VD;
+    g+=`<line x1="${xf}" x2="${xf}" y1="${LINE-240}" y2="${LINE-4}" stroke="#E07B00" stroke-width="7" stroke-dasharray="20 14"/>${tag(Math.max(260,xf+90),LINE-150,'escala fixa',34)}`;
+    g+=`<line x1="${xa}" x2="${xa}" y1="${LINE-200}" y2="${LINE+118}" stroke="#17A04F" stroke-width="8" opacity=".75"/>${tag(xa,LINE+212,'nônio',34)}`;break}
+  }return g}
+/* figuras soltas (sem paquímetro) */
+const FIG={
+ inch1000:`<svg viewBox="0 0 520 170" aria-hidden="true"><rect x="40" y="70" width="440" height="44" fill="#C9CBCD" stroke="#373435" stroke-width="3"/>${Array.from({length:11},(_,i)=>`<line x1="${40+i*44}" x2="${40+i*44}" y1="70" y2="${i%10?92:114}" stroke="#2A2829" stroke-width="${i%10?2:4}"/>`).join('')}<text x="40" y="140" font-size="22" text-anchor="middle" font-weight="700" fill="currentColor">0</text><text x="480" y="140" font-size="22" text-anchor="middle" font-weight="700" fill="currentColor">1"</text><path d="M40 52 H480" stroke="${PINK}" stroke-width="4"/><path d="M40 40 V64 M480 40 V64" stroke="${PINK}" stroke-width="4"/><rect x="170" y="10" width="180" height="36" rx="10" fill="${VIO}"/><text x="260" y="35" text-anchor="middle" font-size="21" font-weight="800" fill="#fff">? milésimos</text></svg>`,
+ inchmm:`<svg viewBox="0 0 520 190" aria-hidden="true"><rect x="40" y="40" width="381" height="34" rx="4" fill="${PINK}" opacity=".3" stroke="${PINK}" stroke-width="3"/><text x="230" y="64" text-anchor="middle" font-size="22" font-weight="800" fill="currentColor">1 polegada</text><rect x="40" y="100" width="440" height="40" fill="#C9CBCD" stroke="#373435" stroke-width="3"/>${Array.from({length:30},(_,i)=>`<line x1="${40+i*15}" x2="${40+i*15}" y1="100" y2="${i%5?114:126}" stroke="#2A2829" stroke-width="2"/>`).join('')}${[0,5,10,15,20,25].map(v=>`<text x="${40+v*15}" y="165" text-anchor="middle" font-size="18" fill="currentColor">${v}</text>`).join('')}<text x="470" y="165" font-size="16" fill="currentColor">mm</text><line x1="421" x2="421" y1="30" y2="140" stroke="${VIO}" stroke-width="4" stroke-dasharray="8 6"/><rect x="390" y="2" width="62" height="30" rx="8" fill="${VIO}"/><text x="421" y="24" text-anchor="middle" font-size="20" font-weight="800" fill="#fff">? mm</text></svg>`,
+ ponto:`<svg viewBox="0 0 520 170" aria-hidden="true"><text x="140" y="118" text-anchor="middle" font-size="110" font-weight="800" font-family="Arial,Helvetica,sans-serif" fill="currentColor">.</text><text x="165" y="118" font-size="110" font-weight="800" font-family="Arial,Helvetica,sans-serif" fill="currentColor">725"</text><circle cx="140" cy="108" r="28" fill="none" stroke="${PINK}" stroke-width="6"/><rect x="60" y="130" width="120" height="34" rx="10" fill="${VIO}"/><text x="120" y="154" text-anchor="middle" font-size="20" font-weight="800" fill="#fff">o que é?</text></svg>`,
+ le725:`<svg viewBox="0 0 520 170" aria-hidden="true"><text x="260" y="112" text-anchor="middle" font-size="110" font-weight="800" font-family="Arial,Helvetica,sans-serif" fill="currentColor">.725"</text><rect x="170" y="128" width="180" height="36" rx="10" fill="${VIO}"/><text x="260" y="153" text-anchor="middle" font-size="21" font-weight="800" fill="#fff">como se lê?</text></svg>`,
+ escrita:`<svg viewBox="0 0 520 170" aria-hidden="true"><rect x="40" y="30" width="170" height="100" rx="16" fill="${VIO}" opacity=".15" stroke="${VIO}" stroke-width="3"/><text x="125" y="96" text-anchor="middle" font-size="58" font-weight="800" fill="currentColor">1"</text><text x="125" y="155" text-anchor="middle" font-size="18" fill="currentColor">1 polegada</text><text x="245" y="96" text-anchor="middle" font-size="58" font-weight="800" fill="currentColor">+</text><rect x="280" y="30" width="200" height="100" rx="16" fill="${PINK}" opacity=".15" stroke="${PINK}" stroke-width="3"/><text x="380" y="96" text-anchor="middle" font-size="44" font-weight="800" fill="currentColor">250</text><text x="380" y="155" text-anchor="middle" font-size="18" fill="currentColor">250 milésimos</text></svg>`,
+ variacao:`<svg viewBox="0 0 520 190" aria-hidden="true">${[['25,02',0],['24,97',1],['25,01',2]].map(([v,i])=>`<rect x="${40+i*160}" y="${60+(i===1?6:0)}" width="${120+(i===1?-6:i===0?4:2)}" height="${70-(i===1?6:0)}" rx="6" fill="var(--panel)" stroke="currentColor" stroke-width="3"/><text x="${100+i*160}" y="165" text-anchor="middle" font-size="24" font-weight="800" fill="${PINK}">${v} mm</text>`).join('')}<text x="260" y="38" text-anchor="middle" font-size="20" font-weight="700" fill="currentColor">3 peças da mesma máquina, desenho pede 25 mm</text></svg>`,
+ termo:`<svg viewBox="0 0 520 190" aria-hidden="true"><rect x="236" y="20" width="48" height="120" rx="24" fill="var(--panel)" stroke="currentColor" stroke-width="4"/><rect x="250" y="70" width="20" height="80" fill="${PINK}"/><circle cx="260" cy="155" r="30" fill="${PINK}" stroke="currentColor" stroke-width="4"/><rect x="310" y="60" width="150" height="44" rx="12" fill="${VIO}"/><text x="385" y="91" text-anchor="middle" font-size="26" font-weight="800" fill="#fff">? °C</text><text x="120" y="88" text-anchor="middle" font-size="20" font-weight="700" fill="currentColor">peça + instrumento</text></svg>`
+};
+const figBox=svg=>`<div class="part" style="color:var(--ink)">${svg}</div>`;
+/* reta da faixa de tolerância: hl = 'nom' | 'min' | 'max' | 'pm' ; mk = posição da medida (min|max) ; q = esconde um valor com "?" */
+function faixaSVG(o){const X={min:110,nom:260,max:410};
+  const lab=k=>o.q===k?'?':o[k];
+  let g=`<svg viewBox="0 0 520 200" aria-hidden="true" style="color:var(--ink)"><rect x="20" y="78" width="90" height="40" fill="#B3261E" opacity=".15"/><rect x="410" y="78" width="90" height="40" fill="#B3261E" opacity=".15"/><rect x="110" y="78" width="300" height="40" fill="#17703F" opacity=".18"/>
+    <text x="65" y="104" text-anchor="middle" font-size="16" font-weight="700" fill="#B3261E">FORA</text><text x="455" y="104" text-anchor="middle" font-size="16" font-weight="700" fill="#B3261E">FORA</text><text x="185" y="104" text-anchor="middle" font-size="16" font-weight="700" fill="#17703F">DENTRO</text>`;
+  for(const k of ['min','nom','max']){const x=X[k];g+=`<line x1="${x}" x2="${x}" y1="66" y2="130" stroke="currentColor" stroke-width="${k==='nom'?3:5}"/>
+    <text x="${x}" y="54" text-anchor="middle" font-size="28" font-weight="800" fill="${o.q===k?VIO:'currentColor'}">${lab(k)}</text><text x="${x}" y="152" text-anchor="middle" font-size="16" fill="currentColor">${{min:'mínima',nom:'nominal',max:'máxima'}[k]}</text>`;
+    if(o.hl===k||o.q===k)g+=`<circle cx="${x}" cy="44" r="26" fill="none" stroke="${PINK}" stroke-width="5"/>`}
+  if(o.mk){const x=X[o.mk];g+=`<path d="M${x} 178 l-12 18 h24 z" transform="rotate(180 ${x} 187)" fill="${PINK}"/><text x="${x}" y="196" text-anchor="middle" font-size="15" font-weight="800" fill="${PINK}"></text><rect x="${x-70}" y="160" width="140" height="30" rx="8" fill="${PINK}"/><text x="${x}" y="181" text-anchor="middle" font-size="17" font-weight="800" fill="#fff">medida da peça</text>`}
+  return g+'</svg>'}
 
 /* =========================================================
    TOLERÂNCIA — valores em centésimos de mm para não errar nas contas
@@ -360,27 +404,30 @@ function partSVG(c,extra){
    FASES
    ========================================================= */
 const BANCO_POL=[
-  ['Quanto vale cada divisão da escala fixa?','.025"',['.001"','.100"','.050"']],
-  ['Quanto vale cada traço do nônio?','.001"','.025"|.010"|.100"'.split('|')],
-  ['Os números pequenos da escala fixa (1, 2, 3...) valem quanto cada um?','.100"',['.025"','.010"','1"']],
-  ['Quantas divisões tem o nônio do paquímetro em polegada milesimal?','25',['10','20','50']],
-  ['Qual é a resolução do paquímetro em polegada milesimal?','.001"',['.025"','0,02 mm','.010"']],
-  ['Quantos milésimos tem 1 polegada?','1000',['100','25,4','10']],
-  ['1 polegada é igual a quantos milímetros?','25,4 mm',['10 mm','2,54 mm','100 mm']],
-  ['Quantas divisões de .025" cabem em .100"?','4',['2','5','10']],
-  ['Como se escreve 1 polegada e 250 milésimos?','1.250"',['1,250 mm','1/250"','12.50"']],
-  ['Como se lê .725"?','725 milésimos de polegada',['7 polegadas e 25','72,5 milímetros','725 polegadas']],
-  ['Na polegada milesimal, o separador decimal é...','o ponto',['a vírgula','a barra','o traço']],
-  ['A leitura do paquímetro é...','escala fixa + nônio',['escala fixa − nônio','só o nônio','escala fixa × nônio']]
+  ['Quanto vale cada divisão da escala fixa (a parte marcada em rosa)?','.025"',['.001"','.100"','.050"'],{cal:{p:1345,hl:'fixDiv'}}],
+  ['Quanto vale cada traço do nônio (a parte marcada em rosa)?','.001"','.025"|.010"|.100"'.split('|'),{cal:{p:1345,hl:'vernDiv'}}],
+  ['Os números pequenos da escala fixa (circulados) valem quanto cada um?','.100"',['.025"','.010"','1"'],{cal:{p:1345,hl:'tenth'}}],
+  ['Quantas divisões tem o nônio (a parte de baixo, marcada)?','25',['10','20','50'],{cal:{p:1345,hl:'vernAll'}}],
+  ['O valor circulado no nônio é a resolução do paquímetro. Quanto ela vale?','.001"',['.025"','0,02 mm','.010"'],{cal:{p:1345,hl:'res'}}],
+  ['Quantos milésimos tem 1 polegada?','1000',['100','25,4','10'],{html:FIG.inch1000}],
+  ['1 polegada é igual a quantos milímetros?','25,4 mm',['10 mm','2,54 mm','100 mm'],{html:FIG.inchmm}],
+  ['Quantas divisões de .025" cabem em .100" (a parte marcada)?','4',['2','5','10'],{cal:{p:1345,hl:'quatro'}}],
+  ['Como se escreve 1 polegada e 250 milésimos?','1.250"',['1,250 mm','1/250"','12.50"'],{html:FIG.escrita}],
+  ['Como se lê .725"?','725 milésimos de polegada',['7 polegadas e 25','72,5 milímetros','725 polegadas'],{html:FIG.le725}],
+  ['Na polegada milesimal, o sinal circulado separa os decimais. Qual é ele?','o ponto',['a vírgula','a barra','o traço'],{html:FIG.ponto}],
+  ['A leitura do paquímetro é...','escala fixa + nônio',['escala fixa − nônio','só o nônio','escala fixa × nônio'],{cal:{p:1721,hl:'soma'}}]
 ];
 const BANCO_TOL=[
-  ['Por que as peças precisam de tolerância?','Nenhum processo fabrica peças exatamente iguais',['Para o desenho ficar mais bonito','Para a peça poder ter qualquer medida','Porque o paquímetro sempre erra']],
-  ['O que quer dizer o sinal ± na cota 25 ± 0,5?','Pode ter até 0,5 mm a mais ou a menos',['Tem que medir exatamente 25,5','Só pode ser maior que 25','Pode ter até 5 mm a mais ou a menos']],
-  ['A medida nominal é...','A medida ideal escrita no desenho',['A maior medida aceita','A medida que o aluno encontrou','A diferença entre máxima e mínima']],
-  ['Uma peça mediu exatamente a medida máxima. Ela...','Passa: o limite ainda vale',['Não passa: tem que ser menor','Passa só se for de aço','Tem que medir de novo até dar o nominal']],
-  ['Qual é a temperatura de referência para as medições?','20 °C',['0 °C','25 °C','100 °C']],
-  ['Medida mínima é...','nominal − tolerância',['nominal + tolerância','máxima + mínima','tolerância ÷ 2']]
+  ['Por que as peças precisam de tolerância?','Nenhum processo fabrica peças exatamente iguais',['Para o desenho ficar mais bonito','Para a peça poder ter qualquer medida','Porque o paquímetro sempre erra'],{html:FIG.variacao}],
+  ['O que quer dizer o sinal ± na cota 25 ± 0,5?','Pode ter até 0,5 mm a mais ou a menos',['Tem que medir exatamente 25,5','Só pode ser maior que 25','Pode ter até 5 mm a mais ou a menos'],{faixa:{min:'24,5',nom:'25',max:'25,5'},cota:'25 ± 0,5'}],
+  ['A medida nominal (circulada) é...','A medida ideal escrita no desenho',['A maior medida aceita','A medida que o aluno encontrou','A diferença entre máxima e mínima'],{faixa:{min:'24,5',nom:'25',max:'25,5',hl:'nom'},cota:'25 ± 0,5'}],
+  ['Uma peça mediu exatamente a medida máxima (seta rosa). Ela...','Passa: o limite ainda vale',['Não passa: tem que ser menor','Passa só se for de aço','Tem que medir de novo até dar o nominal'],{faixa:{min:'24,5',nom:'25',max:'25,5',mk:'max'},cota:'25 ± 0,5'}],
+  ['Qual é a temperatura de referência para as medições?','20 °C',['0 °C','25 °C','100 °C'],{html:FIG.termo}],
+  ['Como se calcula a medida mínima (o "?" da figura)?','nominal − tolerância',['nominal + tolerância','máxima + mínima','tolerância ÷ 2'],{faixa:{min:'24,5',nom:'25',max:'25,5',q:'min'},cota:'25 ± 0,5'}]
 ];
+function figVisual(f){if(!f)return '';if(f.html)return figBox(f.html);
+  if(f.faixa)return `<div class="part">${f.cota?`<div class="cota-big" style="font-size:clamp(30px,8vw,44px)">${f.cota} <span style="font-size:.45em;color:var(--muted)">mm</span></div>`:''}${faixaSVG(f.faixa)}</div>`;return ''}
+function concept(tag,[p,c,w,f]){const o=mcq(tag,p,c,w,figVisual(f));if(f&&f.cal)o.cal=f.cal;o.explain=`Resposta: <b>${esc(c)}</b>.`;return o}
 function mcq(tag,prompt,correct,wrong,extra){return{type:'mcq',tag,prompt,correct,options:shuffle([correct,...wrong.slice(0,3)]),visual:extra||'',log:prompt}}
 function tolMCQ(){const c=genCota();const k=pick(['nom','tol','max','min','faixa']);
   const v={nom:c.nom,tol:c.tol,max:c.max,min:c.min,faixa:2*c.tol};
@@ -395,7 +442,7 @@ function tolMCQ(){const c=genCota();const k=pick(['nom','tol','max','min','faixa
 const PHASES=[
  {id:'p1',w:1,ico:'💡',t:'Aquecimento',s:'O básico da polegada milesimal',
   tip:'1" = 1000 milésimos. Escreve-se com <b>ponto</b>: .725" (725 milésimos). Escala fixa: cada divisão vale <b>.025"</b>. Nônio: 25 divisões de <b>.001"</b>.',
-  make:()=>shuffle(BANCO_POL).slice(0,6).map(([p,c,w])=>Object.assign(mcq('Conceito',p,c,w),{explain:`Resposta: <b>${esc(c)}</b>.`}))},
+  make:()=>shuffle(BANCO_POL).slice(0,6).map(e=>concept('Conceito',e))},
  {id:'p2',w:1,ico:'📏',t:'Escala fixa',s:'Leia até o zero do nônio',
   tip:'Número grande = polegada inteira. Número pequeno = <b>.100"</b> cada. Cada tracinho depois dele = <b>.025"</b>. Conte até o <b>zero do nônio</b> (a setinha azul).',
   make:()=>Array.from({length:5},()=>{const u=genU(100,5300),fx=Math.floor(u/FD)*FD;
@@ -413,7 +460,7 @@ const PHASES=[
   make:()=>Array.from({length:4},()=>({type:'adjust',tag:'Chefão',target:genU(150,4800),log:'Abrir o paquímetro na medida'}))},
  {id:'p6',w:2,ico:'🧩',t:'Palavras da cota',s:'Nominal, tolerância, máxima e mínima',
   tip:'Na cota <b>25 ± 0,5</b>: nominal = 25 mm, tolerância = 0,5 mm, máxima = 25,5 mm, mínima = 24,5 mm. A faixa vai de 24,5 a 25,5 mm.',
-  make:()=>shuffle([tolMCQ(),tolMCQ(),tolMCQ(),tolMCQ(),...shuffle(BANCO_TOL).slice(0,2).map(([p,c,w])=>Object.assign(mcq('Conceito',p,c,w),{explain:`Resposta: <b>${esc(c)}</b>.`}))])},
+  make:()=>shuffle([tolMCQ(),tolMCQ(),tolMCQ(),tolMCQ(),...shuffle(BANCO_TOL).slice(0,2).map(e=>concept('Conceito',e))])},
  {id:'p7',w:2,ico:'➕',t:'Máxima e mínima',s:'Faça a conta e digite',
   tip:'<b>Máxima</b> = nominal + tolerância.<br><b>Mínima</b> = nominal − tolerância.<br>Use vírgula: 30,2.',
   make:()=>Array.from({length:6},(_,i)=>({type:'mm',tag:i%2?'Mínima':'Máxima',c:genCota(),k:i%2?'min':'max',log:''}))},
@@ -607,7 +654,7 @@ const RENDER={
     box.querySelectorAll('#ctl button,#ok').forEach(b=>b.disabled=true);
     answer(q,ok,inTxt(cal.p),inTxt(q.target),ok?explainIn(q.target):`Você deixou em <b>${inTxt(cal.p)}</b>. Para ${inTxt(q.target)}: escala fixa em <b>${inTxt(Math.floor(q.target/FD)*FD)}</b> e o <b>${q.target%FD}º</b> traço do nônio coincidindo.`)}},
  mm(box,q){const c=q.c,k=q.k,right=c[k];q.log=`Medida ${k==='max'?'máxima':'mínima'} de ${c.txt}`;
-  box.innerHTML=`${partSVG(c)}<p class="prompt">Qual é a medida <b>${k==='max'?'máxima':'mínima'}</b> aceita?</p>
+  box.innerHTML=`${partSVG(c,faixaSVG({min:mmTxt(c.min),nom:mmTxt(c.nom),max:mmTxt(c.max),q:k}))}<p class="prompt">Qual é a medida <b>${k==='max'?'máxima':'mínima'}</b> aceita (o <b style="color:var(--vio)">?</b> na figura)?</p>
    <div class="ansrow"><span class="inch"><input id="amm" inputmode="decimal" autocomplete="off" placeholder="0,00" aria-label="Medida em milímetros" style="width:6ch"><span>mm</span></span><button class="btn w2" id="ok">Conferir</button></div>`;
   const inp=$('#amm');inp.focus({preventScroll:true});
   const go=()=>{const s=inp.value.trim().replace(',','.');const v=parseFloat(s);if(!s||isNaN(v)||!/^\d*\.?\d*$/.test(s)){inp.focus();return}
@@ -713,7 +760,7 @@ function pdf(){const J=window.jspdf&&window.jspdf.jsPDF;if(!J){alert('Não conse
 /* início */
 let last=null;try{last=JSON.parse(localStorage.getItem('mpt-last')||'null')}catch(e){}
 if(last&&last.name){load(last.name,last.turma);hud();showMap()}else openGate();
-window.__MPT={get R(){return R},get G(){return G},PHASES,parseInch,inTxt,mmTxt};
+window.__MPT={get R(){return R},get G(){return G},PHASES,parseInch,inTxt,mmTxt,RENDER,BANCO_POL,BANCO_TOL,concept};
 </script>
 </body>
 </html>
