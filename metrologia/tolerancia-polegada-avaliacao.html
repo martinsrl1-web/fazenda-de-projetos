@@ -162,7 +162,7 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
 <main>
 <div class="top">
   <div><span class="nivel">Avaliação · 5,0 pontos</span><h1>Tolerância e Polegada Milesimal</h1>
-  <p class="sub" style="margin-bottom:0">Cinco situações reais de oficina e inspeção, no estilo das questões do ENEM. Leia o texto, observe a figura e escolha uma alternativa. Cada questão vale 1,0 ponto.</p></div>
+  <p class="sub" style="margin-bottom:0">Cinco situações reais de oficina e inspeção: três de tolerância (em milímetro) e duas de paquímetro em polegada milesimal, no estilo das questões do ENEM. Leia o texto, observe a figura e escolha uma alternativa. Cada questão vale 1,0 ponto.</p></div>
 </div>
 <section class="panel inicio" id="inicio" style="margin-top:14px">
   <h2 style="margin-top:0">Antes de começar</h2>
@@ -319,15 +319,15 @@ const Q=[
   ['a escala fixa em 2.230" e o 8º traço do nônio coincidindo.','Errada: a escala fixa não tem marca em 2.230", porque ela avança de .025" em .025".'],
   ['a escala fixa em 2.250" e o 12º traço do nônio coincidindo.','Errada: 2.250" + .012" = 2.262", que passa da medida pedida.'],
   ['a escala fixa em 2.238" e o zero do nônio coincidindo.','Errada: a escala fixa não tem marca em 2.238". Os milésimos são lidos no nônio.']]},
-{tema:'Tudo junto',titulo:'Decisão do inspetor de qualidade',
- texto:`<p>Uma empresa recebeu um lote de eixos importados. No desenho, o diâmetro do eixo está cotado em polegadas como <b>1.500" ± .005"</b>.</p><p>O inspetor mediu um dos eixos com um paquímetro em polegada milesimal e obteve a leitura mostrada na figura. Ele precisa decidir se o eixo pode ser aprovado.</p>`,
- fig:()=>`<div class="cotabox"><span>Cota do desenho</span><b>1.500" ± .005"</b></div><div class="desenho paq" id="dpaq">${paq(1507,false,'q5')}</div><p class="rolar">↔ Arraste o desenho para os lados para ver a escala toda.</p>`,
- en:'A decisão correta do inspetor, com a justificativa adequada, é',
- alts:[['reprovar o eixo, pois a leitura é 1.507", acima da máxima de 1.505".','Certa. Leitura: escala fixa 1.500" + nônio .007" (7º traço) = 1.507". A faixa aceita vai de 1.500" − .005" = 1.495" até 1.500" + .005" = 1.505". Como 1.507" é maior que 1.505", o eixo está fora.'],
-  ['aprovar o eixo, pois a leitura é 1.507", dentro da faixa de 1.495" a 1.510".','Errada: a máxima é 1.500" + .005" = 1.505", e não 1.510".'],
-  ['aprovar o eixo, pois a leitura é 1.500", igual à medida nominal.','Errada: essa é só a leitura da escala fixa. Faltou somar o nônio (.007").'],
-  ['reprovar o eixo, pois a leitura é 1.532", muito acima da máxima.','Errada: foi contado um tracinho de .025" a mais na escala fixa.'],
-  ['aprovar o eixo, pois a leitura é 1.507" e qualquer medida acima da nominal é aceita.','Errada: a tolerância limita a medida para os dois lados. Acima de 1.505" a peça é recusada.']]}
+{tema:'Tolerância',titulo:'A discussão na inspeção',
+ texto:`<p>Em uma indústria de máquinas agrícolas, o diâmetro de um eixo está cotado no desenho como <b>Ø 40 ± 0,2 mm</b>. O inspetor de qualidade mediu um dos eixos e encontrou <b>40,25 mm</b>.</p><p>O operador da máquina não concordou com a recusa da peça e argumentou:</p><p style="font-style:italic;border-left:4px solid var(--line);padding-left:12px">“A diferença para a medida do desenho é só de 0,25 mm. Isso é menor que a largura da faixa de tolerância, que é de 0,4 mm. Então o eixo pode ser aprovado.”</p>`,
+ fig:()=>`<div class="desenho">${D.lcd({nome:'diâmetro do eixo',cota:'Ø 40 ± 0,2',val:'40,25'})}</div>`,
+ en:'Sobre o argumento do operador, conclui-se que ele está',
+ alts:[['incorreto, pois a medida máxima aceita é 40,2 mm, e o eixo, com 40,25 mm, deve ser reprovado.','Certa. A tolerância de 0,2 mm vale para cada lado da nominal: a faixa vai de 39,8 mm a 40,2 mm. A largura da faixa (0,4 mm) não é quanto a peça pode se afastar da nominal. Como 40,25 mm passa da máxima, o eixo é reprovado.'],
+  ['correto, pois 0,25 mm é menor que a largura da faixa de tolerância, de 0,4 mm.','Errada: a peça pode se afastar no máximo 0,2 mm da nominal para cada lado. A largura da faixa (0,4 mm) é a soma dos dois lados.'],
+  ['correto, pois o eixo só seria reprovado se passasse de 40,4 mm.','Errada: 40,4 mm seria a máxima se a tolerância fosse ± 0,4. Com ± 0,2, a máxima é 40,2 mm.'],
+  ['incorreto, pois o eixo só seria aprovado se medisse exatamente 40 mm.','Errada: a conclusão (reprovar) está certa, mas a justificativa não. Qualquer medida de 39,8 a 40,2 mm seria aprovada.'],
+  ['incorreto, pois a faixa aceita vai de 40 mm a 40,2 mm, e o eixo deve ser reprovado.','Errada: a faixa também vale para baixo da nominal. Ela vai de 39,8 mm a 40,2 mm.']]}
 ];
 const N=Q.length,VALOR=1.0;
 
