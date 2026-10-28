@@ -168,13 +168,14 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
 </div>
 <section class="panel inicio" id="inicio" style="margin-top:14px">
   <h2 style="margin-top:0">Antes de começar</h2>
-  <div class="blocos"><div><b>Questões 1 a 5</b>Teoria: o que é cada parte da tolerância</div><div><b>Questões 6 a 23</b>Tolerância em milímetro: contas, inspeção e estudos de caso</div><div><b>Questões 24 a 40</b>Paquímetro em polegada milesimal: leitura e estudos de caso</div></div>
+  <div class="blocos"><div><b>Questões 1 a 5</b>Teoria: o que é cada parte da tolerância</div><div><b>Questões 6 a 23</b>Tolerância em milímetro: contas, inspeção e estudos de caso</div><div><b>Questões 24 a 40</b>Paquímetro em polegada milesimal: leitura completa e estudos de caso</div></div>
   <ul>
     <li>São 40 questões. A avaliação vale <b>5,0 pontos</b> (cada questão vale 0,125).</li>
     <li>As medidas e a ordem dentro de cada parte são sorteadas só para você.</li>
     <li>Ao confirmar uma resposta, ela fica registrada e não pode ser trocada.</li>
     <li>A correção aparece só no fim, quando você entregar a avaliação.</li>
     <li>Milímetros com vírgula (24,5). Polegadas com ponto ou vírgula (.347 ou 1,238).</li>
+    <li><b>Não saia desta tela durante a avaliação.</b> Se você trocar de aba ou de aplicativo, isso fica registrado no relatório, ao lado da questão em que você estava.</li>
     <li>Use papel e caneta para as contas. No fim, baixe o relatório em PDF e entregue ao professor.</li>
   </ul>
   <label class="f">Nome completo<input type="text" id="nome" autocomplete="name" maxlength="60"></label>
@@ -185,6 +186,7 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
 <section class="panel" id="painel" style="margin-top:14px" hidden>
   <div class="aluno"><span>Aluno: <b id="anome"></b> <span id="aturma" style="color:var(--muted)"></span></span><button id="trocar">Não é você? Trocar de aluno</button></div>
   <div class="placar" id="placar"></div>
+  <p class="erro" id="avsai" hidden style="margin:8px 0 0"></p>
   <div class="grade" id="grade" aria-label="Questões" style="margin-top:12px"></div>
 </section>
 <section class="ex" id="ex" aria-live="polite" style="margin-top:14px" hidden></section>
@@ -420,14 +422,12 @@ function sortear(){const T=[],P1=[],P2=[],us=new Set(),uu=new Set();
     P1.push({tema:1,tipo:'pnp',peca:c.peca,med:v,en:`O inspetor mediu ${c.a} ${c.med} e encontrou ${mmU(v)}. A peça passa na inspeção?`,alts:ok?PNP:[PNP[1],PNP[0]],
       exp:`Aceita de ${mmTxt(c.min)} a ${mmU(c.max)}. A medida ${mmU(v)} ${ok?(v===c.min||v===c.max?'está bem no limite: ainda passa.':'está dentro da faixa: passa.'):(v>c.max?'está acima da máxima: não passa.':'está abaixo da mínima: não passa.')}`,ctx:`${c.txt}, mediu ${mmTxt(v)} mm`})});
   ['lote','forn','disc'].forEach(id=>P1.push({tema:1,tipo:'mc',caso:id,en:CASOS[id].en,alts:CASOS[id].alts,exp:CASOS[id].exp,ctx:CASOS[id].titulo}));
-  /* polegada: 9 leituras, 2 escala fixa, 2 nônio, 1 abrir na medida, 1 resolução, 2 estudos de caso */
+  /* polegada: 14 leituras completas até 2" (10 com a linha rosa, 4 sem), 1 de resolução, 2 estudos de caso */
   const nu=(a,b,zero)=>{let u;do{u=rnd(a,b);if(zero)u=Math.floor(u/FD)*FD}while(uu.has(u)||(!zero&&u%FD===0));uu.add(u);return u};
-  /* 9 leituras até 2": as 8 primeiras com a linha rosa no traço que coincide, a última sem */
-  [nu(30,990),nu(30,990),nu(30,990),nu(1010,1990),nu(1010,1990),nu(1010,1990),nu(1010,1990),nu(100,1975,true),nu(1010,1990)]
-    .forEach((u,k)=>{const ro=k<8;P2.push({tema:2,tipo:'in',u,rosa:ro,en:ro?'A linha rosa mostra o traço do nônio que coincide. Qual é a leitura do paquímetro, em polegadas?':'Qual é a leitura do paquímetro, em polegadas?',r:u,exp:explica(u),ctx:'paquímetro em '+inTxt(u)+(ro?' (com linha rosa)':'')})});
-  for(let i=0;i<2;i++){const u=nu(100,1990),fx=Math.floor(u/FD)*FD;P2.push({tema:2,tipo:'in',u,en:'Quanto marca a escala fixa, até o zero do nônio, em polegadas?',r:fx,exp:`Escala fixa: ${decomp(fx)}. Os milésimos do nônio não entram nesta parte.`,ctx:'paquímetro em '+inTxt(u)})}
-  for(let i=0;i<2;i++){const u=nu(100,1990),r=u%FD;P2.push({tema:2,tipo:'in',u,rosa:true,en:'A linha rosa mostra o traço do nônio que coincide. Quanto vale a leitura do nônio, em polegadas?',r,exp:`É o ${r}º traço do nônio. Cada traço vale .001", então o nônio marca ${inTxt(r)}.`,ctx:'paquímetro em '+inTxt(u)})}
-  {const u=nu(300,1990),fx=Math.floor(u/FD)*FD,r=u%FD;P2.push({tema:2,tipo:'n',un:'º traço',alvo:inTxt(u),en:`Para abrir o paquímetro em ${inTxt(u)}, a escala fixa fica em ${inTxt(fx)}. Qual traço do nônio deve coincidir?`,r,exp:`${inTxt(u)} − ${inTxt(fx)} = ${inTxt(r)}. Cada traço do nônio vale .001", então é o ${r}º traço.`,ctx:'abrir em '+inTxt(u)})}
+  const LU=[nu(30,990),nu(30,990),nu(30,990),nu(30,990),nu(1010,1990),nu(1010,1990),nu(1010,1990),nu(1010,1990),nu(1010,1990),nu(100,1975,true),
+            nu(30,990),nu(30,990),nu(1010,1990),nu(1010,1990)];
+  const ROSA=embaralhar([true,true,true,true,true,true,true,true,true,true,false,false,false,false]);
+  LU.forEach((u,k)=>{const ro=ROSA[k];P2.push({tema:2,tipo:'in',u,rosa:ro,en:ro?'A linha rosa mostra o traço do nônio que coincide. Qual é a leitura completa do paquímetro, em polegadas?':'Qual é a leitura completa do paquímetro, em polegadas?',r:u,exp:explica(u),ctx:'paquímetro em '+inTxt(u)+(ro?' (com linha rosa)':' (sem linha rosa)')})});
   P2.push({tema:2,tipo:'mc',en:'Qual é a resolução do paquímetro em polegada milesimal?',alts:['.001"','.025"','.010"','.100"','1"'],exp:'Resolução = valor de uma divisão da escala fixa ÷ número de divisões do nônio = .025" ÷ 25 = .001".',ctx:'resolução'});
   ['leit','abrir'].forEach(id=>P2.push({tema:2,tipo:'mc',caso:id,en:CASOS[id].en,alts:CASOS[id].alts,exp:CASOS[id].exp,ctx:CASOS[id].titulo}));
   /* ordem: teoria fixa (1 a 5); tolerância e polegada embaralhadas dentro de cada parte */
@@ -438,12 +438,25 @@ function sortear(){const T=[],P1=[],P2=[],us=new Set(),uu=new Set();
 
 /* ===== estado ===== */
 const KEY='tol-pol-aval40-v1',N=40,VALOR=5/N;
-let S={E:[],res:{},t:{},entregue:false,nome:'',turma:'',i:0};
+let S={E:[],res:{},t:{},sai:{},fora:null,entregue:false,nome:'',turma:'',i:0};
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&Array.isArray(s.E)&&s.E.length===N)S=Object.assign(S,s)}catch(e){}
 if(S.E.length!==N)S.E=sortear();
 let E=S.E;
 S.i=E.findIndex((e,i)=>S.res[i]===undefined);if(S.i<0)S.i=0;
-const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify({E:S.E,res:S.res,t:S.t,entregue:S.entregue,nome:S.nome,turma:S.turma}))}catch(e){}};
+const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify({E:S.E,res:S.res,t:S.t,sai:S.sai,fora:S.fora,entregue:S.entregue,nome:S.nome,turma:S.turma}))}catch(e){}};
+/* ===== saídas da tela: trocar de aba, de aplicativo ou fechar a página durante a avaliação ===== */
+S.sai=S.sai||{};
+let dialogo=false;
+const pergunta=m=>{dialogo=true;const r=confirm(m);setTimeout(()=>{dialogo=false},300);return r};
+function saiu(){if(dialogo||!S.nome||S.entregue||S.fora)return;S.fora={i:S.i,t:Date.now()};const o=S.sai[S.i]||(S.sai[S.i]={n:0,ms:0});o.n++;salvar()}
+function voltou(){if(!S.fora)return;const o=S.sai[S.fora.i]||(S.sai[S.fora.i]={n:1,ms:0});o.ms+=Math.max(0,Date.now()-S.fora.t);S.fora=null;salvar();if(S.nome&&!S.entregue)avisoSaida()}
+function avisoSaida(){const el=$('avsai');if(!el)return;const tot=Object.values(S.sai).reduce((a,o)=>a+o.n,0);el.hidden=!tot;el.textContent=`Atenção: você saiu da tela ${tot} ${tot===1?'vez':'vezes'}. Isso aparece no relatório.`}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)saiu();else voltou()});
+window.addEventListener('blur',saiu);window.addEventListener('focus',voltou);
+window.addEventListener('pagehide',saiu);
+if(S.fora)voltou();
+const saiTxt=i=>{const o=S.sai[i];return o&&o.n?`Saiu ${o.n} ${o.n===1?'vez':'vezes'} (${ftempo(o.ms)})`:'Não'};
+const totSai=()=>Object.values(S.sai).reduce((a,o)=>[a[0]+o.n,a[1]+o.ms],[0,0]);
 const parseIn=s=>{s=String(s).trim().replace(/["”″\s]|pol/gi,'').replace(',','.');if(!/^\d*\.?\d{0,4}$/.test(s)||s===''||s==='.')return null;return Math.round(parseFloat(s)*1000)};
 const parseMm=s=>{s=String(s).trim().replace(/\s|mm/gi,'').replace(',','.');if(!/^\d+(\.\d{1,3})?$/.test(s))return null;return Math.round(parseFloat(s)*1000)};
 const parseN=s=>{s=String(s).trim().replace(/º|°|o|traço|\s/gi,'');if(!/^\d+$/.test(s))return null;return parseInt(s,10)};
@@ -516,27 +529,30 @@ function confirmar(){const e=E[S.i];let r;const err=m=>{$('emsg').innerHTML=`<p 
   parar();S.res[S.i]=r;salvar();
   const nx=E.findIndex((x,k)=>k>S.i&&S.res[k]===undefined),qq=nx>=0?nx:E.findIndex((x,k)=>S.res[k]===undefined);
   if(qq>=0){S.i=qq;render();$('ex').scrollIntoView({behavior:'smooth',block:'start'})}else render()}
-function entregar(){if(!confirm('Entregar a avaliação? Depois disso as respostas não podem mais ser alteradas.'))return;
+function entregar(){if(!pergunta('Entregar a avaliação? Depois disso as respostas não podem mais ser alteradas.'))return;
   parar();S.entregue=true;salvar();render();$('relpanel').scrollIntoView({behavior:'smooth',block:'start'})}
 $('grade').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;if(S.entregue){const el=document.getElementById('r'+b.dataset.i);if(el)el.scrollIntoView({behavior:'smooth'});return}ir(+b.dataset.i)});
 
 /* ===== relatório ===== */
 const porParte=k=>{const ids=E.map((e,i)=>i).filter(i=>E[i].tema===k);return [ids.filter(i=>correta(E[i],S.res[i])).length,ids.length]};
-function relatorio(){const ac=acertos(),tt=E.reduce((a,e,i)=>a+gasto(i),0);
+function relatorio(){const ac=acertos(),tt=E.reduce((a,e,i)=>a+gasto(i),0),[sn,sms]=totSai();
+  const okL=E.map((e,i)=>i).filter(i=>correta(E[i],S.res[i])).map(i=>i+1),erL=E.map((e,i)=>i).filter(i=>!correta(E[i],S.res[i])).map(i=>i+1);
   $('rcab').innerHTML=`<b>${esc(S.nome)}</b>${S.turma?' · Turma '+esc(S.turma):''} · ${new Date().toLocaleDateString('pt-BR')}`;
   $('rel').innerHTML=`<div class="pontos">${nota()}<small>de 5,0 pontos</small></div>
-   <div class="resumo"><div>Acertos<b style="color:var(--ok)">${ac}/${N}</b></div><div>Erros<b style="color:var(--bad)">${N-ac}</b></div><div>Tempo total<b>${ftempo(tt)}</b></div></div>
+   <div class="resumo"><div>Acertos<b style="color:var(--ok)">${ac}/${N}</b></div><div>Erros<b style="color:var(--bad)">${N-ac}</b></div><div>Tempo total<b>${ftempo(tt)}</b></div><div>Saiu da tela<b style="color:var(${sn?'--bad':'--ok'})">${sn?sn+(sn===1?' vez':' vezes'):'Não'}</b>${sn?'<span>'+ftempo(sms)+' fora</span>':''}</div></div>
    <div class="resumo">${PARTES.map((t,k)=>{const [a,n]=porParte(k);return `<div>${t}<b>${a}/${n}</b></div>`}).join('')}</div>
-   <table class="rtab"><thead><tr><th>Nº</th><th>Questão</th><th>Sua resposta</th><th>Resposta correta</th><th>Resultado</th></tr></thead><tbody>
-   ${E.map((e,i)=>{const r=S.res[i],ok=correta(e,r);
+   <div class="listas"><p><b class="okc">Acertou:</b> ${okL.join(', ')||'nenhuma'}</p><p><b class="noc">Errou:</b> ${erL.join(', ')||'nenhuma'}</p></div>
+   <table class="rtab"><thead><tr><th>Nº</th><th>Questão</th><th>Resposta do aluno</th><th>Resposta correta</th><th>Resultado</th><th>Saiu da tela?</th></tr></thead><tbody>
+   ${E.map((e,i)=>{const r=S.res[i],ok=correta(e,r),o=S.sai[i];
      return `<tr class="${ok?'ok':'no'}" id="r${i}"><td class="n">${i+1}</td><td>${esc(e.en)}<span class="ctx">${esc(PARTES[e.tema]+(e.ctx?' · '+e.ctx:''))}</span><details><summary>Ver explicação</summary>${esc(e.exp)}</details></td>
-       <td data-l="Sua resposta">${esc(txtResp(e,r))}</td><td data-l="Correta">${esc(txtCerta(e))}</td><td class="res" data-l="Resultado">${ok?'Acertou':'Errou'}</td></tr>`}).join('')}
+       <td data-l="Resposta do aluno" style="color:var(${ok?'--ok':'--bad'});font-weight:700">${esc(txtResp(e,r))}</td><td data-l="Correta">${esc(txtCerta(e))}</td><td class="res" data-l="Resultado">${ok?'Acertou':'Errou'}</td>
+       <td data-l="Saiu da tela" style="${o&&o.n?'color:var(--bad);font-weight:700':''}">${esc(saiTxt(i))}</td></tr>`}).join('')}
    </tbody></table>`}
 
 function tela(){const ok=!!S.nome;$('inicio').hidden=ok;$('painel').hidden=!ok;
   if(!ok){$('ex').hidden=true;$('relpanel').hidden=true;$('nome').value='';$('turma').value='';return}
-  $('anome').textContent=S.nome;$('aturma').textContent=S.turma?'· Turma '+S.turma:'';render()}
-$('trocar').onclick=()=>{if(confirm('Trocar de aluno apaga tudo o que foi respondido neste aparelho. Continuar?')){S={E:sortear(),res:{},t:{},entregue:false,nome:'',turma:'',i:0};E=S.E;t0=null;salvar();tela();window.scrollTo(0,0)}};
+  $('anome').textContent=S.nome;$('aturma').textContent=S.turma?'· Turma '+S.turma:'';avisoSaida();render()}
+$('trocar').onclick=()=>{if(pergunta('Trocar de aluno apaga tudo o que foi respondido neste aparelho. Continuar?')){S={E:sortear(),res:{},t:{},sai:{},fora:null,entregue:false,nome:'',turma:'',i:0};E=S.E;t0=null;salvar();tela();window.scrollTo(0,0)}};
 $('comecar').onclick=()=>{const n=$('nome').value.trim().replace(/\s+/g,' '),t=$('turma').value.trim();
   if(n.length<3||!/\s/.test(n)){$('imsg').innerHTML='<p class="erro">Escreva o seu nome completo (nome e sobrenome).</p>';$('nome').focus();return}
   if(!t){$('imsg').innerHTML='<p class="erro">Escreva a sua turma.</p>';$('turma').focus();return}
@@ -556,16 +572,19 @@ $('pdf').onclick=()=>{
   linha('Avaliação: Tolerância e Polegada Milesimal (40 questões, 5,0 pontos)',15,true);y+=2;
   linha(`Nome: ${S.nome}    Turma: ${S.turma||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`,10);y+=2;
   linha(`NOTA: ${nota()} de 5,0 pontos    Acertos: ${ac} de ${N}    Tempo total: ${ftempo(tt)}`,13,true,ac>=24?[23,112,63]:[179,38,30]);
-  linha(PARTES.map((p,k)=>{const [a,n]=porParte(k);return `${p}: ${a} de ${n}`}).join('    '),10.5,true);y+=4;
-  const cols=[['Nº',9],['Questão',75],['Resposta do aluno',38],['Resposta correta',38],['Resultado',20]],FS=8.3,LH=3.6;
+  linha(PARTES.map((p,k)=>{const [a,n]=porParte(k);return `${p}: ${a} de ${n}`}).join('    '),10.5,true);
+  {const [sn,sms]=totSai();linha(sn?`SAIU DA TELA: ${sn} ${sn===1?'vez':'vezes'}, ${ftempo(sms)} fora (questões: ${Object.keys(S.sai).filter(k=>S.sai[k].n).map(k=>+k+1).sort((a,b)=>a-b).join(', ')})`:'Saiu da tela: não',10.5,true,sn?[179,38,30]:[23,112,63])}
+  linha(`Acertou: ${E.map((e,i)=>i).filter(i=>correta(E[i],S.res[i])).map(i=>i+1).join(', ')||'nenhuma'}`,9.5,true,[23,112,63]);
+  linha(`Errou: ${E.map((e,i)=>i).filter(i=>!correta(E[i],S.res[i])).map(i=>i+1).join(', ')||'nenhuma'}`,9.5,true,[179,38,30]);y+=4;
+  const cols=[['Nº',8],['Questão',66],['Resp. do aluno',32],['Resp. correta',32],['Resultado',18],['Saiu da tela',24]],FS=8.2,LH=3.6;
   const cab=()=>{doc.setFillColor(29,59,92);doc.rect(X,y-4.3,Wd,6.4,'F');doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(255,255,255);let x=X+1.5;cols.forEach(([n,w])=>{doc.text(n,x,y);x+=w});y+=5};
   cab();
   E.forEach((e,i)=>{const r=S.res[i],ok=correta(e,r);
-    const cel=[String(i+1),e.en+(e.ctx?' ('+e.ctx+')':'')+(ok?'':' -> '+e.exp),txtResp(e,r),txtCerta(e),ok?'Acertou':'Errou'];
+    const cel=[String(i+1),e.en+(e.ctx?' ('+e.ctx+')':'')+(ok?'':' -> '+e.exp),txtResp(e,r),txtCerta(e),ok?'Acertou':'Errou',saiTxt(i)];
     doc.setFontSize(FS);const ls=cel.map((c,j)=>doc.splitTextToSize(t(c),cols[j][1]-3));const h=Math.max(...ls.map(l=>l.length))*LH+2.4;
     if(y+h>288){doc.addPage();y=18;cab()}
     if(i%2){doc.setFillColor(238,242,245);doc.rect(X,y-3.6,Wd,h,'F')}
-    let x=X+1.5;ls.forEach((l,j)=>{const cor=j===4?(ok?[23,112,63]:[179,38,30]):j===2&&!ok?[179,38,30]:[20,32,43];
+    let x=X+1.5;ls.forEach((l,j)=>{const cor=j===4?(ok?[23,112,63]:[179,38,30]):j===2?(ok?[23,112,63]:[179,38,30]):j===5&&S.sai[i]&&S.sai[i].n?[179,38,30]:[20,32,43];
       doc.setFont('helvetica',j===0||j===4?'bold':'normal');doc.setTextColor(...cor);doc.text(l,x,y);x+=cols[j][1]});
     y+=h});
   const nm=S.nome.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
