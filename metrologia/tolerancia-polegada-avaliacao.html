@@ -137,21 +137,23 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
 .conta hr{grid-column:1/-1;width:100%;border:0;border-top:3px solid var(--ink);margin:2px 0}
 .texto{font-size:17.5px;line-height:1.6;margin:0 0 12px}
 .texto p{margin:0 0 10px}
-.fonte{display:block;font-size:13px;color:var(--muted);text-align:right;margin-top:-4px}
 .cotabox{display:inline-flex;gap:10px;align-items:baseline;flex-wrap:wrap;background:var(--panel);border:2px solid var(--accent);border-radius:6px;padding:8px 14px;margin:0 0 10px}
 .cotabox span{font:600 14px/1.2 Barlow,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .cotabox b{font:800 30px/1 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums}
 .desenho.paq{overflow-x:auto;-webkit-overflow-scrolling:touch}
 @media (max-width:600px){.desenho.paq svg{width:680px;max-width:none;max-height:none}.desenho:not(.paq) svg{max-height:none}}
 .rolar{display:none;font-size:13px;color:var(--muted);margin:-8px 0 10px}@media (max-width:600px){.rolar{display:block}}
-.grade button.feita{background:var(--accent2,#1D3B5C);border-color:#1D3B5C;color:#fff}
+.grade button.feita{background:#1D3B5C;border-color:#1D3B5C;color:#fff}
 .reg{margin-top:12px;padding:10px 14px;border-left:6px solid var(--accent);background:var(--bg);border-radius:0 4px 4px 0}
 .alt .lt{font-weight:800;min-width:1.4em}
-.corr{border:1px solid var(--line);border-radius:6px;padding:14px;margin:12px 0;background:var(--bg)}
-.corr h3{margin:0 0 6px}
-.corr .pts{float:right;font:800 22px/1 'Big Shoulders Display',sans-serif}
 .pontos{font:800 clamp(56px,14vw,96px)/.9 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums}
 .pontos small{font-size:.35em;color:var(--muted);margin-left:.15em}
+.blocos{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:6px 0 14px}
+.blocos div{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:15px}
+.blocos b{display:block;font:800 22px/1.1 'Big Shoulders Display',sans-serif}
+.rtab details{margin-top:4px;font-size:14px;color:var(--muted)}
+.rtab details summary{cursor:pointer;color:var(--accent)}
+.parte{font:700 13px/1 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:10px 0 4px;grid-column:1/-1}
 </style>
 </head>
 <body>
@@ -162,17 +164,18 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
 <main>
 <div class="top">
   <div><span class="nivel">Avaliação · 5,0 pontos</span><h1>Tolerância e Polegada Milesimal</h1>
-  <p class="sub" style="margin-bottom:0">Cinco situações reais de oficina e inspeção: três de tolerância (em milímetro) e duas de paquímetro em polegada milesimal, no estilo das questões do ENEM. Leia o texto, observe a figura e escolha uma alternativa. Cada questão vale 1,0 ponto.</p></div>
+  <p class="sub" style="margin-bottom:0">40 questões: primeiro a teoria da tolerância, depois exercícios de tolerância em milímetro e, por fim, leitura do paquímetro em polegada milesimal. A avaliação vale 5,0 pontos.</p></div>
 </div>
 <section class="panel inicio" id="inicio" style="margin-top:14px">
   <h2 style="margin-top:0">Antes de começar</h2>
+  <div class="blocos"><div><b>Questões 1 a 5</b>Teoria: o que é cada parte da tolerância</div><div><b>Questões 6 a 23</b>Tolerância em milímetro: contas, inspeção e estudos de caso</div><div><b>Questões 24 a 40</b>Paquímetro em polegada milesimal: leitura e estudos de caso</div></div>
   <ul>
-    <li>São 5 questões de múltipla escolha, cada uma valendo <b>1,0 ponto</b>. Total: <b>5,0 pontos</b>.</li>
-    <li>A ordem das questões e das alternativas é sorteada só para você.</li>
+    <li>São 40 questões. A avaliação vale <b>5,0 pontos</b> (cada questão vale 0,125).</li>
+    <li>As medidas e a ordem dentro de cada parte são sorteadas só para você.</li>
     <li>Ao confirmar uma resposta, ela fica registrada e não pode ser trocada.</li>
     <li>A correção aparece só no fim, quando você entregar a avaliação.</li>
-    <li>Use papel e caneta para fazer as contas. Leia com calma: você tem a aula inteira.</li>
-    <li>No fim, baixe o relatório em PDF e entregue ao professor.</li>
+    <li>Milímetros com vírgula (24,5). Polegadas com ponto ou vírgula (.347 ou 1,238).</li>
+    <li>Use papel e caneta para as contas. No fim, baixe o relatório em PDF e entregue ao professor.</li>
   </ul>
   <label class="f">Nome completo<input type="text" id="nome" autocomplete="name" maxlength="60"></label>
   <label class="f" style="margin-top:10px">Turma<input type="text" id="turma" maxlength="20"></label>
@@ -198,6 +201,8 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
 <script>
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const pick=a=>a[Math.floor(Math.random()*a.length)];
 const embaralhar=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const L1=j=>String.fromCharCode(65+j);
 
@@ -277,71 +282,181 @@ const D={
 
 
 
-/* lote numerado (1 a 5), para não confundir com as letras das alternativas */
-const loteN=o=>{const n=o.vals.length,w=96,x0=300-(n*(w+10)-10)/2;
-  return svgw(`<text x="300" y="40" text-anchor="middle" font-size="22" font-weight="700" class="f-ink">Cota do desenho: ${o.cota}</text>`+o.vals.map((v,i)=>`<rect x="${x0+i*(w+10)}" y="66" width="${w}" height="120" rx="8" class="f-panel" stroke="currentColor" stroke-width="1.2"/><text x="${x0+i*(w+10)+w/2}" y="98" text-anchor="middle" font-size="17" font-weight="700" class="f-acc">Pino ${i+1}</text><text x="${x0+i*(w+10)+w/2}" y="148" text-anchor="middle" font-size="26" font-weight="700" class="f-ink">${v}</text>`).join('')+`<text x="300" y="220" text-anchor="middle" font-size="16" class="f-mut">medidas encontradas, em mm</text>`,`Cinco pinos medidos: ${o.vals.join(', ')} mm`,240)};
+/* ===== desenhos das peças: o aluno vê o que é um eixo, um pino, uma bucha... ===== */
+const nomeTxt=(t,y)=>`<text x="300" y="${y}" text-anchor="middle" font-size="17" class="f-mut">${t}</text>`;
+const PD={
+ eixo:o=>svgw(`<path d="M70 110 L82 98 H470 L482 110 V170 L470 182 H82 L70 170 Z" class="f-steel" stroke="currentColor" stroke-width="2"/>
+   <line x1="82" y1="98" x2="82" y2="182" stroke="currentColor" stroke-width="1.2"/><line x1="470" y1="98" x2="470" y2="182" stroke="currentColor" stroke-width="1.2"/>
+   <rect x="180" y="98" width="130" height="14" rx="7" class="f-bg" stroke="currentColor" stroke-width="1.5"/>${centro(50,140,500,140)}
+   ${ext(482,98,540,98)}${ext(482,182,540,182)}${dimV(530,98,182,'',true)}<text x="520" y="80" text-anchor="middle" font-size="20" font-weight="700" class="f-acc">${o.cota}</text>
+   ${nomeTxt((o.nome||'eixo')+' (vista lateral, com rasgo de chaveta)',232)}`,`Desenho de um eixo com cota ${o.cota}`,250),
+ pino:o=>svgw(`<path d="M150 105 L162 93 H420 L432 105 V175 L420 187 H162 L150 175 Z" class="f-steel" stroke="currentColor" stroke-width="2"/>
+   <line x1="162" y1="93" x2="162" y2="187" stroke="currentColor" stroke-width="1.2"/><line x1="420" y1="93" x2="420" y2="187" stroke="currentColor" stroke-width="1.2"/>${centro(130,140,450,140)}
+   ${ext(432,93,500,93)}${ext(432,187,500,187)}${dimV(490,93,187,'',true)}<text x="480" y="76" text-anchor="middle" font-size="20" font-weight="700" class="f-acc">${o.cota}</text>
+   ${nomeTxt((o.nome||'pino')+' (vista lateral)',232)}`,`Desenho de um pino com cota ${o.cota}`,250),
+ bucha:o=>svgw(`<circle cx="190" cy="135" r="92" class="f-steel" stroke="currentColor" stroke-width="2"/><circle cx="190" cy="135" r="52" class="f-bg" stroke="currentColor" stroke-width="2"/>${centro(80,135,300,135)}${centro(190,30,190,240)}
+   <line x1="140" x2="240" y1="135" y2="135" class="s-acc" stroke-width="2" marker-start="url(#ar)" marker-end="url(#ar)"/>
+   <rect x="340" y="60" width="200" height="150" rx="4" class="f-steel" stroke="currentColor" stroke-width="2"/><rect x="340" y="95" width="200" height="80" class="f-bg" stroke="currentColor" stroke-width="1.5" stroke-dasharray="8 5"/>
+   <text x="440" y="48" text-anchor="middle" font-size="15" class="f-mut">corte lateral</text>
+   <text x="190" y="122" text-anchor="middle" font-size="19" font-weight="700" class="f-acc">${o.cota}</text>
+   ${nomeTxt((o.nome||'bucha')+': a cota é do diâmetro do furo',262)}`,`Desenho de uma bucha com furo ${o.cota}`,275),
+ bloco:o=>svgw(`<path d="M120 120 L170 80 H500 L450 120 Z" class="f-panel" stroke="currentColor" stroke-width="2"/><path d="M450 120 L500 80 V150 L450 190 Z" class="f-steel" stroke="currentColor" stroke-width="2" opacity=".8"/>
+   <rect x="120" y="120" width="330" height="70" class="f-steel" stroke="currentColor" stroke-width="2"/>
+   ${ext(120,195,120,235)}${ext(450,195,450,235)}${dimH(120,450,222,o.cota,true)}
+   ${nomeTxt(o.nome||'bloco',60)}`,`Desenho de ${o.nome||'bloco'} com cota ${o.cota}`,250),
+ chaveta:o=>svgw(`<rect x="110" y="95" width="380" height="80" rx="40" class="f-steel" stroke="currentColor" stroke-width="2"/>${centro(90,135,510,135)}
+   ${ext(490,95,550,95)}${ext(490,175,550,175)}${dimV(540,95,175,'',true)}<text x="530" y="78" text-anchor="middle" font-size="20" font-weight="700" class="f-acc">${o.cota}</text>
+   ${nomeTxt('chaveta (vista de cima): a cota é da largura',225)}`,`Desenho de uma chaveta com largura ${o.cota}`,245),
+ barra:o=>svgw(`<rect x="50" y="110" width="500" height="50" class="f-steel" stroke="currentColor" stroke-width="2"/>
+   ${ext(50,105,50,55)}${ext(550,105,550,55)}${dimH(50,550,72,o.cota,true)}${nomeTxt('barra (vista de frente): a cota é do comprimento',200)}`,`Desenho de uma barra com cota ${o.cota}`,220)
+};
+/* medida encontrada no instrumento, embaixo da peça */
+const lcdTxt=v=>`<svg viewBox="0 0 600 120" role="img" aria-label="Medida encontrada: ${v} mm"><rect x="150" y="10" width="300" height="100" rx="10" class="f-lcd"/><text x="300" y="38" text-anchor="middle" font-size="15" fill="#6FA88A" letter-spacing="2">MEDIDA ENCONTRADA</text><text x="300" y="90" text-anchor="middle" font-size="46" font-weight="700" class="f-lcdtxt">${v} mm</text></svg>`;
+/* figuras da teoria: a cota com uma parte destacada e a reta da faixa */
+const cotaTeo=hl=>svgw(`<rect x="70" y="40" width="460" height="150" rx="14" class="f-panel" stroke="currentColor" stroke-width="1.6"/>
+  <text x="300" y="75" text-anchor="middle" font-size="17" class="f-mut">cota de um pino no desenho</text>
+  <text x="300" y="155" text-anchor="middle" font-size="64" font-weight="700" class="f-ink"><tspan class="${hl==='nom'?'f-acc':''}">Ø 25</tspan> <tspan class="${hl==='tol'?'f-acc':''}">± 0,5</tspan></text>
+  ${hl==='nom'?'<ellipse cx="225" cy="134" rx="92" ry="44" fill="none" stroke="#FF2E93" stroke-width="5"/>':''}
+  ${hl==='tol'?'<ellipse cx="385" cy="134" rx="92" ry="44" fill="none" stroke="#FF2E93" stroke-width="5"/>':''}
+  <text x="300" y="232" text-anchor="middle" font-size="17" class="f-mut">medidas em mm</text>`,'Cota Ø 25 ± 0,5',250);
+const faixaTeo=hl=>{const c={min:hl==='min',max:hl==='max',faixa:hl==='faixa'};
+  return svgw(`<text x="300" y="34" text-anchor="middle" font-size="20" font-weight="700" class="f-ink">Cota: Ø 25 ± 0,5 mm</text>
+  <rect x="40" y="120" width="520" height="56" class="f-out"/><rect x="150" y="120" width="300" height="56" class="f-zone"/>
+  <text x="300" y="155" text-anchor="middle" font-size="19" font-weight="700" class="f-ok">ACEITA</text><text x="95" y="155" text-anchor="middle" font-size="16" font-weight="700" class="f-bad">FORA</text><text x="505" y="155" text-anchor="middle" font-size="16" font-weight="700" class="f-bad">FORA</text>
+  <line x1="150" x2="150" y1="106" y2="190" stroke="currentColor" stroke-width="3"/><line x1="450" x2="450" y1="106" y2="190" stroke="currentColor" stroke-width="3"/><line x1="300" x2="300" y1="106" y2="190" class="s-acc" stroke-width="2"/>
+  <text x="150" y="94" text-anchor="middle" font-size="26" font-weight="700" class="f-ink">${c.min?'?':'24,5'}</text><text x="300" y="94" text-anchor="middle" font-size="26" font-weight="700" class="f-acc">25</text><text x="450" y="94" text-anchor="middle" font-size="26" font-weight="700" class="f-ink">${c.max?'?':'25,5'}</text>
+  ${c.min?'<circle cx="150" cy="86" r="26" fill="none" stroke="#FF2E93" stroke-width="5"/>':''}${c.max?'<circle cx="450" cy="86" r="26" fill="none" stroke="#FF2E93" stroke-width="5"/>':''}
+  ${c.faixa?'<line x1="150" x2="450" y1="214" y2="214" stroke="#FF2E93" stroke-width="4" marker-start="url(#ar)" marker-end="url(#ar)"/><text x="300" y="242" text-anchor="middle" font-size="18" font-weight="700" fill="#FF2E93">esta distância</text>':''}`,'Faixa de tolerância da cota Ø 25 ± 0,5',255)};
 
-/* ===== as 5 questões (a primeira alternativa de cada lista é a correta; a ordem é sorteada) ===== */
-const Q=[
-{tema:'Tolerância',titulo:'Inspeção de um lote de pinos',
- texto:`<p>Uma fábrica de autopeças produz pinos de articulação para pedais de freio. Nenhum processo de fabricação consegue fazer peças exatamente iguais, por isso o desenho indica a medida nominal e a tolerância aceita. No desenho do pino, o diâmetro está cotado como <b>Ø 12 ± 0,05 mm</b>.</p><p>No controle de qualidade, um inspetor mediu cinco pinos de um lote e anotou os valores mostrados na figura.</p>`,
- fig:()=>`<div class="desenho">${loteN({cota:'Ø 12 ± 0,05',vals:['12,04','11,94','12,05','11,96','12,06']})}</div>`,
- en:'De acordo com a cota do desenho, devem ser aprovados',
- alts:[['os pinos 1, 3 e 4.','Certa. A faixa vai de 12 − 0,05 = 11,95 mm até 12 + 0,05 = 12,05 mm. Os pinos 1 (12,04), 3 (12,05, no limite) e 4 (11,96) estão dentro. O pino 2 (11,94) está abaixo da mínima e o pino 5 (12,06), acima da máxima.'],
-  ['apenas os pinos 1 e 4, pois o pino 3 está no limite e deve ser recusado.','Errada: uma medida igual à máxima ainda está dentro da tolerância.'],
-  ['os pinos 1, 2, 3 e 4, pois apenas o pino 5 passa da medida máxima.','Errada: também é preciso conferir a mínima (11,95 mm). O pino 2 está abaixo dela.'],
-  ['os pinos 1, 2 e 4, pois a faixa aceita vai de 11,90 a 12,10 mm.','Errada: a tolerância de 0,05 mm vale para cada lado, então a faixa vai de 11,95 a 12,05 mm.'],
-  ['nenhum pino, pois nenhum deles mede exatamente 12,00 mm.','Errada: a tolerância existe justamente porque nenhuma peça sai com a medida exata.']]},
-{tema:'Tolerância',titulo:'Da especificação do fornecedor para o desenho',
- texto:`<p>Uma oficina de manutenção vai encomendar buchas de bronze. O fornecedor informou que aceita fabricar o furo das buchas com qualquer medida <b>entre 24,9 mm e 25,1 mm</b>, como mostra a figura.</p><p>Para registrar a peça no desenho técnico da empresa, o projetista precisa escrever essa exigência na forma de cota, com a medida nominal e a tolerância (nominal ± tolerância).</p>`,
- fig:()=>`<div class="desenho">${D.faixa({min:'24,9',max:'25,1',nom:'?'})}</div>`,
- en:'A cota que o projetista deve escrever no desenho é',
- alts:[['Ø 25 ± 0,1','Certa. A nominal fica no meio da faixa: (24,9 + 25,1) ÷ 2 = 25 mm. A tolerância é a distância da nominal até cada limite: 25,1 − 25 = 0,1 mm.'],
-  ['Ø 25 ± 0,2','Errada: 0,2 mm é a largura da faixa (25,1 − 24,9). A tolerância é a metade disso para cada lado.'],
-  ['Ø 24,9 ± 0,2','Errada: com essa cota a faixa iria de 24,7 a 25,1 mm.'],
-  ['Ø 25,1 ± 0,1','Errada: com essa cota a faixa iria de 25,0 a 25,2 mm.'],
-  ['Ø 25 ± 0,05','Errada: com essa cota a faixa iria só de 24,95 a 25,05 mm, mais apertada que o pedido.']]},
-{tema:'Polegada milesimal',titulo:'Medição em uma máquina importada',
- texto:`<p>Um técnico de manutenção precisa medir o diâmetro de um eixo de uma máquina fabricada nos Estados Unidos. Como o manual da máquina usa o sistema inglês, ele utiliza um paquímetro em polegada milesimal, com resolução de .001".</p><p>A figura mostra a posição da escala fixa e do nônio no momento da medição.</p>`,
- fig:()=>`<div class="desenho paq" id="dpaq">${paq(1347,false,'q3')}</div><p class="rolar">↔ Arraste o desenho para os lados para ver a escala toda.</p>`,
- en:'A leitura correta do paquímetro é',
- alts:[['1.347"','Certa. Escala fixa: 1" + .300" + 1 × .025" = 1.325". Nônio: o 22º traço coincide = .022". Leitura: 1.325" + .022" = 1.347".'],
-  ['1.322"','Errada: faltou somar o tracinho de .025" que passou depois do número 3.'],
-  ['1.325"','Errada: essa é só a leitura da escala fixa. Faltou somar o nônio (.022").'],
-  ['1.372"','Errada: foi contado um tracinho de .025" a mais na escala fixa.'],
-  ['.347"','Errada: faltou a polegada inteira (o número grande 1).']]},
-{tema:'Polegada milesimal',titulo:'Preparando o paquímetro para uma medida',
- texto:`<p>Para conferir um calibrador, o técnico precisa deixar o paquímetro em polegada milesimal aberto e travado exatamente em <b>2.238"</b>.</p><p>Nesse paquímetro, cada divisão da escala fixa vale .025" e o nônio tem 25 divisões, cada uma valendo .001".</p>`,
- fig:()=>`<div class="cotabox"><span>Medida pedida</span><b>2.238"</b></div><div class="desenho paq" id="dpaq">${paq(2000,false,'q4')}</div><p class="rolar">↔ Arraste o desenho para os lados para ver a escala toda.</p><p style="margin:-6px 0 10px;font-size:14px;color:var(--muted)">A figura mostra o paquímetro aberto em 2.000", apenas como referência das escalas.</p>`,
- en:'Para obter a medida de 2.238", o técnico deve posicionar o paquímetro com',
- alts:[['a escala fixa em 2.225" e o 13º traço do nônio coincidindo.','Certa. A escala fixa só marca múltiplos de .025": o maior que cabe em 2.238" é 2.225". Faltam 2.238" − 2.225" = .013", ou seja, o 13º traço do nônio.'],
-  ['a escala fixa em 2.200" e o 38º traço do nônio coincidindo.','Errada: o nônio tem só 25 divisões. Não existe 38º traço.'],
-  ['a escala fixa em 2.230" e o 8º traço do nônio coincidindo.','Errada: a escala fixa não tem marca em 2.230", porque ela avança de .025" em .025".'],
-  ['a escala fixa em 2.250" e o 12º traço do nônio coincidindo.','Errada: 2.250" + .012" = 2.262", que passa da medida pedida.'],
-  ['a escala fixa em 2.238" e o zero do nônio coincidindo.','Errada: a escala fixa não tem marca em 2.238". Os milésimos são lidos no nônio.']]},
-{tema:'Tolerância',titulo:'A discussão na inspeção',
- texto:`<p>Em uma indústria de máquinas agrícolas, o diâmetro de um eixo está cotado no desenho como <b>Ø 40 ± 0,2 mm</b>. O inspetor de qualidade mediu um dos eixos e encontrou <b>40,25 mm</b>.</p><p>O operador da máquina não concordou com a recusa da peça e argumentou:</p><p style="font-style:italic;border-left:4px solid var(--line);padding-left:12px">“A diferença para a medida do desenho é só de 0,25 mm. Isso é menor que a largura da faixa de tolerância, que é de 0,4 mm. Então o eixo pode ser aprovado.”</p>`,
- fig:()=>`<div class="desenho">${D.lcd({nome:'diâmetro do eixo',cota:'Ø 40 ± 0,2',val:'40,25'})}</div>`,
- en:'Sobre o argumento do operador, conclui-se que ele está',
- alts:[['incorreto, pois a medida máxima aceita é 40,2 mm, e o eixo, com 40,25 mm, deve ser reprovado.','Certa. A tolerância de 0,2 mm vale para cada lado da nominal: a faixa vai de 39,8 mm a 40,2 mm. A largura da faixa (0,4 mm) não é quanto a peça pode se afastar da nominal. Como 40,25 mm passa da máxima, o eixo é reprovado.'],
-  ['correto, pois 0,25 mm é menor que a largura da faixa de tolerância, de 0,4 mm.','Errada: a peça pode se afastar no máximo 0,2 mm da nominal para cada lado. A largura da faixa (0,4 mm) é a soma dos dois lados.'],
-  ['correto, pois o eixo só seria reprovado se passasse de 40,4 mm.','Errada: 40,4 mm seria a máxima se a tolerância fosse ± 0,4. Com ± 0,2, a máxima é 40,2 mm.'],
-  ['incorreto, pois o eixo só seria aprovado se medisse exatamente 40 mm.','Errada: a conclusão (reprovar) está certa, mas a justificativa não. Qualquer medida de 39,8 a 40,2 mm seria aprovada.'],
-  ['incorreto, pois a faixa aceita vai de 40 mm a 40,2 mm, e o eixo deve ser reprovado.','Errada: a faixa também vale para baixo da nominal. Ela vai de 39,8 mm a 40,2 mm.']]}
+/* ===== números ===== */
+const mmTxt=c=>{const v=(c/100).toFixed(2).replace(/\.?0+$/,'');return v.replace('.',',')};
+const mmU=c=>mmTxt(c)+' mm';
+
+/* ===== QUESTÕES FIXAS ===== */
+/* teoria (a primeira alternativa é a correta; as alternativas são embaralhadas) */
+const TEO=[
+ {titulo:'Medida nominal',fig:'cn',en:'Na cota Ø 25 ± 0,5, o número destacado (25) é chamado de',
+  alts:['medida nominal: o valor de referência pedido no desenho.','tolerância: o quanto a medida pode variar.','medida máxima: a maior medida aceita.','medida mínima: a menor medida aceita.','faixa de tolerância: o intervalo de medidas aceitas.'],
+  exp:'O número antes do ± é a medida nominal, o valor de referência escrito no desenho.'},
+ {titulo:'Tolerância',fig:'ct',en:'Na cota Ø 25 ± 0,5, a parte destacada (± 0,5) representa',
+  alts:['a tolerância: a peça pode ter até 0,5 mm a mais ou a menos que a nominal.','a medida mínima da peça, que é 0,5 mm.','a largura da faixa de tolerância, que é 0,5 mm.','o erro do paquímetro usado na medição.','a resolução do instrumento de medição.'],
+  exp:'O valor depois do ± é a tolerância: quanto a medida pode variar para cada lado da nominal. Em Ø 25 ± 0,5, a peça pode ter de 24,5 a 25,5 mm.'},
+ {titulo:'Medida máxima',fig:'fmax',en:'O valor que falta no lugar do "?" circulado é a medida máxima. A medida máxima é',
+  alts:['a maior medida que a peça pode ter e ainda ser aceita: nominal + tolerância.','a medida que aparece escrita no desenho: a própria nominal.','a soma da medida mínima com a nominal.','a medida que a peça deve ter para passar sem folga.','nominal − tolerância.'],
+  exp:'Medida máxima = nominal + tolerância. Em Ø 25 ± 0,5: 25 + 0,5 = 25,5 mm. É a maior medida aceita.'},
+ {titulo:'Medida mínima',fig:'fmin',en:'O valor que falta no lugar do "?" circulado é a medida mínima. A medida mínima é',
+  alts:['a menor medida que a peça pode ter e ainda ser aceita: nominal − tolerância.','a nominal dividida por 2.','a menor medida que o paquímetro consegue ler.','nominal + tolerância.','a diferença entre a máxima e a nominal.'],
+  exp:'Medida mínima = nominal − tolerância. Em Ø 25 ± 0,5: 25 − 0,5 = 24,5 mm. É a menor medida aceita.'},
+ {titulo:'Faixa de tolerância',fig:'ffx',en:'A distância destacada na figura, da medida mínima até a máxima, é chamada de',
+  alts:['faixa de tolerância: vale máxima − mínima, o dobro da tolerância.','tolerância: vale 0,5 mm.','medida nominal: vale 25 mm.','erro de medição: vale 25,5 mm.','resolução: vale 0,02 mm.'],
+  exp:'A faixa de tolerância vai da mínima até a máxima. Sua largura é máxima − mínima = 25,5 − 24,5 = 1 mm, o dobro da tolerância (2 × 0,5).'}
 ];
-const N=Q.length,VALOR=1.0;
+/* estudos de caso (estilo ENEM) */
+const CASOS={
+ lote:{tema:1,titulo:'Inspeção de um lote de pinos',
+  texto:`<p>Uma fábrica de autopeças produz pinos de articulação para pedais de freio. Nenhum processo de fabricação consegue fazer peças exatamente iguais, por isso o desenho indica a medida nominal e a tolerância aceita. No desenho do pino, o diâmetro está cotado como <b>Ø 12 ± 0,05 mm</b>.</p><p>No controle de qualidade, um inspetor mediu cinco pinos de um lote e anotou os valores mostrados na figura.</p>`,
+  fig:()=>`<div class="desenho">${PD.pino({cota:'Ø 12 ± 0,05',nome:'pino de articulação'})}</div><div class="desenho">${loteN(['12,04','11,94','12,05','11,96','12,06'])}</div>`,
+  en:'De acordo com a cota do desenho, devem ser aprovados',
+  alts:['os pinos 1, 3 e 4.','apenas os pinos 1 e 4, pois o pino 3 está no limite e deve ser recusado.','os pinos 1, 2, 3 e 4, pois apenas o pino 5 passa da medida máxima.','os pinos 1, 2 e 4, pois a faixa aceita vai de 11,90 a 12,10 mm.','nenhum pino, pois nenhum deles mede exatamente 12,00 mm.'],
+  exp:'A faixa vai de 12 − 0,05 = 11,95 mm até 12 + 0,05 = 12,05 mm. Passam os pinos 1 (12,04), 3 (12,05, no limite) e 4 (11,96). O pino 2 (11,94) está abaixo da mínima e o pino 5 (12,06), acima da máxima.'},
+ forn:{tema:1,titulo:'Da especificação do fornecedor para o desenho',
+  texto:`<p>Uma oficina de manutenção vai encomendar buchas de bronze. O fornecedor informou que aceita fabricar o furo das buchas com qualquer medida <b>entre 24,9 mm e 25,1 mm</b>.</p><p>Para registrar a peça no desenho técnico da empresa, o projetista precisa escrever essa exigência na forma de cota, com a medida nominal e a tolerância (nominal ± tolerância).</p>`,
+  fig:()=>`<div class="desenho">${PD.bucha({cota:'Ø ?',nome:'bucha de bronze'})}</div><div class="desenho">${D.faixa({min:'24,9',max:'25,1',nom:'?'})}</div>`,
+  en:'A cota que o projetista deve escrever no desenho é',
+  alts:['Ø 25 ± 0,1','Ø 25 ± 0,2','Ø 24,9 ± 0,2','Ø 25,1 ± 0,1','Ø 25 ± 0,05'],
+  exp:'A nominal fica no meio da faixa: (24,9 + 25,1) ÷ 2 = 25 mm. A tolerância é a distância da nominal até cada limite: 25,1 − 25 = 0,1 mm. Ø 25 ± 0,2 confunde a largura da faixa com a tolerância.'},
+ disc:{tema:1,titulo:'A discussão na inspeção',
+  texto:`<p>Em uma indústria de máquinas agrícolas, o diâmetro de um eixo está cotado no desenho como <b>Ø 40 ± 0,2 mm</b>. O inspetor de qualidade mediu um dos eixos e encontrou <b>40,25 mm</b>.</p><p>O operador da máquina não concordou com a recusa da peça e argumentou:</p><p style="font-style:italic;border-left:4px solid var(--line);padding-left:12px">“A diferença para a medida do desenho é só de 0,25 mm. Isso é menor que a largura da faixa de tolerância, que é de 0,4 mm. Então o eixo pode ser aprovado.”</p>`,
+  fig:()=>`<div class="desenho">${PD.eixo({cota:'Ø 40 ± 0,2',nome:'eixo'})}${lcdTxt('40,25')}</div>`,
+  en:'Sobre o argumento do operador, conclui-se que ele está',
+  alts:['incorreto, pois a medida máxima aceita é 40,2 mm, e o eixo, com 40,25 mm, deve ser reprovado.','correto, pois 0,25 mm é menor que a largura da faixa de tolerância, de 0,4 mm.','correto, pois o eixo só seria reprovado se passasse de 40,4 mm.','incorreto, pois o eixo só seria aprovado se medisse exatamente 40 mm.','incorreto, pois a faixa aceita vai de 40 mm a 40,2 mm, e o eixo deve ser reprovado.'],
+  exp:'A tolerância de 0,2 mm vale para cada lado: a faixa vai de 39,8 a 40,2 mm. A largura da faixa (0,4 mm) não é quanto a peça pode se afastar da nominal. Como 40,25 mm passa da máxima, o eixo é reprovado.'},
+ leit:{tema:2,titulo:'Medição em uma máquina importada',
+  texto:`<p>Um técnico de manutenção precisa medir o diâmetro de um eixo de uma máquina fabricada nos Estados Unidos. Como o manual da máquina usa o sistema inglês, ele utiliza um paquímetro em polegada milesimal, com resolução de .001".</p><p>A figura mostra a posição da escala fixa e do nônio no momento da medição.</p>`,
+  fig:()=>`<div class="desenho">${PD.eixo({cota:'Ø ?',nome:'eixo da máquina importada'})}</div><div class="desenho paq">${paq(1347,false,'cl')}</div><p class="rolar">↔ Arraste o desenho para os lados para ver a escala toda.</p>`,
+  en:'A leitura correta do paquímetro é',
+  alts:['1.347"','1.322"','1.325"','1.372"','.347"'],
+  exp:'Escala fixa: 1" + .300" + 1 × .025" = 1.325". Nônio: o 22º traço coincide = .022". Leitura: 1.325" + .022" = 1.347". 1.325" esquece o nônio; 1.322" esquece o tracinho de .025"; .347" esquece a polegada inteira.'},
+ abrir:{tema:2,titulo:'Preparando o paquímetro para uma medida',
+  texto:`<p>Para conferir um calibrador, o técnico precisa deixar o paquímetro em polegada milesimal aberto e travado exatamente em <b>2.238"</b>.</p><p>Nesse paquímetro, cada divisão da escala fixa vale .025" e o nônio tem 25 divisões, cada uma valendo .001".</p>`,
+  fig:()=>`<div class="cotabox"><span>Medida pedida</span><b>2.238"</b></div><div class="desenho paq">${paq(2000,false,'ca')}</div><p class="rolar">↔ Arraste o desenho para os lados para ver a escala toda.</p><p style="margin:-6px 0 10px;font-size:14px;color:var(--muted)">A figura mostra o paquímetro aberto em 2.000", só como referência das escalas.</p>`,
+  en:'Para obter a medida de 2.238", o técnico deve posicionar o paquímetro com',
+  alts:['a escala fixa em 2.225" e o 13º traço do nônio coincidindo.','a escala fixa em 2.200" e o 38º traço do nônio coincidindo.','a escala fixa em 2.230" e o 8º traço do nônio coincidindo.','a escala fixa em 2.250" e o 12º traço do nônio coincidindo.','a escala fixa em 2.238" e o zero do nônio coincidindo.'],
+  exp:'A escala fixa só marca múltiplos de .025": o maior que cabe em 2.238" é 2.225". Faltam 2.238" − 2.225" = .013", ou seja, o 13º traço do nônio. O nônio não tem 38º traço, e a escala fixa não tem marcas em 2.230" nem em 2.238".'}
+};
+const loteN=vals=>{const n=vals.length,w=96,x0=300-(n*(w+10)-10)/2;
+  return svgw(`<text x="300" y="36" text-anchor="middle" font-size="20" font-weight="700" class="f-ink">Medidas encontradas (mm)</text>`+vals.map((v,i)=>`<rect x="${x0+i*(w+10)}" y="56" width="${w}" height="120" rx="8" class="f-panel" stroke="currentColor" stroke-width="1.2"/><text x="${x0+i*(w+10)+w/2}" y="86" text-anchor="middle" font-size="17" font-weight="700" class="f-acc">Pino ${i+1}</text><text x="${x0+i*(w+10)+w/2}" y="140" text-anchor="middle" font-size="26" font-weight="700" class="f-ink">${v}</text>`).join(''),`Cinco pinos medidos: ${vals.join(', ')} mm`,190)};
 
-/* ===== estado: ordem das questões e das alternativas sorteadas para cada aluno ===== */
-const KEY='tol-pol-enem-v1';
-let S={ord:[],alt:[],res:{},t:{},entregue:false,nome:'',turma:'',i:0};
-try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&Array.isArray(s.ord)&&s.ord.length===N&&Array.isArray(s.alt)&&s.alt.length===N)S=Object.assign(S,s)}catch(e){}
-if(S.ord.length!==N){S.ord=embaralhar([...Array(N).keys()]);S.alt=Q.map(q=>embaralhar([...q.alts.keys()]))}
-S.i=S.ord.find(i=>S.res[i]===undefined)??S.ord[0];
-const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify({ord:S.ord,alt:S.alt,res:S.res,t:S.t,entregue:S.entregue,nome:S.nome,turma:S.turma}))}catch(e){}};
-const num=i=>S.ord.indexOf(i)+1;
-/* letra que o aluno vê para a alternativa original k da questão i */
-const letra=(i,k)=>L1(S.alt[i].indexOf(k));
-const acertou=i=>S.res[i]===0;
+/* ===== peças sorteadas para as contas de tolerância ===== */
+const PECAS=[['eixo','eixo','diâmetro do eixo',1,'o'],['eixo','eixo de transmissão','diâmetro do eixo de transmissão',1,'o'],['pino','pino','diâmetro do pino',1,'o'],['pino','pino-guia','diâmetro do pino-guia',1,'o'],
+  ['bucha','bucha','diâmetro do furo da bucha',1,'o'],['bloco','calço','comprimento do calço',0,'o'],['bloco','espaçador','comprimento do espaçador',0,'o'],['bloco','bloco-guia','comprimento do bloco-guia',0,'o'],
+  ['chaveta','chaveta','largura da chaveta',0,'a'],['barra','barra','comprimento da barra',0,'o']];
+const NOMS=[8,10,12,15,18,20,25,30,36,40,45,50,60,64,75,80,100,120,150];
+const TOLS=[5,10,15,20,25,30,50,100];
+function cota(us,tipo){let p,nom,tol,k;do{p=tipo?pick(PECAS.filter(x=>x[0]===tipo)):pick(PECAS);nom=pick(NOMS)*100;tol=pick(TOLS);if(nom<=2000&&tol>50)tol=pick([10,20,30]);k=nom+'/'+tol}while(us.has(k));us.add(k);
+  const txt=`${p[3]?'Ø ':''}${mmTxt(nom)} ± ${mmTxt(tol)}`;
+  return{nom,tol,max:nom+tol,min:nom-tol,txt,med:p[2],a:p[4],peca:[p[0],{nome:p[1],cota:txt}]}}
+
+/* ===== polegada milesimal ===== */
+/* inTxt, explica, decomp e paq vêm do bloco do paquímetro */
+
+/* ===== montagem: 5 de teoria + 18 de tolerância + 17 de polegada ===== */
+const PARTES=['Teoria da tolerância','Tolerância em mm','Polegada milesimal'];
+const PNP=['Passa: está dentro da tolerância','Não passa: está fora da tolerância'];
+function sortear(){const T=[],P1=[],P2=[],us=new Set(),uu=new Set();
+  TEO.forEach((q,k)=>T.push({tema:0,tipo:'mc',teo:k,en:q.en,alts:q.alts,exp:q.exp,ctx:q.titulo}));
+  /* tolerância: 4 máx, 4 mín, 2 faixa, 1 nominal, 1 tolerância, 3 passa ou não passa, 3 estudos de caso */
+  const tipos=embaralhar(['eixo','pino','bucha','bloco','chaveta','barra','eixo','pino','bloco','barra','eixo','bucha','chaveta','pino','eixo']);let tp=0;
+  for(let i=0;i<4;i++){const c=cota(us,tipos[tp++]);P1.push({tema:1,tipo:'mm',peca:c.peca,en:`Qual é a medida máxima aceita para ${c.a} ${c.med}?`,r:c.max,exp:`Máxima = nominal + tolerância = ${mmTxt(c.nom)} + ${mmTxt(c.tol)} = ${mmU(c.max)}.`,ctx:c.txt})}
+  for(let i=0;i<4;i++){const c=cota(us,tipos[tp++]);P1.push({tema:1,tipo:'mm',peca:c.peca,en:`Qual é a medida mínima aceita para ${c.a} ${c.med}?`,r:c.min,exp:`Mínima = nominal − tolerância = ${mmTxt(c.nom)} − ${mmTxt(c.tol)} = ${mmU(c.min)}.`,ctx:c.txt})}
+  for(let i=0;i<2;i++){const c=cota(us,tipos[tp++]);P1.push({tema:1,tipo:'mm',peca:c.peca,en:`Qual é a largura da faixa de tolerância d${c.a} ${c.med}?`,r:2*c.tol,exp:`Faixa = máxima − mínima = ${mmTxt(c.max)} − ${mmTxt(c.min)} = ${mmU(2*c.tol)}. É o dobro da tolerância: 2 × ${mmTxt(c.tol)}.`,ctx:c.txt})}
+  {const c=cota(us);P1.push({tema:1,tipo:'mm',faixa:{min:mmTxt(c.min),max:mmTxt(c.max),nom:'?'},en:`A peça é aceita de ${mmTxt(c.min)} a ${mmTxt(c.max)} mm. Qual é a medida nominal?`,r:c.nom,exp:`A nominal fica no meio da faixa: (${mmTxt(c.min)} + ${mmTxt(c.max)}) ÷ 2 = ${mmU(c.nom)}.`,ctx:`faixa de ${mmTxt(c.min)} a ${mmTxt(c.max)} mm`})}
+  {const c=cota(us);P1.push({tema:1,tipo:'mm',faixa:{min:mmTxt(c.min),max:mmTxt(c.max),nom:mmTxt(c.nom)},en:`A peça é aceita de ${mmTxt(c.min)} a ${mmTxt(c.max)} mm, com nominal ${mmTxt(c.nom)} mm. Qual é a tolerância (o valor depois do ±)?`,r:c.tol,exp:`Tolerância = máxima − nominal = ${mmTxt(c.max)} − ${mmTxt(c.nom)} = ${mmU(c.tol)}.`,ctx:`faixa de ${mmTxt(c.min)} a ${mmTxt(c.max)} mm`})}
+  ['dentro','limite','fora'].forEach(k=>{const c=cota(us,tipos[tp++]);let v;
+    if(k==='dentro')v=c.nom+pick([-1,1])*Math.max(1,Math.round(c.tol*pick([.2,.4,.6])));
+    else if(k==='limite')v=pick([c.max,c.min]);
+    else{const ex=Math.max(1,Math.round(c.tol*pick([.2,.4,1])));v=Math.random()<.5?c.max+ex:c.min-ex}
+    const ok=v>=c.min&&v<=c.max;
+    P1.push({tema:1,tipo:'pnp',peca:c.peca,med:v,en:`O inspetor mediu ${c.a} ${c.med} e encontrou ${mmU(v)}. A peça passa na inspeção?`,alts:ok?PNP:[PNP[1],PNP[0]],
+      exp:`Aceita de ${mmTxt(c.min)} a ${mmU(c.max)}. A medida ${mmU(v)} ${ok?(v===c.min||v===c.max?'está bem no limite: ainda passa.':'está dentro da faixa: passa.'):(v>c.max?'está acima da máxima: não passa.':'está abaixo da mínima: não passa.')}`,ctx:`${c.txt}, mediu ${mmTxt(v)} mm`})});
+  ['lote','forn','disc'].forEach(id=>P1.push({tema:1,tipo:'mc',caso:id,en:CASOS[id].en,alts:CASOS[id].alts,exp:CASOS[id].exp,ctx:CASOS[id].titulo}));
+  /* polegada: 9 leituras, 2 escala fixa, 2 nônio, 1 abrir na medida, 1 resolução, 2 estudos de caso */
+  const nu=(a,b,zero)=>{let u;do{u=rnd(a,b);if(zero)u=Math.floor(u/FD)*FD}while(uu.has(u)||(!zero&&u%FD===0));uu.add(u);return u};
+  [nu(30,990),nu(30,990),nu(1010,2990),nu(1010,2990),nu(1010,2990),nu(1010,2990),nu(3010,4990),nu(3010,4990),nu(500,4500,true)]
+    .forEach(u=>P2.push({tema:2,tipo:'in',u,en:'Qual é a leitura do paquímetro, em polegadas?',r:u,exp:explica(u),ctx:'paquímetro em '+inTxt(u)}));
+  for(let i=0;i<2;i++){const u=nu(100,3990),fx=Math.floor(u/FD)*FD;P2.push({tema:2,tipo:'in',u,en:'Quanto marca a escala fixa, até o zero do nônio, em polegadas?',r:fx,exp:`Escala fixa: ${decomp(fx)}. Os milésimos do nônio não entram nesta parte.`,ctx:'paquímetro em '+inTxt(u)})}
+  for(let i=0;i<2;i++){const u=nu(100,3990),r=u%FD;P2.push({tema:2,tipo:'in',u,rosa:true,en:'A linha rosa mostra o traço do nônio que coincide. Quanto vale a leitura do nônio, em polegadas?',r,exp:`É o ${r}º traço do nônio. Cada traço vale .001", então o nônio marca ${inTxt(r)}.`,ctx:'paquímetro em '+inTxt(u)})}
+  {const u=nu(300,3990),fx=Math.floor(u/FD)*FD,r=u%FD;P2.push({tema:2,tipo:'n',un:'º traço',alvo:inTxt(u),en:`Para abrir o paquímetro em ${inTxt(u)}, a escala fixa fica em ${inTxt(fx)}. Qual traço do nônio deve coincidir?`,r,exp:`${inTxt(u)} − ${inTxt(fx)} = ${inTxt(r)}. Cada traço do nônio vale .001", então é o ${r}º traço.`,ctx:'abrir em '+inTxt(u)})}
+  P2.push({tema:2,tipo:'mc',en:'Qual é a resolução do paquímetro em polegada milesimal?',alts:['.001"','.025"','.010"','.100"','1"'],exp:'Resolução = valor de uma divisão da escala fixa ÷ número de divisões do nônio = .025" ÷ 25 = .001".',ctx:'resolução'});
+  ['leit','abrir'].forEach(id=>P2.push({tema:2,tipo:'mc',caso:id,en:CASOS[id].en,alts:CASOS[id].alts,exp:CASOS[id].exp,ctx:CASOS[id].titulo}));
+  /* ordem: teoria fixa (1 a 5); tolerância e polegada embaralhadas dentro de cada parte */
+  const E=[...T,...embaralhar(P1),...embaralhar(P2)];
+  /* ordem das alternativas sorteada (a original 0 é a correta) */
+  E.forEach(e=>{if(e.tipo==='mc')e.ord=embaralhar([...e.alts.keys()]);if(e.tipo==='pnp')e.ord=[0,1]});
+  return E}
+
+/* ===== estado ===== */
+const KEY='tol-pol-aval40-v1',N=40,VALOR=5/N;
+let S={E:[],res:{},t:{},entregue:false,nome:'',turma:'',i:0};
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&Array.isArray(s.E)&&s.E.length===N)S=Object.assign(S,s)}catch(e){}
+if(S.E.length!==N)S.E=sortear();
+let E=S.E;
+S.i=E.findIndex((e,i)=>S.res[i]===undefined);if(S.i<0)S.i=0;
+const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify({E:S.E,res:S.res,t:S.t,entregue:S.entregue,nome:S.nome,turma:S.turma}))}catch(e){}};
+const parseIn=s=>{s=String(s).trim().replace(/["”″\s]|pol/gi,'').replace(',','.');if(!/^\d*\.?\d{0,4}$/.test(s)||s===''||s==='.')return null;return Math.round(parseFloat(s)*1000)};
+const parseMm=s=>{s=String(s).trim().replace(/\s|mm/gi,'').replace(',','.');if(!/^\d+(\.\d{1,3})?$/.test(s))return null;return Math.round(parseFloat(s)*1000)};
+const parseN=s=>{s=String(s).trim().replace(/º|°|o|traço|\s/gi,'');if(!/^\d+$/.test(s))return null;return parseInt(s,10)};
+function correta(e,r){if(r===undefined)return false;
+  if(e.tipo==='mc'||e.tipo==='pnp')return r===0;
+  if(e.tipo==='mm')return parseMm(r)===e.r*10;
+  if(e.tipo==='in')return parseIn(r)===e.r;
+  return parseN(r)===e.r}
+const letra=(e,k)=>L1(e.ord.indexOf(k));
+const txtResp=(e,r)=>{if(r===undefined)return '—';if(e.tipo==='mc'||e.tipo==='pnp')return `${letra(e,r)}) ${e.alts[r]}`;
+  if(e.tipo==='in'){const v=parseIn(r);return v===null?String(r):inTxt(v)}
+  if(e.tipo==='mm'){const v=parseMm(r);return v===null?String(r):(v/1000).toFixed(3).replace(/\.?0+$/,'').replace('.',',')+' mm'}
+  const v=parseN(r);return v===null?String(r):v+'º traço'};
+const txtCerta=e=>e.tipo==='mc'||e.tipo==='pnp'?`${letra(e,0)}) ${e.alts[0]}`:e.tipo==='in'?inTxt(e.r):e.tipo==='mm'?mmU(e.r):e.r+'º traço';
 
 /* ===== tempo ===== */
 let t0=null,tId=null;
@@ -354,55 +469,73 @@ window.addEventListener('pagehide',parar);
 setInterval(()=>{if(t0!==null){parar();iniciar()}const el=$('tvivo');if(el)el.textContent=ftempo(gasto(S.i))},1000);
 
 const nResp=()=>Object.keys(S.res).length;
-const pontos=()=>S.ord.filter(acertou).length*VALOR;
-const fp=v=>v.toFixed(1).replace('.',',');
-function placar(){$('placar').innerHTML=`<span>Respondidas<b>${nResp()}/${N}</b></span><span>Valor<b>5,0 pontos</b></span>${S.entregue?`<span>Sua nota<b>${fp(pontos())}</b></span>`:''}`}
-function grade(){$('grade').innerHTML=S.ord.map(i=>{const r=S.res[i];const cls=S.entregue?(acertou(i)?'ok':'no'):(r!==undefined?'feita':'');
-  return `<button data-i="${i}" class="${cls}" aria-current="${i===S.i&&!S.entregue}" aria-label="Questão ${num(i)}${r!==undefined?', respondida':''}">${num(i)}</button>`}).join('')}
+const acertos=()=>E.filter((e,i)=>correta(e,S.res[i])).length;
+const nota=()=>{const v=Math.round(acertos()*VALOR*100)/100;return v.toFixed(2).replace('.',',')};
+function placar(){$('placar').innerHTML=`<span>Respondidas<b>${nResp()}/${N}</b></span><span>Valor<b>5,0 pontos</b></span>${S.entregue?`<span>Sua nota<b>${nota()}</b></span>`:''}`}
+function grade(){let h='';E.forEach((e,i)=>{if(i===0||i===5||i===23)h+=`<span class="parte">${PARTES[e.tema]}</span>`;const r=S.res[i];
+  const cls=S.entregue?(correta(e,r)?'ok':'no'):(r!==undefined?'feita':'');
+  h+=`<button data-i="${i}" class="${cls}" aria-current="${i===S.i&&!S.entregue}" aria-label="Questão ${i+1}${r!==undefined?', respondida':''}">${i+1}</button>`});$('grade').innerHTML=h}
 
+function figura(e,i){
+  if(e.teo!==undefined){const f=TEO[e.teo].fig;return `<div class="desenho">${f==='cn'?cotaTeo('nom'):f==='ct'?cotaTeo('tol'):f==='fmax'?faixaTeo('max'):f==='fmin'?faixaTeo('min'):faixaTeo('faixa')}</div>`}
+  if(e.caso)return `<div class="texto">${CASOS[e.caso].texto}</div>${CASOS[e.caso].fig()}`;
+  let h='';
+  if(e.peca)h+=`<div class="cotabox"><span>Cota do desenho</span><b>${esc(e.peca[1].cota)} mm</b></div><div class="desenho">${PD[e.peca[0]](e.peca[1])}${e.tipo==='pnp'?lcdTxt(mmTxt(e.med)):''}</div>`;
+  if(e.faixa)h+=`<div class="desenho">${D.faixa(e.faixa)}</div>`;
+  if(e.u!==undefined)h+=`<div class="desenho paq">${paq(e.u,e.rosa,'q'+i)}</div><p class="rolar">↔ Arraste o desenho para os lados para ver a escala toda.</p>`;
+  if(e.alvo)h+=`<div class="cotabox"><span>Medida pedida</span><b>${e.alvo}</b></div>`;
+  return h}
 function render(){placar();grade();
   if(S.entregue){$('ex').hidden=true;$('relpanel').hidden=false;relatorio();return}
   $('ex').hidden=false;$('relpanel').hidden=true;
-  const i=S.i,q=Q[i],r=S.res[i],done=r!==undefined,ord=S.alt[i];
-  const todas=nResp()===N;
-  $('ex').innerHTML=`<div class="cab"><span>Questão ${num(i)} de ${N} · 1,0 ponto</span><span>${q.tema}</span><span>Tempo: <span class="tempo" id="${done?'':'tvivo'}">${ftempo(gasto(i))}</span></span></div>
-   <h2>${esc(q.titulo)}</h2><div class="texto">${q.texto}</div>${q.fig()}
-   <p class="en">${esc(q.en)}</p>
-   <div class="alts">${ord.map((k,j)=>`<label class="alt"><input type="radio" name="alt" value="${k}" ${done&&r===k?'checked':''} ${done?'disabled':''}><span class="lt">${L1(j)})</span><span>${esc(q.alts[k][0])}</span></label>`).join('')}</div>
-   ${done?`<div class="reg"><b>Resposta registrada: alternativa ${letra(i,r)}.</b> A correção aparece quando você entregar a avaliação.</div>`:'<div id="emsg"></div>'}
+  const i=S.i,e=E[i],r=S.res[i],done=r!==undefined,todas=nResp()===N;
+  let corpo='';
+  if(e.tipo==='mc'||e.tipo==='pnp')corpo=`<div class="alts">${e.ord.map((k,j)=>`<label class="alt"><input type="radio" name="alt" value="${k}" ${done&&r===k?'checked':''} ${done?'disabled':''}><span class="lt">${L1(j)})</span><span>${esc(e.alts[k])}</span></label>`).join('')}</div>`;
+  else{const ph=e.tipo==='in'?'.000':e.tipo==='mm'?'0,00':'',un=e.tipo==='in'?'"':e.tipo==='mm'?'mm':'º traço';
+    corpo=`<div class="resp"><input type="text" id="ans" inputmode="${e.tipo==='n'?'numeric':'decimal'}" maxlength="10" placeholder="${ph}" value="${done?esc(r):''}" ${done?'disabled':''} aria-label="Sua resposta"><span class="un">${un}</span></div>`}
+  const tit=e.teo!==undefined?TEO[e.teo].titulo:e.caso?CASOS[e.caso].titulo:'';
+  $('ex').innerHTML=`<div class="cab"><span>Questão ${i+1} de ${N}</span><span>${PARTES[e.tema]}</span><span>Tempo: <span class="tempo" id="${done?'':'tvivo'}">${ftempo(gasto(i))}</span></span></div>
+   ${tit?`<h2>${esc(tit)}</h2>`:''}${figura(e,i)}<p class="en">${esc(e.en)}</p>${corpo}
+   ${done?`<div class="reg"><b>Resposta registrada: ${esc(txtResp(e,r))}.</b> A correção aparece quando você entregar a avaliação.</div>`:'<div id="emsg"></div>'}
    <div class="row">${done?'':`<button class="act" id="conf">Confirmar resposta</button>`}
-   <button class="act ghost" id="ant" ${num(i)<=1?'disabled':''}>Anterior</button><button class="act ${done&&!todas?'':'ghost'}" id="prox" ${num(i)>=N?'disabled':''}>Próxima</button></div>
+   <button class="act ghost" id="ant" ${i<=0?'disabled':''}>Anterior</button><button class="act ${done&&!todas?'':'ghost'}" id="prox" ${i>=N-1?'disabled':''}>Próxima</button></div>
    ${todas?`<div class="fim"><b>Você respondeu as ${N} questões.</b> Confira se está tudo certo. Depois de entregar, não dá para mudar as respostas. <div class="row"><button class="act" id="entregar">Entregar avaliação e ver resultado</button></div></div>`:''}`;
-  if(!done)$('conf').onclick=confirmar;
+  if(!done){$('conf').onclick=confirmar;const a=$('ans');if(a)a.onkeydown=ev=>{if(ev.key==='Enter')confirmar()}}
   if(todas)$('entregar').onclick=entregar;
-  $('ant').onclick=()=>ir(S.ord[num(i)-2]);
-  $('prox').onclick=()=>{const nx=S.ord.slice(num(i)).find(k=>S.res[k]===undefined);ir(done&&nx!==undefined?nx:S.ord[num(i)])};
+  $('ant').onclick=()=>ir(i-1);
+  $('prox').onclick=()=>{const nx=E.findIndex((x,k)=>k>i&&S.res[k]===undefined);ir(done&&nx>=0?nx:i+1)};
   iniciar()}
-function ir(i){if(i===undefined)return;parar();S.i=i;render();$('ex').scrollIntoView({behavior:'smooth',block:'start'})}
-function confirmar(){const s=document.querySelector('input[name=alt]:checked');
-  if(!s){$('emsg').innerHTML='<p class="erro">Escolha uma alternativa.</p>';return}
-  const k=+s.value;if(!confirm(`Confirmar a alternativa ${letra(S.i,k)}? Depois não dá para trocar.`))return;
-  parar();S.res[S.i]=k;salvar();render()}
+function ir(i){if(i<0||i>=N)return;parar();S.i=i;render();$('ex').scrollIntoView({behavior:'smooth',block:'start'})}
+function confirmar(){const e=E[S.i];let r;const err=m=>{$('emsg').innerHTML=`<p class="erro">${m}</p>`;const a=$('ans');if(a)a.focus()};
+  if(e.tipo==='mc'||e.tipo==='pnp'){const s=document.querySelector('input[name=alt]:checked');if(!s)return err('Escolha uma alternativa.');r=+s.value}
+  else{r=$('ans').value.trim();
+    if(e.tipo==='in'&&parseIn(r)===null)return err('Digite a medida em polegadas, como .347 ou 1.238.');
+    if(e.tipo==='mm'&&parseMm(r)===null)return err('Digite um número em milímetros, como 24,5.');
+    if(e.tipo==='n'&&parseN(r)===null)return err('Digite só o número, como 13.')}
+  parar();S.res[S.i]=r;salvar();
+  const nx=E.findIndex((x,k)=>k>S.i&&S.res[k]===undefined),qq=nx>=0?nx:E.findIndex((x,k)=>S.res[k]===undefined);
+  if(qq>=0){S.i=qq;render();$('ex').scrollIntoView({behavior:'smooth',block:'start'})}else render()}
 function entregar(){if(!confirm('Entregar a avaliação? Depois disso as respostas não podem mais ser alteradas.'))return;
   parar();S.entregue=true;salvar();render();$('relpanel').scrollIntoView({behavior:'smooth',block:'start'})}
-$('grade').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;if(S.entregue){const el=document.getElementById('c'+b.dataset.i);if(el)el.scrollIntoView({behavior:'smooth'});return}ir(+b.dataset.i)});
+$('grade').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;if(S.entregue){const el=document.getElementById('r'+b.dataset.i);if(el)el.scrollIntoView({behavior:'smooth'});return}ir(+b.dataset.i)});
 
 /* ===== relatório ===== */
-function relatorio(){const pts=pontos(),ac=S.ord.filter(acertou).length,tt=S.ord.reduce((a,i)=>a+gasto(i),0);
+const porParte=k=>{const ids=E.map((e,i)=>i).filter(i=>E[i].tema===k);return [ids.filter(i=>correta(E[i],S.res[i])).length,ids.length]};
+function relatorio(){const ac=acertos(),tt=E.reduce((a,e,i)=>a+gasto(i),0);
   $('rcab').innerHTML=`<b>${esc(S.nome)}</b>${S.turma?' · Turma '+esc(S.turma):''} · ${new Date().toLocaleDateString('pt-BR')}`;
-  $('rel').innerHTML=`<div class="pontos">${fp(pts)}<small>de 5,0 pontos</small></div>
+  $('rel').innerHTML=`<div class="pontos">${nota()}<small>de 5,0 pontos</small></div>
    <div class="resumo"><div>Acertos<b style="color:var(--ok)">${ac}/${N}</b></div><div>Erros<b style="color:var(--bad)">${N-ac}</b></div><div>Tempo total<b>${ftempo(tt)}</b></div></div>
-   ${S.ord.map(i=>{const q=Q[i],r=S.res[i],ok=acertou(i);
-     return `<div class="corr" id="c${i}"><span class="pts" style="color:var(${ok?'--ok':'--bad'})">${ok?'+1,0':'0,0'}</span><h3>Questão ${num(i)}: ${esc(q.titulo)}</h3>
-       <p style="margin:0 0 6px;color:var(--muted);font-size:15px">${q.tema} · tempo: ${ftempo(gasto(i))}</p>
-       <div class="par"><div><span>Sua resposta</span><b class="${ok?'okc':'noc'}">${letra(i,r)}) ${esc(q.alts[r][0])}</b></div><div><span>Resposta correta</span><b>${letra(i,0)}) ${esc(q.alts[0][0])}</b></div></div>
-       ${ok?'':`<p style="margin:10px 0 0"><b class="noc">Por que a sua está errada:</b> ${esc(q.alts[r][1].replace(/^Errada: /,''))}</p>`}
-       <p style="margin:8px 0 0"><b class="okc">Explicação:</b> ${esc(q.alts[0][1].replace(/^Certa\. /,''))}</p></div>`}).join('')}`}
+   <div class="resumo">${PARTES.map((t,k)=>{const [a,n]=porParte(k);return `<div>${t}<b>${a}/${n}</b></div>`}).join('')}</div>
+   <table class="rtab"><thead><tr><th>Nº</th><th>Questão</th><th>Sua resposta</th><th>Resposta correta</th><th>Resultado</th></tr></thead><tbody>
+   ${E.map((e,i)=>{const r=S.res[i],ok=correta(e,r);
+     return `<tr class="${ok?'ok':'no'}" id="r${i}"><td class="n">${i+1}</td><td>${esc(e.en)}<span class="ctx">${esc(PARTES[e.tema]+(e.ctx?' · '+e.ctx:''))}</span><details><summary>Ver explicação</summary>${esc(e.exp)}</details></td>
+       <td data-l="Sua resposta">${esc(txtResp(e,r))}</td><td data-l="Correta">${esc(txtCerta(e))}</td><td class="res" data-l="Resultado">${ok?'Acertou':'Errou'}</td></tr>`}).join('')}
+   </tbody></table>`}
 
 function tela(){const ok=!!S.nome;$('inicio').hidden=ok;$('painel').hidden=!ok;
   if(!ok){$('ex').hidden=true;$('relpanel').hidden=true;$('nome').value='';$('turma').value='';return}
   $('anome').textContent=S.nome;$('aturma').textContent=S.turma?'· Turma '+S.turma:'';render()}
-$('trocar').onclick=()=>{if(confirm('Trocar de aluno apaga tudo o que foi respondido neste aparelho. Continuar?')){S={ord:embaralhar([...Array(N).keys()]),alt:Q.map(q=>embaralhar([...q.alts.keys()])),res:{},t:{},entregue:false,nome:'',turma:'',i:0};S.i=S.ord[0];t0=null;salvar();tela();window.scrollTo(0,0)}};
+$('trocar').onclick=()=>{if(confirm('Trocar de aluno apaga tudo o que foi respondido neste aparelho. Continuar?')){S={E:sortear(),res:{},t:{},entregue:false,nome:'',turma:'',i:0};E=S.E;t0=null;salvar();tela();window.scrollTo(0,0)}};
 $('comecar').onclick=()=>{const n=$('nome').value.trim().replace(/\s+/g,' '),t=$('turma').value.trim();
   if(n.length<3||!/\s/.test(n)){$('imsg').innerHTML='<p class="erro">Escreva o seu nome completo (nome e sobrenome).</p>';$('nome').focus();return}
   if(!t){$('imsg').innerHTML='<p class="erro">Escreva a sua turma.</p>';$('turma').focus();return}
@@ -414,26 +547,31 @@ $('turma').addEventListener('keydown',e=>{if(e.key==='Enter')$('comecar').click(
 $('pdf').onclick=()=>{
   if(!window.jspdf||!window.jspdf.jsPDF){$('rmsg').innerHTML='<p class="erro">O gerador de PDF não carregou. Confira a internet e recarregue a página.</p>';return}
   const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),X=15,Wd=180;let y=18;
-  const t=s=>String(s).replace(/−/g,'-').replace(/÷/g,'/').replace(/×/g,'x').replace(/[^\x20-\xFF]/g,'');
-  const linha=(s,sz=10.5,b=false,c=[20,32,43],ind=0)=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...c);doc.splitTextToSize(t(s),Wd-ind).forEach(l=>{if(y>284){doc.addPage();y=18}doc.text(l,X+ind,y);y+=sz*.45})};
-  const pts=pontos(),ac=S.ord.filter(acertou).length,tt=S.ord.reduce((a,i)=>a+gasto(i),0);
+  const t=s=>String(s).replace(/−/g,'-').replace(/÷/g,'/').replace(/×/g,'x').replace(/[“”]/g,'"').replace(/[^\x20-\xFF]/g,'');
+  const linha=(s,sz=10.5,b=false,c=[20,32,43])=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...c);doc.splitTextToSize(t(s),Wd).forEach(l=>{if(y>284){doc.addPage();y=18}doc.text(l,X,y);y+=sz*.45})};
+  const ac=acertos(),tt=E.reduce((a,e,i)=>a+gasto(i),0);
   doc.setFillColor(168,84,0);doc.rect(0,0,210,6,'F');
   linha('FAZENDA DE PROJETOS · Metrologia · Avaliação',9,true,[79,95,108]);y+=1;
-  linha('Avaliação: Tolerância e Polegada Milesimal (5 questões, 5,0 pontos)',15,true);y+=2;
+  linha('Avaliação: Tolerância e Polegada Milesimal (40 questões, 5,0 pontos)',15,true);y+=2;
   linha(`Nome: ${S.nome}    Turma: ${S.turma||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`,10);y+=2;
-  linha(`NOTA: ${fp(pts)} de 5,0 pontos    Acertos: ${ac} de ${N}    Tempo total: ${ftempo(tt)}`,13,true,ac>=3?[23,112,63]:[179,38,30]);y+=4;
-  S.ord.forEach(i=>{const q=Q[i],r=S.res[i],ok=acertou(i);
-    if(y>250){doc.addPage();y=18}
-    doc.setDrawColor(200,208,216);doc.line(X,y-4,X+Wd,y-4);
-    linha(`Questão ${num(i)}: ${q.titulo} (${q.tema})    ${ok?'+1,0':'0,0'}    tempo: ${ftempo(gasto(i))}`,11,true,ok?[23,112,63]:[179,38,30]);y+=1;
-    linha(`Resposta do aluno: ${letra(i,r)}) ${q.alts[r][0]}`,10,true,ok?[23,112,63]:[179,38,30]);
-    if(!ok)linha(`Resposta correta: ${letra(i,0)}) ${q.alts[0][0]}`,10,true,[23,112,63]);
-    linha(q.alts[0][1].replace(/^Certa\. /,'Explicação: '),9.5,false,[60,70,80]);y+=5});
+  linha(`NOTA: ${nota()} de 5,0 pontos    Acertos: ${ac} de ${N}    Tempo total: ${ftempo(tt)}`,13,true,ac>=24?[23,112,63]:[179,38,30]);
+  linha(PARTES.map((p,k)=>{const [a,n]=porParte(k);return `${p}: ${a} de ${n}`}).join('    '),10.5,true);y+=4;
+  const cols=[['Nº',9],['Questão',75],['Resposta do aluno',38],['Resposta correta',38],['Resultado',20]],FS=8.3,LH=3.6;
+  const cab=()=>{doc.setFillColor(29,59,92);doc.rect(X,y-4.3,Wd,6.4,'F');doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(255,255,255);let x=X+1.5;cols.forEach(([n,w])=>{doc.text(n,x,y);x+=w});y+=5};
+  cab();
+  E.forEach((e,i)=>{const r=S.res[i],ok=correta(e,r);
+    const cel=[String(i+1),e.en+(e.ctx?' ('+e.ctx+')':'')+(ok?'':' -> '+e.exp),txtResp(e,r),txtCerta(e),ok?'Acertou':'Errou'];
+    doc.setFontSize(FS);const ls=cel.map((c,j)=>doc.splitTextToSize(t(c),cols[j][1]-3));const h=Math.max(...ls.map(l=>l.length))*LH+2.4;
+    if(y+h>288){doc.addPage();y=18;cab()}
+    if(i%2){doc.setFillColor(238,242,245);doc.rect(X,y-3.6,Wd,h,'F')}
+    let x=X+1.5;ls.forEach((l,j)=>{const cor=j===4?(ok?[23,112,63]:[179,38,30]):j===2&&!ok?[179,38,30]:[20,32,43];
+      doc.setFont('helvetica',j===0||j===4?'bold':'normal');doc.setTextColor(...cor);doc.text(l,x,y);x+=cols[j][1]});
+    y+=h});
   const nm=S.nome.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   doc.save(`avaliacao-tolerancia-polegada-${nm||'aluno'}.pdf`);$('rmsg').innerHTML='<p class="okc">PDF gerado. Confira nos downloads.</p>'};
 
 tela();salvar();
-window.__AV={get S(){return S},Q};
+window.__AV={get S(){return S},get E(){return E},sortear,correta,PD,TEO,CASOS};
 </script>
 </body>
 </html>
