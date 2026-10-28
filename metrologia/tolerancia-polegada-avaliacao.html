@@ -135,15 +135,23 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
 .conta .v{font:800 30px/1.1 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums;text-align:right}
 .conta .lb{font-size:14px;color:var(--muted)}
 .conta hr{grid-column:1/-1;width:100%;border:0;border-top:3px solid var(--ink);margin:2px 0}
+.texto{font-size:17.5px;line-height:1.6;margin:0 0 12px}
+.texto p{margin:0 0 10px}
+.fonte{display:block;font-size:13px;color:var(--muted);text-align:right;margin-top:-4px}
 .cotabox{display:inline-flex;gap:10px;align-items:baseline;flex-wrap:wrap;background:var(--panel);border:2px solid var(--accent);border-radius:6px;padding:8px 14px;margin:0 0 10px}
 .cotabox span{font:600 14px/1.2 Barlow,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
 .cotabox b{font:800 30px/1 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums}
 .desenho.paq{overflow-x:auto;-webkit-overflow-scrolling:touch}
 @media (max-width:600px){.desenho.paq svg{width:680px;max-width:none;max-height:none}.desenho:not(.paq) svg{max-height:none}}
 .rolar{display:none;font-size:13px;color:var(--muted);margin:-8px 0 10px}@media (max-width:600px){.rolar{display:block}}
-.blocos{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:8px;margin:6px 0 14px}
-.blocos div{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:15px}
-.blocos b{display:block;font:800 22px/1.1 'Big Shoulders Display',sans-serif}
+.grade button.feita{background:var(--accent2,#1D3B5C);border-color:#1D3B5C;color:#fff}
+.reg{margin-top:12px;padding:10px 14px;border-left:6px solid var(--accent);background:var(--bg);border-radius:0 4px 4px 0}
+.alt .lt{font-weight:800;min-width:1.4em}
+.corr{border:1px solid var(--line);border-radius:6px;padding:14px;margin:12px 0;background:var(--bg)}
+.corr h3{margin:0 0 6px}
+.corr .pts{float:right;font:800 22px/1 'Big Shoulders Display',sans-serif}
+.pontos{font:800 clamp(56px,14vw,96px)/.9 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums}
+.pontos small{font-size:.35em;color:var(--muted);margin-left:.15em}
 </style>
 </head>
 <body>
@@ -153,18 +161,17 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
 </header>
 <main>
 <div class="top">
-  <div><span class="nivel">Avaliação</span><h1>Tolerância e Polegada Milesimal</h1>
-  <p class="sub" style="margin-bottom:0">40 exercícios em três partes: tolerância, leitura do paquímetro em polegada milesimal e as duas coisas juntas. As medidas e a ordem são sorteadas só para você, e o tempo de cada exercício é marcado. O relatório aparece quando você terminar os 40.</p></div>
+  <div><span class="nivel">Avaliação · 5,0 pontos</span><h1>Tolerância e Polegada Milesimal</h1>
+  <p class="sub" style="margin-bottom:0">Cinco situações reais de oficina e inspeção, no estilo das questões do ENEM. Leia o texto, observe a figura e escolha uma alternativa. Cada questão vale 1,0 ponto.</p></div>
 </div>
 <section class="panel inicio" id="inicio" style="margin-top:14px">
   <h2 style="margin-top:0">Antes de começar</h2>
-  <div class="blocos"><div><b>16 de tolerância</b>nominal, máxima, mínima, faixa e passa ou não passa</div><div><b>16 de polegada</b>escala fixa, nônio, leitura e abrir na medida</div><div><b>8 de tudo junto</b>tolerância em polegada e inspeção com o paquímetro</div></div>
   <ul>
-    <li>Medidas e ordem sorteadas só para você.</li>
-    <li>Depois de responder, você confere na hora se acertou e vê a explicação.</li>
-    <li>Cada exercício vale a primeira resposta: não dá para refazer.</li>
-    <li>Milímetros com vírgula (24,5). Polegadas com ponto ou vírgula (.347 ou 1,238).</li>
-    <li>O tempo de cada exercício é marcado. Você tem a aula inteira: leia com calma.</li>
+    <li>São 5 questões de múltipla escolha, cada uma valendo <b>1,0 ponto</b>. Total: <b>5,0 pontos</b>.</li>
+    <li>A ordem das questões e das alternativas é sorteada só para você.</li>
+    <li>Ao confirmar uma resposta, ela fica registrada e não pode ser trocada.</li>
+    <li>A correção aparece só no fim, quando você entregar a avaliação.</li>
+    <li>Use papel e caneta para fazer as contas. Leia com calma: você tem a aula inteira.</li>
     <li>No fim, baixe o relatório em PDF e entregue ao professor.</li>
   </ul>
   <label class="f">Nome completo<input type="text" id="nome" autocomplete="name" maxlength="60"></label>
@@ -175,17 +182,15 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
 <section class="panel" id="painel" style="margin-top:14px" hidden>
   <div class="aluno"><span>Aluno: <b id="anome"></b> <span id="aturma" style="color:var(--muted)"></span></span><button id="trocar">Não é você? Trocar de aluno</button></div>
   <div class="placar" id="placar"></div>
-  <div class="chips" id="chips" role="group" aria-label="Filtrar por parte"></div>
-  <div class="grade" id="grade" aria-label="Exercícios"></div>
+  <div class="grade" id="grade" aria-label="Questões" style="margin-top:12px"></div>
 </section>
 <section class="ex" id="ex" aria-live="polite" style="margin-top:14px" hidden></section>
 <section class="panel" id="relpanel" style="margin-top:14px" hidden>
-  <h2 style="margin-top:0">Relatório</h2>
+  <h2 style="margin-top:0">Resultado</h2>
   <p id="rcab" style="margin:0 0 4px"></p>
   <div id="rel"></div>
   <div id="rmsg" aria-live="polite"></div>
-  <div class="row noprint"><button class="act" id="pdf">Baixar relatório em PDF</button><button class="act ghost" id="zerar">Fazer de novo</button></div>
-  <p class="noprint" style="color:var(--muted);font-size:15px;margin:10px 0 0">Fazer de novo apaga as respostas e os tempos e sorteia novas medidas e uma nova ordem.</p>
+  <div class="row noprint"><button class="act" id="pdf">Baixar relatório em PDF</button></div>
 </section>
 <nav class="trilha noprint" aria-label="Revisão"><span class="t">Tolerância e polegada milesimal</span><a href="missao-polegada-tolerancia.html">Jogo: Missão Metrologia</a><a href="slides/revisao-polegada-tolerancia.pdf">Slides de revisão</a><a href="tolerancia-polegada-avaliacao.html" aria-current="page">Avaliação</a><a href="../index.html#d-metrologia">Voltar à trilha de Metrologia</a></nav>
 </main>
@@ -193,8 +198,6 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
 <script>
 const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
-const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
-const pick=a=>a[Math.floor(Math.random()*a.length)];
 const embaralhar=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
 const L1=j=>String.fromCharCode(65+j);
 
@@ -228,6 +231,7 @@ function paq(u,rosa,id){const cam=u-300/PPU,z=(u-cam)*PPU;let h='';
   if(rosa){const xa=z+(u%FD)*VD;h+=`<line x1="${xa}" x2="${xa}" y1="${LINE-200}" y2="${LINE+118}" stroke="#FF2E93" stroke-width="7" opacity=".6"/><circle cx="${xa}" cy="${LINE+132}" r="11" fill="#FF2E93"/>`}
   return `<svg viewBox="0 0 2000 600" role="img" aria-label="Paquímetro em polegada milesimal${rosa?', com o traço do nônio que coincide marcado em rosa':''}"><defs><clipPath id="cb${id}"><rect x="22" y="22" width="1956" height="306"/></clipPath></defs>${h}</svg>`}
 
+
 /* ===== desenhos (SVG, viewBox 600 x 280) ===== */
 const MK=`<defs><marker id="ar" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="9" markerHeight="9" orient="auto-start-reverse"><path d="M0 1L10 5L0 9z" fill="currentColor"/></marker></defs>`;
 const dimH=(x1,x2,y,lab,acc)=>`<line x1="${x1}" x2="${x2}" y1="${y}" y2="${y}" stroke="currentColor" stroke-width="1.6" marker-start="url(#ar)" marker-end="url(#ar)"/><text x="${(x1+x2)/2}" y="${y-9}" text-anchor="middle" font-size="20" font-weight="700" class="${acc?'f-acc':'f-ink'}">${lab}</text>`;
@@ -235,7 +239,7 @@ const dimV=(x,y1,y2,lab,acc,anchor='start')=>`<line x1="${x}" x2="${x}" y1="${y1
 const ext=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="currentColor" stroke-width="1" opacity=".55"/>`;
 const centro=(x1,y1,x2,y2)=>`<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="currentColor" stroke-width="1" stroke-dasharray="14 4 3 4" opacity=".6"/>`;
 const svgw=(inner,label,h=280)=>`<svg viewBox="0 0 600 ${h}" role="img" aria-label="${esc(label)}">${MK}${inner}</svg>`;
-const D0={
+const D={
  pino:o=>svgw(`<rect x="130" y="85" width="300" height="110" rx="6" class="f-steel" stroke="currentColor" stroke-width="2"/>${centro(110,140,450,140)}${ext(430,85,500,85)}${ext(430,195,500,195)}${dimV(490,85,195,o.cota,true)}<text x="280" y="240" text-anchor="middle" font-size="16" class="f-mut">${o.nome||'pino'} (vista lateral)</text>`,`Desenho de ${o.nome||'pino'} com cota ${o.cota}`),
  bloco:o=>svgw(`<rect x="110" y="110" width="380" height="${o.h||90}" class="f-steel" stroke="currentColor" stroke-width="2"/>${ext(110,105,110,55)}${ext(490,105,490,55)}${dimH(110,490,70,o.cota,true)}<text x="300" y="${135+(o.h||90)}" text-anchor="middle" font-size="16" class="f-mut">${o.nome||'bloco'}</text>`,`Desenho de ${o.nome||'bloco'} com cota ${o.cota}`),
  bucha:o=>svgw(`<circle cx="230" cy="145" r="105" class="f-steel" stroke="currentColor" stroke-width="2"/><circle cx="230" cy="145" r="62" class="f-bg" stroke="currentColor" stroke-width="2"/>${centro(110,145,350,145)}${centro(230,25,230,265)}
@@ -273,87 +277,75 @@ const D0={
 
 
 
-const D=Object.assign({},D0,{pino:o=>svgw(`<rect x="90" y="85" width="280" height="110" rx="6" class="f-steel" stroke="currentColor" stroke-width="2"/>${centro(70,140,390,140)}${ext(370,85,420,85)}${ext(370,195,420,195)}${dimV(410,85,195,o.cota,true)}<text x="230" y="240" text-anchor="middle" font-size="16" class="f-mut">${o.nome||'pino'} (vista lateral)</text>`,`Desenho de ${o.nome||'pino'} com cota ${o.cota}`)});
-/* ===== tolerância em mm: valores em centésimos de milímetro (inteiros) ===== */
-const mmTxt=c=>{const v=(c/100).toFixed(2).replace(/\.?0+$/,'');return v.replace('.',',')};
-const mmU=c=>mmTxt(c)+' mm';
-const PECAS=[['pino','pino','diâmetro do pino',1],['pino','pino-guia','diâmetro do pino-guia',1],['pino','eixo','diâmetro do eixo',1],
-  ['bloco','bloco-guia','comprimento do bloco-guia',0],['bloco','calço','comprimento do calço',0],['bloco','espaçador','comprimento do espaçador',0],
-  ['cota','largura de uma chaveta','largura da chaveta',0],['cota','comprimento de uma barra','comprimento da barra',0],['bucha','bucha','diâmetro do furo da bucha',1]];
-const NOMS=[8,10,12,15,18,20,25,30,36,40,45,50,60,64,75,80,100,120,150];
-const TOLS=[5,10,15,20,25,30,50,100];
-function cota(usadas){let p,nom,tol,k;do{p=pick(PECAS);nom=pick(NOMS)*100;tol=pick(TOLS);if(nom<=2000&&tol>50)tol=pick([10,20,30]);k=nom+'/'+tol}while(usadas.has(k));usadas.add(k);
-  const txt=`${p[3]?'Ø ':''}${mmTxt(nom)} ± ${mmTxt(tol)}`;
-  let d;if(p[0]==='bucha'){const ex=nom+pick([1000,1500,2000]);d=['bucha',{hl:'int',int:txt,ext:`Ø ${mmTxt(ex)} ± ${mmTxt(pick([10,20]))}`}]}
-  else d=[p[0],{nome:p[1],cota:txt}];
-  return{nom,tol,max:nom+tol,min:nom-tol,txt,med:p[2],d}}
+/* lote numerado (1 a 5), para não confundir com as letras das alternativas */
+const loteN=o=>{const n=o.vals.length,w=96,x0=300-(n*(w+10)-10)/2;
+  return svgw(`<text x="300" y="40" text-anchor="middle" font-size="22" font-weight="700" class="f-ink">Cota do desenho: ${o.cota}</text>`+o.vals.map((v,i)=>`<rect x="${x0+i*(w+10)}" y="66" width="${w}" height="120" rx="8" class="f-panel" stroke="currentColor" stroke-width="1.2"/><text x="${x0+i*(w+10)+w/2}" y="98" text-anchor="middle" font-size="17" font-weight="700" class="f-acc">Pino ${i+1}</text><text x="${x0+i*(w+10)+w/2}" y="148" text-anchor="middle" font-size="26" font-weight="700" class="f-ink">${v}</text>`).join('')+`<text x="300" y="220" text-anchor="middle" font-size="16" class="f-mut">medidas encontradas, em mm</text>`,`Cinco pinos medidos: ${o.vals.join(', ')} mm`,240)};
 
-/* ===== montagem dos 40 exercícios (sorteados uma vez e guardados) =====
-   tipo: mm (resposta em mm), in (resposta em polegada), n (número inteiro), mc (alternativa) */
-const TEMAS=['Tolerância','Polegada milesimal','Tudo junto'];
-const DICAS=['<b>Máxima</b> = nominal + tolerância · <b>Mínima</b> = nominal − tolerância · <b>Faixa</b> = máxima − mínima',
-  '<b>Leitura</b> = escala fixa (até o zero do nônio) + traço do nônio que coincide × .001"',
-  '<b>Passa</b> se a medida estiver entre a mínima e a máxima. No limite exato, ainda passa.'];
-const PNP=['Passa: está dentro da tolerância','Não passa: está fora da tolerância'];
-function sortear(){const E=[],us=new Set(),uu=new Set();
-  /* ---- Parte 1: tolerância (16) ---- */
-  for(let i=0;i<4;i++){const c=cota(us);E.push({tema:0,cota:c.txt+' mm',d:c.d,en:`Qual é a medida máxima aceita para o ${c.med}?`,tipo:'mm',r:c.max,exp:`Máxima = nominal + tolerância = ${mmTxt(c.nom)} + ${mmTxt(c.tol)} = ${mmU(c.max)}.`,ctx:c.txt})}
-  for(let i=0;i<4;i++){const c=cota(us);E.push({tema:0,cota:c.txt+' mm',d:c.d,en:`Qual é a medida mínima aceita para o ${c.med}?`,tipo:'mm',r:c.min,exp:`Mínima = nominal − tolerância = ${mmTxt(c.nom)} − ${mmTxt(c.tol)} = ${mmU(c.min)}.`,ctx:c.txt})}
-  for(let i=0;i<2;i++){const c=cota(us);E.push({tema:0,cota:c.txt+' mm',d:c.d,en:`Qual é a largura da faixa de tolerância do ${c.med}?`,tipo:'mm',r:2*c.tol,exp:`Faixa = máxima − mínima = ${mmTxt(c.max)} − ${mmTxt(c.min)} = ${mmU(2*c.tol)}. É o dobro da tolerância: 2 × ${mmTxt(c.tol)}.`,ctx:c.txt})}
-  {const c=cota(us);E.push({tema:0,d:['faixa',{min:mmTxt(c.min),max:mmTxt(c.max),nom:'?'}],en:`A peça é aceita de ${mmTxt(c.min)} a ${mmTxt(c.max)} mm. Qual é a medida nominal?`,tipo:'mm',r:c.nom,exp:`A nominal fica no meio da faixa: (${mmTxt(c.min)} + ${mmTxt(c.max)}) ÷ 2 = ${mmU(c.nom)}. A cota é ${c.txt.replace('Ø ','')}.`,ctx:`faixa de ${mmTxt(c.min)} a ${mmTxt(c.max)} mm`})}
-  {const c=cota(us);E.push({tema:0,d:['faixa',{min:mmTxt(c.min),max:mmTxt(c.max),nom:mmTxt(c.nom)}],en:`A peça é aceita de ${mmTxt(c.min)} a ${mmTxt(c.max)} mm, com nominal ${mmTxt(c.nom)}. Qual é a tolerância (o valor depois do ±)?`,tipo:'mm',r:c.tol,exp:`Tolerância = máxima − nominal = ${mmTxt(c.max)} − ${mmTxt(c.nom)} = ${mmU(c.tol)}. A cota é ${c.txt.replace('Ø ','')}.`,ctx:`faixa de ${mmTxt(c.min)} a ${mmTxt(c.max)} mm`})}
-  /* passa ou não passa: um dentro, um no limite exato, um fora */
-  [['dentro'],['limite'],['fora']].forEach(([k])=>{const c=cota(us);let v;
-    if(k==='dentro')v=c.nom+pick([-1,1])*Math.max(1,Math.round(c.tol*pick([.2,.4,.6])));
-    else if(k==='limite')v=pick([c.max,c.min]);
-    else{const ex=Math.max(1,Math.round(c.tol*pick([.2,.4,1])));v=Math.random()<.5?c.max+ex:c.min-ex}
-    const ok=v>=c.min&&v<=c.max;
-    E.push({tema:0,cota:c.txt+' mm',d:['lcd',{nome:c.med,cota:c.txt,val:mmTxt(v)}],en:'A peça foi medida. Ela passa na inspeção?',tipo:'mc',alts:PNP,c:ok?0:1,
-      exp:`Aceita de ${mmTxt(c.min)} a ${mmU(c.max)}. A medida ${mmU(v)} ${ok?(v===c.min||v===c.max?'está bem no limite: ainda passa.':'está dentro da faixa: passa.'):(v>c.max?'está acima da máxima: não passa.':'está abaixo da mínima: não passa.')}`,ctx:`${c.txt}, mediu ${mmTxt(v)} mm`})});
-  /* lote: quantas peças passam */
-  {const c=cota(us);const st=Math.max(1,Math.round(c.tol/2));const cand=[c.min,c.max,c.nom+st,c.nom-st,c.max+st,c.min-st,c.max+2*st,c.nom];
-    const vals=embaralhar([...new Set(cand)]).slice(0,5);const n=vals.filter(v=>v>=c.min&&v<=c.max).length;
-    E.push({tema:0,cota:c.txt+' mm',d:['lote',{nome:c.med,cota:c.txt,vals:vals.map(mmTxt)}],en:'Quantas peças deste lote passam na inspeção?',tipo:'n',un:'peças',r:n,
-      exp:`Aceita de ${mmTxt(c.min)} a ${mmU(c.max)}. Passam: ${vals.map((v,j)=>L1(j)+' = '+mmTxt(v)+(v>=c.min&&v<=c.max?' ✓':' ✗')).join('; ')}. Total: ${n}.`,ctx:`${c.txt}: ${vals.map(mmTxt).join(' · ')}`})}
-  /* ---- Parte 2: polegada milesimal (16) ---- */
-  const nu=(a,b,zero)=>{let u;do{u=rnd(a,b);if(zero)u=Math.floor(u/FD)*FD}while(uu.has(u)||(!zero&&u%FD===0));uu.add(u);return u};
-  const leit=[nu(30,990),nu(30,990),nu(30,990),nu(1010,2990),nu(1010,2990),nu(1010,2990),nu(1010,2990),nu(3010,4990),nu(3010,4990),nu(500,4500,true)];
-  leit.forEach(u=>E.push({tema:1,u,en:'Qual é a leitura do paquímetro, em polegadas?',tipo:'in',r:u,exp:explica(u),ctx:'paquímetro em '+inTxt(u)}));
-  for(let i=0;i<2;i++){const u=nu(100,3990),fx=Math.floor(u/FD)*FD;E.push({tema:1,u,en:'Quanto marca a escala fixa, até o zero do nônio, em polegadas?',tipo:'in',r:fx,exp:`Escala fixa: ${decomp(fx)}. Os milésimos do nônio não entram nesta parte.`,ctx:'paquímetro em '+inTxt(u)})}
-  for(let i=0;i<2;i++){const u=nu(100,3990),r=u%FD;E.push({tema:1,u,rosa:true,en:'A linha rosa mostra o traço do nônio que coincide. Quanto vale a leitura do nônio, em polegadas?',tipo:'in',r,exp:`É o ${r}º traço do nônio. Cada traço vale .001", então o nônio marca ${inTxt(r)}.`,ctx:'paquímetro em '+inTxt(u)})}
-  {const u=nu(300,3990),fx=Math.floor(u/FD)*FD,r=u%FD;E.push({tema:1,en:`Para abrir o paquímetro em ${inTxt(u)}, a escala fixa fica em ${inTxt(fx)}. Qual traço do nônio deve coincidir?`,tipo:'n',un:'º traço',r,exp:`${inTxt(u)} − ${inTxt(fx)} = ${inTxt(r)}. Cada traço do nônio vale .001", então é o ${r}º traço.`,ctx:'abrir em '+inTxt(u)})}
-  E.push({tema:1,en:'Qual é a resolução do paquímetro em polegada milesimal?',tipo:'mc',alts:['.001"','.025"','.010"','.100"'],c:0,exp:'Resolução = escala fixa ÷ divisões do nônio = .025" ÷ 25 = .001".',ctx:''});
-  /* ---- Parte 3: tudo junto (8) ---- */
-  const cin=()=>{const nom=rnd(20,160)*25,tol=pick([5,10,15,20]);return{nom,tol,txt:`${inTxt(nom)} ± ${inTxt(tol)}`}};
-  for(let i=0;i<4;i++){const c=cin(),mx=i<2;E.push({tema:2,cota:c.txt,en:`A cota da peça é ${c.txt}. Qual é a medida ${mx?'máxima':'mínima'} aceita, em polegadas?`,tipo:'in',r:mx?c.nom+c.tol:c.nom-c.tol,
-    exp:mx?`Máxima = ${inTxt(c.nom)} + ${inTxt(c.tol)} = ${inTxt(c.nom+c.tol)}.`:`Mínima = ${inTxt(c.nom)} − ${inTxt(c.tol)} = ${inTxt(c.nom-c.tol)}.`,ctx:'cota '+c.txt})}
-  ['dentro','limite','fora','fora'].forEach(k=>{const c=cin();let u;
-    do{if(k==='dentro')u=c.nom+rnd(-c.tol+1,c.tol-1);else if(k==='limite')u=c.nom+pick([1,-1])*c.tol;else u=c.nom+pick([1,-1])*(c.tol+rnd(1,8))}while(u%FD===0||uu.has(u));uu.add(u);
-    const ok=u>=c.nom-c.tol&&u<=c.nom+c.tol;
-    E.push({tema:2,u,cota:c.txt,en:'Leia a medida da peça no paquímetro. A peça passa na inspeção?',tipo:'mc',alts:PNP,c:ok?0:1,
-      exp:`Leitura: ${inTxt(u)}. Aceita de ${inTxt(c.nom-c.tol)} a ${inTxt(c.nom+c.tol)}. ${ok?(u===c.nom-c.tol||u===c.nom+c.tol?'Está bem no limite: ainda passa.':'Está dentro: passa.'):(u>c.nom+c.tol?'Está acima da máxima: não passa.':'Está abaixo da mínima: não passa.')}`,ctx:`cota ${c.txt}, paquímetro em ${inTxt(u)}`})});
-  return E}
+/* ===== as 5 questões (a primeira alternativa de cada lista é a correta; a ordem é sorteada) ===== */
+const Q=[
+{tema:'Tolerância',titulo:'Inspeção de um lote de pinos',
+ texto:`<p>Uma fábrica de autopeças produz pinos de articulação para pedais de freio. Nenhum processo de fabricação consegue fazer peças exatamente iguais, por isso o desenho indica a medida nominal e a tolerância aceita. No desenho do pino, o diâmetro está cotado como <b>Ø 12 ± 0,05 mm</b>.</p><p>No controle de qualidade, um inspetor mediu cinco pinos de um lote e anotou os valores mostrados na figura.</p>`,
+ fig:()=>`<div class="desenho">${loteN({cota:'Ø 12 ± 0,05',vals:['12,04','11,94','12,05','11,96','12,06']})}</div>`,
+ en:'De acordo com a cota do desenho, devem ser aprovados',
+ alts:[['os pinos 1, 3 e 4.','Certa. A faixa vai de 12 − 0,05 = 11,95 mm até 12 + 0,05 = 12,05 mm. Os pinos 1 (12,04), 3 (12,05, no limite) e 4 (11,96) estão dentro. O pino 2 (11,94) está abaixo da mínima e o pino 5 (12,06), acima da máxima.'],
+  ['apenas os pinos 1 e 4, pois o pino 3 está no limite e deve ser recusado.','Errada: uma medida igual à máxima ainda está dentro da tolerância.'],
+  ['os pinos 1, 2, 3 e 4, pois apenas o pino 5 passa da medida máxima.','Errada: também é preciso conferir a mínima (11,95 mm). O pino 2 está abaixo dela.'],
+  ['os pinos 1, 2 e 4, pois a faixa aceita vai de 11,90 a 12,10 mm.','Errada: a tolerância de 0,05 mm vale para cada lado, então a faixa vai de 11,95 a 12,05 mm.'],
+  ['nenhum pino, pois nenhum deles mede exatamente 12,00 mm.','Errada: a tolerância existe justamente porque nenhuma peça sai com a medida exata.']]},
+{tema:'Tolerância',titulo:'Da especificação do fornecedor para o desenho',
+ texto:`<p>Uma oficina de manutenção vai encomendar buchas de bronze. O fornecedor informou que aceita fabricar o furo das buchas com qualquer medida <b>entre 24,9 mm e 25,1 mm</b>, como mostra a figura.</p><p>Para registrar a peça no desenho técnico da empresa, o projetista precisa escrever essa exigência na forma de cota, com a medida nominal e a tolerância (nominal ± tolerância).</p>`,
+ fig:()=>`<div class="desenho">${D.faixa({min:'24,9',max:'25,1',nom:'?'})}</div>`,
+ en:'A cota que o projetista deve escrever no desenho é',
+ alts:[['Ø 25 ± 0,1','Certa. A nominal fica no meio da faixa: (24,9 + 25,1) ÷ 2 = 25 mm. A tolerância é a distância da nominal até cada limite: 25,1 − 25 = 0,1 mm.'],
+  ['Ø 25 ± 0,2','Errada: 0,2 mm é a largura da faixa (25,1 − 24,9). A tolerância é a metade disso para cada lado.'],
+  ['Ø 24,9 ± 0,2','Errada: com essa cota a faixa iria de 24,7 a 25,1 mm.'],
+  ['Ø 25,1 ± 0,1','Errada: com essa cota a faixa iria de 25,0 a 25,2 mm.'],
+  ['Ø 25 ± 0,05','Errada: com essa cota a faixa iria só de 24,95 a 25,05 mm, mais apertada que o pedido.']]},
+{tema:'Polegada milesimal',titulo:'Medição em uma máquina importada',
+ texto:`<p>Um técnico de manutenção precisa medir o diâmetro de um eixo de uma máquina fabricada nos Estados Unidos. Como o manual da máquina usa o sistema inglês, ele utiliza um paquímetro em polegada milesimal, com resolução de .001".</p><p>A figura mostra a posição da escala fixa e do nônio no momento da medição.</p>`,
+ fig:()=>`<div class="desenho paq" id="dpaq">${paq(1347,false,'q3')}</div><p class="rolar">↔ Arraste o desenho para os lados para ver a escala toda.</p>`,
+ en:'A leitura correta do paquímetro é',
+ alts:[['1.347"','Certa. Escala fixa: 1" + .300" + 1 × .025" = 1.325". Nônio: o 22º traço coincide = .022". Leitura: 1.325" + .022" = 1.347".'],
+  ['1.322"','Errada: faltou somar o tracinho de .025" que passou depois do número 3.'],
+  ['1.325"','Errada: essa é só a leitura da escala fixa. Faltou somar o nônio (.022").'],
+  ['1.372"','Errada: foi contado um tracinho de .025" a mais na escala fixa.'],
+  ['.347"','Errada: faltou a polegada inteira (o número grande 1).']]},
+{tema:'Polegada milesimal',titulo:'Preparando o paquímetro para uma medida',
+ texto:`<p>Para conferir um calibrador, o técnico precisa deixar o paquímetro em polegada milesimal aberto e travado exatamente em <b>2.238"</b>.</p><p>Nesse paquímetro, cada divisão da escala fixa vale .025" e o nônio tem 25 divisões, cada uma valendo .001".</p>`,
+ fig:()=>`<div class="cotabox"><span>Medida pedida</span><b>2.238"</b></div><div class="desenho paq" id="dpaq">${paq(2000,false,'q4')}</div><p class="rolar">↔ Arraste o desenho para os lados para ver a escala toda.</p><p style="margin:-6px 0 10px;font-size:14px;color:var(--muted)">A figura mostra o paquímetro aberto em 2.000", apenas como referência das escalas.</p>`,
+ en:'Para obter a medida de 2.238", o técnico deve posicionar o paquímetro com',
+ alts:[['a escala fixa em 2.225" e o 13º traço do nônio coincidindo.','Certa. A escala fixa só marca múltiplos de .025": o maior que cabe em 2.238" é 2.225". Faltam 2.238" − 2.225" = .013", ou seja, o 13º traço do nônio.'],
+  ['a escala fixa em 2.200" e o 38º traço do nônio coincidindo.','Errada: o nônio tem só 25 divisões. Não existe 38º traço.'],
+  ['a escala fixa em 2.230" e o 8º traço do nônio coincidindo.','Errada: a escala fixa não tem marca em 2.230", porque ela avança de .025" em .025".'],
+  ['a escala fixa em 2.250" e o 12º traço do nônio coincidindo.','Errada: 2.250" + .012" = 2.262", que passa da medida pedida.'],
+  ['a escala fixa em 2.238" e o zero do nônio coincidindo.','Errada: a escala fixa não tem marca em 2.238". Os milésimos são lidos no nônio.']]},
+{tema:'Tudo junto',titulo:'Decisão do inspetor de qualidade',
+ texto:`<p>Uma empresa recebeu um lote de eixos importados. No desenho, o diâmetro do eixo está cotado em polegadas como <b>1.500" ± .005"</b>.</p><p>O inspetor mediu um dos eixos com um paquímetro em polegada milesimal e obteve a leitura mostrada na figura. Ele precisa decidir se o eixo pode ser aprovado.</p>`,
+ fig:()=>`<div class="cotabox"><span>Cota do desenho</span><b>1.500" ± .005"</b></div><div class="desenho paq" id="dpaq">${paq(1507,false,'q5')}</div><p class="rolar">↔ Arraste o desenho para os lados para ver a escala toda.</p>`,
+ en:'A decisão correta do inspetor, com a justificativa adequada, é',
+ alts:[['reprovar o eixo, pois a leitura é 1.507", acima da máxima de 1.505".','Certa. Leitura: escala fixa 1.500" + nônio .007" (7º traço) = 1.507". A faixa aceita vai de 1.500" − .005" = 1.495" até 1.500" + .005" = 1.505". Como 1.507" é maior que 1.505", o eixo está fora.'],
+  ['aprovar o eixo, pois a leitura é 1.507", dentro da faixa de 1.495" a 1.510".','Errada: a máxima é 1.500" + .005" = 1.505", e não 1.510".'],
+  ['aprovar o eixo, pois a leitura é 1.500", igual à medida nominal.','Errada: essa é só a leitura da escala fixa. Faltou somar o nônio (.007").'],
+  ['reprovar o eixo, pois a leitura é 1.532", muito acima da máxima.','Errada: foi contado um tracinho de .025" a mais na escala fixa.'],
+  ['aprovar o eixo, pois a leitura é 1.507" e qualquer medida acima da nominal é aceita.','Errada: a tolerância limita a medida para os dois lados. Acima de 1.505" a peça é recusada.']]}
+];
+const N=Q.length,VALOR=1.0;
 
-/* ===== estado ===== */
-const KEY='tol-pol-aval-v1',N=40;
-let S={f:-1,i:0,ord:[],res:{},t:{},E:[]};
-try{const s=JSON.parse(localStorage.getItem(KEY)||'null');
-  if(s&&Array.isArray(s.E)&&s.E.length===N&&Array.isArray(s.ord)&&s.ord.length===N){S.ord=s.ord;S.res=s.res||{};S.t=s.t||{};S.E=s.E;S.nome=s.nome||'';S.turma=s.turma||''}}catch(e){}
-S.nome=S.nome||'';S.turma=S.turma||'';
-if(S.E.length!==N){S.E=sortear();S.ord=embaralhar([...Array(N).keys()])}
-let E=S.E;
-S.i=S.ord.find(i=>!S.res[i])??S.ord[0];
-const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify({ord:S.ord,res:S.res,t:S.t,E:S.E,nome:S.nome,turma:S.turma}))}catch(e){}};
-const parseIn=s=>{s=String(s).trim().replace(/["”″\s]|pol/gi,'').replace(',','.');if(!/^\d*\.?\d{0,4}$/.test(s)||s===''||s==='.')return null;return Math.round(parseFloat(s)*1000)};
-/* milímetro -> milésimos de mm (aceita 3 casas para não arredondar resposta errada como certa) */
-const parseMm=s=>{s=String(s).trim().replace(/\s|mm/gi,'').replace(',','.');if(!/^\d+(\.\d{1,3})?$/.test(s))return null;return Math.round(parseFloat(s)*1000)};
-const parseN=s=>{s=String(s).trim().replace(/º|°|o|traço|peças?|\s/gi,'');if(!/^\d+$/.test(s))return null;return parseInt(s,10)};
-const lista=()=>S.ord.filter(i=>S.f<0||E[i].tema===S.f);
+/* ===== estado: ordem das questões e das alternativas sorteadas para cada aluno ===== */
+const KEY='tol-pol-enem-v1';
+let S={ord:[],alt:[],res:{},t:{},entregue:false,nome:'',turma:'',i:0};
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&Array.isArray(s.ord)&&s.ord.length===N&&Array.isArray(s.alt)&&s.alt.length===N)S=Object.assign(S,s)}catch(e){}
+if(S.ord.length!==N){S.ord=embaralhar([...Array(N).keys()]);S.alt=Q.map(q=>embaralhar([...q.alts.keys()]))}
+S.i=S.ord.find(i=>S.res[i]===undefined)??S.ord[0];
+const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify({ord:S.ord,alt:S.alt,res:S.res,t:S.t,entregue:S.entregue,nome:S.nome,turma:S.turma}))}catch(e){}};
 const num=i=>S.ord.indexOf(i)+1;
+/* letra que o aluno vê para a alternativa original k da questão i */
+const letra=(i,k)=>L1(S.alt[i].indexOf(k));
+const acertou=i=>S.res[i]===0;
 
-/* ===== tempo em cada exercício ===== */
+/* ===== tempo ===== */
 let t0=null,tId=null;
-const iniciar=()=>{if(t0!==null||!S.nome||S.res[S.i]||document.hidden)return;t0=performance.now();tId=S.i};
+const iniciar=()=>{if(t0!==null||!S.nome||S.entregue||S.res[S.i]!==undefined||document.hidden)return;t0=performance.now();tId=S.i};
 const parar=()=>{if(t0===null)return;S.t[tId]=(S.t[tId]||0)+(performance.now()-t0);t0=null;salvar()};
 const gasto=i=>(S.t[i]||0)+(t0!==null&&tId===i?performance.now()-t0:0);
 const ftempo=ms=>{const s=Math.round(ms/1000);if(s<60)return s+' s';const m=Math.floor(s/60),r=s%60;if(m<60)return m+' min'+(r?' '+String(r).padStart(2,'0')+' s':'');return Math.floor(m/60)+' h '+String(m%60).padStart(2,'0')+' min'};
@@ -361,76 +353,56 @@ document.addEventListener('visibilitychange',()=>{if(document.hidden)parar();els
 window.addEventListener('pagehide',parar);
 setInterval(()=>{if(t0!==null){parar();iniciar()}const el=$('tvivo');if(el)el.textContent=ftempo(gasto(S.i))},1000);
 
-/* ===== respostas por extenso ===== */
-const txtResp=(e,r)=>{if(e.tipo==='in'){const v=parseIn(r);return v===null?String(r):inTxt(v)}
-  if(e.tipo==='mm'){const v=parseMm(r);return v===null?String(r):(v/1000).toFixed(3).replace(/\.?0+$/,'').replace('.',',')+' mm'}
-  if(e.tipo==='n'){const v=parseN(r);return v===null?String(r):v+(e.un==='º traço'?'º traço':' '+e.un)}
-  return e.alts[r]};
-const txtCerta=e=>e.tipo==='in'?inTxt(e.r):e.tipo==='mm'?mmU(e.r):e.tipo==='n'?e.r+(e.un==='º traço'?'º traço':' '+e.un):e.alts[e.c];
-function armada(u){const fx=Math.floor(u/FD)*FD;return `<div class="conta"><span class="tt">Conta armada</span><span class="op"></span><span class="v">${inTxt(fx)}</span><span class="lb">escala fixa</span><span class="op">+</span><span class="v">${inTxt(u%FD)}</span><span class="lb">nônio</span><hr><span class="op">=</span><span class="v">${inTxt(u)}</span><span class="lb">leitura</span></div>`}
+const nResp=()=>Object.keys(S.res).length;
+const pontos=()=>S.ord.filter(acertou).length*VALOR;
+const fp=v=>v.toFixed(1).replace('.',',');
+function placar(){$('placar').innerHTML=`<span>Respondidas<b>${nResp()}/${N}</b></span><span>Valor<b>5,0 pontos</b></span>${S.entregue?`<span>Sua nota<b>${fp(pontos())}</b></span>`:''}`}
+function grade(){$('grade').innerHTML=S.ord.map(i=>{const r=S.res[i];const cls=S.entregue?(acertou(i)?'ok':'no'):(r!==undefined?'feita':'');
+  return `<button data-i="${i}" class="${cls}" aria-current="${i===S.i&&!S.entregue}" aria-label="Questão ${num(i)}${r!==undefined?', respondida':''}">${num(i)}</button>`}).join('')}
 
-function placar(){const n=Object.keys(S.res).length;$('placar').innerHTML=`<span>Respondidos<b>${n}/${N}</b></span><span>Faltam<b class="num">${N-n}</b></span>`}
-function chips(){$('chips').innerHTML=[['-1','Todos']].concat(TEMAS.map((t,i)=>[i,t])).map(([v,t])=>`<button data-f="${v}" aria-pressed="${+v===S.f}">${t}</button>`).join('')}
-function grade(){$('grade').innerHTML=lista().map(i=>{const r=S.res[i];return `<button data-i="${i}" class="${r?(r.ok?'ok':'no'):''}" aria-current="${i===S.i}" aria-label="Exercício ${num(i)}${r?(r.ok?', acertou':', errou'):''}">${num(i)}</button>`}).join('')}
-
-function render(){const e=E[S.i],r=S.res[S.i],done=!!r;placar();grade();
-  let corpo='';
-  if(e.tipo==='in')corpo=`<div class="resp"><input type="text" id="ans" inputmode="decimal" maxlength="10" placeholder=".000" value="${done?esc(r.r):''}" ${done?'disabled':''} aria-label="Sua resposta em polegadas"><span class="un">"</span></div>`;
-  else if(e.tipo==='mm')corpo=`<div class="resp"><input type="text" id="ans" inputmode="decimal" maxlength="10" placeholder="0,00" value="${done?esc(r.r):''}" ${done?'disabled':''} aria-label="Sua resposta em milímetros"><span class="un">mm</span></div>`;
-  else if(e.tipo==='n')corpo=`<div class="resp"><input type="text" id="ans" inputmode="numeric" maxlength="4" value="${done?esc(r.r):''}" ${done?'disabled':''} aria-label="Sua resposta"><span class="un">${e.un}</span></div>`;
-  else corpo=`<div class="alts">${e.alts.map((a,j)=>{const sel=done&&r.r===j,cls=done?(j===e.c?'c':(sel?'x':'')):'';
-    return `<label class="alt ${cls}"><input type="radio" name="alt" value="${j}" ${sel?'checked':''} ${done?'disabled':''}><span>${L1(j)}) ${esc(a)}</span></label>`}).join('')}</div>`;
-  const fig=(e.cota?`<div class="cotabox"><span>Cota da peça</span><b>${esc(e.cota)}</b></div>`:'')+(e.u!==undefined?`<div class="desenho paq" id="dpaq">${paq(e.u,e.rosa,S.i)}</div><p class="rolar">↔ Arraste o desenho para os lados para ver a escala toda.</p>`:'')+(e.d?`<div class="desenho">${D[e.d[0]](e.d[1])}</div>`:'');
-  const L=lista(),pos=L.indexOf(S.i),todos=Object.keys(S.res).length===N;
-  $('ex').innerHTML=`<div class="cab"><span>Exercício ${num(S.i)} de ${N}</span><span>${TEMAS[e.tema]}</span><span>Tempo: <span class="tempo" id="${done?'':'tvivo'}">${ftempo(gasto(S.i))}</span></span></div>
-   ${fig}<p class="dica">${DICAS[e.tema]}</p><p class="en">${esc(e.en)}</p>${corpo}
-   ${done?`<div class="fb ${r.ok?'ok':'no'}"><b>${r.ok?'Certo!':'Não foi dessa vez.'}</b> ${esc(e.exp)}
-     <div class="par"><div><span>Sua resposta</span><b class="${r.ok?'okc':'noc'}">${esc(txtResp(e,r.r))}</b></div><div><span>Resposta correta</span><b>${esc(txtCerta(e))}</b></div></div>
-     ${e.u!==undefined?armada(e.u):''}</div>`:'<div id="emsg"></div>'}
-   <div class="row">${done?'':`<button class="act" id="conf">Conferir</button>`}
-   <button class="act ghost" id="ant" ${pos<=0?'disabled':''}>Anterior</button><button class="act ${done?'':'ghost'}" id="prox" ${pos>=L.length-1?'disabled':''}>Próximo</button></div>
-   ${todos?`<div class="fim"><b>Você respondeu os ${N} exercícios.</b> O seu relatório já está pronto logo abaixo. Baixe o PDF e entregue ao professor. <button class="act" id="verrel" style="margin-top:10px">Ver relatório</button></div>`:''}`;
-  const dp=$('dpaq');if(dp)dp.scrollLeft=Math.max(0,(300-60)/2000*dp.scrollWidth);
-  if(!done){$('conf').onclick=conferir;const a=$('ans');if(a)a.onkeydown=ev=>{if(ev.key==='Enter')conferir()}}
-  if(todos)$('verrel').onclick=()=>$('relpanel').scrollIntoView({behavior:'smooth',block:'start'});
-  $('ant').onclick=()=>ir(L[pos-1]);$('prox').onclick=()=>{const nx=L.slice(pos+1).find(i=>!S.res[i]);ir(done&&nx!==undefined?nx:L[pos+1])};
-  $('relpanel').hidden=!todos;if(todos)relatorio();iniciar()}
+function render(){placar();grade();
+  if(S.entregue){$('ex').hidden=true;$('relpanel').hidden=false;relatorio();return}
+  $('ex').hidden=false;$('relpanel').hidden=true;
+  const i=S.i,q=Q[i],r=S.res[i],done=r!==undefined,ord=S.alt[i];
+  const todas=nResp()===N;
+  $('ex').innerHTML=`<div class="cab"><span>Questão ${num(i)} de ${N} · 1,0 ponto</span><span>${q.tema}</span><span>Tempo: <span class="tempo" id="${done?'':'tvivo'}">${ftempo(gasto(i))}</span></span></div>
+   <h2>${esc(q.titulo)}</h2><div class="texto">${q.texto}</div>${q.fig()}
+   <p class="en">${esc(q.en)}</p>
+   <div class="alts">${ord.map((k,j)=>`<label class="alt"><input type="radio" name="alt" value="${k}" ${done&&r===k?'checked':''} ${done?'disabled':''}><span class="lt">${L1(j)})</span><span>${esc(q.alts[k][0])}</span></label>`).join('')}</div>
+   ${done?`<div class="reg"><b>Resposta registrada: alternativa ${letra(i,r)}.</b> A correção aparece quando você entregar a avaliação.</div>`:'<div id="emsg"></div>'}
+   <div class="row">${done?'':`<button class="act" id="conf">Confirmar resposta</button>`}
+   <button class="act ghost" id="ant" ${num(i)<=1?'disabled':''}>Anterior</button><button class="act ${done&&!todas?'':'ghost'}" id="prox" ${num(i)>=N?'disabled':''}>Próxima</button></div>
+   ${todas?`<div class="fim"><b>Você respondeu as ${N} questões.</b> Confira se está tudo certo. Depois de entregar, não dá para mudar as respostas. <div class="row"><button class="act" id="entregar">Entregar avaliação e ver resultado</button></div></div>`:''}`;
+  if(!done)$('conf').onclick=confirmar;
+  if(todas)$('entregar').onclick=entregar;
+  $('ant').onclick=()=>ir(S.ord[num(i)-2]);
+  $('prox').onclick=()=>{const nx=S.ord.slice(num(i)).find(k=>S.res[k]===undefined);ir(done&&nx!==undefined?nx:S.ord[num(i)])};
+  iniciar()}
 function ir(i){if(i===undefined)return;parar();S.i=i;render();$('ex').scrollIntoView({behavior:'smooth',block:'start'})}
-
-function conferir(){const e=E[S.i];let r,ok;const err=m=>{$('emsg').innerHTML=`<p class="erro">${m}</p>`;const a=$('ans');if(a)a.focus()};
-  if(e.tipo==='in'){r=$('ans').value.trim();const v=parseIn(r);if(v===null)return err('Digite a medida em polegadas, como .347 ou 1.238.');ok=v===e.r}
-  else if(e.tipo==='mm'){r=$('ans').value.trim();const v=parseMm(r);if(v===null)return err('Digite um número em milímetros, como 24,5.');ok=v===e.r*10}
-  else if(e.tipo==='n'){r=$('ans').value.trim();const v=parseN(r);if(v===null)return err('Digite só o número, como 13.');ok=v===e.r}
-  else{const s=document.querySelector('input[name=alt]:checked');if(!s)return err('Escolha uma alternativa.');r=+s.value;ok=r===e.c}
-  parar();S.res[S.i]={ok,r};salvar();render()}
+function confirmar(){const s=document.querySelector('input[name=alt]:checked');
+  if(!s){$('emsg').innerHTML='<p class="erro">Escolha uma alternativa.</p>';return}
+  const k=+s.value;if(!confirm(`Confirmar a alternativa ${letra(S.i,k)}? Depois não dá para trocar.`))return;
+  parar();S.res[S.i]=k;salvar();render()}
+function entregar(){if(!confirm('Entregar a avaliação? Depois disso as respostas não podem mais ser alteradas.'))return;
+  parar();S.entregue=true;salvar();render();$('relpanel').scrollIntoView({behavior:'smooth',block:'start'})}
+$('grade').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;if(S.entregue){const el=document.getElementById('c'+b.dataset.i);if(el)el.scrollIntoView({behavior:'smooth'});return}ir(+b.dataset.i)});
 
 /* ===== relatório ===== */
-function dados(){const resp=S.ord.filter(i=>S.res[i]),ok=resp.filter(i=>S.res[i].ok),err=resp.filter(i=>!S.res[i].ok);
-  const tt=S.ord.reduce((a,i)=>a+gasto(i),0),tr=resp.reduce((a,i)=>a+gasto(i),0);
-  return {resp,ok,err,tt,med:resp.length?tr/resp.length:0,pct:resp.length?Math.round(ok.length/resp.length*100):0,nota:(ok.length/N*10).toFixed(1).replace('.',',')}}
-const porTema=k=>{const ids=S.ord.filter(i=>E[i].tema===k);return [ids.filter(i=>S.res[i]&&S.res[i].ok).length,ids.length]};
-function relatorio(){const d=dados();$('rcab').innerHTML=`<b>${esc(S.nome)}</b>${S.turma?' · Turma '+esc(S.turma):''} · ${new Date().toLocaleDateString('pt-BR')}`;
-  const nums=a=>a.length?a.map(num).sort((x,y)=>x-y).join(', '):'nenhum';
-  $('rel').innerHTML=`<div class="resumo">
-     <div>Nota (0 a 10)<b>${d.nota}</b></div><div>Acertos<b style="color:var(--ok)">${d.ok.length}/${N}</b></div><div>Erros<b style="color:var(--bad)">${d.err.length}</b></div>
-     <div>Aproveitamento<b>${d.pct}%</b></div><div>Tempo total<b>${ftempo(d.tt)}</b></div><div>Média por exercício<b>${ftempo(d.med)}</b></div></div>
-   <div class="resumo">${TEMAS.map((t,k)=>{const [a,n]=porTema(k);return `<div>${t}<b>${a}/${n}</b></div>`}).join('')}</div>
-   <div class="listas"><p><b class="okc">Acertou:</b> ${nums(d.ok)}</p><p><b class="noc">Errou:</b> ${nums(d.err)}</p></div>
-   <table class="rtab"><thead><tr><th>Nº</th><th>Exercício</th><th>Sua resposta</th><th>Resposta correta</th><th>Resultado</th><th>Tempo</th></tr></thead><tbody>
-   ${S.ord.map(i=>{const e=E[i],r=S.res[i];
-     return `<tr class="${r?(r.ok?'ok':'no'):'nr'}"><td class="n">${num(i)}</td><td><button class="link" data-ir="${i}">${esc(e.en)}</button><span class="ctx">${esc(TEMAS[e.tema]+(e.ctx?' · '+e.ctx:''))}</span></td>
-       <td data-l="Sua resposta">${r?esc(txtResp(e,r.r)):'—'}</td><td data-l="Correta">${r?esc(txtCerta(e)):'—'}</td>
-       <td class="res" data-l="Resultado">${r?(r.ok?'Acertou':'Errou'):'Não respondido'}</td><td data-l="Tempo" class="tempo">${ftempo(gasto(i))}</td></tr>`}).join('')}
-   </tbody></table>`}
-$('rel').addEventListener('click',ev=>{const b=ev.target.closest('[data-ir]');if(!b)return;S.f=-1;chips();ir(+b.dataset.ir)});
-$('chips').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;S.f=+b.dataset.f;chips();const L=lista();if(!L.includes(S.i)){parar();S.i=L[0]}render()});
-$('grade').addEventListener('click',ev=>{const b=ev.target.closest('button');if(b)ir(+b.dataset.i)});
-const novo=()=>{t0=null;S.res={};S.t={};S.E=sortear();E=S.E;S.ord=embaralhar([...Array(N).keys()]);S.f=-1;S.i=S.ord[0]};
-$('zerar').onclick=()=>{if(confirm('Apagar todas as respostas e os tempos e começar de novo, com novas medidas e outra ordem?')){novo();salvar();chips();render();window.scrollTo(0,0)}};
-$('trocar').onclick=()=>{if(confirm('Trocar de aluno apaga tudo o que foi respondido neste aparelho. Continuar?')){novo();S.nome='';S.turma='';salvar();tela();window.scrollTo(0,0)}};
-function tela(){const ok=!!S.nome;$('inicio').hidden=ok;$('painel').hidden=!ok;$('ex').hidden=!ok;
-  if(!ok){$('relpanel').hidden=true;$('nome').value='';$('turma').value='';return}
-  $('anome').textContent=S.nome;$('aturma').textContent=S.turma?'· Turma '+S.turma:'';chips();render()}
+function relatorio(){const pts=pontos(),ac=S.ord.filter(acertou).length,tt=S.ord.reduce((a,i)=>a+gasto(i),0);
+  $('rcab').innerHTML=`<b>${esc(S.nome)}</b>${S.turma?' · Turma '+esc(S.turma):''} · ${new Date().toLocaleDateString('pt-BR')}`;
+  $('rel').innerHTML=`<div class="pontos">${fp(pts)}<small>de 5,0 pontos</small></div>
+   <div class="resumo"><div>Acertos<b style="color:var(--ok)">${ac}/${N}</b></div><div>Erros<b style="color:var(--bad)">${N-ac}</b></div><div>Tempo total<b>${ftempo(tt)}</b></div></div>
+   ${S.ord.map(i=>{const q=Q[i],r=S.res[i],ok=acertou(i);
+     return `<div class="corr" id="c${i}"><span class="pts" style="color:var(${ok?'--ok':'--bad'})">${ok?'+1,0':'0,0'}</span><h3>Questão ${num(i)}: ${esc(q.titulo)}</h3>
+       <p style="margin:0 0 6px;color:var(--muted);font-size:15px">${q.tema} · tempo: ${ftempo(gasto(i))}</p>
+       <div class="par"><div><span>Sua resposta</span><b class="${ok?'okc':'noc'}">${letra(i,r)}) ${esc(q.alts[r][0])}</b></div><div><span>Resposta correta</span><b>${letra(i,0)}) ${esc(q.alts[0][0])}</b></div></div>
+       ${ok?'':`<p style="margin:10px 0 0"><b class="noc">Por que a sua está errada:</b> ${esc(q.alts[r][1].replace(/^Errada: /,''))}</p>`}
+       <p style="margin:8px 0 0"><b class="okc">Explicação:</b> ${esc(q.alts[0][1].replace(/^Certa\. /,''))}</p></div>`}).join('')}`}
+
+function tela(){const ok=!!S.nome;$('inicio').hidden=ok;$('painel').hidden=!ok;
+  if(!ok){$('ex').hidden=true;$('relpanel').hidden=true;$('nome').value='';$('turma').value='';return}
+  $('anome').textContent=S.nome;$('aturma').textContent=S.turma?'· Turma '+S.turma:'';render()}
+$('trocar').onclick=()=>{if(confirm('Trocar de aluno apaga tudo o que foi respondido neste aparelho. Continuar?')){S={ord:embaralhar([...Array(N).keys()]),alt:Q.map(q=>embaralhar([...q.alts.keys()])),res:{},t:{},entregue:false,nome:'',turma:'',i:0};S.i=S.ord[0];t0=null;salvar();tela();window.scrollTo(0,0)}};
 $('comecar').onclick=()=>{const n=$('nome').value.trim().replace(/\s+/g,' '),t=$('turma').value.trim();
   if(n.length<3||!/\s/.test(n)){$('imsg').innerHTML='<p class="erro">Escreva o seu nome completo (nome e sobrenome).</p>';$('nome').focus();return}
   if(!t){$('imsg').innerHTML='<p class="erro">Escreva a sua turma.</p>';$('turma').focus();return}
@@ -438,42 +410,30 @@ $('comecar').onclick=()=>{const n=$('nome').value.trim().replace(/\s+/g,' '),t=$
 $('nome').addEventListener('keydown',e=>{if(e.key==='Enter')$('turma').focus()});
 $('turma').addEventListener('keydown',e=>{if(e.key==='Enter')$('comecar').click()});
 
-/* ===== relatório em PDF ===== */
+/* ===== PDF ===== */
 $('pdf').onclick=()=>{
   if(!window.jspdf||!window.jspdf.jsPDF){$('rmsg').innerHTML='<p class="erro">O gerador de PDF não carregou. Confira a internet e recarregue a página.</p>';return}
-  if(Object.keys(S.res).length<N){$('rmsg').innerHTML='<p class="erro">Termine todos os exercícios antes de baixar o relatório.</p>';return}
-  parar();iniciar();
-  const d=dados();
   const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),X=15,Wd=180;let y=18;
-  const t=s=>String(s).replace(/−/g,'-').replace(/÷/g,'/').replace(/×/g,'x').replace(/≈/g,'~').replace(/✓/g,'(ok)').replace(/✗/g,'(x)').replace(/[^\x20-\xFF]/g,'');
-  const linha=(s,sz=10.5,b=false,c=[20,32,43])=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...c);doc.splitTextToSize(t(s),Wd).forEach(l=>{if(y>284){doc.addPage();y=18}doc.text(l,X,y);y+=sz*.45})};
-  const nums=a=>a.length?a.map(num).sort((x,y)=>x-y).join(', '):'nenhum';
+  const t=s=>String(s).replace(/−/g,'-').replace(/÷/g,'/').replace(/×/g,'x').replace(/[^\x20-\xFF]/g,'');
+  const linha=(s,sz=10.5,b=false,c=[20,32,43],ind=0)=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...c);doc.splitTextToSize(t(s),Wd-ind).forEach(l=>{if(y>284){doc.addPage();y=18}doc.text(l,X+ind,y);y+=sz*.45})};
+  const pts=pontos(),ac=S.ord.filter(acertou).length,tt=S.ord.reduce((a,i)=>a+gasto(i),0);
   doc.setFillColor(168,84,0);doc.rect(0,0,210,6,'F');
   linha('FAZENDA DE PROJETOS · Metrologia · Avaliação',9,true,[79,95,108]);y+=1;
-  linha(`Avaliação: Tolerância e Polegada Milesimal (${N} exercícios)`,16,true);y+=2;
+  linha('Avaliação: Tolerância e Polegada Milesimal (5 questões, 5,0 pontos)',15,true);y+=2;
   linha(`Nome: ${S.nome}    Turma: ${S.turma||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`,10);y+=2;
-  linha(`Nota: ${d.nota} (0 a 10)    Acertos: ${d.ok.length} de ${N}    Erros: ${d.err.length}    Aproveitamento: ${d.pct}%`,12,true,d.pct>=60?[23,112,63]:[179,38,30]);
-  linha(`Tempo total: ${ftempo(d.tt)}    Tempo médio por exercício: ${ftempo(d.med)}`,10.5);y+=2;
-  linha(TEMAS.map((tm,k)=>{const [a,n]=porTema(k);return `${tm}: ${a} de ${n}`}).join('    '),10.5,true);y+=1;
-  linha(`Acertou: ${nums(d.ok)}`,10,true,[23,112,63]);
-  linha(`Errou: ${nums(d.err)}`,10,true,[179,38,30]);
-  y+=4;
-  const cols=[['Nº',9],['Exercício',67],['Sua resposta',32],['Resposta correta',32],['Resultado',20],['Tempo',20]],FS=8.5,LH=3.7;
-  const cab=()=>{doc.setFillColor(29,59,92);doc.rect(X,y-4.3,Wd,6.4,'F');doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(255,255,255);let x=X+1.5;cols.forEach(([n,w])=>{doc.text(n,x,y);x+=w});y+=5};
-  if(y>250){doc.addPage();y=18}cab();
-  S.ord.forEach((i,k)=>{const e=E[i],r=S.res[i];
-    const cel=[String(num(i)),e.en+(e.ctx?' ('+e.ctx+')':''),r?txtResp(e,r.r):'—',r?txtCerta(e):'—',r?(r.ok?'Acertou':'Errou'):'Não respondido',ftempo(gasto(i))];
-    doc.setFontSize(FS);const ls=cel.map((c,j)=>doc.splitTextToSize(t(c),cols[j][1]-3));const h=Math.max(...ls.map(l=>l.length))*LH+2.4;
-    if(y+h>288){doc.addPage();y=18;cab()}
-    if(k%2){doc.setFillColor(238,242,245);doc.rect(X,y-3.6,Wd,h,'F')}
-    let x=X+1.5;ls.forEach((l,j)=>{const cor=j===4&&r?(r.ok?[23,112,63]:[179,38,30]):j===2&&r&&!r.ok?[179,38,30]:[20,32,43];
-      doc.setFont('helvetica',j===0||j===4?'bold':'normal');doc.setTextColor(...cor);doc.text(l,x,y);x+=cols[j][1]});
-    y+=h});
+  linha(`NOTA: ${fp(pts)} de 5,0 pontos    Acertos: ${ac} de ${N}    Tempo total: ${ftempo(tt)}`,13,true,ac>=3?[23,112,63]:[179,38,30]);y+=4;
+  S.ord.forEach(i=>{const q=Q[i],r=S.res[i],ok=acertou(i);
+    if(y>250){doc.addPage();y=18}
+    doc.setDrawColor(200,208,216);doc.line(X,y-4,X+Wd,y-4);
+    linha(`Questão ${num(i)}: ${q.titulo} (${q.tema})    ${ok?'+1,0':'0,0'}    tempo: ${ftempo(gasto(i))}`,11,true,ok?[23,112,63]:[179,38,30]);y+=1;
+    linha(`Resposta do aluno: ${letra(i,r)}) ${q.alts[r][0]}`,10,true,ok?[23,112,63]:[179,38,30]);
+    if(!ok)linha(`Resposta correta: ${letra(i,0)}) ${q.alts[0][0]}`,10,true,[23,112,63]);
+    linha(q.alts[0][1].replace(/^Certa\. /,'Explicação: '),9.5,false,[60,70,80]);y+=5});
   const nm=S.nome.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
   doc.save(`avaliacao-tolerancia-polegada-${nm||'aluno'}.pdf`);$('rmsg').innerHTML='<p class="okc">PDF gerado. Confira nos downloads.</p>'};
 
 tela();salvar();
-window.__AV={get S(){return S},get E(){return E},sortear,parseMm,parseIn};
+window.__AV={get S(){return S},Q};
 </script>
 </body>
 </html>
