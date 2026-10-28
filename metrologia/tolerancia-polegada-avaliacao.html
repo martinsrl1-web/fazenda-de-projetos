@@ -153,6 +153,20 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
 .blocos b{display:block;font:800 22px/1.1 'Big Shoulders Display',sans-serif}
 .rtab details{margin-top:4px;font-size:14px;color:var(--muted)}
 .rtab details summary{cursor:pointer;color:var(--accent)}
+.rcabeca{display:flex;flex-wrap:wrap;gap:16px 28px;align-items:center;justify-content:space-between;padding:18px 20px;border:2px solid var(--line);border-radius:8px;background:var(--bg);margin:6px 0 14px}
+.rcabeca .quem{min-width:0;flex:1 1 300px}
+.rcabeca .rotulo{display:block;font:600 13px/1.2 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.rcabeca .nomeal{display:block;font:800 clamp(30px,6.5vw,46px)/1.02 'Big Shoulders Display','Arial Narrow',sans-serif;overflow-wrap:anywhere}
+.rcabeca .turmaal{display:block;font:700 clamp(20px,4vw,26px)/1.2 Barlow,sans-serif;margin-top:6px}
+.rcabeca .dataal{display:block;font-size:14px;color:var(--muted);margin-top:2px}
+.rcabeca .notaf{flex:0 0 auto;text-align:center;padding:12px 22px;border-radius:8px;background:var(--panel);border:3px solid var(--accent)}
+.rcabeca .notaf b{display:block;font:800 clamp(64px,15vw,104px)/.9 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums;color:var(--accent)}
+.rcabeca .notaf small{display:block;font:700 16px/1.2 Barlow,sans-serif;color:var(--muted);margin-top:4px}
+.indic{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:0 0 16px}
+@media (max-width:640px){.indic{grid-template-columns:repeat(2,1fr)}}
+.indic div{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;font-size:14px;color:var(--muted)}
+.indic b{display:block;font:800 28px/1.05 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.indic span{display:block;font-size:13px}
 .parte{font:700 13px/1 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:10px 0 4px;grid-column:1/-1}
 </style>
 </head>
@@ -191,8 +205,8 @@ label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--m
 </section>
 <section class="ex" id="ex" aria-live="polite" style="margin-top:14px" hidden></section>
 <section class="panel" id="relpanel" style="margin-top:14px" hidden>
-  <h2 style="margin-top:0">Resultado</h2>
-  <p id="rcab" style="margin:0 0 4px"></p>
+  <h2 style="margin-top:0">Resultado da avaliação</h2>
+  <p id="rcab" hidden></p>
   <div id="rel"></div>
   <div id="rmsg" aria-live="polite"></div>
   <div class="row noprint"><button class="act" id="pdf">Baixar relatório em PDF</button></div>
@@ -537,12 +551,10 @@ $('grade').addEventListener('click',ev=>{const b=ev.target.closest('button');if(
 /* ===== relatório ===== */
 const porParte=k=>{const ids=E.map((e,i)=>i).filter(i=>E[i].tema===k);return [ids.filter(i=>correta(E[i],S.res[i])).length,ids.length]};
 function relatorio(){const ac=acertos(),tt=E.reduce((a,e,i)=>a+gasto(i),0),[sn,sms]=totSai();
-  const okL=E.map((e,i)=>i).filter(i=>correta(E[i],S.res[i])).map(i=>i+1),erL=E.map((e,i)=>i).filter(i=>!correta(E[i],S.res[i])).map(i=>i+1);
-  $('rcab').innerHTML=`<b>${esc(S.nome)}</b>${S.turma?' · Turma '+esc(S.turma):''} · ${new Date().toLocaleDateString('pt-BR')}`;
-  $('rel').innerHTML=`<div class="pontos">${nota()}<small>de 5,0 pontos</small></div>
-   <div class="resumo"><div>Acertos<b style="color:var(--ok)">${ac}/${N}</b></div><div>Erros<b style="color:var(--bad)">${N-ac}</b></div><div>Tempo total<b>${ftempo(tt)}</b></div><div>Saiu da tela<b style="color:var(${sn?'--bad':'--ok'})">${sn?sn+(sn===1?' vez':' vezes'):'Não'}</b>${sn?'<span>'+ftempo(sms)+' fora</span>':''}</div></div>
-   <div class="resumo">${PARTES.map((t,k)=>{const [a,n]=porParte(k);return `<div>${t}<b>${a}/${n}</b></div>`}).join('')}</div>
-   <div class="listas"><p><b class="okc">Acertou:</b> ${okL.join(', ')||'nenhuma'}</p><p><b class="noc">Errou:</b> ${erL.join(', ')||'nenhuma'}</p></div>
+  $('rel').innerHTML=`<div class="rcabeca"><div class="quem"><span class="rotulo">Aluno</span><span class="nomeal">${esc(S.nome)}</span><span class="turmaal">Turma ${esc(S.turma||'—')}</span><span class="dataal">${new Date().toLocaleDateString('pt-BR')}</span></div>
+     <div class="notaf"><span class="rotulo">Nota final</span><b>${nota()}</b><small>de 5,0 pontos</small></div></div>
+   <div class="indic"><div>Acertos<b style="color:var(--ok)">${ac}</b><span>de ${N} questões</span></div><div>Erros<b style="color:var(--bad)">${N-ac}</b><span>de ${N} questões</span></div>
+     <div>Tempo total<b>${ftempo(tt)}</b></div><div>Saiu da tela<b style="color:var(${sn?'--bad':'--ok'})">${sn?sn+(sn===1?' vez':' vezes'):'Não'}</b>${sn?'<span>'+ftempo(sms)+' fora da tela</span>':''}</div></div>
    <table class="rtab"><thead><tr><th>Nº</th><th>Questão</th><th>Resposta do aluno</th><th>Resposta correta</th><th>Resultado</th><th>Saiu da tela?</th></tr></thead><tbody>
    ${E.map((e,i)=>{const r=S.res[i],ok=correta(e,r),o=S.sai[i];
      return `<tr class="${ok?'ok':'no'}" id="r${i}"><td class="n">${i+1}</td><td>${esc(e.en)}<span class="ctx">${esc(PARTES[e.tema]+(e.ctx?' · '+e.ctx:''))}</span><details><summary>Ver explicação</summary>${esc(e.exp)}</details></td>
@@ -569,14 +581,27 @@ $('pdf').onclick=()=>{
   const linha=(s,sz=10.5,b=false,c=[20,32,43])=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...c);doc.splitTextToSize(t(s),Wd).forEach(l=>{if(y>284){doc.addPage();y=18}doc.text(l,X,y);y+=sz*.45})};
   const ac=acertos(),tt=E.reduce((a,e,i)=>a+gasto(i),0);
   doc.setFillColor(168,84,0);doc.rect(0,0,210,6,'F');
-  linha('FAZENDA DE PROJETOS · Metrologia · Avaliação',9,true,[79,95,108]);y+=1;
-  linha('Avaliação: Tolerância e Polegada Milesimal (40 questões, 5,0 pontos)',15,true);y+=2;
-  linha(`Nome: ${S.nome}    Turma: ${S.turma||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`,10);y+=2;
-  linha(`NOTA: ${nota()} de 5,0 pontos    Acertos: ${ac} de ${N}    Tempo total: ${ftempo(tt)}`,13,true,ac>=24?[23,112,63]:[179,38,30]);
-  linha(PARTES.map((p,k)=>{const [a,n]=porParte(k);return `${p}: ${a} de ${n}`}).join('    '),10.5,true);
-  {const [sn,sms]=totSai();linha(sn?`SAIU DA TELA: ${sn} ${sn===1?'vez':'vezes'}, ${ftempo(sms)} fora (questões: ${Object.keys(S.sai).filter(k=>S.sai[k].n).map(k=>+k+1).sort((a,b)=>a-b).join(', ')})`:'Saiu da tela: não',10.5,true,sn?[179,38,30]:[23,112,63])}
-  linha(`Acertou: ${E.map((e,i)=>i).filter(i=>correta(E[i],S.res[i])).map(i=>i+1).join(', ')||'nenhuma'}`,9.5,true,[23,112,63]);
-  linha(`Errou: ${E.map((e,i)=>i).filter(i=>!correta(E[i],S.res[i])).map(i=>i+1).join(', ')||'nenhuma'}`,9.5,true,[179,38,30]);y+=4;
+  linha('FAZENDA DE PROJETOS · Metrologia · Avaliação de Tolerância e Polegada Milesimal (40 questões, 5,0 pontos)',9,true,[79,95,108]);y+=4;
+  /* nome, turma e nota final em destaque */
+  const nomeL=doc.splitTextToSize(t(S.nome),118);
+  const boxH=Math.max(34,nomeL.length*9+22);
+  doc.setDrawColor(200,208,216);doc.setLineWidth(.4);doc.roundedRect(X,y,Wd,boxH,2,2,'S');
+  doc.setFont('helvetica','normal');doc.setFontSize(8.5);doc.setTextColor(79,95,108);doc.text('ALUNO',X+5,y+7);
+  doc.setFont('helvetica','bold');doc.setFontSize(20);doc.setTextColor(20,32,43);doc.text(nomeL,X+5,y+15);
+  let yy=y+15+nomeL.length*8.2;doc.setFontSize(13);doc.text(t('Turma '+(S.turma||'—')),X+5,yy);
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(79,95,108);doc.text(t(new Date().toLocaleDateString('pt-BR')+' às '+new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})),X+5,yy+5.5);
+  const nx=X+Wd-52;doc.setDrawColor(168,84,0);doc.setLineWidth(1);doc.roundedRect(nx,y+4,48,boxH-8,2,2,'S');
+  doc.setFontSize(8.5);doc.setTextColor(79,95,108);doc.text('NOTA FINAL',nx+24,y+11,{align:'center'});
+  doc.setFont('helvetica','bold');doc.setFontSize(30);doc.setTextColor(168,84,0);doc.text(nota(),nx+24,y+boxH/2+6,{align:'center'});
+  doc.setFont('helvetica','normal');doc.setFontSize(9);doc.setTextColor(79,95,108);doc.text('de 5,0 pontos',nx+24,y+boxH-7,{align:'center'});
+  y+=boxH+5;
+  /* acertos, erros, tempo e saídas, numa linha */
+  const [sn,sms]=totSai();
+  const ind=[['ACERTOS',`${acertos()} de ${N}`,[23,112,63]],['ERROS',`${N-acertos()} de ${N}`,[179,38,30]],['TEMPO TOTAL',ftempo(E.reduce((a,e,i)=>a+gasto(i),0)),[20,32,43]],['SAIU DA TELA',sn?`${sn} ${sn===1?'vez':'vezes'} (${ftempo(sms)})`:'Não',sn?[179,38,30]:[23,112,63]]];
+  const cw=(Wd-9)/4;ind.forEach(([r,v,c],k)=>{const x=X+k*(cw+3);doc.setFillColor(238,242,245);doc.roundedRect(x,y,cw,16,1.5,1.5,'F');
+    doc.setFont('helvetica','normal');doc.setFontSize(7.5);doc.setTextColor(79,95,108);doc.text(r,x+3,y+5);
+    doc.setFont('helvetica','bold');doc.setFontSize(11.5);doc.setTextColor(...c);doc.text(t(v),x+3,y+12)});
+  y+=24;
   const cols=[['Nº',8],['Questão',66],['Resp. do aluno',32],['Resp. correta',32],['Resultado',18],['Saiu da tela',24]],FS=8.2,LH=3.6;
   const cab=()=>{doc.setFillColor(29,59,92);doc.rect(X,y-4.3,Wd,6.4,'F');doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(255,255,255);let x=X+1.5;cols.forEach(([n,w])=>{doc.text(n,x,y);x+=w});y+=5};
   cab();
