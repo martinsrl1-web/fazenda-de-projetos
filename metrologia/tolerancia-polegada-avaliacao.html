@@ -235,7 +235,8 @@ function paq(u,rosa,id){const cam=u-300/PPU,z=(u-cam)*PPU;let h='';
     h+=`<line x1="${x}" x2="${x}" y1="${LINE}" y2="${LINE+(lb?120:80)}" stroke="#2A2829" stroke-width="${k===0?5:3.2}"/>`;
     if(lb)h+=`<text x="${x}" y="${LINE+170}" text-anchor="middle" font-size="40" font-weight="700" font-family="Arial,Helvetica,sans-serif" fill="#2A2829">${k}</text>`}
   h+=`<text x="${x1-14}" y="${LINE+214}" text-anchor="end" font-size="26" font-family="Arial,Helvetica,sans-serif" fill="#4A4849">.001 in</text>`;
-  if(rosa){const xa=z+(u%FD)*VD;h+=`<line x1="${xa}" x2="${xa}" y1="${LINE-200}" y2="${LINE+118}" stroke="#FF2E93" stroke-width="7" opacity=".6"/><circle cx="${xa}" cy="${LINE+132}" r="11" fill="#FF2E93"/>`}
+  if(rosa){const xa=z+(u%FD)*VD;h+=`<line x1="${xa}" x2="${xa}" y1="${LINE-215}" y2="${LINE+125}" stroke="#FF2E93" stroke-width="13" opacity=".85"/>
+    <path d="M${xa-30} ${LINE-262} H${xa+30} L${xa} ${LINE-218} Z" fill="#FF2E93"/><path d="M${xa-26} ${LINE+224} H${xa+26} L${xa} ${LINE+184} Z" fill="#FF2E93"/>`}
   return `<svg viewBox="0 0 2000 600" role="img" aria-label="Paquímetro em polegada milesimal${rosa?', com o traço do nônio que coincide marcado em rosa':''}"><defs><clipPath id="cb${id}"><rect x="22" y="22" width="1956" height="306"/></clipPath></defs>${h}</svg>`}
 
 
@@ -437,7 +438,7 @@ function sortear(){const T=[],P1=[],P2=[],us=new Set(),uu=new Set();
   return E}
 
 /* ===== estado ===== */
-const KEY='tol-pol-aval40-v1',N=40,VALOR=5/N;
+const KEY='tol-pol-aval40-v3',N=40,VALOR=5/N;
 let S={E:[],res:{},t:{},sai:{},fora:null,entregue:false,nome:'',turma:'',i:0};
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&Array.isArray(s.E)&&s.E.length===N)S=Object.assign(S,s)}catch(e){}
 if(S.E.length!==N)S.E=sortear();
