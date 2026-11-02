@@ -1,0 +1,411 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<style>:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{background:#2c8796}body{margin:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Caça ao Tesouro das Escrituras</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Lora:ital@1&display=swap">
+<style>
+/* Layout: um mapa do tesouro em tela cheia (ilha sobre o mar) com a trilha das 7 pistas; cada pista abre numa folha que sobe de baixo */
+:root{
+  --sea:#2c8796; --sea-deep:#1d6672; --foam:#bfe6e6;
+  --land:#f4e2b4; --land-edge:#c7a467; --ink:#3d2b1b; --ink-soft:#7a6247;
+  --trail:#c9432f; --gold:#eaa921; --paper:#fffaf0; --leaf:#5d9a4a;
+  --a:#0f7c80; --b:#8a4fa0; --ok:#2f8a4f; --err:#c9432f;
+  --display:"Fredoka", "Trebuchet MS", system-ui, sans-serif;
+  --body:"Nunito", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --verse:"Lora", Georgia, serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{background:var(--sea);color:var(--ink)}
+body{font-family:var(--body);font-size:17px;line-height:1.5;min-height:100%;
+  background:radial-gradient(circle at 20% 10%, #3a9aa8 0, transparent 40%), radial-gradient(circle at 85% 80%, #3a9aa8 0, transparent 35%), var(--sea);
+  padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:14px 32px}
+.wrap{max-width:540px;margin:0 auto;display:flex;flex-direction:column;gap:14px}
+h1,h2,h3{font-family:var(--display);margin:0;line-height:1.1;text-wrap:balance}
+p{margin:0}
+button{font:inherit;cursor:pointer;border:0}
+button:focus-visible,input:focus-visible,[role=button]:focus-visible{outline:3px solid var(--gold);outline-offset:3px}
+
+/* Cabeçalho */
+.top{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;color:#fff}
+.flag{display:flex;align-items:center;gap:8px;font-family:var(--display);font-weight:600;font-size:20px}
+.flag i{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font-style:normal;color:#fff;font-size:20px;box-shadow:0 3px 0 rgba(0,0,0,.25)}
+.flag i.A{background:var(--a)} .flag i.B{background:var(--b)}
+.pill{background:rgba(255,255,255,.18);border-radius:999px;padding:5px 12px;font-weight:700;font-size:14px;font-variant-numeric:tabular-nums}
+
+/* Mapa */
+.map{position:relative;width:100%}
+.map svg{display:block;width:100%;height:auto;overflow:visible}
+.stop{cursor:pointer}
+.stop.locked{cursor:not-allowed}
+.stop .ring{fill:none;stroke:var(--trail);stroke-width:3;opacity:0;transform-box:fill-box;transform-origin:center}
+.stop.now .ring{animation:pulse 1.6s ease-out infinite}
+@keyframes pulse{0%{opacity:.9;transform:scale(1)}100%{opacity:0;transform:scale(1.9)}}
+.stop:hover .disk{filter:brightness(1.05)}
+.pin{animation:bob 1.8s ease-in-out infinite}
+@keyframes bob{50%{transform:translateY(-5px)}}
+.seg{fill:none;stroke-width:4;stroke-linecap:round;stroke-dasharray:2 10}
+.seg.todo{stroke:var(--ink-soft);opacity:.35}
+.seg.done{stroke:var(--trail);stroke-dasharray:10 8;animation:draw .8s ease-out}
+@keyframes draw{from{opacity:0}to{opacity:1}}
+.chest.open{animation:wiggle 1.2s ease-in-out infinite}
+@keyframes wiggle{0%,100%{transform:rotate(0)}25%{transform:rotate(-4deg)}75%{transform:rotate(4deg)}}
+.chest{transform-box:fill-box;transform-origin:center bottom}
+.hint{background:var(--paper);border-radius:14px;padding:12px 16px;font-weight:700;text-align:center;box-shadow:0 4px 0 rgba(0,0,0,.15)}
+.hint span{color:var(--trail)}
+
+/* Folha da pista */
+.sheet-bg{position:fixed;inset:0;background:rgba(15,40,45,.55);z-index:20;display:flex;align-items:flex-end;justify-content:center;
+  padding-top:max(24px,env(safe-area-inset-top,0px))}
+.sheet{background:var(--paper);width:100%;max-width:560px;max-height:100%;overflow-y:auto;border-radius:24px 24px 0 0;
+  padding:22px max(18px,env(safe-area-inset-left,0px)) calc(24px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-right,0px));
+  display:flex;flex-direction:column;gap:16px;animation:up .35s cubic-bezier(.2,.9,.3,1.2)}
+@keyframes up{from{transform:translateY(40px);opacity:.5}to{transform:none;opacity:1}}
+.sheet-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.badge{font-family:var(--display);font-weight:600;font-size:15px;background:var(--trail);color:#fff;border-radius:999px;padding:4px 12px}
+.x{background:#efe3c8;color:var(--ink);width:38px;height:38px;border-radius:50%;font-size:22px;line-height:1;font-weight:700}
+.ref{font-family:var(--display);font-size:26px;color:var(--ink)}
+.box{border-radius:16px;padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.lbl{font-size:12px;letter-spacing:.12em;text-transform:uppercase;font-weight:800}
+.box.verse{background:#e7f2f1} .box.verse .lbl{color:var(--sea-deep)}
+.box.verse p{font-family:var(--verse);font-style:italic;font-size:19px;line-height:1.45;color:#16454c}
+.box.refl{background:#f3ead4} .box.refl .lbl{color:var(--ink-soft)}
+.box.enig{background:#fde9c2;border:2px dashed var(--gold)} .box.enig .lbl{color:#a5700a}
+.unlock{display:flex;flex-direction:column;gap:8px}
+.unlock label{font-weight:800}
+.row{display:flex;gap:8px}
+.row input{flex:1;min-width:0;font-family:var(--display);font-size:22px;letter-spacing:.06em;text-transform:uppercase;padding:12px 14px;border-radius:14px;border:3px solid var(--land-edge);background:#fff;color:var(--ink)}
+.go{background:var(--trail);color:#fff;font-family:var(--display);font-weight:600;font-size:19px;padding:0 20px;border-radius:14px;box-shadow:0 4px 0 #8e2c1f}
+.go:active{transform:translateY(3px);box-shadow:0 1px 0 #8e2c1f}
+.msg{min-height:1.4em;font-weight:800;font-size:15px}
+.msg.err{color:var(--err)} .msg.ok{color:var(--ok)}
+.solved{background:#e2f2e6;color:var(--ok);font-weight:800;border-radius:14px;padding:12px 16px;text-align:center}
+.shake{animation:shake .35s}
+@keyframes shake{25%{transform:translateX(-7px)}50%{transform:translateX(7px)}75%{transform:translateX(-3px)}}
+
+/* Início */
+.title{color:#fff;text-align:center;display:flex;flex-direction:column;gap:6px;padding-top:6px}
+.title h1{font-size:clamp(36px,10vw,52px);text-shadow:0 4px 0 var(--sea-deep)}
+.title p{opacity:.92}
+.teams{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.team{background:var(--paper);border-radius:20px;padding:18px 12px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;color:var(--ink);box-shadow:0 6px 0 rgba(0,0,0,.2)}
+.team:active{transform:translateY(4px);box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.team b{font-family:var(--display);font-size:54px;line-height:1;color:#fff;width:76px;height:76px;border-radius:20px;display:grid;place-items:center}
+.team[data-t=A] b{background:var(--a)} .team[data-t=B] b{background:var(--b)}
+.team span{font-family:var(--display);font-weight:600;font-size:20px}
+.howto{background:var(--paper);border-radius:20px;padding:16px 18px;display:flex;flex-direction:column;gap:10px;box-shadow:0 6px 0 rgba(0,0,0,.15)}
+.howto h3{font-size:20px}
+.steps{display:grid;gap:8px;margin:0;padding:0;list-style:none;counter-reset:s}
+.steps li{display:flex;gap:10px;align-items:flex-start;font-size:15px}
+.steps li::before{counter-increment:s;content:counter(s);flex:none;width:26px;height:26px;border-radius:50%;background:var(--gold);color:#fff;font-family:var(--display);font-weight:600;display:grid;place-items:center;font-size:15px}
+.link{background:none;color:#fff;text-decoration:underline;opacity:.9;font-size:14px;padding:8px;align-self:center}
+
+/* Final e organizador */
+.paper{background:var(--paper);border-radius:22px;padding:22px 20px;display:flex;flex-direction:column;gap:14px;box-shadow:0 6px 0 rgba(0,0,0,.18)}
+.final{text-align:center;align-items:center}
+.final h1{font-size:34px;color:var(--trail)}
+.final .msgfinal{font-family:var(--verse);font-style:italic;font-size:19px;line-height:1.5;color:#16454c}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:15px}
+th,td{text-align:left;padding:9px 10px;border-bottom:1px solid #e6d7b5;vertical-align:top}
+th{font-size:11px;letter-spacing:.1em;text-transform:uppercase;color:var(--ink-soft)}
+td.pw{font-family:var(--display);font-weight:600;color:var(--trail);white-space:nowrap}
+td.n{color:var(--ink-soft);font-variant-numeric:tabular-nums}
+.note{font-size:14px;color:var(--ink-soft)}
+.confirm{background:var(--paper);border:3px solid var(--trail);border-radius:16px;padding:14px;display:flex;flex-direction:column;gap:10px}
+.confirm .row button{flex:1;padding:10px;border-radius:12px;font-weight:800}
+.no{background:#efe3c8;color:var(--ink)} .yes{background:var(--trail);color:#fff}
+.conf{position:fixed;top:-12px;width:10px;height:14px;z-index:40;pointer-events:none;animation:fall linear forwards}
+@keyframes fall{to{transform:translateY(105vh) rotate(720deg)}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important}}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app"></div>
+<div class="sheet-bg" id="sheetBg" hidden></div>
+
+<script>
+const DATA = {
+  A:[
+    {ref:"Jeremias 1:5", verse:"“Antes que te formasse no ventre, te conheci...”",
+     refl:"Se Deus já conhecia Jeremias antes de seu nascimento, o que isso nos ensina sobre o valor que temos para Ele?",
+     enig:"Existe alguém que acompanha cada um dos seus movimentos, mas nunca caminha ao seu lado. Ele reproduz seus gestos, revela sua aparência e está sempre diante de você quando procura por ele. Não é uma fotografia, tampouco outra pessoa. Onde você encontra esse estranho tão conhecido?",
+     place:"Espelho do banheiro masculino", pw:"CONHECIDO"},
+    {ref:"Jeremias 2:13", verse:"“A mim me deixaram, o manancial de águas vivas, e cavaram cisternas, cisternas fendidas, que já não retêm águas.”",
+     refl:"Por que alguém abandonaria uma fonte de água pura para tentar armazenar água em um reservatório que não consegue conservá-la?",
+     enig:"Há uma necessidade que todos sentem, independentemente de idade, força ou conhecimento. Alguns procuram satisfazê-la em fontes passageiras, mas existe um lugar onde basta aproximar-se para receber aquilo que o corpo necessita. Procure onde a sede encontra sua resposta.",
+     place:"Bebedouro", pw:"AGUAVIVA"},
+    {ref:"Jeremias 31:3", verse:"“Com amor eterno te amei; também com benignidade te atraí.”",
+     refl:"Como podemos reconhecer o amor de Deus mesmo quando enfrentamos dificuldades?",
+     enig:"Existe uma demonstração de amor que não depende de palavras, que atravessou sofrimentos e sacrifícios e mudou a história da humanidade. Quem foi capaz de demonstrar esse amor de maneira perfeita? Procure uma representação daquele que nos ensinou o verdadeiro significado do amor.",
+     place:"Imagem de Jesus Cristo", pw:"AMORETERNO"},
+    {ref:"Jeremias 31:13", verse:"“E tornarei o seu pranto em alegria, e os consolarei, e lhes darei alegria em lugar de tristeza.”",
+     refl:"O que pode fazer com que alguém que está sofrendo volte a encontrar esperança?",
+     enig:"Nem todas as lágrimas são iguais. Algumas expressam tristeza, outras gratidão e outras ainda alegria. Mas, independentemente do motivo, todas deixam uma marca no rosto. Quando as palavras não são suficientes para consolar alguém, um pequeno objeto pode ajudar a enxugar aquilo que os olhos revelam. Procure perto de onde são compartilhadas mensagens com toda a congregação.",
+     place:"Lenço de papel ao lado do púlpito", pw:"ALEGRIA"},
+    {ref:"Ezequiel 36:26", verse:"“Tirarei o coração de pedra da vossa carne, e vos darei um coração de carne.”",
+     refl:"O que pode tornar o coração de uma pessoa insensível às necessidades dos outros?",
+     enig:"Algumas coisas são conhecidas pela dureza, pela resistência e pela dificuldade de serem transformadas. Não sentem, não choram e não demonstram compaixão. O Senhor usa uma delas para representar aquilo que deseja retirar do coração humano. Encontre essa representação.",
+     place:"Junto a uma pedra", pw:"CORACAONOVO"},
+    {ref:"Ezequiel 37:14", verse:"“E porei em vós o meu espírito, e vivereis...”",
+     refl:"Qual é a diferença entre estar vivo fisicamente e estar espiritualmente fortalecido?",
+     enig:"Não podemos segurar aquilo que procuramos, não conseguimos enxergar diretamente sua presença e, mesmo assim, percebemos quando está ao nosso redor. Pode movimentar folhas, refrescar ambientes e fazer objetos leves se moverem. Procure o equipamento que faz essa força circular dentro deste edifício.",
+     place:"Ventilador ou ar-condicionado", pw:"ESPIRITO"},
+    {ref:"Ezequiel 34:11", verse:"“Eis que eu, eu mesmo, procurarei as minhas ovelhas, e as buscarei.”",
+     refl:"Se uma ovelha se afastar do rebanho, o que um bom pastor fará?",
+     enig:"Um rebanho não é formado apenas por aqueles que permanecem próximos. Também existem os que se afastam, os que precisam de orientação e os que necessitam ser encontrados. Há um grupo nesta capela que precisa aprender a caminhar unido, crescer na fé e fortalecer seu relacionamento com o Salvador. Procure o lugar onde esse grupo se reúne.",
+     place:"Sala dos jovens", pw:"BOMPASTOR"}
+  ],
+  B:[
+    {ref:"Jeremias 7:23", verse:"“Dai ouvidos à minha voz, e eu serei o vosso Deus, e vós sereis o meu povo.”",
+     refl:"É suficiente ouvir os ensinamentos do Senhor ou precisamos também colocá-los em prática?",
+     enig:"Em muitos lugares, as pessoas falam para serem ouvidas. Mas existe um ponto em que uma pessoa se posiciona diante de muitas outras para transmitir mensagens, ensinamentos e testemunhos. Não é o lugar onde todos falam, mas aquele de onde uma voz pode alcançar toda a congregação. Encontre-o.",
+     place:"Púlpito", pw:"OUVIR"},
+    {ref:"Jeremias 17:7–8", verse:"“Bendito o homem que confia no Senhor... Porque será como a árvore plantada junto às águas.”",
+     refl:"O que acontece com uma árvore que perde sua fonte de sustento?",
+     enig:"Não corro atrás do sol, não caminho em busca de alimento e não posso escolher para onde ir. Mesmo assim, cresço, enfrento as estações e ofereço abrigo. Minha força depende daquilo que minhas raízes encontram. Procure uma dessas testemunhas silenciosas da criação.",
+     place:"Árvore do jardim", pw:"RAIZES"},
+    {ref:"Jeremias 20:9", verse:"“Houve no meu coração como um fogo ardente, encerrado nos meus ossos.”",
+     refl:"O que acontece quando nosso testemunho se torna tão forte que sentimos vontade de compartilhá-lo?",
+     enig:"Existe um fogo que não precisa consumir madeira, produzir fumaça ou deixar cinzas. Ele vence a escuridão sem queimar aquilo que ilumina. Não é necessário acendê-lo com gravetos, pois basta acionar aquilo que foi criado para afastar a escuridão. Onde você o encontra?",
+     place:"Luminária", pw:"FOGOARDENTE"},
+    {ref:"Ezequiel 36:25", verse:"“Então, aspergirei água pura sobre vós, e ficareis purificados; de todas as vossas imundícias e de todos os vossos ídolos vos purificarei.”",
+     refl:"O Senhor fala sobre purificação. Assim como precisamos limpar aquilo que está sujo, o que precisamos fazer para manter nosso coração e nossa vida espiritualmente limpos?",
+     enig:"Há coisas que, quando não recebem os devidos cuidados, deixam de cumprir bem sua finalidade. Com o passar do tempo, a sujeira se acumula, as marcas aparecem e aquilo que antes estava em boas condições precisa ser restaurado. Para realizar essa transformação, não basta desejar que tudo fique limpo: é necessário utilizar os instrumentos certos. Nesta capela, existe um lugar onde esses instrumentos aguardam o momento de cumprir sua função. Descubram onde estão.",
+     place:"Armário da zeladoria (materiais de limpeza)", pw:"PUREZA"},
+    {ref:"Ezequiel 3:17", verse:"“Eu te dei por atalaia sobre a casa de Israel.”",
+     refl:"Qual é a responsabilidade de alguém que consegue perceber um perigo antes dos demais?",
+     enig:"O atalaia não espera que o perigo chegue até ele. Seu trabalho é observar aquilo que acontece além de onde está. Ele precisa enxergar sem necessariamente sair do lugar. Procure um ponto da capela que permita observar o mundo do lado de fora.",
+     place:"Janela", pw:"ATALAIA"},
+    {ref:"Ezequiel 37:16–17", verse:"“Ajunta um ao outro, para que sejam uma vara; e serão uma só na tua mão.”",
+     refl:"Por que duas partes separadas podem ser mais frágeis do que quando estão unidas?",
+     enig:"Separadas, duas partes podem parecer incompletas. Unidas, podem formar algo útil, firme e capaz de suportar peso. Nesta capela, existem objetos construídos com partes que se encontram e trabalham juntas. Procure um móvel cuja estrutura dependa dessa união.",
+     place:"Banco ou mesa de madeira", pw:"UNIDOS"},
+    {ref:"Ezequiel 47:12", verse:"“E junto do ribeiro, à sua margem, de uma e de outra banda, subirá toda sorte de árvore...” O versículo também ensina que seus frutos servem de alimento e suas folhas de remédio.",
+     refl:"Como uma pessoa pode produzir bons frutos na vida de outras pessoas?",
+     enig:"Não sou uma construção, não tenho paredes e não preciso de palavras para demonstrar que estou vivo. Minhas folhas recebem a luz, minhas raízes buscam sustento e meus frutos podem alimentar outros. Na visão do profeta, minha presença está ligada à vida e à cura. Onde estou?",
+     place:"Planta ou árvore", pw:"BONSFRUTOS"}
+  ]
+};
+const FINAL = "O Senhor conhece cada um de vocês. Ele deseja transformar seu coração, fortalecer sua fé e guiá-los por meio do Espírito Santo. Assim como as árvores produzem frutos e suas folhas levam cura, vocês também podem ser instrumentos nas mãos do Senhor para levar esperança, amor e bênçãos à vida de outras pessoas. Vocês são conhecidos, amados e necessários na obra do Senhor!";
+const ORG_CODE = "LIDER";
+// posições das 7 pistas e do baú no mapa (viewBox 360 x 640)
+const P = [[78,566],[262,510],[104,428],[266,350],[92,268],[262,192],[108,118]];
+const CHEST = [272,56];
+
+const norm = s => s.normalize("NFD").replace(/[̀-ͯ]/g,"").toUpperCase().replace(/[^A-Z0-9]/g,"");
+const $app = document.getElementById("app"), $bg = document.getElementById("sheetBg");
+let state = load() || {view:"home"};
+let tick = null;
+function load(){ try{ return JSON.parse(localStorage.getItem("caca-tesouro-mapa")) }catch(e){ return null } }
+function save(){ try{ localStorage.setItem("caca-tesouro-mapa", JSON.stringify(state)) }catch(e){} }
+function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;") }
+function fmt(ms){ const t=Math.max(0,Math.floor(ms/1000)); return String(Math.floor(t/60)).padStart(2,"0")+":"+String(t%60).padStart(2,"0") }
+
+function render(){
+  clearInterval(tick); $bg.hidden=true; $bg.innerHTML="";
+  ({game:renderMap, final:renderFinal, org:renderOrg, orgLogin:renderOrgLogin}[state.view] || renderHome)();
+}
+
+/* ---------- Início ---------- */
+function renderHome(){
+  $app.innerHTML = `
+  <div class="title"><h1>Caça ao Tesouro</h1><p>Sigam o mapa, decifrem os enigmas e encontrem as senhas escondidas na capela.</p></div>
+  <div class="teams">
+    <button class="team" data-t="A"><b>A</b><span>Equipe A</span></button>
+    <button class="team" data-t="B"><b>B</b><span>Equipe B</span></button>
+  </div>
+  <div class="howto"><h3>Como jogar</h3>
+    <ol class="steps">
+      <li>Escolham a equipe e toquem na pista que está piscando no mapa.</li>
+      <li>Leiam a escritura e conversem sobre a reflexão.</li>
+      <li>Decifrem o enigma e procurem a senha escondida no lugar certo.</li>
+      <li>Digitem a senha para abrir o caminho até a próxima pista. No fim da trilha está o tesouro!</li>
+    </ol>
+  </div>
+  <button class="link" id="org">Área do organizador</button>`;
+  $app.querySelectorAll(".team").forEach(b=>b.onclick=()=>{
+    state={view:"game",team:b.dataset.t,step:0,start:Date.now()}; save(); render(); openClue(0);
+  });
+  document.getElementById("org").onclick=()=>{state.view="orgLogin"; render()};
+}
+
+/* ---------- Mapa ---------- */
+function segPath(a,b){
+  const dx=b[0]-a[0];
+  return `M${a[0]},${a[1]} C${a[0]+dx*.15},${a[1]-50} ${b[0]-dx*.15},${b[1]+50} ${b[0]},${b[1]}`;
+}
+function mapSVG(){
+  const t=state.team, s=state.step, pts=[...P,CHEST];
+  let segs="";
+  for(let i=0;i<pts.length-1;i++) segs+=`<path class="seg ${i<s?"done":"todo"}" d="${segPath(pts[i],pts[i+1])}"/>`;
+  let stops="";
+  P.forEach(([x,y],i)=>{
+    const st = i<s ? "done" : i===s ? "now" : "locked";
+    let inner;
+    if(st==="done") inner=`<circle class="disk" r="22" fill="var(--gold)" stroke="#fff" stroke-width="4"/><path d="M-9,1 L-3,7 L9,-6" fill="none" stroke="#fff" stroke-width="4.5" stroke-linecap="round" stroke-linejoin="round"/>`;
+    else if(st==="now") inner=`<circle class="ring" r="22"/><circle class="disk" r="22" fill="#fff" stroke="var(--trail)" stroke-width="5"/><text y="8" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="700" font-size="22" fill="var(--trail)">${i+1}</text>`;
+    else inner=`<circle r="20" fill="#e3cf9f" stroke="var(--land-edge)" stroke-width="3"/><rect x="-7" y="-2" width="14" height="11" rx="2" fill="var(--ink-soft)"/><path d="M-4,-2 V-6 A4,4 0 0 1 4,-6 V-2" fill="none" stroke="var(--ink-soft)" stroke-width="2.5"/>`;
+    const lx = x>180 ? x-32 : x+32, anchor = x>180 ? "end" : "start";
+    stops+=`<g class="stop ${st}" data-i="${i}" transform="translate(${x},${y})" ${st!=="locked"?`role="button" tabindex="0" aria-label="Abrir pista ${i+1}"`:`aria-label="Pista ${i+1} bloqueada"`}>${inner}</g>
+      <text x="${lx}" y="${y+6}" text-anchor="${anchor}" font-family="Fredoka, sans-serif" font-weight="600" font-size="15" fill="${st==="locked"?"var(--ink-soft)":"var(--ink)"}" opacity="${st==="locked"?.6:1}">Pista ${i+1}</text>`;
+  });
+  const cur = s<7 ? P[s] : CHEST;
+  const pin = `<g transform="translate(${cur[0]},${cur[1]-(s<7?48:58)})"><g class="pin"><path d="M0,22 L-9,6 A13,13 0 1 1 9,6 Z" fill="var(--${t.toLowerCase()})" stroke="#fff" stroke-width="2.5"/><text y="4" text-anchor="middle" font-family="Fredoka, sans-serif" font-weight="700" font-size="15" fill="#fff">${t}</text></g></g>`;
+  const open = s>=7;
+  const chest = `<g class="chest ${open?"open":""}" data-chest="1" transform="translate(${CHEST[0]},${CHEST[1]})" ${open?`role="button" tabindex="0" aria-label="Abrir o tesouro"`:""} style="cursor:${open?"pointer":"default"}">
+      <path d="M-18,-18 L18,18 M18,-18 L-18,18" stroke="var(--trail)" stroke-width="6" stroke-linecap="round" opacity="${open?0:.85}"/>
+      <g transform="translate(0,${open?-4:-30}) scale(${open?1.15:.8})">
+        <rect x="-24" y="-6" width="48" height="26" rx="4" fill="#8a5a2b" stroke="#5c3a17" stroke-width="2.5"/>
+        <path d="M-24,-6 Q0,${open?-34:-24} 24,-6 Z" fill="#a46c35" stroke="#5c3a17" stroke-width="2.5"/>
+        <rect x="-24" y="2" width="48" height="5" fill="var(--gold)"/>
+        <rect x="-5" y="-2" width="10" height="12" rx="2" fill="var(--gold)" stroke="#5c3a17" stroke-width="1.5"/>
+        ${open?`<circle cx="-10" cy="-14" r="3" fill="#fff6c9"/><circle cx="8" cy="-18" r="2.5" fill="#fff6c9"/><circle cx="16" cy="-10" r="2" fill="#fff6c9"/>`:""}
+      </g>
+    </g>`;
+  const waves = [[30,30],[330,250],[20,350],[338,470],[200,620],[40,620]].map(([x,y])=>`<path d="M${x-12},${y} q6,-6 12,0 t12,0" fill="none" stroke="var(--foam)" stroke-width="2.5" stroke-linecap="round" opacity=".7"/>`).join("");
+  const trees = [[300,120],[318,140],[40,200],[56,218],[300,420],[50,490],[200,280]].map(([x,y])=>`<g transform="translate(${x},${y})"><rect x="-2" y="2" width="4" height="8" fill="#7a5532"/><path d="M0,-14 L10,4 L-10,4 Z" fill="var(--leaf)"/></g>`).join("");
+  return `<svg viewBox="0 0 360 640" role="img" aria-label="Mapa do tesouro da Equipe ${t}">
+    ${waves}
+    <path d="M38,30 C110,2 290,6 335,48 C356,150 326,250 344,345 C360,445 340,560 304,604 C210,632 92,626 36,598 C8,490 30,384 16,292 C4,192 22,104 38,30Z" fill="var(--land)" stroke="var(--land-edge)" stroke-width="4"/>
+    <path d="M38,30 C110,2 290,6 335,48 C356,150 326,250 344,345 C360,445 340,560 304,604 C210,632 92,626 36,598 C8,490 30,384 16,292 C4,192 22,104 38,30Z" fill="none" stroke="#fff" stroke-width="2" stroke-dasharray="4 7" opacity=".6" transform="translate(180 320) scale(1.035) translate(-180 -320)"/>
+    ${trees}
+    <g transform="translate(176,566)" opacity=".75"><circle r="20" fill="none" stroke="var(--ink-soft)" stroke-width="1.5"/><path d="M0,-26 L5,0 L0,26 L-5,0Z" fill="var(--ink-soft)"/><path d="M0,-26 L5,0 L-5,0Z" fill="var(--trail)"/><text y="-30" text-anchor="middle" font-family="Fredoka, sans-serif" font-size="12" font-weight="700" fill="var(--ink-soft)">N</text></g>
+    <text x="40" y="616" font-family="Fredoka, sans-serif" font-size="13" font-weight="600" fill="var(--ink-soft)">Início</text>
+    ${segs}${chest}${stops}${pin}
+  </svg>`;
+}
+function renderMap(){
+  const t=state.team, s=state.step;
+  const hint = s<7 ? `Toque na <span>Pista ${s+1}</span> para ler o enigma.` : `O caminho está aberto! Toque no <span>baú do tesouro</span>.`;
+  $app.innerHTML = `
+  <div class="top"><div class="flag"><i class="${t}">${t}</i>Equipe ${t}</div>
+    <div style="display:flex;gap:8px"><span class="pill">${Math.min(s,7)}/7 senhas</span><span class="pill" id="timer">${fmt(Date.now()-state.start)}</span></div></div>
+  <div class="map">${mapSVG()}</div>
+  <div class="hint">${hint}</div>
+  <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap"><button class="link" id="reset">Recomeçar equipe</button><button class="link" id="home">Trocar de equipe</button></div>
+  <div id="confirm"></div>`;
+  tick=setInterval(()=>{const el=document.getElementById("timer"); if(el) el.textContent=fmt(Date.now()-state.start)},1000);
+  $app.querySelectorAll(".stop:not(.locked)").forEach(g=>{
+    const go=()=>openClue(+g.dataset.i);
+    g.addEventListener("click",go); g.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();go()}});
+  });
+  $app.querySelectorAll(".stop.locked").forEach(g=>g.addEventListener("click",()=>{
+    const h=$app.querySelector(".hint"); h.innerHTML=`Essa pista ainda está trancada. Primeiro resolvam a <span>Pista ${s+1}</span>.`; h.classList.remove("shake"); void h.offsetWidth; h.classList.add("shake");
+  }));
+  const ch=$app.querySelector('[data-chest][role="button"]');
+  if(ch){ const go=()=>{state.view="final";save();confetti();render()}; ch.addEventListener("click",go); ch.addEventListener("keydown",e=>{if(e.key==="Enter")go()}); }
+  const ask=(text,yes)=>{
+    document.getElementById("confirm").innerHTML=`<div class="confirm"><p>${text}</p><div class="row"><button class="no" id="no">Cancelar</button><button class="yes" id="yes">Sim</button></div></div>`;
+    document.getElementById("no").onclick=()=>document.getElementById("confirm").innerHTML="";
+    document.getElementById("yes").onclick=yes;
+  };
+  document.getElementById("reset").onclick=()=>ask(`Voltar a Equipe ${t} para a pista 1 e zerar o tempo?`,()=>{state.step=0;state.start=Date.now();delete state.end;save();render()});
+  document.getElementById("home").onclick=()=>ask("Sair desta equipe? O progresso será perdido.",()=>{state={view:"home"};save();render()});
+}
+
+/* ---------- Folha da pista ---------- */
+function openClue(i){
+  const c=DATA[state.team][i], solved=i<state.step;
+  $bg.innerHTML = `<div class="sheet" role="dialog" aria-modal="true" aria-label="Pista ${i+1}">
+    <div class="sheet-head"><span class="badge">Pista ${i+1} de 7</span><button class="x" id="close" aria-label="Voltar ao mapa">×</button></div>
+    <h2 class="ref">${c.ref}</h2>
+    <div class="box verse"><span class="lbl">Escritura</span><p>${esc(c.verse)}</p></div>
+    <div class="box refl"><span class="lbl">Reflexão</span><p>${esc(c.refl)}</p></div>
+    <div class="box enig"><span class="lbl">Enigma</span><p>${esc(c.enig)}</p></div>
+    ${solved ? `<div class="solved">Senha encontrada: ${c.pw}</div>` : `
+    <form class="unlock" id="f">
+      <label for="pw">Encontraram a senha? Digitem aqui:</label>
+      <div class="row"><input id="pw" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="SENHA"><button class="go" type="submit">Abrir</button></div>
+      <p class="msg" id="msg" role="status"></p>
+    </form>`}
+  </div>`;
+  $bg.hidden=false;
+  const close=()=>{$bg.hidden=true;$bg.innerHTML=""};
+  document.getElementById("close").onclick=close;
+  $bg.onclick=e=>{ if(e.target===$bg) close() };
+  const f=document.getElementById("f"); if(!f) return;
+  const input=document.getElementById("pw"), msg=document.getElementById("msg");
+  f.onsubmit=e=>{
+    e.preventDefault();
+    const v=norm(input.value);
+    if(!v){ msg.className="msg err"; msg.textContent="Digitem a senha antes de abrir."; return }
+    if(v===norm(c.pw)){
+      msg.className="msg ok"; msg.textContent = i===6 ? "Senha correta! O caminho até o tesouro está aberto!" : "Senha correta! Caminho liberado para a próxima pista!";
+      input.disabled=true; confetti();
+      state.step=i+1; if(state.step===7) state.end=Date.now(); save();
+      setTimeout(()=>{ render(); if(state.step<7) setTimeout(()=>openClue(state.step),900) },1300);
+    } else {
+      msg.className="msg err"; msg.textContent="Senha incorreta. Confiram as letras e tentem de novo.";
+      input.classList.remove("shake"); void input.offsetWidth; input.classList.add("shake"); input.select();
+    }
+  };
+}
+
+function confetti(){
+  if(matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+  const cols=["#eaa921","#c9432f","#2c8796","#5d9a4a","#8a4fa0","#fff"];
+  for(let k=0;k<50;k++){
+    const d=document.createElement("i"); d.className="conf";
+    d.style.left=Math.random()*100+"vw"; d.style.background=cols[k%cols.length];
+    d.style.animationDuration=(1.4+Math.random()*1.4)+"s"; d.style.animationDelay=(Math.random()*.4)+"s";
+    d.style.borderRadius = k%3 ? "2px" : "50%";
+    document.body.appendChild(d); setTimeout(()=>d.remove(),3400);
+  }
+}
+
+/* ---------- Final ---------- */
+function renderFinal(){
+  $app.innerHTML = `
+  <div class="top"><div class="flag"><i class="${state.team}">${state.team}</i>Equipe ${state.team}</div><span class="pill">Tempo: ${fmt((state.end||Date.now())-state.start)}</span></div>
+  <div class="paper final">
+    <svg viewBox="-40 -50 80 80" width="120" aria-hidden="true"><g transform="scale(1.3)">
+      <rect x="-24" y="-6" width="48" height="26" rx="4" fill="#8a5a2b" stroke="#5c3a17" stroke-width="2.5"/>
+      <path d="M-24,-6 Q0,-34 24,-6 Z" fill="#a46c35" stroke="#5c3a17" stroke-width="2.5"/>
+      <rect x="-24" y="2" width="48" height="5" fill="#eaa921"/><rect x="-5" y="-2" width="10" height="12" rx="2" fill="#eaa921" stroke="#5c3a17" stroke-width="1.5"/>
+      <circle cx="-10" cy="-14" r="3" fill="#f5c84a"/><circle cx="8" cy="-18" r="2.5" fill="#f5c84a"/><circle cx="16" cy="-10" r="2" fill="#f5c84a"/></g></svg>
+    <h1>Vocês encontraram o tesouro!</h1>
+    <p class="msgfinal">${FINAL}</p>
+    <p class="note">Avisem o líder que a equipe concluiu a caça ao tesouro.</p>
+  </div>
+  <div style="display:flex;justify-content:center;gap:10px;flex-wrap:wrap"><button class="link" id="map">Ver o mapa</button><button class="link" id="home">Voltar ao início</button></div>`;
+  document.getElementById("map").onclick=()=>{state.view="game";save();render()};
+  document.getElementById("home").onclick=()=>{state={view:"home"};save();render()};
+}
+
+/* ---------- Organizador ---------- */
+function renderOrgLogin(){
+  $app.innerHTML = `
+  <div class="paper"><h2>Área do organizador</h2>
+  <p class="note">Digite o código para ver onde esconder cada senha.</p>
+  <form class="unlock" id="f"><label for="code">Código do organizador</label>
+  <div class="row"><input id="code" autocomplete="off" autocapitalize="characters"><button class="go" type="submit">Entrar</button></div>
+  <p class="msg" id="msg" role="status"></p></form></div>
+  <button class="link" id="back">Voltar</button>`;
+  document.getElementById("f").onsubmit=e=>{e.preventDefault();
+    if(norm(document.getElementById("code").value)===ORG_CODE){state.view="org";render()}
+    else{const m=document.getElementById("msg");m.className="msg err";m.textContent="Código incorreto."}};
+  document.getElementById("back").onclick=back;
+}
+function back(){ if(state.team){ state.view = state.end ? "final" : "game" } else state={view:"home"}; render() }
+function renderOrg(){
+  const tbl=t=>`<div class="paper"><h2>Equipe ${t}</h2><div class="tbl"><table><thead><tr><th>#</th><th>Esconder a senha em</th><th>Senha</th><th>Libera</th></tr></thead><tbody>${
+    DATA[t].map((c,i)=>`<tr><td class="n">${i+1}</td><td>${c.place}</td><td class="pw">${c.pw}</td><td>${i<6?"Pista "+(i+2):"Tesouro"}</td></tr>`).join("")
+  }</tbody></table></div></div>`;
+  $app.innerHTML = `
+  <div class="title"><h1 style="font-size:32px">Gabarito</h1><p>A pista 1 abre sozinha quando a equipe começa. Cada equipe precisa de 7 papéis com senha. Maiúsculas, acentos e espaços não importam.</p></div>
+  ${tbl("A")}${tbl("B")}
+  <button class="link" id="back">Sair do gabarito</button>`;
+  document.getElementById("back").onclick=back;
+}
+
+render();
+</script>
+</body>
+</html>
