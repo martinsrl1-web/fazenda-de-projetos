@@ -24,6 +24,8 @@ O site começa por Metrologia. Desenho Mecânico entra em seguida.
 | `metrologia/paquimetro-polegada-fracionaria-avaliacao.html` | Avaliação Polegada Fracionária (frações, régua e paquímetro): 20 exercícios sorteados, relatório em PDF |
 | `metrologia/slides/polegada-fracionaria-fracoes-e-regua.pdf` e `.pptx` | Slides da aula 1: frações da polegada e régua (modelo CEEP) |
 | `metrologia/slides/paquimetro-polegada-fracionaria.pdf` e `.pptx` | Slides da aula 2: paquímetro em polegada fracionária (modelo CEEP) |
+| `metrologia/soma-fracoes-polegada.html` | Atividade Soma de Frações da Polegada: explorar e 3 níveis, com barra de polegada e correção armada |
+| `metrologia/slides/soma-de-fracoes-da-polegada.pdf` e `.pptx` | Slides de revisão: soma de frações da polegada (modelo CEEP) |
 | `vendor/jspdf.umd.min.js` | Biblioteca jsPDF 2.5.1 (licença MIT), usada para gerar os PDFs |
 
 São arquivos HTML comuns, sem etapa de montagem: o que está aqui é o que o navegador abre.
