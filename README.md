@@ -19,6 +19,11 @@ O site começa por Metrologia. Desenho Mecânico entra em seguida.
 | `metrologia/paquimetro-avaliacao.html` | Avaliação de paquímetro: 60 leituras e 10 questões, 50 pontos |
 | `metrologia/paquimetro-polegada-avaliacao.html` | Avaliação Paquímetro Polegada Milesimal: 20 exercícios sorteados, relatório em PDF |
 | `metrologia/slides/paquimetro-polegada-milesimal.pdf` e `.pptx` | Slides da aula Paquímetro Polegada Milesimal (modelo CEEP), em PDF e PowerPoint |
+| `metrologia/regua-polegada-fracionaria.html` | Simulador Régua em Polegada Fracionária (1/16"): explorar, básico, médio e avançado |
+| `metrologia/paquimetro-polegada-fracionaria.html` | Simulador Paquímetro Polegada Fracionária (1/128"): explorar, básico, médio e avançado |
+| `metrologia/paquimetro-polegada-fracionaria-avaliacao.html` | Avaliação Polegada Fracionária (frações, régua e paquímetro): 20 exercícios sorteados, relatório em PDF |
+| `metrologia/slides/polegada-fracionaria-fracoes-e-regua.pdf` e `.pptx` | Slides da aula 1: frações da polegada e régua (modelo CEEP) |
+| `metrologia/slides/paquimetro-polegada-fracionaria.pdf` e `.pptx` | Slides da aula 2: paquímetro em polegada fracionária (modelo CEEP) |
 | `vendor/jspdf.umd.min.js` | Biblioteca jsPDF 2.5.1 (licença MIT), usada para gerar os PDFs |
 
 São arquivos HTML comuns, sem etapa de montagem: o que está aqui é o que o navegador abre.

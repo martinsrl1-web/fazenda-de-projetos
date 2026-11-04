@@ -1,0 +1,273 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Régua em Polegada Fracionária</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<style>
+:root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--bad:#B3261E;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80}}
+:root[data-theme="dark"]{--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.5 Barlow,'Arial Narrow',Arial,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 40px}
+h1{font:800 clamp(36px,8vw,60px)/.95 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 14px;max-width:66ch}
+.stage{background:#1D3B5C;border-radius:6px;padding:10px 4px 4px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+.stage svg{display:block;width:100%;height:auto;margin:0 auto}
+#zoom{cursor:grab;max-height:50dvh}#zoom.fixed{cursor:default}#zoom.drag{cursor:grabbing}
+.ctl{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:8px 0 4px}
+.ctl button{font:700 18px/1 'Big Shoulders Display','Arial Narrow',sans-serif;min-width:62px;min-height:44px;padding:0 8px;border-radius:4px;border:1px solid #4E6E8E;background:#24486E;color:#E8EEF3;cursor:pointer;font-variant-numeric:tabular-nums}
+.ctl button:disabled{opacity:.35;cursor:default}
+.ctl i{width:12px}
+.rot{display:none;color:#BFD3E6;font-size:14px;text-align:center;margin:2px 0 0}
+.tabs{display:flex;margin:14px 0 12px;border:2px solid var(--ink);border-radius:4px;overflow:hidden;width:fit-content;max-width:100%}
+.tabs button{font:700 20px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:11px 18px;min-height:48px;background:transparent;color:var(--ink);border:0;cursor:pointer}
+.tabs button+button{border-left:2px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.big{font:800 clamp(48px,12vw,88px)/.95 'Big Shoulders Display','Arial Narrow',sans-serif;font-variant-numeric:tabular-nums}
+.big small{font-size:.38em;margin-left:.2em;color:var(--muted)}
+.stats{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.stats b{display:block;font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+button.act{font:700 19px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:13px 22px;min-height:48px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+input.n{font:800 40px/1 'Big Shoulders Display',sans-serif;min-height:54px;padding:4px 8px;border:2px solid var(--ink);border-radius:4px;background:var(--bg);color:var(--ink);text-align:right;width:6.5ch}
+.fin{display:inline-flex;align-items:center;gap:8px}
+.unit{font:800 30px/1 'Big Shoulders Display',sans-serif;color:var(--muted)}
+.soma{display:grid;grid-template-columns:auto auto auto;gap:8px 12px;align-items:center;justify-content:start;margin-top:10px}
+.soma .op{font:800 34px/1 'Big Shoulders Display',sans-serif;color:var(--muted);text-align:right}
+.soma .lb{font-size:15px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.soma hr{grid-column:1/-1;width:100%;border:0;border-top:3px solid var(--ink);margin:2px 0}
+.soma output{font:800 44px/1 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums;text-align:right;padding-right:10px}
+.contas{display:flex;gap:16px 36px;flex-wrap:wrap;margin-top:10px}
+.conta{display:grid;grid-template-columns:auto auto auto;gap:2px 10px;align-items:baseline;padding:10px 16px;border-radius:6px;background:var(--panel);border:1px solid var(--line)}
+.conta .tt{grid-column:1/-1;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.conta .op{font:800 30px/1.1 'Big Shoulders Display',sans-serif;color:var(--muted);text-align:right}
+.conta .v{font:800 34px/1.1 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums;text-align:right}
+.conta .m{font-size:14px;font-weight:700}
+.conta .m.ok{color:var(--ok)}.conta .m.no{color:var(--bad)}
+.conta .v.no{color:var(--bad);text-decoration:line-through;text-decoration-thickness:2px}
+.conta hr{grid-column:1/-1;width:100%;border:0;border-top:3px solid var(--ink);margin:2px 0}
+.lbl{font-size:14px;color:var(--muted);display:block;margin-bottom:2px;letter-spacing:.06em;text-transform:uppercase}
+.fb{margin-top:12px;padding:12px 14px;border-left:6px solid var(--line);background:var(--bg);border-radius:0 4px 4px 0}
+.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.eq{color:var(--muted);margin:8px 0 0}.eq b{color:var(--ink)}
+label.chk{display:flex;gap:8px;align-items:center;cursor:pointer}
+details.how{margin-top:12px;border-top:1px solid var(--line);padding-top:8px;color:var(--muted)}
+details.how summary{cursor:pointer;font-weight:600;color:var(--ink)}
+details.how ol{margin:6px 0 0;padding-left:22px}
+.copied{color:var(--ok);font-weight:700;margin-left:8px}
+.task{display:inline-block;font:700 14px/1 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:var(--bg);padding:5px 8px;border-radius:3px;margin-bottom:8px}
+@media (max-width:640px){.tabs{width:100%}.tabs button{flex:1;padding:11px 4px;font-size:17px}.row .act{flex:1 1 auto}.ctl button{min-width:56px;font-size:16px}.ctl i{display:none}}
+@media (orientation:portrait) and (max-width:640px){.rot{display:block}}
+@media (orientation:landscape) and (max-height:820px){
+ main{padding:10px 18px 18px;max-width:1200px}h1{font-size:34px;margin:0 0 6px}.sub{display:none}
+ #zoom{max-height:44dvh}.tabs{margin:8px 0}.tabs button{padding:8px 16px;min-height:42px;font-size:18px}
+ .panel{padding:12px 16px}.stats{margin-bottom:6px}.stats b{font-size:24px}.big{font-size:54px}.row{margin-top:8px}.fb{margin-top:8px;padding:8px 12px}
+}
+@media (prefers-reduced-motion:no-preference){.fb{animation:pop .18s ease-out}@keyframes pop{from{transform:translateY(4px);opacity:.4}}}
+
+/* Cabeçalho comum do site Fazenda de Projetos */
+.fp-in{max-width:1000px;margin-inline:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.fp-brand{font:800 27px/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.fp-brand b{color:var(--accent);font-weight:800}
+.fp-onde{font:600 13.5px/1.2 Barlow,'Arial Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fp-rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+.fin .fstack{display:inline-flex;flex-direction:column;align-items:center;gap:4px}
+.fin .fstack i{display:block;width:100%;height:3px;background:var(--ink);border-radius:2px}
+input.n.w{width:2.6ch;text-align:center}
+input.n.f{width:3.2ch;font-size:30px;min-height:44px;text-align:center}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;font-size:.5em;margin-left:.08em}
+.fr span:first-child{border-bottom:.08em solid currentColor;padding:0 .1em .06em}
+.fr span:last-child{padding-top:.06em}
+.conta .v .fr{font-size:.62em}
+.cnt{font:800 30px/1 'Big Shoulders Display',sans-serif;color:var(--muted)}
+</style>
+</head>
+<body>
+<header class="fp-top">
+  <div class="fp-in"><a class="fp-brand" href="../index.html">Fazenda <b>de Projetos</b></a><span class="fp-onde">Metrologia · Réguas graduadas</span></div>
+  <div class="fp-rule" aria-hidden="true"></div>
+</header>
+<main>
+<h1>Régua em Polegada Fracionária</h1>
+<p class="sub">Cada polegada da régua é dividida em 16 partes: cada tracinho vale 1/16". Conte os tracinhos depois da última polegada inteira e simplifique a fração.</p>
+<div class="stage">
+  <svg id="rg" viewBox="0 0 2000 430" xmlns="http://www.w3.org/2000/svg" role="slider" tabindex="0" aria-label="Régua em polegada com uma peça: arraste para mudar a medida"></svg>
+  <div class="ctl" id="ctl">
+    <button data-d="-16" aria-label="Diminuir 1 polegada">−1"</button>
+    <button data-d="-4" aria-label="Diminuir 1/4 de polegada">−1/4</button>
+    <button data-d="-1" aria-label="Diminuir 1/16 de polegada">−1/16</button>
+    <i></i>
+    <button data-d="1" aria-label="Aumentar 1/16 de polegada">+1/16</button>
+    <button data-d="4" aria-label="Aumentar 1/4 de polegada">+1/4</button>
+    <button data-d="16" aria-label="Aumentar 1 polegada">+1"</button>
+  </div>
+  <p class="rot">Gire o celular para ver a régua maior.</p>
+</div>
+<div class="tabs" role="tablist" aria-label="Modo">
+  <button role="tab" data-m="explore">Explorar</button>
+  <button role="tab" data-m="basic">Básico</button>
+  <button role="tab" data-m="medio">Médio</button>
+  <button role="tab" data-m="avancado">Avançado</button>
+</div>
+<section class="panel" id="panel" aria-live="polite"></section>
+</main>
+<script>
+/* Medidas em dezesseis avos de polegada (inteiros): 1 unidade = 1/16". */
+const $=id=>document.getElementById(id),P=$('panel'),RG=$('rg');
+const X0=60,LINE=250;let SPAN=6,PX=1880/6/16;   /* px por 1/16" */
+const S={mode:'explore',u:23,target:0,task:'read',round:1,score:0,correct:0,streak:0,best:0,done:false,answered:false,played:0,used:null,last:null};
+const RN=()=>({basic:50,medio:20,avancado:10})[S.mode]||10;
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a);
+
+/* ---------- frações ---------- */
+function parts(u){const w=Math.floor(u/16);let n=u%16,d=16;if(n){const g=gcd(n,d);n/=g;d/=g}return{w,n,d}}
+function fTxt(u){const {w,n,d}=parts(u);return n?`${w?w+' ':''}${n}/${d}"`:`${w}"`}
+function fHTML(u,raw){let w=Math.floor(u/16),n=u%16,d=16;if(!raw&&n){const g=gcd(n,d);n/=g;d/=g}
+  if(!n)return `${w}"`;return `${w?w:''}<span class="fr"><span>${n}</span><span>${d}</span></span>"`}
+function simpTxt(n){if(!n)return '0';let a=n,d=16,s=`${n}/16`;while(a%2===0){a/=2;d/=2;s+=` = ${a}/${d}`}return s}
+function explain(u){const w=Math.floor(u/16),n=u%16;
+  return `${w?`<b>${w}"</b> inteira${w>1?'s':''} + `:''}<b>${n}</b> tracinho${n===1?'':'s'} de 1/16" ${n?`= ${simpTxt(n)}`:''} → leitura <b>${fTxt(u)}</b>`}
+const mmTxt=u=>(u/16*25.4).toFixed(2).replace('.',',')+' mm';
+
+/* ---------- desenho ---------- */
+function layout(){SPAN=window.innerWidth<640&&window.innerHeight>window.innerWidth?3:6;PX=1880/SPAN/16}
+function draw(){let h='';const R=X0+SPAN*16*PX;
+  /* peça apoiada na régua, começando no zero */
+  const xe=X0+S.u*PX;
+  if(S.u>0)h+=`<rect x="${X0}" y="70" width="${xe-X0}" height="${LINE-74}" fill="#8FA7BF" stroke="#24486E" stroke-width="4"/><text x="${X0+12}" y="104" font-size="28" font-family="Arial,sans-serif" fill="#14202B">peça</text>`;
+  /* encosto no zero */
+  h+=`<rect x="${X0-40}" y="40" width="40" height="${LINE+150-40}" fill="#5C6670"/>`;
+  /* régua */
+  h+=`<rect x="${X0}" y="${LINE}" width="${R-X0+20}" height="160" rx="4" fill="#D9DBDD" stroke="#373435" stroke-width="4"/>`;
+  for(let k=0;k<=SPAN*16;k++){const x=X0+k*PX,L=k%16===0?110:k%8===0?86:k%4===0?66:k%2===0?50:36;
+    h+=`<line x1="${x}" x2="${x}" y1="${LINE}" y2="${LINE+L}" stroke="#2A2829" stroke-width="${k%16===0?4.5:2.6}"/>`;
+    if(k%16===0&&k>0&&k<SPAN*16)h+=`<text x="${x}" y="${LINE+148}" text-anchor="middle" font-size="40" font-weight="900" font-family="'Arial Black',Arial,sans-serif" fill="#14202B">${k/16}</text>`}
+  h+=`<text x="${R-6}" y="${LINE+148}" text-anchor="end" font-size="24" font-family="Arial,sans-serif" fill="#4A4849">INCH · 1/16</text>`;
+  /* marcação do fim da peça */
+  const show=S.mode==='explore'||S.answered||S.mode==='basic';
+  if(S.u>0)h+=`<line x1="${xe}" x2="${xe}" y1="60" y2="${LINE+120}" stroke="${S.mode==='basic'&&!S.answered?'#FF2E93':'#E07B00'}" stroke-width="5" opacity="${show?.85:.0}"/>`;
+  /* guia: última polegada inteira */
+  if((S.mode==='explore'&&S.guide)||S.answered){const xi=X0+Math.floor(S.u/16)*16*PX;h+=`<line x1="${xi}" x2="${xi}" y1="${LINE}" y2="${LINE+120}" stroke="#E07B00" stroke-width="6" stroke-dasharray="14 10"/>`}
+  RG.innerHTML=h;
+  const can=canMove();RG.style.cursor=can?'grab':'default';document.querySelectorAll('#ctl button').forEach(b=>b.disabled=!can);
+  RG.setAttribute('aria-valuetext',can?fTxt(S.u):'peça fixa')}
+S.guide=true;
+
+/* ---------- movimento ---------- */
+const canMove=()=>S.mode==='explore'||(S.task==='adjust'&&!S.answered&&!S.done);
+function setU(u){u=Math.max(1,Math.min(SPAN*16,Math.round(u)));if(u===S.u)return;S.u=u;draw();if(S.mode==='explore')panelExplore()}
+const svgX=e=>{const pt=RG.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;return pt.matrixTransform(RG.getScreenCTM().inverse()).x};
+let drag=false;
+RG.addEventListener('pointerdown',e=>{if(!canMove())return;drag=true;RG.setPointerCapture(e.pointerId);RG.focus();setU((svgX(e)-X0)/PX)});
+RG.addEventListener('pointermove',e=>{if(drag)setU((svgX(e)-X0)/PX)});
+['pointerup','pointercancel'].forEach(v=>RG.addEventListener(v,()=>drag=false));
+RG.addEventListener('keydown',e=>{if(!canMove())return;const d={ArrowLeft:-1,ArrowDown:-1,ArrowRight:1,ArrowUp:1,PageUp:4,PageDown:-4}[e.key];if(d){e.preventDefault();setU(S.u+d)}});
+document.querySelectorAll('#ctl button').forEach(b=>b.onclick=()=>setU(S.u+ +b.dataset.d));
+
+/* ---------- respostas ---------- */
+const val=id=>{const x=($(id)?.value||'').trim();return x===''?null:x};
+/* resposta em fração mista: inteiro + numerador/denominador -> {u em 1/16 (pode ser não inteiro), simplificada?} */
+function readFrac(){const w=val('aw'),n=val('an'),d=val('ad');if(w===null&&n===null)return null;
+  const W=w===null?0:parseInt(w,10),N=n===null?0:parseInt(n,10),D=n===null?1:parseInt(d===null?'':d,10);
+  if([W,N].some(x=>isNaN(x)||x<0)||isNaN(D)||D<=0)return{bad:true};
+  const u=(W*D+N)*16/D,simp=N===0||(gcd(N,D)===1&&N<D);
+  return{u,simp,txt:(W?W+(N?' ':''):'')+(N?N+'/'+D:'')+'"'}}
+const fracIn=`<span class="fin"><input class="n w" id="aw" inputmode="numeric" autocomplete="off" aria-label="Polegadas inteiras"><span class="fstack"><input class="n f" id="an" inputmode="numeric" autocomplete="off" aria-label="Numerador"><i></i><input class="n f" id="ad" inputmode="numeric" autocomplete="off" aria-label="Denominador"></span><span class="unit">"</span></span>`;
+const howTo=`<details class="how"><summary>Como ler (passo a passo)</summary><ol>
+<li>Veja qual foi a última polegada inteira (número grande) antes do fim da peça.</li>
+<li>Conte os tracinhos de 1/16" depois dela até o fim da peça.</li>
+<li>Escreva a fração em dezesseis avos e simplifique: divida em cima e embaixo por 2 enquanto der. Ex.: 12/16 = 6/8 = 3/4.</li></ol></details>`;
+
+/* ---------- Explorar ---------- */
+function panelExplore(){
+  P.innerHTML=`<div class="big">${fHTML(S.u)}</div><p class="eq">${explain(S.u)}</p><p class="eq">Em milímetros: <b>${mmTxt(S.u)}</b> (× 25,4)</p>
+  <div class="row"><label class="chk"><input type="checkbox" id="g" ${S.guide?'checked':''}> Mostrar guia da polegada inteira</label></div>${howTo}`;
+  $('g').onchange=e=>{S.guide=e.target.checked;draw()}}
+
+/* ---------- jogo ---------- */
+function genValue(){const max=SPAN*16-1;let lo,hi;
+  if(S.mode==='basic'){lo=1;hi=Math.min(31,max)}else if(S.mode==='medio'){lo=1;hi=max}else{lo=2;hi=max}
+  let u,t=0;do{u=rnd(lo,hi);t++}while(t<300&&((S.used&&S.used.has(u))||u===S.u||(u%16===0&&Math.random()<.85)));if(S.used)S.used.add(u);return u}
+function newRound(){S.answered=false;S.last=null;
+  S.task=S.mode==='avancado'?'adjust':'read';
+  if(S.task==='adjust'){S.target=genValue();S.u=rnd(1,8)}else S.u=genValue();
+  draw()}
+function startGame(){S.used=new Set();S.played=0;S.round=1;S.score=0;S.correct=0;S.streak=0;S.done=false;newRound();panelGame()}
+const key=()=>`regua-frac-${S.mode}`;
+function loadBest(){try{S.best=+localStorage.getItem(key())||0}catch(e){S.best=0}}
+const stats=()=>`<div class="stats"><span>Rodada<b>${Math.min(S.round,RN())}/${RN()}</b></span><span>Pontos<b>${S.score}</b></span><span>Sequência<b>${S.streak}</b></span><span>Recorde<b>${S.best}</b></span></div>`;
+const levelName={basic:'Básico',medio:'Médio',avancado:'Avançado'};
+function record(pts,ok,last){S.answered=true;S.played++;S.score+=pts;S.streak=ok?S.streak+1:0;if(ok)S.correct++;S.last=last;draw();panelGame();const n=$('next');if(n)n.focus()}
+
+function updBasic(){const w=val('bw'),n=val('bn'),o=$('bsum');if(!o)return;const W=+(w||0),N=+(n||0);
+  if(isNaN(W)||isNaN(N)||(w===null&&n===null)){o.innerHTML='—';return}o.innerHTML=N?`${W?W+' ':''}${N}/16" = ${fHTML(W*16+N)}`:fHTML(W*16)}
+function checkBasic(){const w=val('bw'),n=val('bn');const W=w===null?0:parseInt(w,10),N=n===null?0:parseInt(n,10);
+  if(isNaN(W)||isNaN(N)||(w===null&&n===null)){$('bn').focus();return}
+  const wOk=W===Math.floor(S.u/16),nOk=N===S.u%16,pts=(wOk?5:0)+(nOk?5:0);
+  record(pts,wOk&&nOk,{basic:true,wOk,nOk,W,N,pts})}
+function checkRead(){const a=readFrac();if(!a||a.bad){$('an').focus();return}
+  const exact=Math.abs(a.u-S.u)<1e-9,pts=exact?(a.simp?10:7):0;record(pts,exact&&a.simp,{exact,simp:a.simp,txt:a.txt,pts})}
+function checkAdjust(){const ok=S.u===S.target,near=Math.abs(S.u-S.target)===1;record(ok?10:near?3:0,ok,{exact:ok,txt:fTxt(S.u),pts:ok?10:near?3:0})}
+
+function conta(u){const w=Math.floor(u/16),n=u%16;return `<div class="contas"><div class="conta"><span class="tt">Resposta certa</span>
+  <span class="op"></span><span class="v">${w}"</span><span class="m">polegadas inteiras</span>
+  <span class="op">+</span><span class="v">${n}/16"</span><span class="m">${n} tracinho${n===1?'':'s'}</span><hr>
+  <span class="op">=</span><span class="v">${fHTML(u)}</span><span class="m">${n&&parts(u).d!==16?'simplificado':''}</span></div></div>`}
+
+function panelGame(){
+  if(S.done){const nb=S.score>S.best;if(nb){S.best=S.score;try{localStorage.setItem(key(),S.best)}catch(e){}}
+    const jog=S.played||1,max=jog*10,pc=S.score/max*100;
+    const msg=pc>=90?'Leitura de régua dominada.':pc>=70?'Leitura firme. Cuidado com a simplificação.':pc>=40?'Bom caminho. Conte os tracinhos com calma e simplifique dividindo por 2.':'Volte ao modo Explorar e treine a contagem dos tracinhos.';
+    P.innerHTML=`<div class="big">${S.score}<small>de ${max} pontos</small></div><p>${levelName[S.mode]} · régua em polegada fracionária. ${S.correct}/${jog} acertos. ${msg}${nb&&S.score>0?' Novo recorde.':''}</p>
+    <div class="row"><button class="act" id="again">Jogar de novo</button><button class="act ghost" id="copyres">Copiar resultado</button><span id="copied" class="copied" style="display:none">Copiado!</span></div>`;
+    $('again').onclick=startGame;
+    $('copyres').onclick=()=>{const t=`Régua em polegada fracionária — ${levelName[S.mode]}: ${S.score}/${max} pontos — ${S.correct}/${jog} acertos — ${new Date().toLocaleDateString('pt-BR')}`;
+      (navigator.clipboard&&navigator.clipboard.writeText?navigator.clipboard.writeText(t):Promise.reject()).catch(()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy')}catch(e){}ta.remove()})
+      .finally(()=>{const c=$('copied');c.style.display='inline';setTimeout(()=>c.style.display='none',1800)})};
+    return}
+  const l=S.last;let h=stats();
+  h+=`<span class="task">${S.task==='adjust'?'Marcar na régua':'Leitura'}</span>`;
+  if(S.mode==='basic'){h+=`<p style="margin:0 0 6px">Qual é o comprimento da peça? A <b style="color:#FF2E93">linha rosa</b> marca o fim da peça. Escreva as polegadas inteiras e quantos tracinhos de 1/16" passaram: a fração e a simplificação aparecem sozinhas.</p>`;
+    if(!S.answered)h+=`<div class="soma"><span class="op"></span><span class="fin"><input class="n w" id="bw" inputmode="numeric" autocomplete="off" aria-label="Polegadas inteiras"><span class="unit">"</span></span><span class="lb">Polegadas inteiras</span>
+      <span class="op">+</span><span class="fin"><input class="n w" id="bn" inputmode="numeric" autocomplete="off" aria-label="Tracinhos de 1/16"><span class="cnt">/16"</span></span><span class="lb">Tracinhos de 1/16"</span>
+      <hr><span class="op">=</span><output id="bsum" aria-live="polite">—</output><span class="lb">Fração simplificada</span></div><div class="row"><button class="act" id="ok">Conferir</button></div>`}
+  else if(S.task==='read'){h+=`<p style="margin:0 0 6px">Qual é o comprimento da peça? Escreva a fração <b>simplificada</b> (deixe o inteiro vazio se for menor que 1").</p>`;
+    if(!S.answered)h+=`<div class="row">${fracIn}<button class="act" id="ok">Conferir</button></div>`}
+  else{h+=`<p style="margin:0 0 6px">Arraste o fim da peça até a medida abaixo e confira.</p><div class="big">${fHTML(S.target)}</div>`;
+    if(!S.answered)h+=`<div class="row"><button class="act" id="ok">Conferir</button></div>`}
+  if(S.answered){const ok=l.pts>=10;let body='';
+    if(l.basic)body=`Polegadas: ${l.wOk?'certo':`você escreveu ${l.W}, o certo era <b>${Math.floor(S.u/16)}</b>`}. Tracinhos: ${l.nOk?'certo':`você escreveu ${l.N}, o certo era <b>${S.u%16}</b>`}.`;
+    else if(S.task==='read')body=l.exact?(l.simp?`Você respondeu ${l.txt}.`:`Você respondeu ${l.txt}: o valor está certo, mas falta simplificar para <b>${fTxt(S.u)}</b>.`):`Você respondeu ${l.txt}. O certo era <b>${fTxt(S.u)}</b>.`;
+    else body=l.exact?`A peça mede exatamente ${fTxt(S.target)}.`:`Você deixou em ${l.txt}; o pedido era <b>${fTxt(S.target)}</b>.`;
+    h+=`<div class="fb ${ok?'ok':'no'}"><strong>${ok?'Certo!':l.pts?'Quase.':'Não foi dessa vez.'} +${l.pts}</strong><br>${body}${conta(S.u)}<p class="eq">${explain(S.u)}</p></div>
+    <div class="row"><button class="act" id="next">${S.round>=RN()?'Ver resultado':'Próxima'}</button>${S.round<RN()?'<button class="act ghost" id="stop">Terminar agora e ver resultado</button>':''}</div>`}
+  h+=howTo;P.innerHTML=h;
+  const ok=$('ok');
+  if(ok){ok.onclick=S.mode==='basic'?checkBasic:S.task==='read'?checkRead:checkAdjust;
+    P.querySelectorAll('input.n').forEach(i=>{i.onkeydown=e=>{if(e.key==='Enter')ok.click()};i.oninput=updBasic});
+    const f=P.querySelector('input.n');if(f)f.focus({preventScroll:true})}
+  if($('stop'))$('stop').onclick=()=>{S.done=true;draw();panelGame()};
+  if($('next'))$('next').onclick=()=>{if(S.round>=RN()){S.done=true;draw();panelGame()}else{S.round++;newRound();panelGame()}}}
+
+/* ---------- abas ---------- */
+const mtabs=[...document.querySelectorAll('.tabs button')];
+function setMode(m){S.mode=m;S.done=false;S.answered=false;S.task='read';
+  mtabs.forEach(b=>b.setAttribute('aria-selected',b.dataset.m===m));loadBest();
+  if(m==='explore'){draw();panelExplore()}else startGame()}
+mtabs.forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+layout();window.addEventListener('resize',()=>{const s=SPAN;layout();if(s!==SPAN){if(S.u>SPAN*16)S.u=SPAN*16;draw()}});
+setMode('explore');
+</script>
+</body>
+</html>
