@@ -208,7 +208,7 @@ const key=()=>`regua-frac-${S.mode}`;
 function loadBest(){try{S.best=+localStorage.getItem(key())||0}catch(e){S.best=0}}
 const stats=()=>`<div class="stats"><span>Rodada<b>${Math.min(S.round,RN())}/${RN()}</b></span><span>Pontos<b>${S.score}</b></span><span>Sequência<b>${S.streak}</b></span><span>Recorde<b>${S.best}</b></span></div>`;
 const levelName={basic:'Básico',medio:'Médio',avancado:'Avançado'};
-function record(pts,ok,last){S.answered=true;S.played++;S.score+=pts;S.streak=ok?S.streak+1:0;if(ok)S.correct++;S.last=last;draw();panelGame();const n=$('next');if(n)n.focus()}
+function record(pts,ok,last){S.answered=true;S.played++;S.score+=pts;S.streak=ok?S.streak+1:0;if(ok)S.correct++;S.last=last;draw();panelGame();const n=$('next');if(n)n.focus({preventScroll:true});const fb=P.querySelector('.fb');if(fb)fb.scrollIntoView({behavior:'smooth',block:'center'})}
 
 function updBasic(){const w=val('bw'),n=val('bn'),o=$('bsum');if(!o)return;const W=+(w||0),N=+(n||0);
   if(isNaN(W)||isNaN(N)||(w===null&&n===null)){o.innerHTML='—';return}o.innerHTML=N?`${W?W+' ':''}${N}/16" = ${fHTML(W*16+N)}`:fHTML(W*16)}
@@ -217,10 +217,18 @@ function checkBasic(){const w=val('bw'),n=val('bn');const W=w===null?0:parseInt(
   const wOk=W===Math.floor(S.u/16),nOk=N===S.u%16,pts=(wOk?5:0)+(nOk?5:0);
   record(pts,wOk&&nOk,{basic:true,wOk,nOk,W,N,pts})}
 function checkRead(){const a=readFrac();if(!a||a.bad){$('an').focus();return}
-  const exact=Math.abs(a.u-S.u)<1e-9,pts=exact?(a.simp?10:7):0;record(pts,exact&&a.simp,{exact,simp:a.simp,txt:a.txt,pts})}
+  const exact=Math.abs(a.u-S.u)<1e-9,pts=exact?(a.simp?10:7):0;record(pts,exact&&a.simp,{read:true,exact,simp:a.simp,txt:a.txt,pts})}
 function checkAdjust(){const ok=S.u===S.target,near=Math.abs(S.u-S.target)===1;record(ok?10:near?3:0,ok,{exact:ok,txt:fTxt(S.u),pts:ok?10:near?3:0})}
 
-function conta(u){const w=Math.floor(u/16),n=u%16;return `<div class="contas"><div class="conta"><span class="tt">Resposta certa</span>
+const mk=ok=>`<span class="m ${ok?'ok':'no'}">${ok?'✓ certo':'✗ errado'}</span>`;
+const vv=(x,ok)=>`<span class="v${ok===false?' no':''}">${x}</span>`;
+function sua(l){
+  if(l.basic){const tot=l.W*16+l.N,ok=l.wOk&&l.nOk;return `<div class="conta"><span class="tt">Sua resposta</span>
+    <span class="op"></span>${vv(l.W+'"',l.wOk)}${mk(l.wOk)}<span class="op">+</span>${vv(l.N+'/16"',l.nOk)}${mk(l.nOk)}<hr>
+    <span class="op">=</span>${vv(fHTML(tot),ok)}${mk(ok)}</div>`}
+  if(l.read)return `<div class="conta"><span class="tt">Sua resposta</span><span class="op">=</span>${vv(l.txt,l.exact&&l.simp)}${l.exact&&!l.simp?'<span class="m no">✗ falta simplificar</span>':mk(l.exact)}</div>`;
+  return `<div class="conta"><span class="tt">Você marcou</span><span class="op">=</span>${vv(l.txt,l.exact)}${mk(l.exact)}</div>`}
+function conta(u,l){const w=Math.floor(u/16),n=u%16;return `<div class="contas">${l?sua(l):''}<div class="conta"><span class="tt">Resposta certa</span>
   <span class="op"></span><span class="v">${w}"</span><span class="m">polegadas inteiras</span>
   <span class="op">+</span><span class="v">${n}/16"</span><span class="m">${n} tracinho${n===1?'':'s'}</span><hr>
   <span class="op">=</span><span class="v">${fHTML(u)}</span><span class="m">${n&&parts(u).d!==16?'simplificado':''}</span></div></div>`}
@@ -250,7 +258,7 @@ function panelGame(){
     if(l.basic)body=`Polegadas: ${l.wOk?'certo':`você escreveu ${l.W}, o certo era <b>${Math.floor(S.u/16)}</b>`}. Tracinhos: ${l.nOk?'certo':`você escreveu ${l.N}, o certo era <b>${S.u%16}</b>`}.`;
     else if(S.task==='read')body=l.exact?(l.simp?`Você respondeu ${l.txt}.`:`Você respondeu ${l.txt}: o valor está certo, mas falta simplificar para <b>${fTxt(S.u)}</b>.`):`Você respondeu ${l.txt}. O certo era <b>${fTxt(S.u)}</b>.`;
     else body=l.exact?`A peça mede exatamente ${fTxt(S.target)}.`:`Você deixou em ${l.txt}; o pedido era <b>${fTxt(S.target)}</b>.`;
-    h+=`<div class="fb ${ok?'ok':'no'}"><strong>${ok?'Certo!':l.pts?'Quase.':'Não foi dessa vez.'} +${l.pts}</strong><br>${body}${conta(S.u)}<p class="eq">${explain(S.u)}</p></div>
+    h+=`<div class="fb ${ok?'ok':'no'}"><strong>${ok?'Certo!':l.pts?'Quase.':'Não foi dessa vez.'} +${l.pts}</strong><br>${body}${conta(S.u,l)}<p class="eq">${explain(S.u)}</p></div>
     <div class="row"><button class="act" id="next">${S.round>=RN()?'Ver resultado':'Próxima'}</button>${S.round<RN()?'<button class="act ghost" id="stop">Terminar agora e ver resultado</button>':''}</div>`}
   h+=howTo;P.innerHTML=h;
   const ok=$('ok');
