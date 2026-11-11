@@ -121,6 +121,7 @@ input.n.f{width:3.4ch;font-size:28px;min-height:42px;text-align:center}
 .mmc td.dv{border-left:4px solid var(--ink);padding-left:12px}
 .mmc input.n.f{width:2.6ch}
 .mmc td.c-ok{color:var(--ok)}.mmc td.c-no{color:var(--bad);text-decoration:line-through}
+.mmcres output{color:var(--accent)}
 .mmcres{display:flex;align-items:center;gap:10px;font:800 30px/1 'Big Shoulders Display',sans-serif;margin-top:6px}
 .armada{display:grid;grid-template-columns:auto auto auto auto;gap:6px 10px;align-items:center;font:800 30px/1 'Big Shoulders Display',sans-serif}
 .armada .op{color:var(--muted);text-align:right;min-width:1ch}
@@ -235,7 +236,7 @@ function passos(){const A=S.A,B=S.B,D=Math.max(A.d,B.d);
     return `<div class="passos">
     <div class="passo col"><span class="cab"><span class="pn">1</span><span class="pt">Faça o MMC dos denominadores: divida por 2 até chegar a 1</span></span>
       <table class="mmc" aria-label="Tabela do MMC">${t}</table>
-      <div class="mmcres">MMC = <input class="n f" id="mmc" inputmode="numeric" autocomplete="off" aria-label="Resultado do MMC"></div></div>
+      <div class="mmcres">MMC = <output id="mmc" aria-live="polite">?</output></div><span class="pt" style="font-size:15px">O MMC é calculado sozinho: multiplica os números da coluna do divisor.</span></div>
     <div class="passo col"><span class="cab"><span class="pn">2</span><span class="pt">Monte a conta com o MMC embaixo e some os numeradores</span></span>
       <div class="armada">${linha(A,'s1','')}${linha(B,'s2','+')}<hr><span class="op">=</span><span></span><span></span><span class="fin"><span class="fstack"><input class="n f" id="s3" inputmode="numeric" autocomplete="off" aria-label="Soma dos numeradores"><i></i><span class="fixd mmcd">?</span></span></span></div></div>
     <div class="passo"><span class="pn">3</span><span class="pt">Simplifique o resultado</span><span class="ex">= ${fracBox('r','Resultado')}</span></div></div>`}
@@ -245,19 +246,19 @@ function conferir(){const A=S.A,B=S.B,D=Math.max(A.d,B.d),na=A.n*D/A.d,nb=B.n*D/
   const cs=[];
   if(S.mode==='n1'){const s1=num('s1');if(s1===null||Number.isNaN(s1)){$('s1').focus();return}cs.push({t:'Soma dos numeradores',sua:`${s1}/${D}`,ok:s1===na+nb,certa:`${na+nb}/${D}`})}
   let tab=null;
-  if(S.mode==='n2'){const L=Math.log2(D),need=['mmc','s1','s2','s3'];for(const id of need){const x=num(id);if(x===null||Number.isNaN(x)){$(id).focus();return}}
-    const M=num('mmc'),s1=num('s1'),s2=num('s2'),s3=num('s3');
+  if(S.mode==='n2'){const L=Math.log2(D),need=[...Array(L).keys()].map(i=>'dv'+i).concat(['s1','s2','s3']);for(const id of need){const x=num(id);if(x===null||Number.isNaN(x)){$(id).focus();return}}
+    const M=[...Array(L).keys()].reduce((a,i)=>a*num('dv'+i),1),s1=num('s1'),s2=num('s2'),s3=num('s3');
     tab=[];let tabOk=true;for(let i=0;i<=L;i++){const ea=Math.max(A.d/2**i,1),eb=Math.max(B.d/2**i,1),r=[];
       r.push(i?{v:num('ta'+i),e:ea}:{v:A.d,e:A.d,fixo:1});r.push(i?{v:num('tb'+i),e:eb}:{v:B.d,e:B.d,fixo:1});r.push(i<L?{v:num('dv'+i),e:2}:null);
       r.forEach(c=>{if(c&&!c.fixo&&c.v!==c.e)tabOk=false});tab.push(r)}
     cs.push({t:'Tabela do MMC',ok:tabOk,hide:true});
-    cs.push({t:'MMC',sua:`MMC = ${M}`,ok:M===D,certa:`MMC = ${D}`,op:''});
+    cs.push({t:'MMC',sua:`MMC = ${M}`,ok:M===D,certa:`MMC = ${D}`,op:'',noScore:true});
     cs.push({t:'1ª fração',sua:`${A.n}/${A.d} = ${s1}/${M}`,ok:M===D&&s1===na,certa:`${A.n}/${A.d} = ${na}/${D}`,op:''});
     cs.push({t:'2ª fração',sua:`${B.n}/${B.d} = ${s2}/${M}`,ok:M===D&&s2===nb,certa:`${B.n}/${B.d} = ${nb}/${D}`,op:'+'});
     cs.push({t:'Soma',sua:`${s3}/${M}`,ok:M===D&&s3===na+nb,certa:`${na+nb}/${D}`,op:'=',hr:true})}
   if(!r||r.bad){$('rn').focus();return}
   const igual=Math.abs(r.u-tot)<1e-9;cs.push({t:'Resultado',sua:r.txt,ok:igual&&r.simp,certa:uT(tot),falta:igual&&!r.simp,op:'=',hr:S.mode!=='n2'});
-  const peso=10/cs.length,pts=Math.round(cs.reduce((a,c)=>a+(c.ok?peso:c.falta?peso*.6:0),0));
+  const sc=cs.filter(c=>!c.noScore),peso=10/sc.length,pts=Math.round(sc.reduce((a,c)=>a+(c.ok?peso:c.falta?peso*.6:0),0));
   S.answered=true;S.played++;S.score+=pts;const ok=cs.every(c=>c.ok);S.streak=ok?S.streak+1:0;if(ok)S.correct++;S.last={cs,pts,ok,tab};drawBar(A,B,true);panelGame();
   const fb=P.querySelector('.fb');if(fb)fb.scrollIntoView({behavior:'smooth',block:'center'})}
 
@@ -291,7 +292,8 @@ function panelGame(){
    <li>Simplifique: divida em cima e embaixo por 2 enquanto os dois forem pares. Ex.: 2/8 = 1/4.</li></ol></details>`;
   P.innerHTML=h;
   const ok=$('ok');if(ok){ok.onclick=conferir;P.querySelectorAll('input.n').forEach(i=>i.onkeydown=e=>{if(e.key==='Enter')ok.click()});const f=P.querySelector('input.n');if(f)f.focus({preventScroll:true})}
-  const mm=$('mmc');if(mm)mm.oninput=()=>{const x=mm.value.trim();P.querySelectorAll('.mmcd').forEach(e=>e.textContent=x||'?')};
+  const mm=$('mmc');if(mm){const dvs=[...P.querySelectorAll('input[id^="dv"]')];const upd=()=>{const vs=dvs.map(e=>e.value.trim()).filter(x=>/^\d+$/.test(x)).map(Number);
+    const M=vs.reduce((a,b)=>a*b,1);mm.textContent=vs.length?`${vs.join(' × ')} = ${M}`:'?';P.querySelectorAll('.mmcd').forEach(e=>e.textContent=vs.length?M:'?')};dvs.forEach(e=>e.addEventListener('input',upd))}
   if($('stop'))$('stop').onclick=()=>{S.done=true;panelGame()};
   if($('next'))$('next').onclick=()=>{if(S.round>=RN()){S.done=true;panelGame()}else{S.round++;newRound();panelGame()}}}
 
