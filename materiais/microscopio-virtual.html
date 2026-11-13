@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Microscópio Virtual</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<style>
+:root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--bad:#B3261E;--zone:#CFE6D8;--steel:#1D3B5C;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}}
+:root[data-theme="dark"]{--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 Barlow,'Arial Narrow',Arial,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 48px}
+h1{font:800 clamp(36px,8vw,60px)/.95 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:0 0 6px}
+h2{font:800 clamp(26px,5vw,36px)/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:34px 0 10px;letter-spacing:.01em}
+h3{font:700 22px/1.1 'Big Shoulders Display','Arial Narrow',sans-serif;margin:18px 0 6px;letter-spacing:.02em}
+.sub{color:var(--muted);margin:0 0 18px;max-width:66ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.big{font:800 clamp(48px,12vw,88px)/.9 'Big Shoulders Display','Arial Narrow',sans-serif;font-variant-numeric:tabular-nums}
+.big small{font-size:.38em;margin-left:.2em;color:var(--muted)}
+.stats{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.stats b{display:block;font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+button.act,a.act{display:inline-flex;align-items:center;justify-content:center;font:700 19px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:13px 22px;min-height:48px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;text-decoration:none}
+button.ghost,a.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabs{display:flex;margin:16px 0 12px;border:2px solid var(--ink);border-radius:4px;overflow:hidden;width:fit-content;max-width:100%}
+.tabs button{font:700 20px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:11px 18px;min-height:48px;background:transparent;color:var(--ink);border:0;cursor:pointer}
+.tabs button+button{border-left:2px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.fb{margin-top:12px;padding:12px 14px;border-left:6px solid var(--line);background:var(--bg);border-radius:0 4px 4px 0}
+.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.okc{color:var(--ok);font-weight:700}.noc{color:var(--bad);font-weight:700}
+input[type=text],input[type=number],select,textarea{font:600 18px/1.2 Barlow,Arial,sans-serif;padding:10px 12px;min-height:46px;border:2px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);max-width:100%}
+textarea{width:100%;min-height:90px;resize:vertical}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--muted);font-size:15px}
+.num{font-variant-numeric:tabular-nums}
+@media (max-width:640px){.tabs{width:100%}.tabs button{flex:1;padding:11px 6px}.row .act{flex:1 1 auto}}
+@media (prefers-reduced-motion:no-preference){.fb{animation:pop .18s ease-out}@keyframes pop{from{transform:translateY(4px);opacity:.4}}}
+@media print{.fp-rule,.noprint{display:none!important}body{background:#fff;color:#000}}
+
+/* Cabeçalho comum do site Fazenda de Projetos */
+.fp-in{max-width:1000px;margin-inline:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.fp-brand{font:800 27px/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.fp-brand b{color:var(--accent);font-weight:800}
+.fp-onde{font:600 13.5px/1.2 Barlow,'Arial Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fp-rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+.trilha{display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.trilha a{font:600 15px/1.2 Barlow,sans-serif;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:4px;padding:10px 12px;min-height:44px;display:inline-flex;align-items:center;background:var(--panel)}
+.trilha a[aria-current]{border-color:var(--accent);color:var(--accent);font-weight:700}
+.trilha .t{flex-basis:100%;font:600 13px/1 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+/* Correção bem visível: verde com ✓ quando acerta, vermelho com ✗ quando erra */
+.fb.ok,.fb.no{border-left-width:8px;padding:14px 16px;display:flow-root}
+.fb.ok{background:color-mix(in srgb,var(--ok) 13%,var(--bg))}
+.fb.no{background:color-mix(in srgb,var(--bad) 12%,var(--bg))}
+.fb.ok::before,.fb.no::before{content:'✓';float:left;width:58px;height:58px;border-radius:50%;background:#17703F;color:#fff;font:800 38px/58px Arial,sans-serif;text-align:center;margin:0 14px 6px 0}
+.fb.no::before{content:'✗';background:#B3261E}
+.fb.ok>strong:first-child{color:#17703F;font-size:24px}
+.fb.no>strong:first-child{color:#B3261E;font-size:24px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fb.ok>strong:first-child{color:var(--ok)}:root:not([data-theme="light"]) .fb.no>strong:first-child{color:var(--bad)}}
+
+/* Página */
+.lab{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:820px){.lab{grid-template-columns:1fr}}
+.ocular{position:relative;background:#05080b;border-radius:8px;padding:10px;aspect-ratio:1/1;touch-action:none;user-select:none;-webkit-user-select:none}
+.ocular canvas{display:block;width:100%;height:100%;cursor:grab;border-radius:50%}
+.ocular canvas:active{cursor:grabbing}
+.ocular .esc{position:absolute;left:50%;bottom:9%;transform:translateX(-50%);display:flex;flex-direction:column;align-items:center;gap:3px;pointer-events:none}
+.ocular .esc i{display:block;height:6px;background:#fff;border:1px solid #000;border-radius:1px}
+.ocular .esc span{font:700 14px/1 Barlow,sans-serif;color:#fff;text-shadow:0 0 3px #000,0 0 3px #000}
+.ocular .aum{position:absolute;right:14px;top:12px;font:800 22px/1 'Big Shoulders Display',sans-serif;color:#F2A93B}
+.ocular .msg{position:absolute;inset:0;display:none;align-items:center;justify-content:center;color:#fff;font:600 18px/1.3 Barlow,sans-serif;text-align:center;padding:30px}
+.ocular.carregando .msg{display:flex}
+.ctrl h3{margin-top:0}
+.grupo{margin:0 0 16px}
+.grupo>.lb{display:block;font:600 14px/1.2 Barlow,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:700 19px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;min-height:46px;padding:10px 14px;border:2px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+input[type=range]{width:100%;accent-color:var(--accent);height:34px}
+select{width:100%}
+.dica{font-size:15px;color:var(--muted);margin:4px 0 0}
+.foco-ok{color:var(--ok);font-weight:700}
+.ficha{margin-top:18px}
+.ficha dl{display:grid;grid-template-columns:auto 1fr;gap:6px 16px;margin:0}
+.ficha dt{font-weight:700;color:var(--muted)}
+.ficha dd{margin:0}
+.ficha ul{margin:8px 0 0;padding-left:20px}
+.ops{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+@media (max-width:520px){.ops{grid-template-columns:1fr}}
+.ops button{font:600 17px/1.25 Barlow,sans-serif;text-align:left;min-height:52px;padding:10px 14px;border:2px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);cursor:pointer}
+.ops button:disabled{opacity:1;cursor:default}
+.ops button.certa{border-color:var(--ok);background:color-mix(in srgb,var(--ok) 16%,var(--panel))}
+.ops button.errada{border-color:var(--bad);background:color-mix(in srgb,var(--bad) 14%,var(--panel))}
+.placar{display:flex;gap:22px;flex-wrap:wrap;color:var(--muted);margin-bottom:8px}
+.placar b{display:block;font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--ink)}
+.erro{color:var(--bad);font-weight:700}
+.rtab{width:100%;border-collapse:collapse;margin-top:12px;font-size:15px}
+.rtab th,.rtab td{border-bottom:1px solid var(--line);padding:7px 6px;text-align:left;vertical-align:top}
+.rtab td.ok{color:var(--ok);font-weight:700}.rtab td.no{color:var(--bad);font-weight:700}
+.fonte{font-size:14px;color:var(--muted);margin-top:22px}
+</style>
+</head>
+<body>
+<header class="fp-top">
+  <div class="fp-in"><a class="fp-brand" href="../index.html">Fazenda <b>de Projetos</b></a><span class="fp-onde">Tecnologia dos Materiais · Microestrutura</span></div>
+  <div class="fp-rule" aria-hidden="true"></div>
+</header>
+<main>
+<h1>Microscópio Virtual</h1>
+<p class="sub">Escolha uma lâmina, troque a objetiva, acerte o foco e arraste a imagem para passear pela amostra. Depois, no modo Detetive, descubra qual material está no microscópio.</p>
+
+<div class="tabs" role="tablist" aria-label="Modo">
+  <button role="tab" data-m="explorar" aria-selected="true">Explorar</button>
+  <button role="tab" data-m="detetive" aria-selected="false">Detetive</button>
+</div>
+
+<div class="lab">
+  <div>
+    <div class="ocular carregando" id="ocular">
+      <canvas id="cv" width="800" height="800" tabindex="0" aria-label="Imagem vista pela ocular do microscópio. Arraste ou use as setas para mover a amostra."></canvas>
+      <div class="aum" id="aum">100x</div>
+      <div class="esc" id="esc"><i id="escBar" style="width:80px"></i><span id="escTxt">200 µm</span></div>
+      <div class="msg">Preparando a lâmina...</div>
+    </div>
+    <p class="dica">Arraste a imagem (ou use as setas do teclado) para mudar a região observada.</p>
+  </div>
+
+  <section class="panel ctrl" aria-label="Controles do microscópio">
+    <div class="grupo" id="gLamina"><label class="lb" for="lamina">Lâmina</label><select id="lamina"></select></div>
+    <div class="grupo"><span class="lb">Objetiva (aumento)</span>
+      <div class="seg" id="obj"><button data-z="100">100x</button><button data-z="200">200x</button><button data-z="500">500x</button><button data-z="1000">1000x</button></div></div>
+    <div class="grupo"><label class="lb" for="foco">Foco</label><input type="range" id="foco" min="0" max="100" value="50">
+      <p class="dica" id="focoMsg" aria-live="polite">Gire o foco até a imagem ficar nítida.</p></div>
+    <div class="grupo"><label class="lb" for="luz">Luz</label><input type="range" id="luz" min="40" max="150" value="100"></div>
+    <div class="grupo"><span class="lb">Preparação da amostra</span>
+      <div class="seg" id="ataque"><button data-a="0">Só polida</button><button data-a="1">Polida e atacada</button></div>
+      <p class="dica">Sem o ataque químico, a superfície fica um espelho e os grãos não aparecem.</p></div>
+  </section>
+</div>
+
+<section class="panel ficha" id="painel" aria-live="polite"></section>
+
+<p class="fonte">As imagens são desenhadas pelo computador para treinar o olhar, parecidas com o que se vê num microscópio metalográfico. Para ver fotos reais de microscópio, visite a <a href="https://www.doitpoms.ac.uk/miclib/browse.php" target="_blank" rel="noopener">biblioteca de micrografias da Universidade de Cambridge (DoITPoMS, em inglês)</a>.</p>
+
+<nav class="trilha noprint" aria-label="Tecnologia dos Materiais"><span class="t">Tecnologia dos Materiais</span><a href="microscopio-virtual.html" aria-current="page">Microscópio Virtual</a><a href="forno-virtual.html">Forno Virtual</a><a href="../index.html#d-tecnologia-dos-materiais">Voltar à trilha da disciplina</a></nav>
+</main>
+
+<script src="micro.js"></script>
+<script src="../vendor/jspdf.umd.min.js"></script>
+<script>
+const LAMINAS = [
+ {id:'ferrita', nome:'Ferro quase puro (aço com 0,02% C)', curto:'Ferro quase puro (só ferrita)', tipo:'ferrita', o:{}, reag:'Nital 2%', trat:'Recozido',
+  ver:['Grãos claros, de vários tamanhos, separados por linhas finas e escuras: os contornos de grão.','Quase não há perlita, porque quase não há carbono.'],
+  uso:'Chapas para motores elétricos e peças que precisam ser muito dúcteis.',
+  pista:'Só grãos claros, sem regiões escuras.'},
+ {id:'1020', nome:'Aço SAE 1020 recozido (0,20% C)', curto:'Aço baixo carbono (1020)', tipo:'fp', o:{pf:0.26}, reag:'Nital 2%', trat:'Recozido (esfriou dentro do forno)',
+  ver:['Grãos claros de ferrita (a maioria).','Algumas ilhas escuras de perlita, cerca de 1/4 da área.','Na objetiva de 1000x, a perlita mostra listras: lâminas de ferrita e cementita.'],
+  uso:'Parafusos comuns, chapas, eixos pouco exigidos, peças que vão ser cementadas.',
+  pista:'Muita ferrita clara e pouca perlita escura.'},
+ {id:'1045', nome:'Aço SAE 1045 recozido (0,45% C)', curto:'Aço médio carbono (1045)', tipo:'fp', o:{pf:0.58}, reag:'Nital 2%', trat:'Recozido',
+  ver:['Ferrita (clara) e perlita (escura) em quantidades parecidas.','Mais carbono = mais perlita.','Aumente para 1000x e procure as lâminas da perlita.'],
+  uso:'Eixos, engrenagens, pinos e peças que podem ser temperadas.',
+  pista:'Metade clara (ferrita), metade escura (perlita).'},
+ {id:'1045n', nome:'Aço SAE 1045 normalizado (0,45% C)', curto:'Aço 1045 normalizado (grão fino)', tipo:'fp', o:{pf:0.62,grao:58,lam:3}, reag:'Nital 2%', trat:'Normalizado (esfriou ao ar)',
+  ver:['Os mesmos constituintes do 1045 recozido: ferrita e perlita.','Mas os grãos são bem menores e mais uniformes: é o efeito da normalização.','A perlita é mais fina: as lâminas ficam mais juntinhas.'],
+  uso:'Peças forjadas antes da usinagem, para deixar o grão fino e uniforme.',
+  pista:'Ferrita e perlita com grãos bem pequenos.'},
+ {id:'1080', nome:'Aço SAE 1080 recozido (0,80% C)', curto:'Aço eutetoide (1080, só perlita)', tipo:'perlita', o:{}, reag:'Nital 2%', trat:'Recozido',
+  ver:['Quase 100% perlita: é um aço eutetoide.','Em 500x e 1000x, cada grão mostra listras em uma direção diferente.','Lembra impressão digital.'],
+  uso:'Trilhos de trem, molas, arames de alta resistência.',
+  pista:'Tudo listrado (perlita), sem ferrita clara.'},
+ {id:'1095', nome:'Aço SAE 1095 recozido (0,95% C)', curto:'Aço alto carbono (1095)', tipo:'perlita-cementita', o:{cem:3}, reag:'Nital 2%', trat:'Recozido',
+  ver:['Grãos de perlita (listrados).','Em volta dos grãos, uma rede branca: é cementita a mais, porque o aço tem mais carbono que o eutetoide.'],
+  uso:'Ferramentas de corte, facas, lâminas, molas.',
+  pista:'Perlita com uma rede branca em volta dos grãos.'},
+ {id:'1045t', nome:'Aço SAE 1045 temperado em água', curto:'Aço temperado (martensita)', tipo:'martensita', o:{grao:150}, reag:'Nital 2%', trat:'Aquecido a 850 °C e resfriado em água',
+  ver:['Agulhas finas cruzadas, em várias direções: é a martensita.','As agulhas param nos contornos dos antigos grãos de austenita.','Não existe mais ferrita nem perlita.'],
+  uso:'Peças que precisam de muita dureza. Depois da têmpera, sempre vem o revenimento.',
+  pista:'Agulhas cruzadas, sem grãos claros.'},
+ {id:'cinzento', nome:'Ferro fundido cinzento', curto:'Ferro fundido cinzento', tipo:'cinzento', o:{}, reag:'Nital 2%', trat:'Bruto de fundição',
+  ver:['Veios pretos e curvos de grafita espalhados pela amostra.','Os veios aparecem mesmo sem ataque químico.','Depois do ataque, a matriz em volta é de perlita.'],
+  uso:'Blocos de motor, bases de máquinas, discos de freio.',
+  pista:'Veios pretos e compridos.'},
+ {id:'nodular', nome:'Ferro fundido nodular', curto:'Ferro fundido nodular', tipo:'nodular', o:{}, reag:'Nital 2%', trat:'Bruto de fundição',
+  ver:['Bolinhas pretas de grafita (nódulos).','Depois do ataque, cada nódulo fica cercado por um anel claro de ferrita: parece um “olho de boi”.','A matriz em volta é de perlita.'],
+  uso:'Virabrequins, engrenagens, tubos e conexões.',
+  pista:'Bolinhas pretas com anel claro em volta.'},
+ {id:'branco', nome:'Ferro fundido branco', curto:'Ferro fundido branco', tipo:'branco', o:{}, reag:'Nital 2%', trat:'Bruto de fundição, resfriado rápido',
+  ver:['Fundo claro de cementita, com muitos pontinhos escuros (ledeburita).','Manchas escuras alongadas, em forma de galhos: perlita que cresceu como dendritas.','Não tem grafita: o carbono ficou todo na cementita.'],
+  uso:'Peças que só precisam resistir ao desgaste, como bolas de moinho.',
+  pista:'Fundo claro pontilhado com galhos escuros, sem grafita.'},
+ {id:'cobre', nome:'Cobre puro recozido', curto:'Cobre puro', tipo:'cobre', o:{}, reag:'Cloreto férrico', trat:'Recozido',
+  ver:['Grãos de várias cores, porque cada um reflete a luz de um jeito.','Faixas retas e paralelas dentro dos grãos: são as maclas, típicas do cobre recozido.'],
+  uso:'Fios e cabos elétricos, tubos, trocadores de calor.',
+  pista:'Grãos avermelhados com faixas retas (maclas).'},
+ {id:'latao', nome:'Latão (cobre com 30% de zinco)', curto:'Latão', tipo:'latao', o:{}, reag:'Cloreto férrico', trat:'Recozido',
+  ver:['Parecido com o cobre: grãos de cores diferentes e maclas.','Mas a cor é amarelada, por causa do zinco.'],
+  uso:'Torneiras, conexões, buchas, instrumentos musicais.',
+  pista:'Grãos amarelados com maclas.'}
+];
+const ZOOM={100:1600,200:800,500:320,1000:160};
+const $=id=>document.getElementById(id),cv=$('cv'),ctx=cv.getContext('2d');
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const S={modo:'explorar',lam:LAMINAS[2],z:100,at:true,cx:800,cy:800,foco:50,alvo:50,luz:100,cache:{},
+  jogo:null,nome:'',turma:''};
+try{const v=JSON.parse(localStorage.getItem('fp-micro-aluno')||'{}');S.nome=v.nome||'';S.turma=v.turma||''}catch(e){}
+
+/* ---------- ocular ---------- */
+function amostra(cb){
+  const k=S.lam.id+(S.at?'a':'p');
+  if(S.cache[k]){cb(S.cache[k]);return}
+  $('ocular').classList.add('carregando');
+  setTimeout(()=>{const seed=[...S.lam.id].reduce((a,c)=>a*31+c.charCodeAt(0),7)>>>0;
+    S.cache[k]=MICRO.piramide(MICRO.gerar(S.lam.tipo,Object.assign({N:1600,seed,atacado:S.at},S.lam.o)));
+    $('ocular').classList.remove('carregando');cb(S.cache[k])},30);
+}
+function novoAlvo(){let a;do{a=12+Math.random()*76}while(Math.abs(a-S.foco)<14);S.alvo=a}
+function desenhar(){
+  amostra(img=>{
+    const fw=ZOOM[S.z],h=fw/2;
+    S.cx=Math.min(1600-h,Math.max(h,S.cx));S.cy=Math.min(1600-h,Math.max(h,S.cy));
+    const D=cv.width;ctx.fillStyle='#000';ctx.fillRect(0,0,D,D);
+    ctx.save();ctx.beginPath();ctx.arc(D/2,D/2,D/2-2,0,7);ctx.clip();
+    MICRO.desenharRegiao(ctx,img,S.cx-h,S.cy-h,fw,0,0,D);
+    const g=ctx.createRadialGradient(D/2,D/2,D*0.32,D/2,D/2,D/2);g.addColorStop(0,'rgba(0,0,0,0)');g.addColorStop(1,'rgba(0,0,0,.55)');
+    ctx.fillStyle=g;ctx.fillRect(0,0,D,D);ctx.restore();
+    filtro();escala()});
+}
+function filtro(){
+  const sens=S.z>=500?0.32:0.22, b=Math.min(9,Math.abs(S.foco-S.alvo)*sens);
+  cv.style.filter=`blur(${b.toFixed(1)}px) brightness(${S.luz/100})`;
+  $('focoMsg').innerHTML=b<0.9?'<span class="foco-ok">Imagem nítida.</span>':'Gire o foco até a imagem ficar nítida.';
+}
+function escala(){
+  const campo=ZOOM[S.z]*MICRO.UM_PX,opc=[500,200,100,50,20,10];
+  const L=opc.find(v=>v<=campo*0.3)||10,w=L/campo*$('ocular').clientWidth*0.97;
+  $('escBar').style.width=w+'px';$('escTxt').textContent=L+' µm';$('aum').textContent=S.z+'x';
+  [...$('obj').children].forEach(b=>b.setAttribute('aria-pressed',+b.dataset.z===S.z));
+  [...$('ataque').children].forEach(b=>b.setAttribute('aria-pressed',(b.dataset.a==='1')===S.at));
+}
+/* arrastar */
+let arr=null;
+cv.addEventListener('pointerdown',e=>{arr={x:e.clientX,y:e.clientY,cx:S.cx,cy:S.cy};cv.setPointerCapture(e.pointerId)});
+cv.addEventListener('pointermove',e=>{if(!arr)return;const k=ZOOM[S.z]/cv.clientWidth;S.cx=arr.cx-(e.clientX-arr.x)*k;S.cy=arr.cy-(e.clientY-arr.y)*k;desenhar()});
+cv.addEventListener('pointerup',()=>arr=null);cv.addEventListener('pointercancel',()=>arr=null);
+cv.addEventListener('keydown',e=>{const p=ZOOM[S.z]*0.1,m={ArrowLeft:[-p,0],ArrowRight:[p,0],ArrowUp:[0,-p],ArrowDown:[0,p]}[e.key];
+  if(m){e.preventDefault();S.cx+=m[0];S.cy+=m[1];desenhar()}});
+$('obj').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.z=+b.dataset.z;novoAlvo();desenhar()};
+$('ataque').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.at=b.dataset.a==='1';desenhar()};
+$('foco').oninput=e=>{S.foco=+e.target.value;filtro()};
+$('luz').oninput=e=>{S.luz=+e.target.value;filtro()};
+$('lamina').innerHTML=LAMINAS.map((l,i)=>`<option value="${i}">${esc(l.nome)}</option>`).join('');
+$('lamina').value=2;
+$('lamina').onchange=e=>{S.lam=LAMINAS[+e.target.value];S.cx=S.cy=800;novoAlvo();desenhar();painel()};
+window.addEventListener('resize',escala);
+
+/* ---------- painel ---------- */
+function fichaHTML(l){
+  return `<h3>${esc(l.nome)}</h3><dl><dt>Tratamento</dt><dd>${esc(l.trat)}</dd><dt>Reagente</dt><dd>${esc(l.reag)}</dd><dt>Usos</dt><dd>${esc(l.uso)}</dd></dl>
+  <p style="margin:12px 0 0"><b>O que observar:</b></p><ul>${l.ver.map(v=>`<li>${esc(v)}</li>`).join('')}</ul>`;
+}
+function painel(){
+  const P=$('painel');
+  if(S.modo==='explorar'){P.innerHTML=fichaHTML(S.lam)+`<p class="dica" style="margin-top:12px">Dica: compare o 1020, o 1045 e o 1080 na mesma objetiva. Quanto mais carbono, mais perlita escura.</p>`;return}
+  const J=S.jogo;
+  if(!J){P.innerHTML=`<h3>Detetive do microscópio</h3><p>Você vai ver 10 amostras sem saber o que são. Use as objetivas, o foco e o ataque químico, e escolha qual é o material. No fim, baixe o relatório em PDF.</p>
+    <div class="row"><label class="f">Seu nome<input type="text" id="nome" value="${esc(S.nome)}" autocomplete="name"></label><label class="f">Turma<input type="text" id="turma" value="${esc(S.turma)}" style="width:10ch"></label></div>
+    <div class="row"><button class="act" id="comecar">Começar</button></div><p id="msgN"></p>`;
+    $('comecar').onclick=()=>{S.nome=$('nome').value.trim();S.turma=$('turma').value.trim();
+      if(!S.nome){$('msgN').innerHTML='<span class="erro">Digite seu nome para começar.</span>';return}
+      try{localStorage.setItem('fp-micro-aluno',JSON.stringify({nome:S.nome,turma:S.turma}))}catch(e){}
+      const ord=LAMINAS.map((l,i)=>i).sort(()=>Math.random()-.5).slice(0,10);
+      S.jogo={ord,i:0,res:[],t0:Date.now()};rodada()};return}
+  if(J.i>=J.ord.length){fim();return}
+  const l=LAMINAS[J.ord[J.i]],r=J.res[J.i];
+  P.innerHTML=`<div class="placar"><span><b>${J.i+1} de ${J.ord.length}</b>amostra</span><span><b>${J.res.filter(x=>x.ok).length}</b>acertos</span></div>
+   <h3>Qual material está no microscópio?</h3><div class="ops" id="ops">${J.ops.map(k=>`<button data-k="${k}">${esc(LAMINAS[k].curto)}</button>`).join('')}</div><div id="fb"></div>`;
+  if(r)marcar(r);
+  $('ops').onclick=e=>{const b=e.target.closest('button');if(!b||J.res[J.i])return;
+    const k=+b.dataset.k,ok=k===J.ord[J.i];J.res[J.i]={ok,esc:k};marcar(J.res[J.i])};
+}
+function marcar(r){
+  const J=S.jogo,l=LAMINAS[J.ord[J.i]];
+  [...$('ops').children].forEach(b=>{const k=+b.dataset.k;if(k===J.ord[J.i])b.classList.add('certa');else if(k===r.esc)b.classList.add('errada');b.disabled=true});
+  $('fb').innerHTML=`<div class="fb ${r.ok?'ok':'no'}"><strong>${r.ok?'Acertou!':'Errou.'}</strong><p style="margin:6px 0 0">É <b>${esc(l.nome)}</b>. Pista: ${esc(l.pista)}</p></div>
+   <div class="row"><button class="act" id="prox">${J.i+1<J.ord.length?'Próxima amostra':'Ver resultado'}</button></div>`;
+  $('prox').onclick=()=>{J.i++;rodada()};$('prox').focus();
+}
+function rodada(){
+  const J=S.jogo;
+  if(J.i<J.ord.length){const c=J.ord[J.i],outros=LAMINAS.map((l,i)=>i).filter(i=>i!==c).sort(()=>Math.random()-.5).slice(0,3);
+    J.ops=[c,...outros].sort(()=>Math.random()-.5);S.lam=LAMINAS[c];S.z=100;S.at=true;S.cx=400+Math.random()*800;S.cy=400+Math.random()*800;novoAlvo();desenhar()}
+  painel();
+}
+function fim(){
+  const J=S.jogo,ok=J.res.filter(x=>x.ok).length,min=Math.round((Date.now()-J.t0)/60000);
+  $('painel').innerHTML=`<h3>Resultado</h3><div class="placar"><span><b>${ok} de ${J.ord.length}</b>acertos</span><span><b>${Math.round(ok/J.ord.length*100)}%</b>aproveitamento</span><span><b>${min} min</b>tempo</span></div>
+   <table class="rtab"><thead><tr><th>Nº</th><th>Amostra</th><th>Sua resposta</th><th></th></tr></thead><tbody>
+   ${J.ord.map((c,i)=>{const r=J.res[i];return `<tr><td>${i+1}</td><td>${esc(LAMINAS[c].nome)}</td><td>${esc(LAMINAS[r.esc].curto)}</td><td class="${r.ok?'ok':'no'}">${r.ok?'✓ Acertou':'✗ Errou'}</td></tr>`}).join('')}</tbody></table>
+   <div class="row"><button class="act" id="pdf">Baixar relatório em PDF</button><button class="act ghost" id="denovo">Jogar de novo</button></div><p id="rmsg"></p>`;
+  $('denovo').onclick=()=>{S.jogo=null;painel()};
+  $('pdf').onclick=()=>pdf(ok,min);
+}
+function pdf(ok,min){
+  if(!window.jspdf||!window.jspdf.jsPDF){$('rmsg').innerHTML='<span class="erro">O gerador de PDF não carregou. Confira a internet e recarregue a página.</span>';return}
+  const J=S.jogo,doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),X=15,W=180;let y=18;
+  const linha=(s,sz=10.5,b=false,c=[20,32,43])=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...c);doc.splitTextToSize(String(s),W).forEach(l=>{if(y>284){doc.addPage();y=18}doc.text(l,X,y);y+=sz*.45})};
+  doc.setFillColor(168,84,0);doc.rect(0,0,210,6,'F');
+  linha('FAZENDA DE PROJETOS · Tecnologia dos Materiais',9,true,[79,95,108]);y+=1;
+  linha('Relatório: Detetive do Microscópio',16,true);y+=2;
+  linha(`Nome: ${S.nome}    Turma: ${S.turma||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`,10);y+=2;
+  linha(`Acertos: ${ok} de ${J.ord.length}    Aproveitamento: ${Math.round(ok/J.ord.length*100)}%    Tempo: ${min} min`,12,true,[23,112,63]);y+=4;
+  J.ord.forEach((c,i)=>{const r=J.res[i];linha(`${i+1}. ${LAMINAS[c].nome}`,10.5,true);
+    linha(`Resposta: ${LAMINAS[r.esc].curto} — ${r.ok?'ACERTOU':'ERROU'}`,10,false,r.ok?[23,112,63]:[179,38,30]);y+=1.5});
+  const nm=S.nome.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  doc.save(`detetive-microscopio-${nm||'aluno'}.pdf`);$('rmsg').innerHTML='<span class="okc">PDF gerado. Confira nos downloads.</span>';
+}
+
+/* ---------- abas ---------- */
+document.querySelector('.tabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.modo=b.dataset.m;
+  document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));
+  $('gLamina').style.display=S.modo==='explorar'?'':'none';
+  if(S.modo==='explorar'){S.lam=LAMINAS[+$('lamina').value];desenhar()}
+  else if(S.jogo&&S.jogo.i<S.jogo.ord.length){S.lam=LAMINAS[S.jogo.ord[S.jogo.i]];desenhar()}
+  else{ctx.fillStyle='#000';ctx.fillRect(0,0,cv.width,cv.height)}
+  painel()};
+
+/* resolução da ocular de acordo com a tela */
+(function(){const d=Math.min(2,window.devicePixelRatio||1),w=Math.round(Math.min(700,$('ocular').clientWidth||600)*d);cv.width=cv.height=Math.max(500,w)})();
+novoAlvo();desenhar();painel();
+if(location.hash==='#detetive')document.querySelector('.tabs button[data-m="detetive"]').click();
+</script>
+</body>
+</html>

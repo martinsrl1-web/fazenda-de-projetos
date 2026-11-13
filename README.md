@@ -2,7 +2,7 @@
 
 Site de ensino técnico do Prof. Rodrigo Leandro Martins: simuladores, jogos, atividades e avaliações, com acesso livre e sem cadastro.
 
-O site começa por Metrologia. Desenho Mecânico entra em seguida.
+O site começa por Metrologia e Tecnologia Mecânica dos Materiais. Desenho Mecânico entra em seguida.
 
 ## Como o site está organizado
 
@@ -26,13 +26,17 @@ O site começa por Metrologia. Desenho Mecânico entra em seguida.
 | `metrologia/slides/paquimetro-polegada-fracionaria.pdf` e `.pptx` | Slides da aula 2: paquímetro em polegada fracionária (modelo CEEP) |
 | `metrologia/soma-fracoes-polegada.html` | Interativo Soma de Frações da Polegada (para praticar, sem nota): explorar e 3 níveis, com barra de polegada e correção armada |
 | `metrologia/slides/soma-de-fracoes-da-polegada.pdf` e `.pptx` | Slides de revisão: soma de frações da polegada (modelo CEEP) |
+| `materiais/microscopio-virtual.html` | Microscópio Virtual (Tecnologia dos Materiais): 12 lâminas, objetivas de 100x a 1000x, foco, luz e ataque químico; modo Detetive com relatório em PDF |
+| `materiais/forno-virtual.html` | Forno Virtual: tratamento térmico de aços 1020, 1045, 1080 e 1095, com diagrama ferro-carbono, microestrutura e propriedades; 6 desafios com relatório em PDF |
+| `materiais/micro.js` | Gerador das microestruturas desenhadas, usado pelo microscópio e pelo forno |
+| `materiais/slides/tecnologia-dos-materiais.pdf` e `.pptx` | Slides de toda a disciplina, revisados com base no Callister (modelo CEEP) |
 | `vendor/jspdf.umd.min.js` | Biblioteca jsPDF 2.5.1 (licença MIT), usada para gerar os PDFs |
 
 São arquivos HTML comuns, sem etapa de montagem: o que está aqui é o que o navegador abre.
 
 ## Como alterar
 
-- **Lista de disciplinas e de recursos:** fica dentro do `index.html`, nas constantes `AREAS`, `VISIVEIS` e `ASSUNTOS`. Para mostrar uma disciplina nova, inclua o id dela em `VISIVEIS`.
+- **Lista de disciplinas e de recursos:** fica dentro do `index.html`, nas constantes `AREAS`, `VISIVEIS`, `ASSUNTOS` (Metrologia) e `MATERIAIS` (Tecnologia dos Materiais). Para mostrar uma disciplina nova, inclua o id dela em `VISIVEIS`.
 - **Recurso novo:** crie o arquivo na pasta da disciplina e aponte para ele em `ASSUNTOS`, trocando a situação de `breve` para `ok`.
 - **Visual:** todas as páginas usam as mesmas cores e letras (Barlow e Big Shoulders Display) e o mesmo cabeçalho, com o nome do site e a faixa de régua.
 

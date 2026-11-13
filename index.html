@@ -213,7 +213,7 @@ const r = (tipo, nome, st = 'breve', url = '') => ({tipo, nome, st, url});
 const AREAS = [
   {id:'mecanica', nome:'Mecânica', desc:'Medir, desenhar, projetar, fabricar e manter.', disc:[
     ['metrologia','Metrologia','ativa'], ['desenho-mecanico','Desenho Mecânico'], ['mecanica-geral','Mecânica'],
-    ['processo-de-fabricacao','Processo de Fabricação'], ['tecnologia-dos-materiais','Tecnologia Mecânica dos Materiais'],
+    ['processo-de-fabricacao','Processo de Fabricação'], ['tecnologia-dos-materiais','Tecnologia Mecânica dos Materiais','ativa'],
     ['resistencia-dos-materiais','Resistência dos Materiais'], ['elementos-de-maquinas','Elementos de Máquinas'],
     ['projetos-mecanicos','Projetos Mecânicos'], ['eletromecanica','Eletromecânica'],
     ['manutencao-de-maquinas','Manutenção de Máquinas e Equipamentos']]},
@@ -308,6 +308,42 @@ const ASSUNTOS = [
    avaliar:[r('aval','Avaliação de tolerâncias geométricas')]}
 ];
 
+/* Tecnologia Mecânica dos Materiais */
+const MATERIAIS = [
+  {nome:'Átomos, ligações e classes de materiais', resumo:'Do que a matéria é feita e por que cada material se comporta de um jeito.',
+   topicos:['Átomo: prótons, nêutrons e elétrons','Ligações iônica, covalente e metálica','Metais, cerâmicas, polímeros e compósitos'],
+   praticar:[r('jogo','Monte a ligação')], aplicar:[r('ativ','Classifique os materiais da oficina')], avaliar:[r('aval','Avaliação de ligações e classes')],
+   apoio:[r('apoio','Slides de toda a disciplina, revisados com base no Callister (PDF, para apresentar)','ok','materiais/slides/tecnologia-dos-materiais.pdf'), r('apoio','Slides de toda a disciplina (PowerPoint)','ok','materiais/slides/tecnologia-dos-materiais.pptx')]},
+  {nome:'Estrutura cristalina e microestrutura', resumo:'Como os átomos se arrumam e o que se vê no microscópio.',
+   topicos:['Células CS, CCC, CFC e HC','Alotropia do ferro','Grãos e contornos de grão','Discordâncias e encruamento','Ferrita, perlita, cementita e martensita'],
+   praticar:[r('sim','Microscópio Virtual: objetivas, foco e ataque químico','ok','materiais/microscopio-virtual.html')],
+   aplicar:[r('jogo','Detetive do microscópio: descubra o material, com relatório em PDF','ok','materiais/microscopio-virtual.html#detetive')],
+   avaliar:[r('aval','Avaliação de estrutura e microestrutura')]},
+  {nome:'Propriedades dos materiais', resumo:'Mecânicas, térmicas, elétricas e químicas.',
+   topicos:['Elasticidade e plasticidade','Dureza, fragilidade e tenacidade','Densidade e ponto de fusão','Condutividade e resistividade'],
+   praticar:[r('jogo','Qual propriedade é essa?')], aplicar:[r('ativ','Escolha o material da peça')], avaliar:[r('aval','Avaliação de propriedades')]},
+  {nome:'Do minério ao aço', resumo:'Siderurgia: alto-forno, conversores e fornos elétricos.',
+   topicos:['Minério, sinterização e pelotização','Alto-forno e ferro-gusa','Conversores e fornos elétricos','Siderurgia e meio ambiente'],
+   praticar:[r('sim','Alto-forno por dentro')], aplicar:[r('ativ','Linha de produção do aço')], avaliar:[r('aval','Avaliação de siderurgia')]},
+  {nome:'Aços, ferros fundidos e não ferrosos', resumo:'Classificação pelo carbono, ligas e metais não ferrosos.',
+   topicos:['Aço baixo, médio e alto carbono','Aço-liga e aço inoxidável','Ferros fundidos cinzento, nodular, branco e maleável','Alumínio, cobre, bronze, latão, titânio e magnésio'],
+   praticar:[r('sim','Compare os ferros fundidos no Microscópio Virtual','ok','materiais/microscopio-virtual.html')], aplicar:[r('ativ','Qual aço usar?')], avaliar:[r('aval','Avaliação de ligas')]},
+  {nome:'Tratamentos térmicos', resumo:'Recozimento, normalização, têmpera e revenimento.',
+   topicos:['Diagrama ferro-carbono e zona crítica','Recozimento, esferoidização e normalização','Têmpera, martensita e meios de resfriamento','Revenimento e temperabilidade'],
+   praticar:[r('sim','Forno Virtual: aqueça, resfrie e veja a microestrutura','ok','materiais/forno-virtual.html')],
+   aplicar:[r('ativ','Desafios do Forno: 6 problemas de oficina, com relatório em PDF','ok','materiais/forno-virtual.html#desafios')],
+   avaliar:[r('aval','Avaliação de tratamentos térmicos')]},
+  {nome:'Tratamentos termoquímicos e de superfície', resumo:'Cementação, nitretação, têmpera superficial e revestimentos.',
+   topicos:['Difusão do carbono e do nitrogênio','Cementação e nitretação','Têmpera por chama e por indução','Metalização, zincagem, fosfatização e pintura'],
+   praticar:[r('sim','Profundidade de cementação')], aplicar:[r('ativ','Escolha o tratamento da peça')], avaliar:[r('aval','Avaliação de tratamentos de superfície')]},
+  {nome:'Corrosão', resumo:'Por que o metal enferruja e como proteger.',
+   topicos:['A corrosão como pilha','Meios corrosivos','Proteção por revestimento e ânodo de sacrifício'],
+   praticar:[r('sim','Pilha de corrosão')], aplicar:[r('ativ','Proteja a estrutura')], avaliar:[r('aval','Avaliação de corrosão')]},
+  {nome:'Ensaios dos materiais', resumo:'Tração, dureza, impacto e fadiga.',
+   topicos:['Ensaio de tração e curva tensão-deformação','Dureza Brinell, Rockwell e Vickers','Impacto Charpy e fratura','Fadiga e fluência'],
+   praticar:[r('sim','Ensaio de tração virtual')], aplicar:[r('ativ','Leia a curva tensão-deformação')], avaliar:[r('aval','Avaliação de ensaios')]}
+];
+
 const NORMAS = [
   ['Temperatura de referência, 20 °C','NBR NM-ISO 1'], ['Paquímetro','NBR NM 216'], ['Micrômetro externo','NBR NM-ISO 3611'],
   ['Relógio comparador','NBR ISO 463'], ['Blocos-padrão','NBR NM 215'], ['Tolerâncias e ajustes','NBR 6158'],
@@ -317,10 +353,13 @@ const NORMAS = [
 
 const FASES = [['praticar','Praticar','simuladores e jogos'], ['aplicar','Aplicar','atividades'], ['avaliar','Avaliar','avaliações'], ['apoio','Material de apoio','']];
 const allOf = a => FASES.flatMap(f => a[f[0]] || []);
-const RECURSOS = ASSUNTOS.flatMap((a, i) => allOf(a).map(x => ({...x, assunto:a.nome, n:i + 1})));
+const RECURSOS = [...ASSUNTOS.flatMap((a, i) => allOf(a).map(x => ({...x, disc:'Metrologia', assunto:a.nome, n:i + 1}))),
+  ...MATERIAIS.flatMap((a, i) => allOf(a).map(x => ({...x, disc:'Tecnologia dos Materiais', assunto:a.nome, n:i + 1})))];
+const N_OK_MET = RECURSOS.filter(x => x.st === 'ok' && x.disc === 'Metrologia').length;
+const N_OK_MAT = RECURSOS.filter(x => x.st === 'ok' && x.disc !== 'Metrologia').length;
 const N_OK = RECURSOS.filter(x => x.st === 'ok').length;
 // As 21 disciplinas ficam cadastradas em AREAS. Para mostrar mais uma no site, inclua o id dela aqui.
-const VISIVEIS = ['metrologia', 'desenho-mecanico'];
+const VISIVEIS = ['metrologia', 'tecnologia-dos-materiais', 'desenho-mecanico'];
 const DISC = Object.fromEntries(AREAS.flatMap(ar => ar.disc.filter(d => VISIVEIS.includes(d[0])).map(d => [d[0], {id:d[0], nome:d[1], st:d[2] || 'breve'}])));
 const LISTA = VISIVEIS.map(id => DISC[id]);
 
@@ -355,9 +394,10 @@ function pgInicio(){
   </section>
 
   <section class="sec">
-    <div class="head"><h2>Disciplinas</h2><p class="lead">Metrologia já tem material. Desenho Mecânico entra em breve.</p></div>
+    <div class="head"><h2>Disciplinas</h2><p class="lead">Metrologia e Tecnologia dos Materiais já têm material. Desenho Mecânico entra em breve.</p></div>
     <div class="areas">
-      <a class="area" href="#d-metrologia" data-go="d-metrologia"><span class="n">Metrologia</span><span class="c">${ASSUNTOS.length} assuntos, ${N_OK} recursos disponíveis</span><p>A ciência das medidas, dos fundamentos às tolerâncias geométricas.</p></a>
+      <a class="area" href="#d-metrologia" data-go="d-metrologia"><span class="n">Metrologia</span><span class="c">${ASSUNTOS.length} assuntos, ${N_OK_MET} recursos disponíveis</span><p>A ciência das medidas, dos fundamentos às tolerâncias geométricas.</p></a>
+      <a class="area" href="#d-tecnologia-dos-materiais" data-go="d-tecnologia-dos-materiais"><span class="n">Tecnologia dos Materiais</span><span class="c">${MATERIAIS.length} assuntos, ${N_OK_MAT} recursos disponíveis</span><p>Do átomo ao tratamento térmico: microscópio virtual e forno virtual.</p></a>
       <a class="area" href="#d-desenho-mecanico" data-go="d-desenho-mecanico"><span class="n">Desenho Mecânico</span><span class="c">Em breve</span><p>Ler e representar peças: vistas, cotas, cortes e tolerâncias.</p></a>
     </div>
   </section>
@@ -381,7 +421,7 @@ function pgDisciplinas(){
   return `
   <div class="head">
     <h1 tabindex="-1">Disciplinas</h1>
-    <p class="lead">O site começa por Metrologia. Desenho Mecânico entra em breve, e as outras disciplinas chegam depois.</p>
+    <p class="lead">O site começa por Metrologia e Tecnologia Mecânica dos Materiais. Desenho Mecânico entra em breve, e as outras disciplinas chegam depois.</p>
   </div>
   <ul class="rows">
     ${LISTA.map(d => `<li><a class="rowlink" href="#d-${d.id}" data-go="d-${d.id}"><span class="what"><span class="nome">${d.nome}</span></span>${discPill(d.st)}</a></li>`).join('')}
@@ -419,7 +459,7 @@ function pgMetrologia(){
   <dl class="carimbo">
     <div><dt>Disciplina</dt><dd>Metrologia</dd></div>
     <div><dt>Assuntos</dt><dd>${ASSUNTOS.length}</dd></div>
-    <div><dt>Recursos disponíveis</dt><dd>${N_OK} de ${RECURSOS.length}</dd></div>
+    <div><dt>Recursos disponíveis</dt><dd>${N_OK_MET} de ${RECURSOS.filter(x => x.disc === 'Metrologia').length}</dd></div>
   </dl>
   <section class="sec">
     <div class="head"><h2>Trilha da disciplina</h2><p class="lead">Siga a ordem. Toque num assunto para ver o que ele tem.</p></div>
@@ -433,6 +473,26 @@ function pgMetrologia(){
     </table></div>
     <p class="note" style="margin-top:12px">Lista levantada em outubro de 2026. Confira a edição em vigor no catálogo da ABNT antes de citar.</p>
   </details>`;
+}
+
+function pgMateriais(){
+  const tot = RECURSOS.filter(x => x.disc !== 'Metrologia').length;
+  return `
+  <div class="head">
+    <p class="crumbs">${link('disciplinas','Disciplinas')}</p>
+    <h1 tabindex="-1">Tecnologia Mecânica dos Materiais</h1>
+    <p class="lead">Do átomo ao tratamento térmico. A escola não tem microscópio nem forno? Aqui eles são virtuais: veja a microestrutura dos metais e trate o aço do seu jeito.</p>
+  </div>
+  <dl class="carimbo">
+    <div><dt>Disciplina</dt><dd>Tecnologia dos Materiais</dd></div>
+    <div><dt>Assuntos</dt><dd>${MATERIAIS.length}</dd></div>
+    <div><dt>Recursos disponíveis</dt><dd>${N_OK_MAT} de ${tot}</dd></div>
+  </dl>
+  <section class="sec">
+    <div class="head"><h2>Trilha da disciplina</h2><p class="lead">Siga a ordem. Toque num assunto para ver o que ele tem.</p></div>
+    <div class="assuntos">${MATERIAIS.map(assuntoHTML).join('')}</div>
+  </section>
+  <p class="note">Conteúdo revisado com base no livro Ciência e Engenharia de Materiais (Callister), em linguagem para o 1º ano do ensino técnico.</p>`;
 }
 
 function pgDisciplinaVazia(d){
@@ -458,14 +518,14 @@ function listaRecursos(){
   const l = RECURSOS.filter(x => (F.tipo === 'todos' || x.tipo === F.tipo) && (!F.so || x.st === 'ok'))
     .sort((a, b) => (a.st === 'ok' ? 0 : a.st === 'inc' ? 1 : 2) - (b.st === 'ok' ? 0 : b.st === 'inc' ? 1 : 2) || a.n - b.n);
   if(!l.length) return '<li><div class="what"><span class="nome">Nenhum recurso disponível neste tipo por enquanto.</span><span class="onde">Desmarque a opção acima para ver o que está por vir.</span></div></li>';
-  return l.map(x => `<li><div class="what"><span class="tipo">${TIPOS[x.tipo]}</span><span class="nome">${esc(x.nome)}</span><span class="onde">Metrologia, assunto ${x.n}: ${esc(x.assunto)}</span></div>${acao(x)}</li>`).join('');
+  return l.map(x => `<li><div class="what"><span class="tipo">${TIPOS[x.tipo]}</span><span class="nome">${esc(x.nome)}</span><span class="onde">${x.disc}, assunto ${x.n}: ${esc(x.assunto)}</span></div>${acao(x)}</li>`).join('');
 }
 function pgRecursos(){
   const chips = [['todos','Todos'], ['sim','Simuladores'], ['jogo','Jogos'], ['ativ','Atividades'], ['aval','Avaliações'], ['apoio','Material de apoio']];
   return `
   <div class="head">
     <h1 tabindex="-1">Recursos</h1>
-    <p class="lead">Tudo o que o site tem, separado por tipo. ${N_OK} de ${RECURSOS.length} recursos de Metrologia já estão disponíveis.</p>
+    <p class="lead">Tudo o que o site tem, separado por tipo. ${N_OK} de ${RECURSOS.length} recursos já estão disponíveis.</p>
   </div>
   <section class="sec">
     <div class="filters" role="group" aria-label="Tipo de recurso">
@@ -551,6 +611,7 @@ let atual = null;
 function render(tok, primeira){
   let html, ativo = tok;
   if(tok === 'd-metrologia'){ html = pgMetrologia(); ativo = 'disciplinas'; }
+  else if(tok === 'd-tecnologia-dos-materiais'){ html = pgMateriais(); ativo = 'disciplinas'; }
   else if(tok.startsWith('d-') && DISC[tok.slice(2)]){ html = pgDisciplinaVazia(DISC[tok.slice(2)]); ativo = 'disciplinas'; }
   else { if(!PAGINAS[tok]) tok = 'inicio'; html = PAGINAS[tok](); ativo = tok; }
   atual = tok;

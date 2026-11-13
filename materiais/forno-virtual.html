@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Forno Virtual: tratamento térmico do aço</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<style>
+:root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--bad:#B3261E;--zone:#CFE6D8;--steel:#1D3B5C;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}}
+:root[data-theme="dark"]{--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 Barlow,'Arial Narrow',Arial,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 48px}
+h1{font:800 clamp(36px,8vw,60px)/.95 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:0 0 6px}
+h2{font:800 clamp(26px,5vw,36px)/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:34px 0 10px;letter-spacing:.01em}
+h3{font:700 22px/1.1 'Big Shoulders Display','Arial Narrow',sans-serif;margin:18px 0 6px;letter-spacing:.02em}
+.sub{color:var(--muted);margin:0 0 18px;max-width:66ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.big{font:800 clamp(48px,12vw,88px)/.9 'Big Shoulders Display','Arial Narrow',sans-serif;font-variant-numeric:tabular-nums}
+.big small{font-size:.38em;margin-left:.2em;color:var(--muted)}
+.stats{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.stats b{display:block;font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+button.act,a.act{display:inline-flex;align-items:center;justify-content:center;font:700 19px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:13px 22px;min-height:48px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;text-decoration:none}
+button.ghost,a.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabs{display:flex;margin:16px 0 12px;border:2px solid var(--ink);border-radius:4px;overflow:hidden;width:fit-content;max-width:100%}
+.tabs button{font:700 20px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:11px 18px;min-height:48px;background:transparent;color:var(--ink);border:0;cursor:pointer}
+.tabs button+button{border-left:2px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.fb{margin-top:12px;padding:12px 14px;border-left:6px solid var(--line);background:var(--bg);border-radius:0 4px 4px 0}
+.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.okc{color:var(--ok);font-weight:700}.noc{color:var(--bad);font-weight:700}
+input[type=text],input[type=number],select,textarea{font:600 18px/1.2 Barlow,Arial,sans-serif;padding:10px 12px;min-height:46px;border:2px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);max-width:100%}
+textarea{width:100%;min-height:90px;resize:vertical}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--muted);font-size:15px}
+.num{font-variant-numeric:tabular-nums}
+@media (max-width:640px){.tabs{width:100%}.tabs button{flex:1;padding:11px 6px}.row .act{flex:1 1 auto}}
+@media (prefers-reduced-motion:no-preference){.fb{animation:pop .18s ease-out}@keyframes pop{from{transform:translateY(4px);opacity:.4}}}
+@media print{.fp-rule,.noprint{display:none!important}body{background:#fff;color:#000}}
+
+/* Cabeçalho comum do site Fazenda de Projetos */
+.fp-in{max-width:1000px;margin-inline:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.fp-brand{font:800 27px/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.fp-brand b{color:var(--accent);font-weight:800}
+.fp-onde{font:600 13.5px/1.2 Barlow,'Arial Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fp-rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+.trilha{display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.trilha a{font:600 15px/1.2 Barlow,sans-serif;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:4px;padding:10px 12px;min-height:44px;display:inline-flex;align-items:center;background:var(--panel)}
+.trilha a[aria-current]{border-color:var(--accent);color:var(--accent);font-weight:700}
+.trilha .t{flex-basis:100%;font:600 13px/1 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+/* Correção bem visível: verde com ✓ quando acerta, vermelho com ✗ quando erra */
+.fb.ok,.fb.no{border-left-width:8px;padding:14px 16px;display:flow-root}
+.fb.ok{background:color-mix(in srgb,var(--ok) 13%,var(--bg))}
+.fb.no{background:color-mix(in srgb,var(--bad) 12%,var(--bg))}
+.fb.ok::before,.fb.no::before{content:'✓';float:left;width:58px;height:58px;border-radius:50%;background:#17703F;color:#fff;font:800 38px/58px Arial,sans-serif;text-align:center;margin:0 14px 6px 0}
+.fb.no::before{content:'✗';background:#B3261E}
+.fb.ok>strong:first-child{color:#17703F;font-size:24px}
+.fb.no>strong:first-child{color:#B3261E;font-size:24px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fb.ok>strong:first-child{color:var(--ok)}:root:not([data-theme="light"]) .fb.no>strong:first-child{color:var(--bad)}}
+
+/* Página */
+.lab{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:860px){.lab{grid-template-columns:1fr}}
+.stage{background:var(--steel);border-radius:6px;padding:8px}
+.stage svg{display:block;width:100%;height:auto}
+.stage text{font-family:Barlow,'Arial Narrow',Arial,sans-serif}
+.grupo{margin:0 0 14px}
+.grupo>.lb{display:flex;justify-content:space-between;gap:8px;font:600 14px/1.2 Barlow,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+.grupo>.lb output{font:800 22px/1 'Big Shoulders Display',sans-serif;letter-spacing:0;color:var(--ink);text-transform:none}
+.seg{display:flex;flex-wrap:wrap;gap:6px}
+.seg button{font:700 18px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;min-height:46px;padding:10px 12px;border:2px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.seg button:disabled{opacity:.4;cursor:not-allowed}
+input[type=range]{width:100%;accent-color:var(--accent);height:34px}
+.dica{font-size:15px;color:var(--muted);margin:4px 0 0}
+.chk{display:flex;gap:10px;align-items:center;font-weight:600;min-height:44px}
+.chk input{width:24px;height:24px;accent-color:var(--accent)}
+.regiao{font-weight:700}
+.res{margin-top:18px}
+.res-grid{display:grid;grid-template-columns:minmax(0,320px) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:700px){.res-grid{grid-template-columns:1fr}}
+.micro{position:relative;background:#05080b;border-radius:6px;padding:6px;aspect-ratio:1/1;max-width:320px}
+.micro canvas{width:100%;height:100%;display:block;border-radius:50%}
+.micro span{position:absolute;right:10px;top:8px;font:800 18px/1 'Big Shoulders Display',sans-serif;color:#F2A93B}
+.estado{font:800 clamp(26px,5vw,34px)/1 'Big Shoulders Display',sans-serif;margin:0 0 6px}
+.props{display:grid;gap:8px;margin:12px 0}
+.prop{display:grid;grid-template-columns:118px 1fr auto;gap:10px;align-items:center;font-size:15px}
+.prop .bar{height:14px;border-radius:7px;background:var(--line);overflow:hidden}
+.prop .bar i{display:block;height:100%;background:var(--accent);border-radius:7px;transition:width .6s}
+.prop b{font-variant-numeric:tabular-nums}
+.alerta{border-left:6px solid var(--bad);background:color-mix(in srgb,var(--bad) 10%,var(--bg));padding:10px 12px;border-radius:0 4px 4px 0;margin:8px 0;font-weight:600}
+.desafios{display:grid;gap:8px}
+.desafios button{display:flex;gap:12px;align-items:center;text-align:left;font:600 17px/1.25 Barlow,sans-serif;min-height:56px;padding:10px 14px;border:2px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);cursor:pointer}
+.desafios button[aria-pressed="true"]{border-color:var(--accent)}
+.desafios .n{font:800 24px/1 'Big Shoulders Display',sans-serif;min-width:28px;color:var(--accent)}
+.desafios .st{margin-left:auto;font-weight:700;white-space:nowrap}
+.desafios .st.ok{color:var(--ok)}.desafios .st.no{color:var(--bad)}
+.missao{border:2px solid var(--accent);border-radius:6px;padding:12px 14px;margin-bottom:14px;background:var(--panel)}
+.missao h3{margin-top:0}
+.erro{color:var(--bad);font-weight:700}
+.fonte{font-size:14px;color:var(--muted);margin-top:22px}
+</style>
+</head>
+<body>
+<header class="fp-top">
+  <div class="fp-in"><a class="fp-brand" href="../index.html">Fazenda <b>de Projetos</b></a><span class="fp-onde">Tecnologia dos Materiais · Tratamento térmico</span></div>
+  <div class="fp-rule" aria-hidden="true"></div>
+</header>
+<main>
+<h1>Forno Virtual</h1>
+<p class="sub">Escolha o aço, a temperatura do forno, o tempo e onde a peça vai esfriar. Depois veja no microscópio o que se formou e como ficaram a dureza e a tenacidade.</p>
+
+<div class="tabs" role="tablist" aria-label="Modo">
+  <button role="tab" data-m="livre" aria-selected="true">Laboratório livre</button>
+  <button role="tab" data-m="desafios" aria-selected="false">Desafios</button>
+</div>
+
+<div id="areaDesafio"></div>
+
+<div class="lab">
+  <div>
+    <div class="stage"><svg id="cena" viewBox="0 0 600 330" role="img" aria-label="Forno, peça e tanque de resfriamento"></svg></div>
+    <div class="stage" style="margin-top:10px"><svg id="grafico" viewBox="0 0 600 230" role="img" aria-label="Gráfico da temperatura da peça ao longo do tratamento"></svg></div>
+    <div class="stage" style="margin-top:10px"><svg id="fec" viewBox="0 0 600 260" role="img" aria-label="Diagrama ferro-carbono simplificado com a posição do aço escolhido"></svg></div>
+  </div>
+
+  <section class="panel" aria-label="Controles do tratamento">
+    <div class="grupo"><span class="lb">Aço</span><div class="seg" id="aco"></div><p class="dica" id="acoInfo"></p></div>
+    <div class="grupo"><label class="lb" for="temp">Temperatura do forno <output id="tempV"></output></label>
+      <input type="range" id="temp" min="200" max="1100" step="10" value="850">
+      <p class="dica">Nessa temperatura o aço fica: <span class="regiao" id="regiao"></span></p></div>
+    <div class="grupo"><label class="lb" for="tempo">Tempo no forno <output id="tempoV"></output></label>
+      <input type="range" id="tempo" min="0" max="10" step="1" value="3"></div>
+    <div class="grupo"><span class="lb">Onde a peça esfria</span><div class="seg" id="meio"></div></div>
+    <div class="grupo">
+      <label class="chk"><input type="checkbox" id="revOn"> Fazer revenimento depois (1 hora)</label>
+      <div id="revBox" hidden><label class="lb" for="revT">Temperatura do revenimento <output id="revV"></output></label>
+        <input type="range" id="revT" min="150" max="700" step="10" value="400"></div>
+    </div>
+    <div class="row"><button class="act" id="go">Iniciar tratamento</button></div>
+  </section>
+</div>
+
+<section class="panel res" id="res" aria-live="polite"><p class="dica" style="margin:0">Ajuste o tratamento e toque em <b>Iniciar tratamento</b>. O resultado aparece aqui.</p></section>
+
+<p class="fonte">Modelo simplificado para fins didáticos, baseado no diagrama ferro-carbono e nos dados de aços-carbono do livro Callister (Ciência e Engenharia de Materiais). Os valores de dureza são aproximados e valem para peças pequenas. A resistência à tração foi estimada pela regra do livro: resistência (MPa) ≈ 3,45 × dureza Brinell.</p>
+
+<nav class="trilha noprint" aria-label="Tecnologia dos Materiais"><span class="t">Tecnologia dos Materiais</span><a href="microscopio-virtual.html">Microscópio Virtual</a><a href="forno-virtual.html" aria-current="page">Forno Virtual</a><a href="../index.html#d-tecnologia-dos-materiais">Voltar à trilha da disciplina</a></nav>
+</main>
+
+<script src="micro.js"></script>
+<script src="../vendor/jspdf.umd.min.js"></script>
+<script>
+/* ===== dados dos aços (aproximados, peças pequenas) ===== */
+const ACOS = [
+ {id:'1020',nome:'SAE 1020',c:0.20,txt:'Baixo carbono (0,20% C): macio, usado em peças que vão ser cementadas.',rec:111,nor:131,esf:100,agua:42,oleo:null,oleoHB:175,r650:10},
+ {id:'1045',nome:'SAE 1045',c:0.45,txt:'Médio carbono (0,45% C): eixos e engrenagens.',rec:163,nor:207,esf:140,agua:56,oleo:38,r650:22},
+ {id:'1080',nome:'SAE 1080',c:0.80,txt:'Carbono eutetoide (0,80% C): molas e arames.',rec:174,nor:293,esf:163,agua:64,oleo:58,r650:26},
+ {id:'1095',nome:'SAE 1095',c:0.95,txt:'Alto carbono (0,95% C): ferramentas, facas e lâminas.',rec:192,nor:293,esf:175,agua:65,oleo:60,r650:28}
+];
+const MEIOS=[['forno','Dentro do forno'],['ar','No ar'],['oleo','Óleo'],['agua','Água'],['salmoura','Salmoura']];
+const TEMPOS=[5,10,20,30,60,120,240,480,600,900,1200]; // minutos
+const A1=727, A3=c=>c<0.76?912-185*(c/0.76):727, ACM=c=>c>0.76?727+(c-0.76)*305:727;
+const SUP=c=>c<0.76?A3(c):A1; // acima disto o aço está todo (ou quase) austenita
+const HRC_HB=[[20,226],[25,253],[30,286],[35,327],[40,371],[45,421],[50,481],[55,560],[60,654],[65,739],[66,760]];
+const hrc2hb=h=>{for(let i=1;i<HRC_HB.length;i++){const[a,x]=HRC_HB[i-1],[b,y]=HRC_HB[i];if(h<=b)return x+(y-x)*(h-a)/(b-a)}return 760};
+const hb2hrc=hb=>{if(hb<226)return null;for(let i=1;i<HRC_HB.length;i++){const[a,x]=HRC_HB[i-1],[b,y]=HRC_HB[i];if(hb<=y)return a+(b-a)*(hb-x)/(y-x)}return 66};
+const fmtT=m=>m<60?m+' min':(m%60?(m/60).toFixed(1).replace('.',','):m/60)+(m===60?' hora':' horas');
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const lever=c=>Math.min(1,Math.max(0,(c-0.022)/(0.76-0.022)));
+
+const S={aco:ACOS[1],T:850,ti:3,meio:'agua',rev:false,revT:400,modo:'livre',des:-1,anim:null,
+  nome:'',turma:'',tent:{},feito:{}};
+try{const v=JSON.parse(localStorage.getItem('fp-forno')||'{}');S.nome=v.nome||'';S.turma=v.turma||'';S.tent=v.tent||{};S.feito=v.feito||{}}catch(e){}
+const salvar=()=>{try{localStorage.setItem('fp-forno',JSON.stringify({nome:S.nome,turma:S.turma,tent:S.tent,feito:S.feito}))}catch(e){}};
+
+/* ===== o modelo ===== */
+function simular(a,T,tmin,meio,rev,revT){
+  const c=a.c,sup=SUP(c),R={aco:a,T,tmin,meio,rev,revT,notas:[],alertas:[],grosso:false,trincou:false,temMart:false,fM:0};
+  let fA;
+  if(T<A1) fA=0;
+  else if(T>=sup) fA=1;
+  else fA=(T-A1)/(sup-A1);
+  if(fA>0&&tmin<20){fA*=tmin/20;R.alertas.push('Pouco tempo no forno: a peça não teve tempo de virar austenita por inteiro.')}
+  if(T>sup+170||(T>sup+100&&tmin>=240)){R.grosso=true;R.alertas.push('Superaquecimento: a temperatura ficou alta demais e os grãos cresceram (grão grosso). O aço fica menos tenaz.')}
+  const lev=lever(c);
+  if(fA===0){ // não chegou à zona crítica
+    if(T>=650&&tmin>=600&&c>=0.4){R.estado='esferoidizado';R.HB=a.esf;R.micro=['esferoidita',{c,grao:95}];
+      R.notas.push('Muitas horas logo abaixo de 727 °C: a cementita da perlita virou bolinhas. Isso é a <b>esferoidização</b>, que deixa o aço bem macio para usinar.')}
+    else{R.estado=T>=500?'alívio de tensões':'sem mudança';R.HB=a.nor;R.micro=micLaminado(a);
+      R.notas.push(T>=500?'A peça não passou de 727 °C, então a estrutura não mudou. Serviu só para <b>aliviar tensões</b>.':'Temperatura baixa demais: nada mudou dentro do aço.');
+      R.notas.push('Para mudar a estrutura, o aço precisa entrar na <b>zona crítica</b> (acima de 727 °C).')}
+  } else if(meio==='forno'||meio==='ar'){
+    const nor=meio==='ar';
+    if(fA<1){R.estado=nor?'normalização incompleta':'recozimento incompleto';R.HB=nor?a.nor:Math.round((a.rec+a.nor)/2);R.micro=micLaminado(a);
+      R.notas.push('A peça não ficou toda austenita, então só uma parte da estrutura foi refeita. O grão não ficou uniforme.')}
+    else if(nor){R.estado='normalizado';R.HB=a.nor;R.micro=c<0.7?['fp',{pf:Math.min(1,lev*1.08),grao:R.grosso?150:58,lam:3}]:c<=0.85?['perlita',{lam:3,grao:R.grosso?150:62}]:['perlita-cementita',{lam:3,grao:R.grosso?150:62,cem:2}];
+      R.notas.push('Esfriou no ar: formou <b>perlita fina</b> e grãos pequenos. Isso é a <b>normalização</b>: grão fino e uniforme, mais resistência.')}
+    else{R.estado='recozido';R.HB=a.rec;R.micro=c<0.7?['fp',{pf:lev,grao:R.grosso?170:100,lam:4.5}]:c<=0.85?['perlita',{lam:4.5,grao:R.grosso?170:110}]:['perlita-cementita',{lam:4.5,grao:R.grosso?170:115,cem:3}];
+      R.notas.push('Esfriou devagar, dentro do forno: formou <b>perlita grossa</b>'+(c<0.7?' e ferrita':'')+'. Isso é o <b>recozimento pleno</b>: o aço fica macio e fácil de usinar.')}
+  } else { // têmpera
+    let hrcQ,ferr=0,bain=0,perl=0;
+    if(meio==='oleo'){
+      if(a.oleo==null){hrcQ=null;R.HBq=a.oleoHB;ferr=0.45;bain=0.4;perl=0.15;R.notas.push('O 1020 tem pouco carbono e endurece pouco: no óleo ele esfria devagar demais para formar martensita. Formou ferrita e bainita.')}
+      else{hrcQ=a.oleo;if(c<0.6){bain=0.35;perl=0.12;R.notas.push('No óleo o resfriamento é mais suave: formou martensita misturada com bainita. Endureceu, mas menos do que na água.')}
+        else{perl=0.1;R.notas.push('No óleo, o aço de alto carbono forma martensita com menos risco de trincar do que na água.')}}
+    } else {hrcQ=a.agua+(meio==='salmoura'?1:0);if(c<0.3){ferr=0.12;R.notas.push('Resfriamento muito rápido: formou <b>martensita</b>. Mas com só 0,20% de carbono ela não fica tão dura.')}
+      else R.notas.push('Resfriamento muito rápido: o carbono ficou preso e formou <b>martensita</b>, o constituinte mais duro do aço.')}
+    let hbQ=hrcQ==null?R.HBq:hrc2hb(hrcQ);
+    if(fA<1){ // têmpera de dentro da zona crítica: sobra ferrita mole
+      hbQ=fA*hbQ+(1-fA)*a.rec;ferr=Math.max(ferr,1-fA);
+      R.alertas.push(`A peça estava só ${Math.round(fA*100)}% austenita quando foi resfriada. A parte que era ferrita continuou mole: a têmpera ficou incompleta. Aqueça acima de ${Math.round(SUP(c))} °C.`)}
+    R.fM=hrcQ==null?0:Math.max(0,1-ferr-bain-perl);R.temMart=R.fM>0.3;
+    R.HB=Math.round(hbQ);R.estado=R.temMart?'temperado':'resfriado rápido';
+    const risco=(meio==='agua'&&c>=0.75)||(meio==='salmoura'&&c>=0.6)||(R.grosso&&(meio==='agua'||meio==='salmoura')&&c>=0.4);
+    if(risco&&R.temMart){R.trincou=true;R.alertas.push('<b>A peça trincou!</b> Aço com muito carbono resfriado em água (ou salmoura) sofre um choque térmico forte. Para esses aços, use óleo.')}
+    R.micro=['martensita',{grao:R.grosso?230:130,ferr,bain,perl,rev:0}];
+  }
+  // revenimento
+  if(rev){
+    const x=Math.min(1,Math.max(0,(revT-150)/500));
+    if(R.temMart){
+      const hrcQ=hb2hrc(R.HB)||20,drop=Math.max(0,hrcQ-a.r650)*Math.pow(x,1.4);
+      R.HB=Math.round(hrc2hb(hrcQ-drop));R.estado='temperado e revenido';
+      R.micro[1].rev=0.25+0.75*x;
+      R.notas.push(`Revenimento a ${revT} °C: ${revT<=260?'quase não perdeu dureza e aliviou as tensões (revenido baixo).':revT<=450?'perdeu um pouco de dureza e ganhou tenacidade (revenido médio).':'perdeu bastante dureza e ganhou muita tenacidade (revenido alto).'}`);
+      if(R.trincou)R.notas.push('O revenimento não conserta uma trinca: a peça vai para o refugo.');
+    } else R.notas.push('O revenimento quase não mudou nada, porque não havia martensita para revenir.');
+  }
+  // propriedades
+  const hrc=hb2hrc(R.HB);R.HRC=hrc==null?null:Math.round(hrc);R.MPa=Math.round(3.45*R.HB/10)*10;
+  const x=rev?Math.min(1,Math.max(0,(revT-150)/500)):0;
+  let duct,ten;
+  if(R.estado==='esferoidizado'){duct=9;ten=8}
+  else if(R.estado.startsWith('recozido')||R.estado.startsWith('recozimento')){duct=8.5-4*c;ten=7-2.5*c}
+  else if(R.estado.startsWith('normaliza')){duct=7.5-4*c;ten=7.5-2.5*c}
+  else if(R.temMart){duct=1+6*x+(1-R.fM)*3;ten=1+8*x+(1-R.fM)*3}
+  else if(R.estado==='resfriado rápido'){duct=5;ten=6}
+  else{duct=7-4*c;ten=7-2.5*c}
+  if(R.grosso)ten-=2.5;if(R.trincou){ten=0;duct=0}
+  R.duct=Math.max(0,Math.min(10,duct));R.ten=Math.max(0,Math.min(10,ten));
+  return R;
+}
+function micLaminado(a){const c=a.c;return c<0.7?['fp',{pf:Math.min(1,lever(c)*1.05),grao:70,lam:3.5}]:c<=0.85?['perlita',{lam:3.5,grao:75}]:['perlita-cementita',{lam:3.5,grao:80,cem:2}]}
+function durezaTxt(R){return R.HRC!=null?`${R.HRC} HRC`:`${R.HB} HB`}
+
+/* ===== desafios ===== */
+const DES=[
+ {t:'Amolecer para usinar',aco:'1045',txt:'Uma barra de aço 1045 chegou dura demais para usinar. Deixe-a macia: dureza de no máximo 180 HB.',
+  ok:R=>!R.trincou&&R.HB<=180,dica:'Aqueça acima da zona crítica e deixe a peça esfriar devagar, dentro do forno (recozimento pleno). Esferoidizar também funciona.'},
+ {t:'Grão fino e uniforme',aco:'1045',txt:'Depois do forjamento, o 1045 ficou com o grão grosso e irregular. Refine o grão.',
+  ok:R=>R.estado==='normalizado'&&!R.grosso,dica:'Aqueça um pouco acima da zona crítica (sem exagerar na temperatura) e deixe esfriar no ar: é a normalização.'},
+ {t:'Ferramenta de corte',aco:'1095',txt:'Faça uma ferramenta de aço 1095 com dureza de pelo menos 58 HRC, sem trincar.',
+  ok:R=>!R.trincou&&R.HRC!=null&&R.HRC>=58,dica:'Aço de alto carbono trinca na água. Tempere no óleo. Se quiser revenir, use revenido baixo (até uns 200 °C).'},
+ {t:'Eixo resistente e tenaz',aco:'1045',txt:'Um eixo de 1045 precisa de dureza entre 25 e 35 HRC e boa tenacidade.',
+  ok:R=>!R.trincou&&R.temMart&&R.rev&&R.HRC!=null&&R.HRC>=25&&R.HRC<=35,dica:'Tempere (água) e depois faça um revenido alto, por volta de 500 a 600 °C.'},
+ {t:'Mola de suspensão',aco:'1080',txt:'Uma mola de 1080 precisa ter de 42 a 50 HRC e não pode ser frágil.',
+  ok:R=>!R.trincou&&R.temMart&&R.rev&&R.HRC!=null&&R.HRC>=42&&R.HRC<=50,dica:'Tempere no óleo e faça um revenido médio. Teste temperaturas entre 300 e 450 °C.'},
+ {t:'Por que não endureceu?',aco:'1045',txt:'Um colega aqueceu o 1045 a 760 °C, temperou na água e a peça saiu mole. Faça do jeito certo e consiga pelo menos 50 HRC, sem trincar.',
+  ok:R=>!R.trincou&&R.HRC!=null&&R.HRC>=50,dica:'A 760 °C o 1045 ainda está dentro da zona crítica. Aqueça acima da linha A3 (uns 830 a 870 °C) e tempere na água.'}
+];
+
+/* ===== controles ===== */
+$('aco').innerHTML=ACOS.map((a,i)=>`<button data-i="${i}">${a.nome}</button>`).join('');
+$('meio').innerHTML=MEIOS.map(m=>`<button data-m="${m[0]}">${m[1]}</button>`).join('');
+$('tempo').max=TEMPOS.length-1;
+function ui(){
+  [...$('aco').children].forEach(b=>{b.setAttribute('aria-pressed',ACOS[+b.dataset.i]===S.aco);b.disabled=S.modo==='desafios'&&S.des>=0&&ACOS[+b.dataset.i]!==S.aco});
+  [...$('meio').children].forEach(b=>b.setAttribute('aria-pressed',b.dataset.m===S.meio));
+  $('acoInfo').textContent=S.aco.txt;
+  $('tempV').textContent=S.T+' °C';$('tempoV').textContent=fmtT(TEMPOS[S.ti]);
+  $('revBox').hidden=!S.rev;$('revOn').checked=S.rev;$('revV').textContent=S.revT+' °C';
+  const c=S.aco.c,sup=SUP(c);
+  $('regiao').textContent=S.T<A1?'abaixo da zona crítica (ferrita + perlita)':S.T<sup?'dentro da zona crítica (parte austenita)':S.T>sup+170?'austenita, mas quente demais (o grão cresce)':'todo austenita: pronto para temperar, normalizar ou recozer';
+  $('regiao').style.color=S.T<A1?'':S.T<sup?'var(--accent)':S.T>sup+170?'var(--bad)':'var(--ok)';
+  desenharFeC();if(!S.anim)desenharCena(S.T>300?S.T:25,'forno');
+}
+$('aco').onclick=e=>{const b=e.target.closest('button');if(!b||b.disabled)return;S.aco=ACOS[+b.dataset.i];ui()};
+$('meio').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.meio=b.dataset.m;ui()};
+$('temp').oninput=e=>{S.T=+e.target.value;ui()};
+$('tempo').oninput=e=>{S.ti=+e.target.value;ui()};
+$('revOn').onchange=e=>{S.rev=e.target.checked;ui()};
+$('revT').oninput=e=>{S.revT=+e.target.value;ui()};
+
+/* ===== desenhos ===== */
+function corAco(T){ // cor da peça conforme a temperatura (como o aço brilha)
+  const P=[[25,[128,138,148]],[480,[110,112,116]],[560,[90,30,20]],[650,[150,30,15]],[750,[205,45,20]],[850,[235,90,25]],[950,[250,150,40]],[1100,[255,220,120]]];
+  for(let i=1;i<P.length;i++)if(T<=P[i][0]){const[a,ca]=P[i-1],[b,cb]=P[i],k=(T-a)/(b-a);return `rgb(${ca.map((v,j)=>Math.round(v+(cb[j]-v)*k)).join(',')})`}
+  return 'rgb(255,220,120)';
+}
+function desenharCena(T,onde,bolhas=0){
+  const tanque=['oleo','agua','salmoura'].includes(S.meio),liq=S.meio==='oleo'?'#8a6a1f':S.meio==='salmoura'?'#5f8fb0':'#3d7fbf';
+  const quente=T>500,brilho=quente?`<rect x="${onde==='forno'?118:onde==='tanque'?398:258}" y="${onde==='tanque'?190:onde==='forno'?150:150}" width="${onde==='forno'?164:84}" height="34" rx="6" fill="${corAco(T)}" opacity=".35" filter="url(#bl)"/>`:'';
+  let g=`<defs><filter id="bl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="8"/></filter></defs>`;
+  // forno
+  g+=`<rect x="70" y="60" width="260" height="190" rx="10" fill="#2b3440" stroke="#0e141a" stroke-width="3"/>
+      <rect x="92" y="84" width="216" height="142" rx="6" fill="${S.anim&&onde==='forno'?'#5a1d0e':'#3a2420'}"/>
+      <text x="200" y="48" text-anchor="middle" font-size="18" font-weight="700" fill="#E8EEF3">FORNO</text>
+      <rect x="130" y="255" width="140" height="34" rx="4" fill="#1a2128"/><text x="200" y="278" text-anchor="middle" font-size="20" font-weight="700" fill="#F2A93B">${Math.round(onde==='forno'?T:S.anim?S.anim.Tf:S.T)} °C</text>`;
+  // tanque ou bancada
+  g+=tanque?`<rect x="380" y="150" width="140" height="120" rx="6" fill="#1a2128" stroke="#0e141a" stroke-width="3"/><rect x="386" y="170" width="128" height="94" fill="${liq}" opacity=".85"/>
+      <text x="450" y="300" text-anchor="middle" font-size="16" font-weight="700" fill="#E8EEF3">${MEIOS.find(m=>m[0]===S.meio)[1].toUpperCase()}</text>`
+     :`<rect x="370" y="225" width="170" height="14" rx="3" fill="#6b5a45"/><rect x="380" y="239" width="10" height="50" fill="#4b3e30"/><rect x="520" y="239" width="10" height="50" fill="#4b3e30"/>
+      <text x="455" y="300" text-anchor="middle" font-size="16" font-weight="700" fill="#E8EEF3">${S.meio==='ar'?'ESFRIA NO AR':'(fica no forno)'}</text>`;
+  // peça
+  const px=onde==='forno'?150:onde==='tanque'?408:onde==='ar'?413:150,py=onde==='forno'?160:onde==='tanque'?200:200;
+  g+=brilho+`<rect x="${px}" y="${py}" width="${onde==='forno'?100:64}" height="16" rx="4" fill="${corAco(T)}" stroke="#111" stroke-width="1.5"/>`;
+  if(bolhas>0&&onde==='tanque'){for(let k=0;k<14*bolhas;k++){const x=395+Math.random()*110,y=170+Math.random()*90;g+=`<circle cx="${x}" cy="${y}" r="${1.5+Math.random()*3}" fill="#fff" opacity=".7"/>`}
+    g+=`<path d="M420 140 q10 -15 0 -30 M450 140 q10 -15 0 -30 M480 140 q10 -15 0 -30" stroke="#dfe7ee" stroke-width="3" fill="none" opacity="${.6*bolhas}"/>`}
+  $('cena').innerHTML=g;
+}
+function desenharFeC(){
+  const W=600,H=260,x0=58,x1=580,y0=20,y1=220,Tmin=500,Tmax=1150,Cmax=1.2;
+  const X=c=>x0+(c/Cmax)*(x1-x0),Y=T=>y1-(T-Tmin)/(Tmax-Tmin)*(y1-y0);
+  let pA3='',pAcm='';for(let c=0;c<=0.76;c+=0.02)pA3+=`${pA3?'L':'M'}${X(c)},${Y(A3(c))}`;
+  for(let c=0.76;c<=Cmax;c+=0.02)pAcm+=`${pAcm?'L':'M'}${X(c)},${Y(ACM(c))}`;
+  let g=`<rect x="${x0}" y="${y0}" width="${x1-x0}" height="${y1-y0}" fill="#16304a"/>`;
+  g+=`<path d="${pA3}L${X(1.2)},${Y(ACM(1.2))}L${X(1.2)},${y0}L${x0},${y0}Z" fill="#7a2a1e" opacity=".55"/>`;
+  g+=`<path d="${pA3}" stroke="#fff" stroke-width="2.5" fill="none"/><path d="${pAcm}" stroke="#fff" stroke-width="2.5" fill="none"/>`;
+  g+=`<line x1="${X(0.022)}" x2="${x1}" y1="${Y(727)}" y2="${Y(727)}" stroke="#F2A93B" stroke-width="2.5"/>`;
+  g+=`<text x="${X(0.55)}" y="${Y(1080)}" fill="#ffd9d0" font-size="17" font-weight="700" text-anchor="middle">AUSTENITA</text>`;
+  g+=`<text x="${X(0.25)}" y="${Y(600)}" fill="#C9D6E2" font-size="13" text-anchor="middle">ferrita + perlita</text>`;
+  g+=`<text x="${X(1.0)}" y="${Y(600)}" fill="#C9D6E2" font-size="13" text-anchor="middle">perlita + cementita</text>`;
+  g+=`<text x="${x1-4}" y="${Y(727)-6}" fill="#F2A93B" font-size="13" text-anchor="end">727 °C (A1)</text>`;
+  [500,700,900,1100].forEach(t=>g+=`<text x="${x0-6}" y="${Y(t)+4}" fill="#C9D6E2" font-size="12" text-anchor="end">${t}</text>`);
+  [0,0.2,0.4,0.6,0.8,1.0,1.2].forEach(c=>g+=`<text x="${X(c)}" y="${y1+16}" fill="#C9D6E2" font-size="12" text-anchor="middle">${String(c).replace('.',',')}</text>`);
+  g+=`<text x="${(x0+x1)/2}" y="${H-4}" fill="#C9D6E2" font-size="12" text-anchor="middle">% de carbono</text><text x="14" y="${(y0+y1)/2}" fill="#C9D6E2" font-size="12" text-anchor="middle" transform="rotate(-90 14 ${(y0+y1)/2})">°C</text>`;
+  ACOS.forEach(a=>g+=`<line x1="${X(a.c)}" x2="${X(a.c)}" y1="${y0}" y2="${y1}" stroke="#C9D6E2" stroke-dasharray="3 4" opacity="${a===S.aco?.9:.25}"/>`);
+  const T=Math.min(Tmax,Math.max(Tmin,S.T));
+  g+=`<circle cx="${X(S.aco.c)}" cy="${Y(T)}" r="9" fill="#F2A93B" stroke="#1a1204" stroke-width="2"/>`;
+  g+=`<text x="${X(S.aco.c)+(S.aco.c>0.9?-14:14)}" y="${Y(T)-12}" fill="#fff" font-size="14" font-weight="700" text-anchor="${S.aco.c>0.9?'end':'start'}">${S.aco.nome}, ${S.T} °C</text>`;
+  if(S.T<Tmin)g+=`<text x="${X(S.aco.c)+14}" y="${y1-8}" fill="#fff" font-size="12">(abaixo do gráfico)</text>`;
+  $('fec').innerHTML=g;
+}
+/* gráfico temperatura x tempo (fora de escala, em etapas) */
+function curva(R){
+  const tau={forno:0.9,ar:0.25,oleo:0.06,agua:0.025,salmoura:0.018}[R.meio];
+  const pts=[],Tf=R.T;
+  const seg=R.rev?[0.2,0.18,0.37,0.25]:[0.24,0.24,0.52,0];
+  const n=60;
+  for(let i=0;i<=n;i++)pts.push([seg[0]*i/n,25+(Tf-25)*i/n,'forno']);
+  for(let i=1;i<=n;i++)pts.push([seg[0]+seg[1]*i/n,Tf,'forno']);
+  const fora=R.meio==='forno'?'forno':['oleo','agua','salmoura'].includes(R.meio)?'tanque':'ar';
+  for(let i=1;i<=n*2;i++){const u=i/(n*2);pts.push([seg[0]+seg[1]+seg[2]*u,25+(Tf-25)*Math.exp(-u/tau),fora])}
+  if(R.rev){const a=seg[0]+seg[1]+seg[2],rt=R.revT;
+    for(let i=1;i<=n;i++){const u=i/n;pts.push([a+seg[3]*0.35*u,25+(rt-25)*u,'forno'])}
+    for(let i=1;i<=n;i++)pts.push([a+seg[3]*(0.35+0.35*i/n),rt,'forno']);
+    for(let i=1;i<=n;i++){const u=i/n;pts.push([a+seg[3]*(0.7+0.3*u),25+(rt-25)*Math.exp(-u/0.3),'ar'])}}
+  return {pts,seg};
+}
+function desenharGrafico(R,ate){
+  const x0=48,x1=588,y0=16,y1=190,X=u=>x0+u*(x1-x0),Y=T=>y1-(T-25)/(1125)*(y1-y0);
+  let g=`<rect x="${x0}" y="${y0}" width="${x1-x0}" height="${y1-y0}" fill="#16304a"/>`;
+  g+=`<line x1="${x0}" x2="${x1}" y1="${Y(727)}" y2="${Y(727)}" stroke="#F2A93B" stroke-dasharray="6 5"/><text x="${x1-4}" y="${Y(727)-5}" fill="#F2A93B" font-size="12" text-anchor="end">727 °C</text>`;
+  [200,400,600,800,1000].forEach(t=>g+=`<text x="${x0-6}" y="${Y(t)+4}" fill="#C9D6E2" font-size="12" text-anchor="end">${t}</text>`);
+  if(R){const {pts,seg}=curva(R);let acc=0;
+    const nomes=[['Aquecer',seg[0]],['Manter: '+fmtT(R.tmin),seg[1]],['Resfriar: '+MEIOS.find(m=>m[0]===R.meio)[1].toLowerCase(),seg[2]]];if(R.rev)nomes.push(['Revenir',seg[3]]);
+    nomes.forEach(([n,w])=>{g+=`<text x="${X(acc+w/2)}" y="${y1+18}" fill="#C9D6E2" font-size="12" text-anchor="middle">${esc(n)}</text>`;acc+=w;if(acc<1)g+=`<line x1="${X(acc)}" x2="${X(acc)}" y1="${y0}" y2="${y1}" stroke="#2a4a68"/>`});
+    const vis=pts.slice(0,Math.max(2,Math.round(pts.length*ate)));
+    g+=`<path d="${vis.map((p,i)=>(i?'L':'M')+X(p[0]).toFixed(1)+','+Y(p[1]).toFixed(1)).join('')}" stroke="#ff8a5c" stroke-width="3.5" fill="none"/>`;
+    const p=vis[vis.length-1];g+=`<circle cx="${X(p[0])}" cy="${Y(p[1])}" r="6" fill="#fff"/>`;}
+  else g+=`<text x="${(x0+x1)/2}" y="${(y0+y1)/2}" fill="#C9D6E2" font-size="15" text-anchor="middle">O gráfico da temperatura aparece durante o tratamento</text>`;
+  g+=`<text x="12" y="${(y0+y1)/2}" fill="#C9D6E2" font-size="12" text-anchor="middle" transform="rotate(-90 12 ${(y0+y1)/2})">°C</text>`;
+  $('grafico').innerHTML=g;
+}
+
+/* ===== rodar ===== */
+$('go').onclick=()=>{
+  if(S.anim)return;
+  if(S.modo==='desafios'&&S.des<0){$('areaDesafio').querySelector('#msgD')&&($('areaDesafio').querySelector('#msgD').innerHTML='<span class="erro">Escolha um desafio primeiro.</span>');return}
+  const R=simular(S.aco,S.T,TEMPOS[S.ti],S.meio,S.rev,S.revT);
+  const {pts}=curva(R);const dur=(window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches)?10:4200,t0=performance.now();
+  S.anim={Tf:S.T};$('go').disabled=true;$('res').innerHTML='<p class="dica" style="margin:0">Tratamento em andamento...</p>';
+  const passo=now=>{const u=Math.min(1,(now-t0)/dur),p=pts[Math.min(pts.length-1,Math.round((pts.length-1)*u))];
+    desenharGrafico(R,u);desenharCena(p[1],p[2],p[2]==='tanque'&&p[1]>150?Math.min(1,p[1]/600):0);
+    if(u<1)requestAnimationFrame(passo);else{S.anim=null;$('go').disabled=false;mostrar(R)}};
+  requestAnimationFrame(passo);
+};
+function mostrar(R){
+  const barras=[['Dureza',Math.min(1,R.HB/760),durezaTxt(R)],['Resistência',Math.min(1,R.MPa/2600),'≈ '+R.MPa.toLocaleString('pt-BR')+' MPa'],['Ductilidade',R.duct/10,R.duct>=6.5?'alta':R.duct>=3.5?'média':'baixa'],['Tenacidade',R.ten/10,R.ten>=6.5?'alta':R.ten>=3.5?'média':'baixa']];
+  let des='';
+  if(S.modo==='desafios'&&S.des>=0){const d=DES[S.des],ok=d.ok(R);S.tent[S.des]=(S.tent[S.des]||0)+1;
+    if(ok&&!S.feito[S.des])S.feito[S.des]={T:R.T,tmin:R.tmin,meio:R.meio,rev:R.rev?R.revT:null,dur:durezaTxt(R),tent:S.tent[S.des]};salvar();
+    des=`<div class="fb ${ok?'ok':'no'}"><strong>${ok?'Desafio cumprido!':'Ainda não.'}</strong><p style="margin:6px 0 0">Resultado: ${esc(R.estado)}, ${durezaTxt(R)}${R.trincou?', peça trincada':''}.</p>${ok?'':`<p style="margin:6px 0 0"><b>Dica:</b> ${d.dica}</p>`}</div>`;
+    listaDesafios()}
+  $('res').innerHTML=`${des}<div class="res-grid" style="margin-top:${des?14:0}px"><div class="micro"><canvas id="mic" width="640" height="640" aria-label="Microestrutura obtida, vista ao microscópio"></canvas><span>500x</span></div>
+   <div><p class="estado">${R.trincou?'Trincou!':esc(R.estado[0].toUpperCase()+R.estado.slice(1))}</p>
+   <p class="dica" style="margin:0">${esc(R.aco.nome)} · ${R.T} °C por ${fmtT(R.tmin)} · ${esc(MEIOS.find(m=>m[0]===R.meio)[1].toLowerCase())}${R.rev?` · revenido a ${R.revT} °C`:''}</p>
+   <div class="props">${barras.map(b=>`<div class="prop"><span>${b[0]}</span><span class="bar"><i style="width:${Math.round(b[1]*100)}%"></i></span><b>${b[2]}</b></div>`).join('')}</div></div></div>
+   ${R.alertas.map(a=>`<p class="alerta">${a}</p>`).join('')}
+   <ul>${R.notas.map(n=>`<li>${n}</li>`).join('')}</ul>
+   <p class="dica">Quer ver melhor? Abra o <a href="microscopio-virtual.html">Microscópio Virtual</a>.</p>`;
+  const [tipo,o]=R.micro,cv=$('mic'),ctx=cv.getContext('2d');
+  setTimeout(()=>{const img=MICRO.piramide(MICRO.gerar(tipo,Object.assign({N:800,seed:(Math.random()*1e9)|0,atacado:true},o)));
+    ctx.fillStyle='#000';ctx.fillRect(0,0,640,640);ctx.save();ctx.beginPath();ctx.arc(320,320,318,0,7);ctx.clip();
+    MICRO.desenharRegiao(ctx,img,240,240,320,0,0,640);
+    if(R.trincou){ctx.strokeStyle='#050505';ctx.lineWidth=5;ctx.beginPath();ctx.moveTo(120,0);let x=120;for(let y=0;y<=640;y+=40){x+=(Math.random()-.4)*60;ctx.lineTo(x,y)}ctx.stroke()}
+    ctx.restore()},20);
+}
+
+/* ===== modo desafios ===== */
+function listaDesafios(){
+  const A=$('areaDesafio');
+  if(S.modo!=='desafios'){A.innerHTML='';return}
+  if(!S.nome){A.innerHTML=`<section class="panel" style="margin-bottom:16px"><h3 style="margin-top:0">Desafios do Forno</h3><p>São 6 problemas reais de oficina. Para cada um, descubra o tratamento térmico certo. No fim, baixe o relatório em PDF para entregar.</p>
+    <div class="row"><label class="f">Seu nome<input type="text" id="nome" autocomplete="name"></label><label class="f">Turma<input type="text" id="turma" style="width:10ch"></label></div>
+    <div class="row"><button class="act" id="ent">Começar</button></div><p id="msgD"></p></section>`;
+    $('ent').onclick=()=>{const n=$('nome').value.trim();if(!n){$('msgD').innerHTML='<span class="erro">Digite seu nome.</span>';return}S.nome=n;S.turma=$('turma').value.trim();salvar();listaDesafios()};return}
+  const feitos=Object.keys(S.feito).length;
+  A.innerHTML=`<section class="panel" style="margin-bottom:16px">
+    ${S.des>=0?`<div class="missao"><h3>Desafio ${S.des+1}: ${esc(DES[S.des].t)}</h3><p style="margin:0">${esc(DES[S.des].txt)}</p></div>`:'<p id="msgD">Escolha um desafio:</p>'}
+    <div class="desafios" id="ldes">${DES.map((d,i)=>`<button data-i="${i}" aria-pressed="${i===S.des}"><span class="n">${i+1}</span><span>${esc(d.t)} <small style="color:var(--muted)">(${d.aco})</small></span><span class="st ${S.feito[i]?'ok':S.tent[i]?'no':''}">${S.feito[i]?'✓ Cumprido':S.tent[i]?S.tent[i]+(S.tent[i]>1?' tentativas':' tentativa'):''}</span></button>`).join('')}</div>
+    <div class="row"><span><b>${feitos} de ${DES.length}</b> cumpridos · ${esc(S.nome)}${S.turma?' · '+esc(S.turma):''}</span></div>
+    <div class="row"><button class="act" id="pdf">Baixar relatório em PDF</button><button class="act ghost" id="zerar">Recomeçar</button><button class="act ghost" id="troca">Trocar aluno</button></div><p id="rmsg"></p></section>`;
+  $('ldes').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.des=+b.dataset.i;S.aco=ACOS.find(a=>a.id===DES[S.des].aco);S.rev=false;listaDesafios();ui()};
+  $('pdf').onclick=pdf;
+  $('zerar').onclick=()=>{if(!confirmar())return;S.tent={};S.feito={};S.des=-1;salvar();listaDesafios();ui()};
+  $('troca').onclick=()=>{S.nome='';S.turma='';S.tent={};S.feito={};S.des=-1;salvar();listaDesafios();ui()};
+}
+let conf=0;function confirmar(){const now=Date.now();if(now-conf<4000)return true;conf=now;$('rmsg').innerHTML='<span class="erro">Toque em Recomeçar de novo para apagar seu progresso.</span>';return false}
+function pdf(){
+  if(!window.jspdf||!window.jspdf.jsPDF){$('rmsg').innerHTML='<span class="erro">O gerador de PDF não carregou. Confira a internet e recarregue a página.</span>';return}
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),X=15,W=180;let y=18;
+  const t=s=>String(s).replace(/≈/g,'aprox.');
+  const linha=(s,sz=10.5,b=false,c=[20,32,43])=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...c);doc.splitTextToSize(t(s),W).forEach(l=>{if(y>284){doc.addPage();y=18}doc.text(l,X,y);y+=sz*.45})};
+  const feitos=Object.keys(S.feito).length;
+  doc.setFillColor(168,84,0);doc.rect(0,0,210,6,'F');
+  linha('FAZENDA DE PROJETOS · Tecnologia dos Materiais',9,true,[79,95,108]);y+=1;
+  linha('Relatório: Desafios do Forno Virtual',16,true);y+=2;
+  linha(`Nome: ${S.nome}    Turma: ${S.turma||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`,10);y+=2;
+  linha(`Desafios cumpridos: ${feitos} de ${DES.length}`,12,true,[23,112,63]);y+=4;
+  DES.forEach((d,i)=>{const f=S.feito[i];linha(`${i+1}. ${d.t} (aço ${d.aco})`,11,true);
+    linha(d.txt,9.5,false,[79,95,108]);
+    if(f)linha(`CUMPRIDO na tentativa ${f.tent}: ${f.T} °C por ${fmtT(f.tmin)}, resfriado ${MEIOS.find(m=>m[0]===f.meio)[1].toLowerCase()}${f.rev?`, revenido a ${f.rev} °C`:''}. Dureza: ${f.dur}.`,10,true,[23,112,63]);
+    else linha(S.tent[i]?`NÃO CUMPRIDO (${S.tent[i]} tentativa${S.tent[i]>1?'s':''}).`:'NÃO TENTADO.',10,true,[179,38,30]);
+    y+=2.5});
+  const nm=S.nome.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  doc.save(`desafios-forno-${nm||'aluno'}.pdf`);$('rmsg').innerHTML='<span class="okc">PDF gerado. Confira nos downloads.</span>';
+}
+
+document.querySelector('.tabs').onclick=e=>{const b=e.target.closest('button');if(!b)return;S.modo=b.dataset.m;
+  document.querySelectorAll('.tabs button').forEach(x=>x.setAttribute('aria-selected',x===b));
+  if(S.modo==='livre')S.des=-1;listaDesafios();ui()};
+
+ui();desenharGrafico(null,0);
+if(location.hash==='#desafios')document.querySelector('.tabs button[data-m="desafios"]').click();
+</script>
+</body>
+</html>
