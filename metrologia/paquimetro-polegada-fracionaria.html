@@ -105,6 +105,21 @@ input.n.f{width:3.2ch;font-size:30px;min-height:44px;text-align:center}
 .conta .m.ok,.conta .m.no{color:#fff;border-radius:12px;padding:3px 9px;font-size:14px;white-space:nowrap}
 .conta .m.ok{background:#17703F}.conta .m.no{background:#B3261E}
 .par b.okc::before{content:'✓ ';}.par b.noc::before{content:'✗ ';}
+.bsoma{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;margin-top:12px}
+.bgrp{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 14px}
+.bgrp .lb{font-size:15px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.mix{display:inline-flex;align-items:center;gap:10px}
+input.n.bwh{width:2.4ch;font-size:64px;min-height:120px;text-align:center;padding:4px}
+input.n.bf{width:2.8ch;font-size:36px;min-height:52px;text-align:center;padding:2px 4px}
+.fst{display:inline-flex;flex-direction:column;align-items:center;gap:5px}
+.fst i{display:block;width:100%;min-width:3ch;height:4px;background:var(--ink);border-radius:2px}
+.fst .den{font:800 36px/52px 'Big Shoulders Display',sans-serif}
+.pol{font:800 40px/1 'Big Shoulders Display',sans-serif;color:var(--muted);align-self:flex-start;margin-top:8px}
+.bop{font:800 52px/1 'Big Shoulders Display',sans-serif;color:var(--muted)}
+.sf{display:inline-flex;flex-direction:column;align-items:center;font-size:.8em;line-height:1;vertical-align:middle;margin:0 .08em}
+.sf span:first-child{border-bottom:4px solid currentColor;padding:0 .1em .08em}.sf span:last-child{padding-top:.08em}
+@media (max-width:640px){.bsoma{flex-direction:column;align-items:stretch;gap:6px}.bop{text-align:center;line-height:.9}.bsoma output{min-height:0;justify-content:center;flex-wrap:wrap;font-size:38px}}
+.bsoma output{gap:.25em;font:800 44px/1 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums;min-height:120px;display:flex;align-items:center}
 </style>
 </head>
 <body>
@@ -248,7 +263,8 @@ function record(pts,ok,last){S.answered=true;S.played++;S.score+=pts;S.streak=ok
 function bVals(){const w=val('bw'),k=val('bk'),r=val('br');const Wv=w===null?0:parseInt(w,10),K=k===null?0:parseInt(k,10),R=r===null?0:parseInt(r,10);
   return{empty:w===null&&k===null,rEmpty:r===null,bad:[Wv,K,R].some(x=>isNaN(x)||x<0),Wv,K,R}}
 function updBasic(){const o=$('bsum');if(!o)return;const v=bVals();if(v.empty||v.rEmpty||v.bad){o.innerHTML='—';return}
-  const u=v.Wv*128+v.K*8+v.R;o.innerHTML=`${v.Wv?v.Wv+' ':''}${v.K*8+v.R}/128" = ${fHTML(u)}`}
+  const u=v.Wv*128+v.K*8+v.R,sf=(n,d)=>`<span class="sf"><span>${n}</span><span>${d}</span></span>`,W=Math.floor(u/128);let n=u%128,d=128;const raw=`${W?W+' ':''}${sf(n,128)}"`;
+  if(n){const g=(a,b)=>b?g(b,a%b):a,k=g(n,d);n/=k;d/=k}const simp=n?`${W?W+' ':''}${sf(n,d)}"`:`${W}"`;o.innerHTML=raw===simp?raw:`${raw} = ${simp}`}
 function checkBasic(){const v=bVals();if(v.empty||v.bad){$('bk').focus();return}if(v.rEmpty){$('br').focus();return}
   const n=Math.floor(S.p/FD),fOk=v.Wv===Math.floor(n/16)&&v.K===n%16,nOk=v.R===S.p%FD,pts=(fOk?5:0)+(nOk?5:0);
   record(pts,fOk&&nOk,{basic:true,fOk,nOk,fTxt:rawTxt(v.Wv*16+v.K,16),nTxt:v.R+'/128"',pts})}
@@ -289,9 +305,12 @@ function panelGame(){
   h+=`<span class="task">${{read:'Leitura',adjust:'Abrir na medida',convert:'Ler e converter'}[S.task]}</span>`;
   if(S.task==='read'&&S.mode==='basic'){
     h+=`<p style="margin:0 0 6px">Qual é a leitura? A <b style="color:#FF2E93">linha rosa</b> mostra o traço do nônio que coincide. Escreva a escala fixa (polegadas e divisões de 1/16") e o traço do nônio: a soma em 128 avos e a simplificação aparecem sozinhas.</p>`;
-    if(!S.answered)h+=`<div class="soma"><span class="op"></span><span class="fin"><input class="n w" id="bw" inputmode="numeric" autocomplete="off" aria-label="Polegadas inteiras da escala fixa"><span class="cnt">"</span><input class="n w" id="bk" inputmode="numeric" autocomplete="off" aria-label="Divisões de 1/16 da escala fixa"><span class="cnt">/16"</span></span><span class="lb">Escala fixa</span>
-      <span class="op">+</span><span class="fin"><input class="n w" id="br" inputmode="numeric" autocomplete="off" aria-label="Traço do nônio"><span class="cnt">/128"</span></span><span class="lb">Nônio</span>
-      <hr><span class="op">=</span><output id="bsum" aria-live="polite">—</output><span class="lb">Soma automática</span></div><div class="row"><button class="act" id="ok">Conferir</button></div>`}
+    if(!S.answered)h+=`<div class="bsoma">
+      <div class="bgrp"><span class="lb">Escala fixa</span><span class="mix"><input class="n bwh" id="bw" inputmode="numeric" autocomplete="off" aria-label="Polegadas inteiras da escala fixa"><span class="fst"><input class="n bf" id="bk" inputmode="numeric" autocomplete="off" aria-label="Numerador da escala fixa, em 1/16"><i></i><span class="den">16</span></span><span class="pol">"</span></span></div>
+      <span class="bop">+</span>
+      <div class="bgrp"><span class="lb">Nônio</span><span class="mix"><span class="fst"><input class="n bf" id="br" inputmode="numeric" autocomplete="off" aria-label="Numerador do nônio, em 1/128"><i></i><span class="den">128</span></span><span class="pol">"</span></span></div>
+      <span class="bop">=</span>
+      <div class="bgrp"><span class="lb">Soma automática</span><output id="bsum" aria-live="polite">—</output></div></div><div class="row"><button class="act" id="ok">Conferir</button></div>`}
   else if(S.task==='read'){
     h+=`<p style="margin:0 0 6px">Qual é a leitura do paquímetro? Some a escala fixa com o nônio e escreva a fração <b>simplificada</b>.</p>`;
     if(!S.answered)h+=`<div class="row">${fracIn}<button class="act" id="ok">Conferir</button><button class="act ghost" id="hint" ${S.hint?'disabled':''}>Dica (−3)</button></div>`}
