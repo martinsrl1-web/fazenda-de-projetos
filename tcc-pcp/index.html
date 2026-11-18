@@ -1,0 +1,1407 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Assistente do TCC – Técnico em PCP</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap">
+<style>
+:root{
+  --bg:#f3f5f7; --surface:#ffffff; --ink:#18212b; --muted:#5b6876; --line:#d6dde4;
+  --accent:#1f5fa8; --accent-ink:#ffffff; --accent-soft:#e3edf8;
+  --ok:#1d7a4a; --ok-soft:#e2f3ea;
+  --bad:#b3261e; --bad-soft:#fbe4e2;
+  --near:#8a6d00; --near-soft:#fbf3cf;
+  --gone:#8b95a0; --gone-soft:#eceff2;
+  --f-display:"Archivo", "Helvetica Neue", Arial, sans-serif;
+  --f-body:"Atkinson Hyperlegible", "Segoe UI", Roboto, Arial, sans-serif;
+  --f-mono:"JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+  color-scheme:light;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#11161c; --surface:#1a2129; --ink:#e7edf3; --muted:#9aa7b4; --line:#2c3743;
+  --accent:#6aa6ec; --accent-ink:#0b1622; --accent-soft:#1d2d40;
+  --ok:#5fc890; --ok-soft:#16301f;
+  --bad:#ff8a80; --bad-soft:#3a1c1a;
+  --near:#e5c64a; --near-soft:#352e0e;
+  --gone:#7c8792; --gone-soft:#222a33;
+  color-scheme:dark;
+}}
+*{box-sizing:border-box}
+html,body{margin:0}
+body{background:var(--bg); color:var(--ink); font-family:var(--f-body); font-size:17px; line-height:1.5}
+.wrap{max-width:1200px; margin:0 auto; padding:20px max(16px, env(safe-area-inset-right,0px)) 48px max(16px, env(safe-area-inset-left,0px))}
+header.top{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap}
+h1,h2,h3{font-family:var(--f-display); text-wrap:balance; margin:0; letter-spacing:-.01em}
+h1{font-size:1.65rem; font-weight:800}
+h2{font-size:1.35rem; font-weight:800}
+h3{font-size:1.02rem; font-weight:700}
+.eyebrow{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
+.ruler{height:14px; margin:10px 0 18px; color:var(--line);
+  background:repeating-linear-gradient(90deg, currentColor 0 1.5px, transparent 1.5px 50px) bottom/100% 14px no-repeat,
+             repeating-linear-gradient(90deg, currentColor 0 1px, transparent 1px 10px) bottom/100% 7px no-repeat;
+  border-bottom:1.5px solid currentColor}
+.muted{color:var(--muted)} .small{font-size:.88rem}
+.row{display:flex; gap:10px; flex-wrap:wrap; align-items:center}
+.panel{background:var(--surface); border:1px solid var(--line); border-radius:14px; padding:18px}
+button,.btn{font:inherit; font-weight:700; border-radius:12px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink);
+  padding:10px 16px; cursor:pointer; min-height:44px; display:inline-flex; align-items:center; justify-content:center; gap:8px; text-decoration:none}
+button:focus-visible,input:focus-visible,textarea:focus-visible,select:focus-visible{outline:3px solid var(--accent); outline-offset:2px}
+button.primary{background:var(--accent); border-color:var(--accent); color:var(--accent-ink)}
+button.ghost{border-color:transparent; background:transparent; color:var(--accent); padding-inline:8px}
+button.danger{color:var(--bad); border-color:var(--bad-soft)}
+button.mini{min-height:34px; padding:4px 10px; font-size:.85rem; border-radius:9px}
+button:disabled{opacity:.5; cursor:not-allowed}
+input[type=text],input[type=date],textarea,select{font:inherit; width:100%; padding:10px 12px; border-radius:10px; border:1.5px solid var(--line); background:var(--surface); color:var(--ink)}
+textarea{min-height:170px; line-height:1.55; resize:vertical}
+textarea.short{min-height:90px}
+label.f{display:block; font-weight:700; margin:14px 0 6px}
+label.f .muted{font-weight:400}
+.hint{font-size:.85rem; color:var(--muted); margin:4px 0 0}
+.note{background:var(--accent-soft); border-radius:12px; padding:12px 14px; font-size:.95rem}
+.note p{margin:.3em 0}
+.note ul{margin:.3em 0; padding-left:1.2em}
+.toolbar{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
+.saved{font-family:var(--f-mono); font-size:.75rem; color:var(--muted)}
+
+/* layout com menu lateral */
+.layout{display:grid; grid-template-columns:290px minmax(0,1fr); gap:18px; align-items:start}
+nav.secs{position:sticky; top:12px; max-height:calc(100vh - 24px); overflow:auto; padding:10px}
+nav.secs .grp{font-family:var(--f-mono); font-size:.68rem; letter-spacing:.1em; text-transform:uppercase; color:var(--muted); margin:12px 8px 4px}
+nav.secs button{width:100%; justify-content:space-between; min-height:36px; padding:6px 10px; border:none; border-radius:9px; font-weight:500; font-size:.9rem; text-align:left; background:transparent}
+nav.secs button.cur{background:var(--accent-soft); color:var(--accent); font-weight:700}
+.st{font-family:var(--f-mono); font-size:.72rem; font-weight:700; padding:2px 7px; border-radius:99px; white-space:nowrap; flex:none}
+.st.ok{background:var(--ok-soft); color:var(--ok)}
+.st.bad{background:var(--bad-soft); color:var(--bad)}
+.st.mid{background:var(--near-soft); color:var(--near)}
+.st.nada{background:var(--gone-soft); color:var(--gone)}
+.mobnav{display:none}
+@media (max-width:860px){ .layout{grid-template-columns:1fr} nav.secs{display:none} .mobnav{display:block; margin-bottom:12px} }
+
+.cols{display:grid; grid-template-columns:minmax(0,1fr) 330px; gap:16px; align-items:start}
+@media (max-width:1100px){ .cols{grid-template-columns:1fr} }
+.sug{position:sticky; top:12px}
+.sug h3{margin-bottom:8px}
+.sug ul{list-style:none; margin:0; padding:0; display:flex; flex-direction:column; gap:8px}
+.sug li{border-radius:10px; padding:9px 11px; font-size:.9rem; display:grid; grid-template-columns:22px 1fr; gap:4px}
+.sug li b.ic{font-size:1rem; line-height:1.3}
+.sug li.erro{background:var(--bad-soft); color:var(--bad)}
+.sug li.aviso{background:var(--near-soft); color:var(--near)}
+.sug li.ok{background:var(--ok-soft); color:var(--ok)}
+.sug li .tr{grid-column:2; font-family:var(--f-mono); font-size:.78rem; opacity:.9; overflow-wrap:anywhere}
+.tudook{background:var(--ok-soft); color:var(--ok); border-radius:12px; padding:14px; font-weight:700; text-align:center; font-size:1.05rem}
+
+/* tabelas editáveis */
+.tablewrap{overflow-x:auto; border:1px solid var(--line); border-radius:12px; background:var(--surface)}
+table.ed{border-collapse:collapse; width:100%; font-size:.9rem; min-width:560px}
+table.ed th{font-family:var(--f-display); font-size:.75rem; color:var(--muted); text-transform:uppercase; letter-spacing:.05em; text-align:left; padding:8px; border-bottom:1px solid var(--line)}
+table.ed td{padding:4px; border-bottom:1px solid var(--line); vertical-align:top}
+table.ed td input,table.ed td select{padding:7px 8px; border-radius:8px; font-size:.9rem}
+table.ed td.x{width:36px}
+table.ed tr.tot td{font-weight:700; font-family:var(--f-mono); padding:10px 8px}
+.bloco{border:1.5px solid var(--line); border-radius:12px; padding:12px 14px; margin:12px 0; background:var(--bg)}
+.bloco .cab{display:flex; justify-content:space-between; align-items:center; gap:8px}
+.foto{display:grid; grid-template-columns:120px 1fr; gap:12px; align-items:start; margin-top:10px}
+.foto .th{width:120px; height:90px; border-radius:8px; border:1.5px dashed var(--line); display:grid; place-items:center; overflow:hidden; color:var(--muted); font-size:.75rem; text-align:center; background:var(--surface)}
+.foto .th img{width:100%; height:100%; object-fit:cover}
+@media (max-width:520px){ .foto{grid-template-columns:1fr} .row[style*=nowrap]{flex-wrap:wrap!important} }
+.navbtns{display:flex; justify-content:space-between; gap:10px; margin-top:18px}
+.cnt{font-family:var(--f-mono); font-size:.75rem; color:var(--muted); text-align:right; margin-top:4px}
+.toast{position:fixed; left:50%; transform:translateX(-50%); bottom:calc(20px + env(safe-area-inset-bottom,0px)); background:var(--ink); color:var(--bg);
+  padding:10px 16px; border-radius:99px; font-weight:700; font-size:.9rem; z-index:20; max-width:90vw; text-align:center}
+.resumo-grid{display:grid; gap:8px}
+.resumo-grid button{justify-content:space-between; font-weight:500; text-align:left}
+dialog{border:none; border-radius:16px; padding:20px; max-width:520px; background:var(--surface); color:var(--ink)}
+dialog::backdrop{background:rgba(0,0,0,.4)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <div>
+      <div class="eyebrow">TCC – CEEP FRG · Técnico em Planejamento e Controle da Produção</div>
+      <h1>Assistente do TCC</h1>
+    </div>
+    <div class="toolbar">
+      <span class="saved" id="salvo">Salvo neste navegador</span>
+      <button class="mini" id="bSalvar" title="Baixar uma cópia para continuar em outro computador">Salvar cópia</button>
+      <button class="mini" id="bAbrir" title="Abrir uma cópia salva antes">Abrir cópia</button>
+      <button class="mini danger" id="bNovo">Novo trabalho</button>
+      <input type="file" id="fAbrir" accept=".json,application/json" hidden>
+    </div>
+  </header>
+  <div class="ruler"></div>
+  <div class="mobnav"><select id="selSec" aria-label="Escolher parte do TCC"></select></div>
+  <div class="layout">
+    <nav class="secs panel" id="nav" aria-label="Partes do TCC"></nav>
+    <main id="main"></main>
+  </div>
+</div>
+<div class="toast" id="toast" hidden></div>
+<dialog id="dlg"><div id="dlgBody"></div><div class="row" style="justify-content:flex-end;margin-top:16px" id="dlgBtns"></div></dialog>
+
+<script src="config.js"></script>
+<script src="../vendor/docx.iife.js" defer></script>
+<script src="gerar-docx.js" defer></script>
+<script src="importar.js" defer></script>
+<script>
+'use strict';
+/* =====================================================================
+   ESTADO, SALVAMENTO E IMAGENS
+   ===================================================================== */
+const CHAVE = 'tcc-pcp-v1';
+const ANO = '2026';
+const APP = 'tcc-pcp-ceep';
+// trechos do exemplo do modelo (Confeitaria Doce Sabor): se aparecerem, o texto foi copiado do modelo
+const RX_MODELO = /doce sabor|m[áa]rcia ribeiro|confeiteira-chefe|chocolate em barra|leite condensado|creme de leite|distribuidora x/i;
+const semAcento = s => String(s || '').toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '');
+const linhas0 = (n, c) => Array.from({ length: n }, () => Array(c).fill(''));
+const figVazia = () => ({ img: '', legenda: '', fonte: '' });
+const ferrVazia = () => ({ titulo: '', dados: '', formula: '', variaveis: '', substituicao: '', significado: '', fig: figVazia() });
+function estadoInicial() {
+  return {
+    organizacao: '', titulo: '', subtitulo: '', curso: 'Curso Técnico em Planejamento e Controle da Produção', orientador: 'Prof. Rodrigo Leandro Martins', ano: ANO,
+    ficticia: false, integrantes: ['', '', '', '', '', ''],
+    dedicatoria: '', agradecimentos: '', resumo: '', palavras: '',
+    tema: '', contexto: '', problema: '', justificativa: '', objGeral: '', objEsp: ['', '', '', ''],
+    historico: '', produtos: linhas0(3, 4), produtosTexto: '', estrutura: linhas0(3, 3), capacidade: '', processo: '',
+    fund: [{ titulo: '', texto: '' }, { titulo: '', texto: '' }, { titulo: '', texto: '' }],
+    tipoPesquisa: 'Quanto à natureza, trata-se de uma pesquisa aplicada, pois buscou solucionar um problema prático de uma organização. Quanto aos objetivos, classifica-se como descritiva, uma vez que descreve o processo estudado e seus resultados. Quanto aos procedimentos, caracteriza-se como estudo de caso (GIL, 2017). A abordagem é quantitativa, pois se baseia em indicadores numéricos.',
+    objeto: '', coleta: '', analise: '',
+    etapas: [['Levantamento bibliográfico', 'Livros e artigos', ''], ['Caracterização da organização', '', ''], ['Mapeamento do processo atual', '', ''],
+      ['Análise das causas', '', ''], ['Elaboração da proposta', '5W2H', ''], ['Aplicação das ferramentas', '', ''], ['Avaliação dos resultados', 'Indicadores', '']],
+    procAtual: '', figFluxo: figVazia(), procAnalise: '',
+    dadosTexto: '', dados: linhas0(4, 2), dadosUnid: '', dadosAnalise: '', indAtuais: linhas0(3, 3),
+    causasTexto: '', figIshikawa: figVazia(), porques: linhas0(5, 2), causasAnalise: '',
+    gut: linhas0(4, 4), sintese: '',
+    acoes: linhas0(4, 3), w2h: linhas0(4, 7), w2hTexto: '', indicadores: linhas0(3, 4),
+    ferramentas: [ferrVazia(), ferrVazia()],
+    resultados: linhas0(3, 5), resultadosTexto: '', figResultado: figVazia(),
+    economiaTexto: '', economiaMensal: '', financeiroTexto: '',
+    discussao: [], discussaoTexto: '', conclusao: '',
+    referencias: [{ tipo: 'livro' }],
+    roteiro: '', naoUsouIA: false, ia: linhas0(1, 5), tarefas: [],
+    siglas: [['5W2H', 'What, Why, Where, When, Who, How, How much'], ['ABNT', 'Associação Brasileira de Normas Técnicas'], ['GUT', 'Gravidade, Urgência e Tendência'], ['PCP', 'Planejamento e Controle da Produção']],
+    sobras: [], galeria: [], importadoDe: '',
+  };
+}
+let S;
+try { S = Object.assign(estadoInicial(), JSON.parse(localStorage.getItem(CHAVE) || 'null') || {}); } catch (e) { S = estadoInicial(); }
+let salvarT = null;
+function salvar() {
+  clearTimeout(salvarT);
+  document.getElementById('salvo').textContent = 'Salvando…';
+  salvarT = setTimeout(() => {
+    try { localStorage.setItem(CHAVE, JSON.stringify(S)); document.getElementById('salvo').textContent = 'Salvo neste navegador ✓'; }
+    catch (e) { document.getElementById('salvo').textContent = 'Não foi possível salvar: use "Salvar cópia"'; }
+  }, 300);
+}
+
+// imagens no IndexedDB (fotos são grandes demais para o localStorage)
+const IDB = (() => {
+  let dbp = null;
+  const abrir = () => dbp || (dbp = new Promise((res, rej) => {
+    const r = indexedDB.open('tcc-pcp-img', 1);
+    r.onupgradeneeded = () => r.result.createObjectStore('img');
+    r.onsuccess = () => res(r.result); r.onerror = () => rej(r.error);
+  }));
+  const op = (modo, f) => abrir().then(db => new Promise((res, rej) => {
+    const t = db.transaction('img', modo); const s = t.objectStore('img'); const r = f(s);
+    t.oncomplete = () => res(r && r.result); t.onerror = () => rej(t.error);
+  }));
+  return {
+    put: (id, v) => op('readwrite', s => s.put(v, id)),
+    get: id => op('readonly', s => s.get(id)),
+    del: id => op('readwrite', s => s.delete(id)),
+    keys: () => op('readonly', s => s.getAllKeys()),
+    clear: () => op('readwrite', s => s.clear()),
+  };
+})();
+const urlCache = {};
+async function urlImg(id) {
+  if (!id) return '';
+  if (urlCache[id]) return urlCache[id];
+  const v = await IDB.get(id).catch(() => null);
+  if (!v) return '';
+  return (urlCache[id] = URL.createObjectURL(new Blob([v.data], { type: v.type === 'png' ? 'image/png' : 'image/jpeg' })));
+}
+function reduzirImagem(file) {
+  return new Promise((res, rej) => {
+    const u = URL.createObjectURL(file); const im = new Image();
+    im.onload = () => {
+      const k = Math.min(1, 1600 / Math.max(im.naturalWidth, im.naturalHeight));
+      const w = Math.round(im.naturalWidth * k), h = Math.round(im.naturalHeight * k);
+      const c = document.createElement('canvas'); c.width = w; c.height = h;
+      const g = c.getContext('2d'); g.fillStyle = '#fff'; g.fillRect(0, 0, w, h); g.drawImage(im, 0, 0, w, h);
+      URL.revokeObjectURL(u);
+      c.toBlob(b => b ? b.arrayBuffer().then(buf => res({ data: buf, w, h, type: 'jpg' })) : rej(new Error('img')), 'image/jpeg', 0.85);
+    };
+    im.onerror = () => { URL.revokeObjectURL(u); rej(new Error('Não consegui abrir essa imagem. Use JPG ou PNG.')); };
+    im.src = u;
+  });
+}
+const novoId = () => 'i' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+
+/* =====================================================================
+   VERIFICAÇÕES (sem IA: regras)
+   ===================================================================== */
+const L = s => String(s == null ? '' : s).trim();
+const tem = s => L(s) !== '';
+const palavras = s => (L(s).match(/[A-Za-zÀ-ÿ0-9][A-Za-zÀ-ÿ0-9'’-]*/g) || []).length;
+const temNumero = s => /\d/.test(s || '');
+const E = (m, t) => ({ n: 'erro', m, t }), A = (m, t) => ({ n: 'aviso', m, t }), OK = m => ({ n: 'ok', m });
+const RX = {
+  marca: /\[[^\]]*\]|EDIT[ÁA]VEL|\bINSERIR\b|\bPREENCHER\b|como (você|vc) pediu|na vers[ãa]o final|voc[êe] est[áa] criando|ORIENTA[ÇC][ÃA]O|apague esta caixa|lorem ipsum|aqui est[áa] (o|a|um|uma)|espero que (isso|isto) ajude/i,
+  emoji: /[\u{1F300}-\u{1FAFF}\u{2600}-\u{27BF}\u{2B50}]/u,
+  alheio: /\bbacharel|\bgradua[çc][ãa]o\b|engenharia de produ[çc][ãa]o|universidade|monografia|disserta[çc][ãa]o/i,
+  futuro: /(?<![A-Za-zÀ-ÿ])(será|serão|seremos|iremos|vamos|irá|irão|deverá|deverão|poderá|poderão|pretendemos|pretende-se|faremos)(?![A-Za-zÀ-ÿ])/i,
+  futuro2: /(?<![A-Za-zÀ-ÿ])[a-zà-ÿ]{3,}(?:ar|er|ir)(?:á|ão|emos)(?![A-Za-zÀ-ÿ])/i,
+  forte: /comprovam?|comprovad[oa]s?|perfeit[ao]s?|perfeitamente|\bgarant(e|em|imos|ir)\b|revolucion|inovador|exponencial|indispens[áa]vel|totalmente|rigorosamente|absolutamente|o melhor do mercado|m[áa]xima efici/i,
+  eu: /(?<![A-Za-zÀ-ÿ])(eu|meu|minha|meus|minhas|comigo)(?![A-Za-zÀ-ÿ])/i,
+  informal: /(?<![A-Za-zÀ-ÿ])(vc|vcs|pq|tb|tbm|né|tipo assim|a gente|pra|pro|coisa|coisas|muito top|show de bola)(?![A-Za-zÀ-ÿ])/i,
+  decimal: /\b\d+\.\d+\s?(%|h|min|s|kg|g|m|km|un|unidades|pe[çc]as|R\$)/,
+  dinheiro: /R\$\s?\d+\.\d{2}\b(?!\d)/,
+  citacao: /\([A-ZÀ-Ý][A-ZÀ-Ý\s.&;-]+,\s*\d{4}[a-z]?(?:,\s*p\.\s*\d+)?\)|[A-ZÀ-Ý][a-zà-ÿ]+(?:\s+et al\.|\s+e\s+[A-ZÀ-Ý][a-zà-ÿ]+)?\s*\(\d{4}/,
+  loja: /amazon\.|mercadolivre\.|shopee\.|magazineluiza\.|americanas\./i,
+};
+const trecho = (s, rx) => { const m = String(s).match(rx); return m ? '“' + m[0] + '”' : ''; };
+function analisa(texto, o = {}) {
+  const r = [];
+  const s = L(texto);
+  if (!s) return r;
+  if (RX_MODELO.test(s)) r.push(E('Esse trecho é do exemplo do modelo (Confeitaria Doce Sabor). Escrevam com os dados da organização de vocês.', trecho(s, RX_MODELO)));
+  if (RX.marca.test(s)) r.push(E('Sobrou marca de modelo ou de IA. Apaguem e escrevam com os dados do grupo.', trecho(s, RX.marca)));
+  if (RX.emoji.test(s)) r.push(E('Tem emoji no texto. Trabalho acadêmico não usa emoji.', trecho(s, RX.emoji)));
+  if (RX.alheio.test(s)) r.push(A('Esse trecho parece ter vindo de outro tipo de trabalho (faculdade). Confiram se é texto do grupo.', trecho(s, RX.alheio)));
+  if (o.passado) {
+    if (RX.futuro.test(s)) r.push(E('Verbo no futuro. Esta parte conta o que já foi feito: escrevam no passado (“foi feito”, “foram levantados”).', trecho(s, RX.futuro)));
+    else if (RX.futuro2.test(s)) r.push(A('Parece ter verbo no futuro. Confiram se o texto está no passado.', trecho(s, RX.futuro2)));
+  }
+  if (RX.forte.test(s) && !o.semForte) r.push(A('Afirmação muito forte. Só mantenham se tiverem o número para provar.', trecho(s, RX.forte)));
+  if (RX.eu.test(s)) r.push(A('O TCC é da equipe: evitem “eu”, “meu”, “minha”.', trecho(s, RX.eu)));
+  if (RX.informal.test(s)) r.push(A('Linguagem informal. Troquem por uma forma mais formal.', trecho(s, RX.informal)));
+  if (RX.decimal.test(s) || RX.dinheiro.test(s)) r.push(A('Em português, o decimal usa vírgula: 1,5 h; R$ 470,00 (e não 1.5 h).', trecho(s, RX.decimal) || trecho(s, RX.dinheiro)));
+  const frases = s.split(/(?<=[.!?])\s+/).filter(f => palavras(f) > 45);
+  if (frases.length) r.push(A(`Há ${frases.length === 1 ? 'uma frase muito longa' : frases.length + ' frases muito longas'} (mais de 45 palavras). Dividam em frases menores.`, '“' + frases[0].slice(0, 70) + '…”'));
+  if (o.citacao === 'exige' && !RX.citacao.test(s)) r.push(E('Falta citação. Indiquem de onde veio a informação: (SOBRENOME, ano) ou Sobrenome (ano).'));
+  if (o.citacao === 'sugere' && !RX.citacao.test(s)) r.push(A('Que tal citar um autor? Ex.: (TUBINO, 2017) ou Segundo Slack (2018).'));
+  if (o.semCitacao && RX.citacao.test(s)) r.push(A('Esta parte não leva citação.', trecho(s, RX.citacao)));
+  if (o.numero && !temNumero(s)) r.push(A('Coloquem números: quantidades, tempos, percentuais, valores. O PCP trabalha com dados.'));
+  if (o.min && palavras(s) < o.min) r.push(A(`Texto curto (${palavras(s)} palavras). O ideal é pelo menos ${o.min}.`));
+  return r;
+}
+const vazioTab = t => !(t || []).some(r => r && r.some(c => tem(c)));
+const linhasCheias = t => (t || []).filter(r => r && r.some(c => tem(c)));
+const numBR = v => { const x = parseFloat(String(v || '').replace(/[^\d,.\-]/g, '').replace(/\.(?=\d{3}(\D|$))/g, '').replace(',', '.')); return isNaN(x) ? 0 : x; };
+const temNum = v => /\d/.test(String(v || ''));
+const real = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+const fmt = (v, d = 1) => v.toLocaleString('pt-BR', { maximumFractionDigits: d });
+// cálculos automáticos
+const gutNota = l => (temNum(l[1]) && temNum(l[2]) && temNum(l[3])) ? numBR(l[1]) * numBR(l[2]) * numBR(l[3]) : null;
+const custo5w2h = () => linhasCheias(S.w2h).reduce((a, l) => a + numBR(l[6]), 0);
+function variacao(antes, depois) {
+  if (!temNum(antes) || !temNum(depois)) return '–';
+  const a = numBR(antes), d = numBR(depois);
+  if (/%/.test(antes + depois)) { const pp = d - a; return (pp > 0 ? '+' : pp < 0 ? '−' : '') + fmt(Math.abs(pp)) + ' p.p.'; }
+  if (!a) return '–';
+  const v = (d - a) / a * 100; return (v > 0 ? '+' : v < 0 ? '−' : '') + fmt(Math.abs(v), 0) + '%';
+}
+function payback() {
+  const inv = custo5w2h(), eco = numBR(S.economiaMensal);
+  if (!inv || !eco) return null;
+  return inv / eco;
+}
+// junta todo o texto do diagnóstico (para conferir se os números "antes" vieram de lá)
+const textoDiagnostico = () => [S.contexto, S.dadosTexto, S.dadosAnalise, S.procAtual, ...S.indAtuais.flat(), ...S.dados.flat(), ...S.indicadores.flat()].join(' ');
+
+/* =====================================================================
+   SEÇÕES
+   ===================================================================== */
+const SEC = [];
+const sec = d => SEC.push(d);
+
+sec({ id: 'grupo', grp: 'Começo', nome: 'Dados da equipe',
+  ori: `<p>Preencham primeiro os dados da equipe. Tudo fica salvo neste navegador enquanto vocês trabalham.</p>
+  <ul><li>Em computador da escola, usem <b>Salvar cópia</b> no fim de cada aula e guardem o arquivo no Drive.</li>
+  <li>À direita aparecem as <b>sugestões</b>: <span style="color:var(--bad)">✗ precisa mudar</span>, <span style="color:var(--near)">! vale revisar</span>, <span style="color:var(--ok)">✓ está bom</span>.</li>
+  <li>A sequência segue o <b>Modelo de TCC do Técnico em PCP</b>: do problema (Capítulos 1 a 5) à solução (Capítulos 6 a 9).</li>
+  <li>No final, em <b>Gerar o TCC</b>, vocês baixam o Word já formatado e enviam ao professor.</li></ul>`,
+  campos: [
+    { t: 'importar' },
+    { t: 'input', k: 'organizacao', rot: 'Nome da organização estudada', dica: 'Empresa, escola, setor ou processo. Ex.: Metalúrgica Silva, almoxarifado do CEEP, padaria do bairro.' },
+    { t: 'check', k: 'ficticia', rot: 'A organização é fictícia ou os dados são simulados' },
+    { t: 'input', k: 'titulo', rot: 'Título do trabalho', dica: 'Ferramenta + problema + organização. Ex.: Aplicação do Kanban para reduzir faltas de material em uma metalúrgica de pequeno porte' },
+    { t: 'input', k: 'subtitulo', rot: 'Subtítulo', opc: true },
+    { t: 'lista', k: 'integrantes', rot: 'Nomes completos dos integrantes', max: 6, fixo: true, dica: 'Um nome completo por linha, sem abreviar.' },
+    { t: 'input', k: 'orientador', rot: 'Orientador' },
+  ],
+  check() {
+    const r = [];
+    if (!tem(S.organizacao)) r.push(E('Preencham o nome da organização estudada.'));
+    if (!tem(S.titulo)) r.push(E('Falta o título.'));
+    else {
+      if (palavras(S.titulo) < 6) r.push(A('Título curto. Digam a ferramenta, o problema e onde foi aplicado.'));
+      r.push(...analisa(S.titulo));
+    }
+    const ns = S.integrantes.filter(tem);
+    if (!ns.length) r.push(E('Faltam os nomes dos integrantes.'));
+    ns.forEach(n => { if (n.trim().split(/\s+/).length < 2) r.push(A(`Nome incompleto: “${n}”. Usem o nome completo.`)); });
+    return r;
+  },
+  vazio: () => !tem(S.organizacao) && !tem(S.titulo) && !S.integrantes.some(tem),
+});
+
+sec({ id: 'pre', grp: 'Começo', nome: 'Dedicatória e agradecimentos', opc: true,
+  ori: `<p>As duas partes são <b>opcionais</b>. Se ficarem em branco, não entram no trabalho.</p><p>Escrevam com as palavras da equipe. Não copiem agradecimentos de outros trabalhos.</p>`,
+  campos: [
+    { t: 'area', k: 'dedicatoria', rot: 'Dedicatória', opc: true, curto: true },
+    { t: 'area', k: 'agradecimentos', rot: 'Agradecimentos', opc: true },
+  ],
+  check() { return [...analisa(S.dedicatoria, { semForte: true }), ...analisa(S.agradecimentos, { semForte: true })]; },
+  vazio: () => !tem(S.dedicatoria) && !tem(S.agradecimentos),
+});
+
+/* ---------------------------------------------------- 1 INTRODUÇÃO */
+sec({ id: 'tema', grp: '1 Introdução', nome: '1 Tema e 1.1 Contextualização',
+  ori: `<p>A introdução é um <b>funil</b>: do assunto geral até o problema da organização.</p>
+  <p><b>Abertura do capítulo:</b> 1 ou 2 parágrafos sobre o tema geral e sua importância para as empresas, com pelo menos uma citação.</p>
+  <p><b>1.1 Contextualização do problema:</b> a situação concreta na organização, já com números: o que acontece, com que frequência e qual o impacto.</p>`,
+  campos: [
+    { t: 'area', k: 'tema', rot: 'Abertura: o tema geral', dica: 'Ex.: O PCP organiza os recursos produtivos... (TUBINO, 2017).' },
+    { t: 'area', k: 'contexto', rot: '1.1 Contextualização do problema' },
+  ],
+  check() {
+    const r = [...analisa(S.tema, { citacao: 'exige', min: 50 }), ...analisa(S.contexto, { numero: true, min: 50 })];
+    if (!tem(S.tema)) r.push(E('Falta a abertura com o tema geral.'));
+    if (!tem(S.contexto)) r.push(E('Falta a contextualização do problema.'));
+    else if (tem(S.organizacao) && !semAcento(S.contexto).includes(semAcento(L(S.organizacao)).split(' ').filter(w => w.length > 3)[0] || '§')) r.push(A(`A contextualização não cita a organização (“${S.organizacao}”).`));
+    return r;
+  },
+  vazio: () => !tem(S.tema) && !tem(S.contexto),
+});
+sec({ id: 'problema', grp: '1 Introdução', nome: '1.2 Problema de pesquisa',
+  ori: `<p>Uma pergunta clara, que o trabalho vai responder na conclusão.</p>
+  <p><i>Ex.: Como o balanceamento da linha de solda pode reduzir o tempo de atravessamento dos pedidos?</i></p>
+  <p><i>Ex.: De que forma o mapeamento do processo de matrícula pode reduzir o tempo de espera dos alunos?</i></p>`,
+  campos: [{ t: 'area', k: 'problema', rot: 'Pergunta do problema', curto: true, dica: 'Pode começar com: Diante desse cenário, este trabalho busca responder à seguinte pergunta: ...' }],
+  check() {
+    const s = L(S.problema), r = analisa(s);
+    if (!s) return r;
+    const q = (s.match(/\?/g) || []).length;
+    if (q === 0) r.push(E('O problema é uma pergunta: terminem com ponto de interrogação.'));
+    if (q > 1) r.push(A('Há mais de uma pergunta. Escolham a principal.'));
+    if (!/como|de que forma|de que maneira|qual|quais|em que medida/i.test(s)) r.push(A('Perguntas que começam com “Como...” ou “De que forma...” funcionam melhor no PCP.'));
+    return r;
+  },
+  vazio: () => !tem(S.problema),
+});
+sec({ id: 'justificativa', grp: '1 Introdução', nome: '1.3 Justificativa',
+  ori: `<p>Respondam: por que o problema é importante? Que impactos causa e quem é afetado? Por que a proposta é relevante e que contribuições o trabalho gera para a organização e para a equipe?</p>`,
+  campos: [{ t: 'area', k: 'justificativa', rot: 'Texto da justificativa' }],
+  check() { const r = analisa(S.justificativa, { min: 60 }); if (tem(S.justificativa) && !/afet|impact|preju|cust|client|colaborad/i.test(S.justificativa)) r.push(A('Digam quem é afetado pelo problema e qual o impacto (custo, atraso, cliente...).')); return r; },
+  vazio: () => !tem(S.justificativa),
+});
+sec({ id: 'objetivos', grp: '1 Introdução', nome: '1.4 Objetivos',
+  ori: `<p><b>Objetivo geral:</b> uma frase, iniciada por verbo no infinitivo, que responde ao problema de pesquisa.</p>
+  <p><b>Objetivos específicos:</b> de 3 a 5 etapas que, somadas, levam ao objetivo geral. Cada um deve ser cumprido em algum capítulo. Verbos úteis: mapear, identificar, analisar, classificar, dimensionar, calcular, elaborar, propor, simular, avaliar. Evitem “conhecer”, “entender”, “estudar”.</p>
+  <p class="small">O item 1.5 (Estrutura do trabalho) é escrito sozinho no Word.</p>`,
+  campos: [
+    { t: 'area', k: 'objGeral', rot: 'Objetivo geral', curto: true },
+    { t: 'lista', k: 'objEsp', rot: 'Objetivos específicos', max: 5, dica: 'Um objetivo por linha. Ex.: mapear o processo atual de recebimento de materiais' },
+  ],
+  check() {
+    const r = analisa(S.objGeral);
+    const g = L(S.objGeral).replace(/^(o\s+)?objetivo geral( deste trabalho)?\s*(é|e|:)\s*/i, '');
+    if (g) {
+      const v = g.split(/\s+/)[0].toLowerCase();
+      if (!/r$/.test(v)) r.push(E('O objetivo geral começa com verbo no infinitivo (analisar, propor, aplicar...).', '“' + v + '”'));
+      if ((g.match(/\./g) || []).length > 1) r.push(A('O objetivo geral é uma frase só.'));
+    }
+    const es = S.objEsp.filter(tem);
+    if (es.length && es.length < 3) r.push(A(`São ${es.length} objetivos específicos. O ideal é de 3 a 5.`));
+    es.forEach(o => {
+      const v = o.trim().split(/\s+/)[0].toLowerCase();
+      if (!/r$/.test(v)) r.push(E('Objetivo específico deve começar com verbo no infinitivo.', '“' + o.slice(0, 50) + '”'));
+      if (/^(conhecer|entender|estudar|compreender|aprender)\b/i.test(o.trim())) r.push(A('Evitem “conhecer”, “entender”, “estudar”: usem verbos que geram resultado (mapear, calcular, propor...).', '“' + o.slice(0, 50) + '”'));
+      r.push(...analisa(o).filter(x => x.n === 'erro'));
+    });
+    if (!g) r.push(E('Falta o objetivo geral.'));
+    if (!es.length) r.push(E('Faltam os objetivos específicos.'));
+    return r;
+  },
+  vazio: () => !tem(S.objGeral) && !S.objEsp.some(tem),
+});
+
+/* ---------------------------------------------------- 2 CARACTERIZAÇÃO */
+sec({ id: 'historico', grp: '2 Caracterização', nome: '2.1–2.2 Histórico e produtos',
+  ori: `<p><b>2.1</b> Histórico e segmento: quando e como a organização surgiu, o que faz e em que setor atua.</p>
+  <p><b>2.2</b> Produtos ou serviços: preencham a tabela (vira a Tabela 1 do trabalho).</p>
+  <p>Mesmo em organização fictícia, os dados precisam ser coerentes: eles serão usados nos cálculos dos Capítulos 5 a 8.</p>`,
+  campos: [
+    { t: 'area', k: 'historico', rot: '2.1 Histórico e segmento de atuação' },
+    { t: 'tabela', k: 'produtos', rot: '2.2 Produtos ou serviços', cols: ['Família de produtos ou serviço', 'Exemplos', 'Produção ou atendimentos por período', 'Participação no faturamento (%)'], pesos: [2, 2.6, 1.8, 1.6] },
+    { t: 'area', k: 'produtosTexto', rot: 'Comentário sobre a tabela', curto: true, opc: true, dica: 'Ex.: Os bolos respondem pela maior parte do faturamento...' },
+  ],
+  check() {
+    const r = analisa(S.historico, { min: 50 });
+    if (!tem(S.historico)) r.push(E('Falta o histórico da organização.'));
+    if (S.ficticia && tem(S.historico) && !/fict[íi]ci|simulad/i.test(S.historico + S.produtosTexto)) r.push(E('A organização é fictícia: digam isso no texto (ex.: “Por se tratar de empresa fictícia, os dados foram simulados com finalidade acadêmica”).'));
+    const p = linhasCheias(S.produtos);
+    if (!p.length) r.push(E('Preencham a tabela de produtos ou serviços.'));
+    p.forEach(l => { if (!temNum(l[2])) r.push(A(`“${l[0] || 'produto'}”: falta a produção ou quantidade por período.`)); });
+    const pct = p.filter(l => temNum(l[3]));
+    if (pct.length === p.length && pct.length) { const t = pct.reduce((a, l) => a + numBR(l[3]), 0); if (Math.abs(t - 100) > 1) r.push(E(`A participação no faturamento soma ${fmt(t)}%. O total precisa dar 100%.`)); }
+    r.push(...analisa(S.produtosTexto));
+    return r;
+  },
+  vazio: () => !tem(S.historico) && vazioTab(S.produtos),
+});
+sec({ id: 'estrutura', grp: '2 Caracterização', nome: '2.3–2.5 Estrutura e processo',
+  ori: `<p><b>2.3</b> Estrutura organizacional: setores, funções e quantidade de pessoas (o total é somado sozinho).</p>
+  <p><b>2.4</b> Estrutura física e capacidade: é o dado mais importante para o PCP. Informem a jornada, os equipamentos e a capacidade, e comparem com a produção atual (utilização da capacidade).</p>
+  <p><b>2.5</b> Processo produtivo: o fluxo geral, do fornecedor ao cliente. O detalhe do processo estudado vai no Capítulo 5.</p>`,
+  campos: [
+    { t: 'tabela', k: 'estrutura', rot: '2.3 Estrutura organizacional', cols: ['Setor', 'Função', 'Quantidade'], pesos: [2, 3.2, 1.2], somaCol: 2, somaRot: 'Total de colaboradores' },
+    { t: 'area', k: 'capacidade', rot: '2.4 Estrutura física e capacidade produtiva', dica: 'Área, equipamentos, turnos, jornada, capacidade e % de utilização.' },
+    { t: 'area', k: 'processo', rot: '2.5 Processo produtivo', curto: true },
+  ],
+  check() {
+    const r = [], e = linhasCheias(S.estrutura);
+    if (!e.length) r.push(E('Preencham a estrutura organizacional.'));
+    e.forEach(l => { if (!temNum(l[2])) r.push(A(`“${l[0] || l[1] || 'setor'}”: falta a quantidade.`)); });
+    r.push(...analisa(S.capacidade, { numero: true }));
+    if (!tem(S.capacidade)) r.push(E('Falta a capacidade produtiva.'));
+    else if (!/capacidade/i.test(S.capacidade)) r.push(A('Digam qual é a capacidade (quanto a organização consegue produzir ou atender por período).'));
+    else if (!/%|utiliza/i.test(S.capacidade)) r.push(A('Comparem a capacidade com a produção atual (utilização em %).'));
+    r.push(...analisa(S.processo));
+    if (!tem(S.processo)) r.push(E('Falta o processo produtivo geral.'));
+    return r;
+  },
+  vazio: () => vazioTab(S.estrutura) && !tem(S.capacidade) && !tem(S.processo),
+});
+
+/* ---------------------------------------------------- 3 FUNDAMENTAÇÃO */
+sec({ id: 'fund', grp: '3 Fundamentação', nome: '3 Fundamentação teórica',
+  ori: `<p>De 4 a 7 tópicos, com <b>no mínimo 5 fontes</b> no capítulo. Toda ferramenta usada nos Capítulos 5 a 7 precisa ser explicada aqui, e todo tópico daqui precisa ser usado depois.</p>
+  <p>Cada tópico segue quatro passos: (1) definir o conceito com citação; (2) explicar como funciona; (3) mostrar vantagens e limitações; (4) ligar ao trabalho (<i>“No presente trabalho...”</i>).</p>
+  <p>Exemplos de tópicos: PCP, gestão de estoques, curva ABC, Kanban, capacidade, gargalos, balanceamento, cronoanálise, OEE, ferramentas da qualidade, 5S, SMED, roteirização, Indústria 4.0.</p>`,
+  campos: [{ t: 'topicos', k: 'fund', rot: 'Tópico', min: 1, max: 8, pref: '3' }],
+  check() {
+    const fs = S.fund.filter(f => tem(f.titulo) || tem(f.texto));
+    const r = [];
+    if (fs.length && fs.length < 4) r.push(A(`São ${fs.length} tópicos. O ideal é de 4 a 7.`));
+    fs.forEach((f, i) => {
+      const p = `Tópico 3.${i + 1}: `;
+      if (!tem(f.titulo)) r.push(E(p + 'falta o título.'));
+      if (!tem(f.texto)) r.push(E(p + 'falta o texto.'));
+      else {
+        r.push(...analisa(f.texto, { citacao: 'exige', min: 80 }).map(x => Object.assign(x, { m: p + x.m })));
+        if (!/no presente trabalho|neste trabalho|nesta pesquisa|no presente estudo|neste estudo/i.test(f.texto)) r.push(A(p + 'falta o passo 4: liguem o conceito ao trabalho (“No presente trabalho, ...”).'));
+      }
+    });
+    // conta autores diferentes citados no capítulo
+    const autores = new Set();
+    const txt = fs.map(f => f.texto).join(' ');
+    (txt.match(/\(([A-ZÀ-Ý][A-ZÀ-Ý-]+)/g) || []).forEach(m => autores.add(m.slice(1)));
+    (txt.match(/\b([A-ZÀ-Ý][a-zà-ÿ]+)(?:,?\s+[A-ZÀ-Ý][a-zà-ÿ-]+)*(?:\s+et al\.)?\s*\(\d{4}/g) || []).forEach(m => { const w = m.split(/[\s(,]/)[0]; if (!/^(Segundo|Conforme|Para|De|Em|Assim|Como|Já|Ainda|Nesse|Neste|Por)$/.test(w)) autores.add(semAcento(w).toUpperCase()); });
+    if (fs.length && autores.size < 5) r.push(A(`O capítulo cita ${autores.size} autor(es) diferente(s). O mínimo são 5 fontes.`));
+    return r;
+  },
+  vazio: () => !S.fund.some(f => tem(f.titulo) || tem(f.texto)),
+});
+
+/* ---------------------------------------------------- 4 METODOLOGIA */
+sec({ id: 'metodo', grp: '4 Metodologia', nome: '4 Metodologia',
+  ori: `<p>Expliquem como o trabalho foi feito, com detalhe suficiente para outra equipe conseguir repetir. Tudo <b>no passado</b>.</p>
+  <p><b>4.1 Tipo de pesquisa</b> já vem pronto (pesquisa aplicada, descritiva, estudo de caso): adaptem. <b>4.2</b> o que foi estudado; <b>4.3</b> como os dados foram coletados (entrevista, observação, documentos); <b>4.4</b> como foram analisados; <b>4.5</b> as etapas na tabela.</p>`,
+  campos: [
+    { t: 'area', k: 'tipoPesquisa', rot: '4.1 Tipo de pesquisa' },
+    { t: 'area', k: 'objeto', rot: '4.2 Objeto de estudo', curto: true, dica: 'Ex.: O objeto de estudo é o processo de controle de insumos do almoxarifado...' },
+    { t: 'area', k: 'coleta', rot: '4.3 Coleta de dados', dica: 'Quem foi entrevistado, o que foi observado e por quanto tempo, quais documentos foram analisados.' },
+    { t: 'area', k: 'analise', rot: '4.4 Análise dos dados', curto: true, dica: 'Ex.: Os dados foram organizados em planilha. O processo foi representado por fluxograma...' },
+    { t: 'tabela', k: 'etapas', rot: '4.5 Etapas da pesquisa', cols: ['Atividade', 'Ferramenta', 'Período'], pesos: [2.6, 2.6, 1.4] },
+  ],
+  check() {
+    const r = [...analisa(S.tipoPesquisa, { passado: true }), ...analisa(S.objeto), ...analisa(S.coleta, { passado: true, min: 40 }), ...analisa(S.analise, { passado: true })];
+    if (!tem(S.objeto)) r.push(E('Falta o objeto de estudo (4.2).'));
+    if (!tem(S.coleta)) r.push(E('Falta a coleta de dados (4.3).'));
+    if (!tem(S.analise)) r.push(E('Falta a análise dos dados (4.4).'));
+    if (S.ficticia && tem(S.coleta) && !/simulad|fict[íi]ci/i.test(S.coleta + S.tipoPesquisa)) r.push(A('A organização é fictícia: digam na coleta que os valores foram simulados e com base em quê.'));
+    if (tem(S.coleta) && /entrevist/i.test(S.coleta) && !tem(S.roteiro)) r.push(A('Houve entrevista: coloquem o roteiro de perguntas no Apêndice A.'));
+    const et = linhasCheias(S.etapas);
+    const semP = et.filter(e => !tem(e[2])).map(e => e[0] || '?');
+    if (semP.length) r.push(A(`Na tabela, falta o período em ${semP.length} etapa(s). Preencham ou apaguem as linhas que não aconteceram.`, semP.join(', ')));
+    const semF = et.filter(e => !tem(e[1])).map(e => e[0] || '?');
+    if (semF.length) r.push(A(`Na tabela, falta a ferramenta em ${semF.length} etapa(s).`, semF.join(', ')));
+    return r;
+  },
+  vazio: () => !tem(S.objeto) && !tem(S.coleta) && !tem(S.analise),
+});
+
+/* ---------------------------------------------------- 5 DIAGNÓSTICO */
+sec({ id: 'procAtual', grp: '5 Diagnóstico', nome: '5.1 Processo atual',
+  ori: `<p>O diagnóstico responde, nesta ordem: <b>como é o processo atual? Qual o tamanho do problema, em números? Por que ele acontece?</b> Sem um bom diagnóstico, a proposta vira opinião.</p>
+  <p>Aqui: descrevam o processo como ele é hoje, coloquem o <b>fluxograma</b> e comentem o que a figura mostra.</p>
+  <p class="small">Fluxograma: Google Desenhos (no Docs: Inserir → Desenho), draw.io ou Lucidchart. Salvem como imagem e enviem aqui.</p>`,
+  campos: [
+    { t: 'area', k: 'procAtual', rot: 'Descrição do processo atual' },
+    { t: 'figura', k: 'figFluxo', rot: 'Fluxograma do processo atual', legPad: 'Fluxograma do processo atual' },
+    { t: 'area', k: 'procAnalise', rot: 'O que o fluxograma mostra', curto: true, dica: 'Ex.: Observa-se que a reposição depende exclusivamente da percepção...' },
+  ],
+  check() {
+    const r = [...analisa(S.procAtual, { min: 50 }), ...analisa(S.procAnalise)];
+    if (!tem(S.procAtual)) r.push(E('Descrevam o processo atual.'));
+    if (!S.figFluxo.img) r.push(E('Falta a imagem do fluxograma.'));
+    if (!tem(S.procAnalise)) r.push(A('Comentem a figura: toda figura precisa de comentário no texto.'));
+    return r;
+  },
+  vazio: () => !tem(S.procAtual) && !S.figFluxo.img,
+});
+sec({ id: 'dados', grp: '5 Diagnóstico', nome: '5.2 Dados do problema',
+  ori: `<p>O tamanho do problema, em números. Na primeira tabela, listem as ocorrências por item ou causa: o assistente <b>ordena e calcula o % e o % acumulado sozinho (Pareto)</b>.</p>
+  <p>Na segunda, os indicadores da situação atual. Esses valores serão o <b>“antes”</b> do Capítulo 8.</p>`,
+  campos: [
+    { t: 'area', k: 'dadosTexto', rot: 'Como os dados foram levantados', curto: true, dica: 'Ex.: Para dimensionar o problema, foram levantadas as faltas ocorridas nos últimos seis meses...' },
+    { t: 'input', k: 'dadosUnid', rot: 'O que foi contado (com período)', dica: 'Ex.: Rupturas em seis meses; Peças refugadas em março; Atrasos no trimestre' },
+    { t: 'tabela', k: 'dados', rot: 'Ocorrências por item ou causa', cols: () => ['Item ou causa', S.dadosUnid ? L(S.dadosUnid) : 'Ocorrências'], pesos: [3, 1.4], pareto: true },
+    { t: 'area', k: 'dadosAnalise', rot: 'O que a tabela mostra', curto: true, dica: 'Ex.: Das 54 ocorrências, 41 (76%) estão em apenas três itens...' },
+    { t: 'tabela', k: 'indAtuais', rot: 'Indicadores do processo atual', cols: ['Indicador', 'Valor atual', 'Como foi obtido'], pesos: [3, 1.2, 2.4] },
+  ],
+  check() {
+    const r = [...analisa(S.dadosTexto, { passado: true }), ...analisa(S.dadosAnalise, { numero: true })];
+    const d = linhasCheias(S.dados);
+    if (!d.length) r.push(E('Preencham a tabela de ocorrências.'));
+    else {
+      if (d.length < 3) r.push(A('Listem pelo menos 3 itens ou causas para a análise de Pareto.'));
+      d.forEach(l => { if (!temNum(l[1])) r.push(E(`“${l[0] || 'item'}”: falta o número de ocorrências.`)); });
+      if (!tem(S.dadosUnid)) r.push(A('Digam o que foi contado e em que período (ex.: Rupturas em seis meses).'));
+    }
+    if (!tem(S.dadosAnalise)) r.push(A('Comentem a tabela: quais itens concentram a maior parte das ocorrências?'));
+    const ind = linhasCheias(S.indAtuais);
+    if (!ind.length) r.push(E('Preencham os indicadores do processo atual.'));
+    ind.forEach(l => { if (!temNum(l[1]) && !/n[ãa]o medid/i.test(l[1])) r.push(E(`Indicador “${l[0] || '?'}”: falta o valor atual.`)); if (!tem(l[2])) r.push(A(`Indicador “${l[0] || '?'}”: digam como o valor foi obtido.`)); });
+    return r;
+  },
+  vazio: () => vazioTab(S.dados) && vazioTab(S.indAtuais) && !tem(S.dadosTexto),
+});
+sec({ id: 'causas', grp: '5 Diagnóstico', nome: '5.3 Análise das causas',
+  ori: `<p>Usem <b>pelo menos duas ferramentas</b> que se completam: o diagrama de Ishikawa para levantar as causas (6M: método, mão de obra, material, máquina, medida, meio ambiente) e os <b>5 Porquês</b> para chegar à causa raiz.</p>
+  <p>Na tabela dos 5 Porquês, cada resposta vira a próxima pergunta. Marquem a última como causa raiz.</p>`,
+  campos: [
+    { t: 'area', k: 'causasTexto', rot: 'Como as causas foram levantadas', curto: true },
+    { t: 'figura', k: 'figIshikawa', rot: 'Diagrama de Ishikawa', legPad: 'Diagrama de Ishikawa' },
+    { t: 'tabela', k: 'porques', rot: '5 Porquês', cols: ['Pergunta', 'Resposta'], pesos: [1, 1.4] },
+    { t: 'area', k: 'causasAnalise', rot: 'Comentário', curto: true, opc: true },
+  ],
+  check() {
+    const r = [...analisa(S.causasTexto, { passado: true }), ...analisa(S.causasAnalise)];
+    if (!tem(S.causasTexto)) r.push(A('Digam como as causas foram levantadas (com quem, de que forma).'));
+    if (!S.figIshikawa.img) r.push(E('Falta a imagem do diagrama de Ishikawa.'));
+    const p = linhasCheias(S.porques);
+    if (!p.length) r.push(E('Preencham os 5 Porquês.'));
+    else {
+      if (p.length < 3) r.push(A(`São ${p.length} porquês. Continuem perguntando até chegar à causa raiz (normalmente 4 ou 5).`));
+      p.forEach((l, i) => { if (tem(l[0]) && !/^por\s?qu[eê]/i.test(L(l[0]))) r.push(A(`Linha ${i + 1}: a pergunta começa com “Por que”.`)); if (!tem(l[1])) r.push(E(`Linha ${i + 1}: falta a resposta.`)); });
+      if (!/causa raiz/i.test(p.flat().join(' ') + S.causasAnalise)) r.push(A('Indiquem qual é a causa raiz (ex.: “(causa raiz)” no fim da última resposta).'));
+    }
+    return r;
+  },
+  vazio: () => !tem(S.causasTexto) && !S.figIshikawa.img && vazioTab(S.porques),
+});
+sec({ id: 'gut', grp: '5 Diagnóstico', nome: '5.4–5.5 Priorização e síntese',
+  ori: `<p><b>5.4 Matriz GUT:</b> deem notas de 1 a 5 para gravidade (G), urgência (U) e tendência (T). O produto G × U × T e a ordem de prioridade são calculados sozinhos.</p>
+  <p><b>5.5 Síntese:</b> em um parágrafo, o que o diagnóstico mostrou (com números) e a causa raiz. É a ponte para a proposta.</p>`,
+  campos: [
+    { t: 'tabela', k: 'gut', rot: '5.4 Matriz GUT', cols: ['Causa', 'G', 'U', 'T'], pesos: [4, .7, .7, .7], calc: { cab: 'G × U × T', f: l => { const g = gutNota(l); return g == null ? '' : String(g); } } },
+    { t: 'area', k: 'sintese', rot: '5.5 Síntese do diagnóstico', curto: true },
+  ],
+  check() {
+    const r = [], g = linhasCheias(S.gut);
+    if (!g.length) r.push(E('Preencham a matriz GUT.'));
+    if (g.length && g.length < 3) r.push(A('Priorizem pelo menos 3 causas.'));
+    g.forEach(l => {
+      [1, 2, 3].forEach(k => { if (!temNum(l[k])) r.push(E(`“${l[0] || 'causa'}”: falta a nota ${'·GUT'[k]}.`)); else if (numBR(l[k]) < 1 || numBR(l[k]) > 5 || numBR(l[k]) % 1) r.push(E(`“${l[0] || 'causa'}”: as notas vão de 1 a 5 (números inteiros).`)); });
+    });
+    r.push(...analisa(S.sintese, { numero: true }));
+    if (!tem(S.sintese)) r.push(E('Falta a síntese do diagnóstico.'));
+    return r;
+  },
+  vazio: () => vazioTab(S.gut) && !tem(S.sintese),
+});
+
+/* ---------------------------------------------------- 6 PROPOSTA */
+sec({ id: 'proposta', grp: '6 Proposta', nome: '6.1–6.2 Ações e plano 5W2H',
+  ori: `<p>Toda ação precisa atacar uma <b>causa do Capítulo 5</b>: ação sem causa é palpite.</p>
+  <p><b>6.1</b> liguem cada causa a uma ação e a uma ferramenta. <b>6.2</b> montem o plano 5W2H. Na coluna “Quanto”, coloquem o valor em reais (use 0 quando não houver custo): o <b>custo total é somado sozinho</b> e vira o investimento do Capítulo 8.</p>
+  <p>Organização fictícia: deixem claro que a implantação é simulada. Empresa real: digam se a proposta foi aceita, implantada ou apenas sugerida.</p>`,
+  campos: [
+    { t: 'tabela', k: 'acoes', rot: '6.1 Relação entre causas e ações', cols: ['Causa (Capítulo 5)', 'Ação proposta', 'Ferramenta'], pesos: [2.2, 3, 1.6] },
+    { t: 'tabela', k: 'w2h', rot: '6.2 Plano de ação 5W2H', cols: ['O quê', 'Por quê', 'Onde', 'Quando', 'Quem', 'Como', 'Quanto (R$)'], pesos: [1.8, 1.6, 1.2, 1, 1.3, 1.6, 1], somaCol: 6, somaRot: 'Custo total (R$)', somaReal: true },
+    { t: 'area', k: 'w2hTexto', rot: 'Comentário sobre o plano', curto: true, opc: true, dica: 'Ex.: O custo total estimado é compatível com o porte da empresa.' },
+  ],
+  check() {
+    const r = [], a = linhasCheias(S.acoes);
+    if (!a.length) r.push(E('Preencham a relação entre causas e ações.'));
+    const causasGut = linhasCheias(S.gut).map(l => semAcento(l[0]));
+    a.forEach(l => {
+      if (!tem(l[1])) r.push(E(`Causa “${l[0] || '?'}”: falta a ação.`));
+      if (!tem(l[0])) r.push(E(`Ação “${l[1] || '?'}”: falta a causa que ela ataca.`));
+      if (!tem(l[2])) r.push(A(`Ação “${l[1] || '?'}”: falta a ferramenta.`));
+    });
+    if (causasGut.length && a.length) {
+      const sem = linhasCheias(S.gut).filter(l => !a.some(x => semAcento(x[0]).includes(semAcento(l[0]).slice(0, 12)) || semAcento(l[0]).includes(semAcento(x[0]).slice(0, 12))));
+      if (sem.length === causasGut.length) r.push(A('As causas da tabela de ações não batem com as da matriz GUT. Usem os mesmos nomes de causas do Capítulo 5.'));
+    }
+    const w = linhasCheias(S.w2h);
+    if (!w.length) r.push(E('Preencham o plano 5W2H.'));
+    w.forEach(l => {
+      const n = l[0] || 'ação';
+      const falt = ['O quê', 'Por quê', 'Onde', 'Quando', 'Quem', 'Como'].filter((_, k) => !tem(l[k]));
+      if (falt.length) r.push(E(`5W2H “${n}”: falta ${falt.join(', ')}.`));
+      if (!temNum(l[6])) r.push(E(`5W2H “${n}”: falta o custo (use 0 se não houver).`));
+    });
+    if (S.ficticia && (w.length || a.length) && !/simulad|fict[íi]ci/i.test(S.w2hTexto + S.sintese + S.economiaTexto + S.resultadosTexto)) r.push(A('Organização fictícia: deixem claro em algum comentário que a implantação é simulada.'));
+    r.push(...analisa(S.w2hTexto));
+    return r;
+  },
+  vazio: () => vazioTab(S.acoes) && vazioTab(S.w2h),
+});
+sec({ id: 'indicadores', grp: '6 Proposta', nome: '6.3 Indicadores',
+  ori: `<p>Os indicadores que vão medir a melhoria, cada um com <b>fórmula, valor atual e meta</b>. O valor atual vem do Capítulo 5.</p>
+  <p class="small">Outros exemplos: OEE (disponibilidade × desempenho × qualidade), lead time, takt time, índice de refugo (%), produtividade (unidades por hora-homem), OTIF, giro de estoque, tempo médio de atendimento.</p>`,
+  campos: [{ t: 'tabela', k: 'indicadores', rot: 'Indicadores de desempenho', cols: ['Indicador', 'Fórmula', 'Valor atual', 'Meta'], pesos: [2, 3, 1.1, 1.1] }],
+  check() {
+    const r = [], ind = linhasCheias(S.indicadores);
+    if (!ind.length) return [E('Preencham os indicadores de desempenho.')];
+    if (ind.length < 2) r.push(A('Usem pelo menos 2 indicadores.'));
+    ind.forEach(l => {
+      const n = l[0] || 'indicador';
+      if (!tem(l[1])) r.push(E(`“${n}”: falta a fórmula.`));
+      if (!tem(l[2])) r.push(E(`“${n}”: falta o valor atual (ou “não medido”).`));
+      if (!tem(l[3])) r.push(E(`“${n}”: falta a meta.`));
+      else if (!temNum(l[3])) r.push(A(`“${n}”: a meta precisa de número.`));
+    });
+    return r;
+  },
+  vazio: () => vazioTab(S.indicadores),
+});
+
+/* ---------------------------------------------------- 7 APLICAÇÃO */
+sec({ id: 'ferramentas', grp: '7 Aplicação', nome: '7 Aplicação das ferramentas',
+  ori: `<p>O capítulo <b>mais técnico</b>. Uma ferramenta por bloco (curva ABC, ponto de pedido, Kanban, 5S, takt time, OEE, balanceamento...). Em cada uma: <b>dados de entrada → fórmula ou método → cálculo → resultado → interpretação</b>. O leitor precisa conseguir refazer as contas.</p>
+  <p>Tabelas e gráficos da planilha podem entrar como imagem (print), com legenda.</p>
+  <p class="small">Para escrever: × (multiplicação), ÷, ², ³. Ex.: <b>PP = D × LT + ES</b> → <b>PP = 12 × 3 + 12 = 48 kg</b></p>`,
+  campos: [{ t: 'ferramentas', k: 'ferramentas' }],
+  check() {
+    const fs = S.ferramentas.filter(f => [f.titulo, f.dados, f.formula, f.substituicao, f.significado].some(tem) || (f.fig && f.fig.img)), r = [];
+    if (!fs.length) return [];
+    if (fs.length < 2) r.push(A('Normalmente o capítulo tem pelo menos 2 ferramentas aplicadas.'));
+    fs.forEach((f, i) => {
+      const p = `Ferramenta 7.${i + 1}: `;
+      if (!tem(f.titulo)) r.push(E(p + 'falta o nome da ferramenta.'));
+      if (!tem(f.dados)) r.push(E(p + 'faltam os dados de entrada.'));
+      else if (!temNumero(f.dados)) r.push(A(p + 'os dados de entrada precisam de números.'));
+      if (tem(f.formula) && !tem(f.substituicao)) r.push(E(p + 'tem fórmula, mas falta o cálculo com os números.'));
+      if (!tem(f.formula) && !(f.fig && f.fig.img) && !tem(f.substituicao)) r.push(A(p + 'mostrem o método: a fórmula com o cálculo, ou a tabela (como imagem) com o resultado.'));
+      if (tem(f.substituicao) && !/=/.test(f.substituicao)) r.push(A(p + 'o cálculo precisa do sinal de igual e do resultado.'));
+      if (!tem(f.significado)) r.push(E(p + 'falta a interpretação: o que o resultado significa para a organização.'));
+      [f.dados, f.significado].forEach(t => r.push(...analisa(t).filter(x => x.n !== 'ok').map(x => Object.assign(x, { m: p + x.m }))));
+    });
+    // ferramentas da aplicação devem estar na fundamentação
+    const fundT = semAcento(S.fund.map(f => f.titulo + ' ' + f.texto).join(' '));
+    fs.forEach(f => { const pal = semAcento(L(f.titulo)).split(/\s+/).filter(w => w.length > 3 && !/^(aplica|calculo|dimensio|anali|sistema|ponto)/.test(w)); if (pal.length && !pal.some(w => fundT.includes(w))) r.push(A(`“${f.titulo}” não aparece na fundamentação teórica. Toda ferramenta aplicada precisa ser explicada no Capítulo 3.`)); });
+    return r;
+  },
+  vazio: () => !S.ferramentas.some(f => [f.titulo, f.dados, f.formula, f.substituicao, f.significado].some(tem) || (f.fig && f.fig.img)),
+});
+
+/* ---------------------------------------------------- 8 RESULTADOS */
+sec({ id: 'resultados', grp: '8 Resultados', nome: '8.1 Resultados',
+  ori: `<p>Comparem <b>antes e depois</b> usando os mesmos indicadores do Capítulo 6. Os valores “antes” são os do Capítulo 5. A variação é calculada sozinha (para valores em %, em pontos percentuais).</p>
+  <p>Resultados simulados devem ser plausíveis: reduções de 100% em tudo parecem irreais. Uma meta não atingida e bem explicada mostra mais maturidade técnica.</p>`,
+  campos: [
+    { t: 'tabela', k: 'resultados', rot: 'Indicadores antes e depois', cols: ['Indicador', 'Antes', 'Depois', 'Meta', 'Situação'], pesos: [2.4, 1, 1, 1, 1.4],
+      sel: { 4: ['', 'Atingida', 'Parcial', 'Não atingida'] }, calc: { cab: 'Variação', f: l => variacao(l[1], l[2]) } },
+    { t: 'area', k: 'resultadosTexto', rot: 'Como os resultados foram obtidos e o que mostram', dica: 'Ex.: A Tabela compara os indicadores antes da melhoria e após oito semanas de funcionamento simulado...' },
+    { t: 'figura', k: 'figResultado', rot: 'Gráfico antes × depois', opc: true, legPad: 'Indicadores antes e depois da melhoria' },
+  ],
+  check() {
+    const r = [...analisa(S.resultadosTexto, { passado: true, numero: true })];
+    const res = linhasCheias(S.resultados);
+    if (!res.length) return [E('Preencham a tabela de resultados.')].concat(r);
+    const diag = semAcento(textoDiagnostico());
+    res.forEach(l => {
+      const n = l[0] || 'indicador';
+      if (!tem(l[1])) r.push(E(`“${n}”: falta o valor antes (use “–” se não era medido).`));
+      if (!tem(l[2])) r.push(E(`“${n}”: falta o valor depois.`));
+      if (!tem(l[4])) r.push(A(`“${n}”: escolham a situação (atingida, parcial, não atingida).`));
+      if (temNum(l[1])) { const v = String(l[1]).match(/\d+(?:[.,]\d+)?/)[0]; if (!new RegExp('(^|[^\\d,.])' + v.replace(/[.,]/g, '[.,]') + '([^\\d]|$)').test(diag)) r.push(A(`“${n}”: o valor antes (${l[1]}) não aparece no diagnóstico (Capítulo 5). Os números precisam conversar.`)); }
+      if (temNum(l[1]) && temNum(l[2]) && numBR(l[2]) === 0 && numBR(l[1]) > 0) r.push(A(`“${n}”: zerar o problema parece irreal. Confiram se o resultado é plausível.`));
+    });
+    const inds = linhasCheias(S.indicadores).map(l => semAcento(l[0]).slice(0, 10));
+    if (inds.length && res.every(l => !inds.some(i => semAcento(l[0]).includes(i)))) r.push(A('Os indicadores daqui não batem com os do item 6.3. Usem os mesmos nomes.'));
+    if (!tem(S.resultadosTexto)) r.push(E('Escrevam como os resultados foram obtidos e o que eles mostram.'));
+    if (S.ficticia && tem(S.resultadosTexto) && !/simula/i.test(S.resultadosTexto)) r.push(A('Organização fictícia: digam que os resultados foram obtidos por simulação.'));
+    return r;
+  },
+  vazio: () => vazioTab(S.resultados) && !tem(S.resultadosTexto),
+});
+sec({ id: 'financeiro', grp: '8 Resultados', nome: '8.2 Análise financeira',
+  ori: `<p>Traduzam a melhoria em dinheiro. O <b>investimento</b> vem do custo total do plano 5W2H (item 6.2). Informem a <b>economia por mês</b> e expliquem a conta: o <b>payback</b> (tempo de retorno) é calculado sozinho.</p>
+  <p class="small">Ex.: Cada compra emergencial custava R$ 60,00 a mais. Com a redução de 9 para 2 compras por mês, a economia é de 7 × R$ 60,00 = R$ 420,00 por mês.</p>`,
+  campos: [{ t: 'financeiro' }],
+  check() {
+    const r = [...analisa(S.economiaTexto, { numero: true }), ...analisa(S.financeiroTexto)];
+    if (!tem(S.economiaTexto)) r.push(E('Expliquem como a economia foi calculada.'));
+    if (!temNum(S.economiaMensal)) r.push(E('Informem a economia por mês (em R$).'));
+    if (!custo5w2h() && linhasCheias(S.w2h).length) r.push(A('O plano 5W2H está com custo total zero. Confiram a coluna “Quanto”.'));
+    const pb = payback();
+    if (pb != null && pb < 0.1) r.push(A('O retorno ficou rápido demais. Confiram se a economia está por mês.'));
+    return r;
+  },
+  vazio: () => !tem(S.economiaTexto) && !tem(S.economiaMensal),
+});
+sec({ id: 'discussao', grp: '8 Resultados', nome: '8.3 Discussão',
+  ori: `<p>Discutir é <b>explicar</b>: por que os resultados aconteceram, se confirmam a teoria do Capítulo 3 (citem os autores de novo), por que alguma meta não foi atingida e quais foram as limitações.</p>
+  <p>Para cada objetivo específico, digam o resultado e se foi atingido.</p>`,
+  campos: [{ t: 'discussao' }, { t: 'area', k: 'discussaoTexto', rot: 'Discussão' }],
+  check() {
+    const es = S.objEsp.filter(tem), r = [];
+    if (!es.length) return [A('Primeiro preencham os objetivos específicos (item 1.4).')];
+    es.forEach((o, i) => { const d = S.discussao[i] || {}; if (!tem(d.resultado)) r.push(E(`Objetivo “${o.slice(0, 40)}…”: falta o resultado.`)); if (!tem(d.situacao)) r.push(E(`Objetivo “${o.slice(0, 40)}…”: falta a situação.`)); });
+    if (!tem(S.discussaoTexto)) r.push(E('Escrevam a discussão dos resultados.'));
+    else {
+      r.push(...analisa(S.discussaoTexto, { citacao: 'exige', min: 80 }));
+      if (!/limita/i.test(S.discussaoTexto)) r.push(A('Comentem as limitações do trabalho.'));
+    }
+    return r;
+  },
+  vazio: () => !(S.discussao || []).some(d => d && (tem(d.resultado) || tem(d.situacao))) && !tem(S.discussaoTexto),
+});
+
+/* ---------------------------------------------------- 9 CONCLUSÃO */
+sec({ id: 'conclusao', grp: '9 Conclusão', nome: '9 Conclusão',
+  ori: `<p>Roteiro: (1) respondam diretamente ao problema de pesquisa; (2) mostrem que o objetivo geral foi atingido; (3) comentem cada objetivo específico e onde foi cumprido; (4) contribuições para a organização e para a equipe; (5) limitações; (6) sugestões de trabalhos futuros.</p>
+  <p>Não tragam dados novos nem citações, não repitam o resumo e não afirmem resultados maiores que os do Capítulo 8.</p>`,
+  campos: [{ t: 'area', k: 'conclusao', rot: 'Texto da conclusão' }],
+  check() {
+    const s = S.conclusao, r = analisa(s, { min: 150, semCitacao: true });
+    if (!tem(s)) return r;
+    if (!temNumero(s)) r.push(A('Citem o principal resultado com número para responder ao problema.'));
+    if (!/objetivo geral/i.test(s)) r.push(A('Digam se o objetivo geral foi atingido.'));
+    if (!/futur|sugere-se|sugest/i.test(s)) r.push(A('Incluam sugestões de trabalhos futuros.'));
+    if (!/limita/i.test(s)) r.push(A('Comentem as limitações.'));
+    if (!/contribu/i.test(s)) r.push(A('Digam as contribuições para a organização e para a equipe.'));
+    return r;
+  },
+  vazio: () => !tem(S.conclusao),
+});
+sec({ id: 'resumo', grp: '9 Conclusão', nome: 'Resumo',
+  ori: `<p>Escrevam o resumo <b>por último</b>. Um parágrafo de 150 a 500 palavras, nesta ordem: tema, organização e problema (com número), objetivo, metodologia, ferramentas, principais resultados (com números) e conclusão. Sem citações.</p><p>Palavras-chave: de 3 a 5, separadas por ponto.</p>`,
+  campos: [{ t: 'area', k: 'resumo', rot: 'Resumo', contador: true }, { t: 'input', k: 'palavras', rot: 'Palavras-chave', dica: 'Ex.: Planejamento e Controle da Produção. Gestão de estoques. Kanban.' }],
+  check() {
+    const s = L(S.resumo), r = analisa(s, { semCitacao: true });
+    if (s) {
+      const n = palavras(s);
+      if (n < 150) r.push(E(`O resumo tem ${n} palavras. O mínimo é 150.`));
+      if (n > 500) r.push(E(`O resumo tem ${n} palavras. O máximo é 500.`));
+      if (/\n\s*\S/.test(s)) r.push(A('O resumo é um parágrafo só.'));
+      if (!temNumero(s)) r.push(E('O resumo precisa dos principais resultados com número.'));
+    }
+    const p = L(S.palavras).split(/[.;]/).map(L).filter(Boolean);
+    if (tem(S.palavras) && (p.length < 3 || p.length > 5)) r.push(A(`São ${p.length} palavras-chave. Usem de 3 a 5, separadas por ponto.`));
+    if (!tem(S.palavras)) r.push(E('Faltam as palavras-chave.'));
+    return r;
+  },
+  vazio: () => !tem(S.resumo) && !tem(S.palavras),
+});
+sec({ id: 'referencias', grp: 'Final', nome: 'Referências',
+  ori: `<p>Coloquem aqui <b>todas as obras citadas</b> no texto, e só elas. A formatação ABNT e a ordem alfabética são feitas sozinhas.</p><p>Usem fontes confiáveis: livros, artigos (Google Acadêmico, SciELO, ENEGEP), normas e sites oficiais.</p>`,
+  campos: [{ t: 'refs', k: 'referencias' }],
+  check() {
+    const rs = S.referencias.filter(x => tem(x.titulo) || tem(x.livre)), r = [];
+    if (!rs.length) return [];
+    if (rs.length < 5) r.push(A(`São ${rs.length} referências. O mínimo são 5.`));
+    rs.forEach((x, i) => {
+      const p = `Referência ${i + 1}: `;
+      if (x.tipo === 'livre') return;
+      if (x.tipo === 'livro') { if (!tem(x.sobrenome)) r.push(E(p + 'falta o sobrenome do autor.')); if (!tem(x.editora) || !tem(x.cidade)) r.push(E(p + 'faltam cidade e editora.')); if (!/\d{4}/.test(x.ano || '')) r.push(E(p + 'falta o ano.')); }
+      if (x.tipo === 'site') { if (!/^https?:\/\//i.test(L(x.url))) r.push(E(p + 'falta o endereço completo (começando com https://).')); if (!tem(x.acesso)) r.push(E(p + 'falta a data de acesso.')); if (!tem(x.sobrenome) && !tem(x.entidade)) r.push(A(p + 'falta o autor ou a entidade responsável.')); }
+      if (RX.loja.test(x.url || '')) r.push(E(p + 'link de loja não é referência. Usem os dados do livro.'));
+    });
+    const textos = [S.tema, S.contexto, S.justificativa, S.tipoPesquisa, S.discussaoTexto, ...S.fund.map(f => f.texto)].join(' ');
+    const citados = new Set();
+    (textos.match(/\(([A-ZÀ-Ý][A-ZÀ-Ý-]+)[^,)]*,\s*\d{4}/g) || []).forEach(m => citados.add(m.replace(/^\(/, '').split(/[,\s;]/)[0].toUpperCase()));
+    (textos.match(/\b([A-ZÀ-Ý][a-zà-ÿ]+)(?:\s+et al\.)?\s*\(\d{4}/g) || []).forEach(m => { const w = m.split(/[\s(]/)[0]; if (!/^(Segundo|Conforme|Para|De|Em|Assim|Como|Já|Ainda|Nesse|Neste|Por)$/.test(w)) citados.add(w.toUpperCase()); });
+    const nos = rs.map(x => semAcento(L(x.sobrenome) + ' ' + L(x.entidade) + ' ' + L(x.livre)).toUpperCase());
+    citados.forEach(c => { if (!nos.some(n => n.includes(semAcento(c).toUpperCase()))) r.push(E(`O texto cita ${c}, mas essa obra não está nas referências.`)); });
+    return r;
+  },
+  vazio: () => !S.referencias.some(x => tem(x.titulo) || tem(x.livre)),
+});
+sec({ id: 'apendices', grp: 'Final', nome: 'Apêndices e siglas',
+  ori: `<p><b>A – Roteiro de entrevista:</b> as perguntas feitas (se houve entrevista). <b>B – Uso de IA:</b> registrem cada uso de ChatGPT, Gemini, Copilot ou outra IA, com o pedido (prompt) exato, ou marquem que não usaram. <b>C – Tarefas:</b> o que cada integrante fez.</p>`,
+  campos: [
+    { t: 'area', k: 'roteiro', rot: 'Apêndice A – Roteiro de entrevista (uma pergunta por linha)', opc: true },
+    { t: 'check', k: 'naoUsouIA', rot: 'A equipe não usou inteligência artificial neste trabalho' },
+    { t: 'tabela', k: 'ia', rot: 'Apêndice B – Uso de inteligência artificial', cols: ['Ferramenta', 'Data', 'Para que foi usada', 'Pedido feito (prompt)', 'Como a equipe conferiu e usou'], pesos: [1.2, 1, 1.8, 2.6, 2.4], se: () => !S.naoUsouIA },
+    { t: 'tarefas' },
+    { t: 'tabela', k: 'siglas', rot: 'Siglas usadas no texto', cols: ['Sigla', 'Significado'], pesos: [1, 4] },
+  ],
+  check() {
+    const r = [];
+    if (!S.naoUsouIA && vazioTab(S.ia)) r.push(E('Preencham o uso de IA ou marquem que a equipe não usou.'));
+    linhasCheias(S.ia).forEach(l => { if (!tem(l[3])) r.push(E(`IA “${l[0] || '?'}”: falta o pedido (prompt) exato.`)); if (!tem(l[4])) r.push(A(`IA “${l[0] || '?'}”: digam como a equipe conferiu o resultado.`)); });
+    S.integrantes.forEach((n, i) => { if (tem(n) && !tem((S.tarefas || [])[i])) r.push(E(`Faltam as tarefas de ${n.split(' ')[0]}.`)); });
+    r.push(...analisa(S.roteiro));
+    return r;
+  },
+  vazio: () => vazioTab(S.ia) && !S.naoUsouIA && !(S.tarefas || []).some(tem) && !tem(S.roteiro),
+});
+sec({ id: 'entrega', grp: 'Final', nome: 'Gerar o TCC', entrega: true });
+
+/* =====================================================================
+   STATUS
+   ===================================================================== */
+function status(s) {
+  if (s.entrega) return null;
+  if (s.vazio && s.vazio()) return { c: s.opc ? 'nada' : 'nada', txt: s.opc ? 'opcional' : 'vazio', erros: 0, avisos: 0, itens: [] };
+  const itens = s.check ? s.check() : [];
+  const erros = itens.filter(i => i.n === 'erro').length, avisos = itens.filter(i => i.n === 'aviso').length;
+  if (erros) return { c: 'bad', txt: `✗ ${erros}`, erros, avisos, itens };
+  if (avisos) return { c: 'mid', txt: `! ${avisos}`, erros, avisos, itens };
+  return { c: 'ok', txt: '✓', erros, avisos, itens };
+}
+
+/* =====================================================================
+   INTERFACE
+   ===================================================================== */
+let atual = SEC[0].id;
+try { const u = localStorage.getItem(CHAVE + '-sec'); if (u && SEC.find(s => s.id === u)) atual = u; } catch (e) {}
+const $ = (s, el = document) => el.querySelector(s);
+const esc = s => String(s == null ? '' : s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+function toast(m) { const t = $('#toast'); t.textContent = m; t.hidden = false; clearTimeout(toast.t); toast.t = setTimeout(() => t.hidden = true, 2600); }
+function dialogo(html, botoes) {
+  return new Promise(res => {
+    const d = $('#dlg'); $('#dlgBody').innerHTML = html; const b = $('#dlgBtns'); b.innerHTML = '';
+    botoes.forEach(([txt, val, cls]) => { const x = document.createElement('button'); x.textContent = txt; if (cls) x.className = cls; x.onclick = () => { d.close(); res(val); }; b.appendChild(x); });
+    d.showModal();
+  });
+}
+
+function desenharNav() {
+  const nav = $('#nav'), sel = $('#selSec');
+  let h = '', g = '', o = '';
+  SEC.forEach(s => {
+    if (s.grp !== g) { g = s.grp; h += `<div class="grp">${esc(g)}</div>`; }
+    const st = status(s);
+    h += `<button data-s="${s.id}" class="${s.id === atual ? 'cur' : ''}"><span>${esc(s.nome)}</span>${st ? `<span class="st ${st.c}">${st.txt}</span>` : '<span class="st ok">⬇</span>'}</button>`;
+    o += `<option value="${s.id}" ${s.id === atual ? 'selected' : ''}>${esc(s.nome)}${st ? ' — ' + st.txt : ''}</option>`;
+  });
+  nav.innerHTML = h; sel.innerHTML = o;
+}
+$('#nav').addEventListener('click', e => { const b = e.target.closest('button[data-s]'); if (b) ir(b.dataset.s); });
+$('#selSec').addEventListener('change', e => ir(e.target.value));
+function ir(id) { atual = id; try { localStorage.setItem(CHAVE + '-sec', id); } catch (e) {} desenhar(); window.scrollTo({ top: 0, behavior: 'smooth' }); }
+
+function desenharSug() {
+  const s = SEC.find(x => x.id === atual); const box = $('#sugBox'); if (!box || !s || s.entrega) return;
+  const st = status(s);
+  let h = '<h3>Sugestões</h3>';
+  if (st.c === 'nada') h += `<p class="muted small">${s.opc ? 'Parte opcional. Se ficar em branco, não entra no trabalho.' : 'Comecem a preencher: as sugestões aparecem aqui enquanto vocês escrevem.'}</p>`;
+  else if (!st.itens.length) h += '<div class="tudook">✓ Esta parte está boa!</div>';
+  else {
+    const ord = { erro: 0, aviso: 1, ok: 2 };
+    h += '<ul>' + st.itens.sort((a, b) => ord[a.n] - ord[b.n]).map(i =>
+      `<li class="${i.n}"><b class="ic">${i.n === 'erro' ? '✗' : i.n === 'aviso' ? '!' : '✓'}</b><span>${esc(i.m)}</span>${i.t ? `<span class="tr">${esc(i.t)}</span>` : ''}</li>`).join('') + '</ul>';
+    if (!st.erros) h += '<p class="small muted" style="margin-top:10px">Sem nada obrigatório: os avisos são para revisar.</p>';
+  }
+  box.innerHTML = h;
+}
+let atT = null;
+function mudou() { salvar(); clearTimeout(atT); atT = setTimeout(() => { desenharSug(); desenharNav(); }, 350); }
+
+/* ---------- renderizadores de campos ---------- */
+function get(k) { return S[k]; }
+function campoHTML(c, i) {
+  const id = 'c' + i;
+  const rot = c.rot ? `<label class="f" for="${id}">${esc(c.rot)}${c.opc ? ' <span class="muted">(opcional)</span>' : ''}</label>` : '';
+  const dica = c.dica ? `<p class="hint">${esc(c.dica)}</p>` : '';
+  switch (c.t) {
+    case 'input': return rot + `<input type="text" id="${id}" data-k="${c.k}" value="${esc(get(c.k))}">` + dica;
+    case 'area': return rot + `<textarea id="${id}" data-k="${c.k}" class="${c.curto ? 'short' : ''}">${esc(get(c.k))}</textarea>` + (c.contador ? `<div class="cnt" data-cnt="${c.k}">${palavras(get(c.k))} palavras</div>` : '') + dica;
+    case 'select': return rot + `<select id="${id}" data-k="${c.k}">${c.opcoes.map(([v, t]) => `<option value="${v}" ${get(c.k) === v ? 'selected' : ''}>${esc(t)}</option>`).join('')}</select>` + dica;
+    case 'check': return `<label class="f" style="display:flex;gap:10px;align-items:center;font-weight:700"><input type="checkbox" data-chk="${c.k}" ${S[c.k] ? 'checked' : ''} style="width:22px;height:22px"> ${esc(c.rot)}</label>`;
+    case 'lista': {
+      const arr = S[c.k];
+      return rot + arr.map((v, j) => `<div class="row" style="margin-bottom:6px;flex-wrap:nowrap"><span class="muted small" style="width:22px">${c.k === 'objEsp' ? 'abcdef'[j] + ')' : j + 1}</span><input type="text" data-arr="${c.k}" data-i="${j}" value="${esc(v)}">${!c.fixo && arr.length > 1 ? `<button class="mini ghost" data-del-arr="${c.k}" data-i="${j}" title="Remover">✕</button>` : ''}</div>`).join('')
+        + (!c.fixo && arr.length < c.max ? `<button class="mini" data-add-arr="${c.k}">+ Adicionar</button>` : '') + dica;
+    }
+    case 'banca': return rot + S.banca.map((b, j) => `<div class="row" style="margin-bottom:6px;flex-wrap:nowrap"><input type="text" placeholder="Nome do professor" data-banca="${j}" data-f="nome" value="${esc(b.nome)}"><input type="text" placeholder="Instituição" data-banca="${j}" data-f="inst" value="${esc(b.inst)}"></div>`).join('') + dica;
+    case 'tabela': {
+      if (c.se && !c.se()) return '';
+      const cols = typeof c.cols === 'function' ? c.cols() : c.cols;
+      const arr = S[c.k];
+      const calc = calcDe(c);
+      let h = rot + `<div class="tablewrap"><table class="ed" data-tab="${c.k}"><thead><tr>${cols.map(x => `<th>${esc(x)}</th>`).join('')}${calc ? `<th>${esc(calc.cab)}</th>` : ''}<th></th></tr></thead><tbody>`;
+      arr.forEach((l, j) => {
+        h += '<tr>' + cols.map((_, q) => {
+          const opts = c.sel && c.sel[q];
+          if (opts) return `<td><select data-t="${c.k}" data-r="${j}" data-c="${q}">${opts.map(o => `<option ${l[q] === o ? 'selected' : ''}>${esc(o)}</option>`).join('')}</select></td>`;
+          return `<td><input type="text" data-t="${c.k}" data-r="${j}" data-c="${q}" value="${esc(l[q])}"></td>`;
+        }).join('') + (calc ? `<td data-calc="${c.k}-${j}" style="padding:10px 8px;font-family:var(--f-mono);white-space:nowrap">${esc(calc.f(l))}</td>` : '') + `<td class="x"><button class="mini ghost" data-del-row="${c.k}" data-r="${j}" title="Remover linha">✕</button></td></tr>`;
+      });
+      if (c.somaCol != null) h += `<tr class="tot"><td colspan="${cols.length - 1}">${esc(c.somaRot || 'Total')}</td><td id="soma-${c.k}">${somaTxt(c)}</td>${calc ? '<td></td>' : ''}<td></td></tr>`;
+      h += `</tbody></table></div><button class="mini" style="margin-top:6px" data-add-row="${c.k}" data-n="${cols.length}">+ Linha</button>` + dica;
+      return h;
+    }
+    case 'figura': return rot + figuraHTML(c.k, S[c.k], c.legPad);
+    case 'topicos': return S.fund.map((f, j) => `<div class="bloco"><div class="cab"><b>Tópico ${c.pref || '3'}.${j + 1}</b>${S.fund.length > 1 ? `<button class="mini danger" data-del-obj="fund" data-i="${j}">Remover</button>` : ''}</div>
+      <label class="f">Título do tópico</label><input type="text" data-obj="fund" data-i="${j}" data-f="titulo" value="${esc(f.titulo)}" placeholder="Ex.: Gestão de estoques">
+      <label class="f">Texto</label><textarea data-obj="fund" data-i="${j}" data-f="texto">${esc(f.texto)}</textarea></div>`).join('')
+      + (S.fund.length < (c.max || 6) ? '<button class="mini" data-add-obj="fund">+ Tópico</button>' : '');
+    case 'ferramentas': return S.ferramentas.map((x, j) => `<div class="bloco"><div class="cab"><b>Ferramenta 7.${j + 1}</b><span class="row">${j > 0 ? `<button class="mini ghost" data-up="${j}" title="Subir">↑</button>` : ''}${S.ferramentas.length > 1 ? `<button class="mini danger" data-del-obj="ferramentas" data-i="${j}">Remover</button>` : ''}</span></div>
+      <label class="f">Nome da ferramenta</label><input type="text" data-obj="ferramentas" data-i="${j}" data-f="titulo" value="${esc(x.titulo)}" placeholder="Ex.: Ponto de pedido e estoque de segurança">
+      <label class="f">1. Dados de entrada (com números e unidades)</label><textarea class="short" data-obj="ferramentas" data-i="${j}" data-f="dados" placeholder="Ex.: O ponto de pedido foi calculado considerando 25 dias de produção por mês, prazo de entrega de três dias...">${esc(x.dados)}</textarea>
+      <label class="f">2. Fórmula ou método <span class="muted">(opcional se for uma tabela)</span></label><input type="text" data-obj="ferramentas" data-i="${j}" data-f="formula" value="${esc(x.formula)}" placeholder="Ex.: PP = D × LT + ES">
+      <label class="f">O que é cada letra <span class="muted">(opcional)</span></label><input type="text" data-obj="ferramentas" data-i="${j}" data-f="variaveis" value="${esc(x.variaveis)}" placeholder="Ex.: PP é o ponto de pedido, D é a demanda média diária, LT é o prazo de entrega (dias) e ES é o estoque de segurança">
+      <label class="f">3. Cálculo e resultado <span class="muted">(com unidade)</span></label><input type="text" data-obj="ferramentas" data-i="${j}" data-f="substituicao" value="${esc(x.substituicao)}" placeholder="Ex.: PP = 12 × 3 + 12 = 48 kg">
+      <label class="f">Tabela ou gráfico <span class="muted">(opcional: print da planilha)</span></label>${figuraHTML('ferramentas.' + j, x.fig, 'Ex.: Classificação ABC dos insumos')}
+      <label class="f">4. Interpretação: o que o resultado significa para a organização</label><textarea class="short" data-obj="ferramentas" data-i="${j}" data-f="significado" placeholder="Ex.: Assim, sempre que o estoque chegar a 48 kg, um novo pedido deve ser feito.">${esc(x.significado)}</textarea></div>`).join('')
+      + (S.ferramentas.length < 8 ? '<button class="mini" data-add-obj="ferramentas">+ Ferramenta</button>' : '');
+    case 'financeiro': {
+      const inv = custo5w2h(), pb = payback();
+      return `<div class="bloco"><div class="row" style="justify-content:space-between"><span><b>Investimento</b> (custo total do 5W2H)</span><span style="font-family:var(--f-mono);font-weight:700">R$ ${real(inv)}</span></div>
+        ${linhasCheias(S.w2h).length ? '' : '<p class="hint">Preencham o plano 5W2H (item 6.2) para calcular o investimento.</p>'}</div>
+        <label class="f" for="cEco">Como a economia foi calculada</label><textarea id="cEco" class="short" data-k="economiaTexto">${esc(S.economiaTexto)}</textarea>
+        <label class="f" for="cEcoM">Economia por mês (R$)</label><input type="text" id="cEcoM" data-k="economiaMensal" value="${esc(S.economiaMensal)}" placeholder="Ex.: 420,00" style="max-width:220px">
+        <div class="bloco"><div class="row" style="justify-content:space-between"><span><b>Payback</b> = investimento ÷ economia mensal</span><span id="pbView" style="font-family:var(--f-mono);font-weight:700">${pbTxt()}</span></div></div>
+        <label class="f" for="cFin">Comentário <span class="muted">(opcional)</span></label><textarea id="cFin" class="short" data-k="financeiroTexto" placeholder="Ex.: O investimento, portanto, é recuperado em pouco mais de um mês.">${esc(S.financeiroTexto)}</textarea>`;
+    }
+    case 'tarefas': return '<label class="f">Apêndice C – O que cada integrante fez</label>' + (S.integrantes.some(tem) ? S.integrantes.map((n, j) => tem(n) ? `<div style="margin-bottom:8px"><span class="small"><b>${esc(n)}</b></span><input type="text" data-arr="tarefas" data-i="${j}" value="${esc((S.tarefas || [])[j] || '')}" placeholder="Ex.: entrevista na empresa, fluxograma e cálculo do ponto de pedido"></div>` : '').join('') : '<p class="hint">Preencham os nomes em “Dados da equipe”.</p>');
+    case 'discussao': {
+      const es = S.objEsp.filter(tem);
+      if (!es.length) return '<p class="note">Preencham primeiro os objetivos específicos no item 1.4.</p>';
+      return '<label class="f">Objetivos × resultados</label>' + S.objEsp.map((o, j) => tem(o) ? `<div class="bloco"><b>${esc(o)}</b>
+        <label class="f">Resultado obtido</label><input type="text" data-disc="${j}" data-f="resultado" value="${esc((S.discussao[j] || {}).resultado)}">
+        <label class="f">Situação</label><select data-disc="${j}" data-f="situacao">${['', 'Atingido', 'Atingido em parte', 'Não atingido'].map(v => `<option ${((S.discussao[j] || {}).situacao || '') === v ? 'selected' : ''}>${v}</option>`).join('')}</select></div>` : '').join('');
+    }
+    case 'refs': return S.referencias.map((x, j) => refHTML(x, j)).join('') + '<button class="mini" data-add-obj="referencias">+ Referência</button>';
+    case 'importar': return `<div class="bloco" style="background:var(--surface)">
+      <h3>Já começaram o TCC em outro arquivo?</h3>
+      <p class="small" style="margin:6px 0 10px">Enviem o arquivo (Word <b>.docx</b>, <b>PDF</b> ou <b>.txt</b>). O assistente lê o que vocês já escreveram no modelo do PCP e coloca cada parte no lugar certo, com figuras e tabelas. Depois é só conferir as sugestões de cada parte.</p>
+      <p class="hint" style="margin-bottom:10px">No Google Docs: Arquivo → Fazer download → Microsoft Word (.docx).</p>
+      <div class="row"><label class="btn primary">⬆ Enviar o que já fizemos<input type="file" id="fImport" accept=".docx,.pdf,.txt,application/pdf,application/vnd.openxmlformats-officedocument.wordprocessingml.document,text/plain" hidden></label>
+      <a class="btn" href="Modelo_TCC_Tecnico_PCP_CEEP.docx" download>⬇ Baixar o modelo do PCP em Word</a></div>
+      ${S.importadoDe ? `<p class="hint" style="margin-top:8px">Último arquivo enviado: ${esc(S.importadoDe)}</p>` : ''}
+      ${(S.sobras || []).length ? `<details style="margin-top:10px"><summary><b>${S.sobras.length} trecho(s) do arquivo que o assistente não soube onde colocar</b></summary>
+        <p class="hint">Copiem e colem na parte certa, ou apaguem se não servirem.</p>
+        <textarea readonly style="min-height:160px;font-size:.85rem">${esc(S.sobras.join('\n\n'))}</textarea>
+        <button class="mini danger" data-limpar-sobras="1">Apagar esta lista</button></details>` : ''}
+      ${(S.galeria || []).length ? `<p class="small" style="margin-top:10px"><b>${S.galeria.length} imagem(ns) do arquivo aguardando lugar.</b> Em qualquer figura, use “Usar imagem do arquivo enviado”. <button class="mini ghost" data-limpar-galeria="1">Apagar essas imagens</button></p>` : ''}
+    </div>`;
+  }
+  return '';
+}
+function figuraHTML(chave, f, legPad) {
+  f = f || {};
+  return `<div class="foto"><div class="th" data-th="${f.img || ''}">${f.img ? '' : 'sem imagem'}</div><div>
+    <div class="row"><label class="btn mini" style="min-height:34px;padding:4px 10px;font-size:.85rem">${f.img ? 'Trocar imagem' : 'Escolher foto/imagem'}<input type="file" accept="image/*" hidden data-foto="${chave}"></label>
+    ${f.img ? `<button class="mini ghost" data-tirar="${chave}">Tirar imagem</button>` : ''}
+    ${(S.galeria || []).length ? `<button class="mini" data-galeria="${chave}">Usar imagem do arquivo enviado (${S.galeria.length})</button>` : ''}</div>
+    <label class="f" style="margin-top:8px">Legenda</label><input type="text" data-leg="${chave}" data-f="legenda" value="${esc(f.legenda)}" placeholder="${esc(legPad || 'Descreva a imagem')}">
+    <label class="f">Fonte</label><input type="text" data-leg="${chave}" data-f="fonte" value="${esc(f.fonte)}" placeholder="Fonte: os autores (${ANO}).">
+    <p class="hint">Deixe a fonte em branco se a foto ou o desenho for do grupo. Imagem da internet: informe o site.</p></div></div>`;
+}
+const TIPOS_REF = [['livro', 'Livro'], ['site', 'Site ou página da internet'], ['norma', 'Norma (NR, NBR)'], ['livre', 'Outro (escrever completo)']];
+function refHTML(x, j) {
+  const inp = (f, ph, rot) => `<div><label class="f">${rot}</label><input type="${f === 'acesso' ? 'date' : 'text'}" data-obj="referencias" data-i="${j}" data-f="${f}" value="${esc(x[f])}" placeholder="${esc(ph)}"></div>`;
+  let campos = '';
+  if (x.tipo === 'livro') campos = `<div class="row" style="flex-wrap:nowrap">${inp('sobrenome', 'Ex.: Melconian', 'Sobrenome do autor')}${inp('nome', 'Ex.: Sarkis', 'Nome')}</div>${inp('titulo', 'Ex.: Elementos de máquinas', 'Título do livro')}${inp('subtitulo', '', 'Subtítulo (opcional)')}<div class="row" style="flex-wrap:nowrap">${inp('edicao', 'Ex.: 10', 'Edição')}${inp('cidade', 'Ex.: São Paulo', 'Cidade')}${inp('editora', 'Ex.: Érica', 'Editora')}${inp('ano', 'Ex.: 2012', 'Ano')}</div>`;
+  else if (x.tipo === 'site') campos = `${inp('entidade', 'Ex.: Gerdau', 'Site ou empresa (quando não há autor)')}<div class="row" style="flex-wrap:nowrap">${inp('sobrenome', '', 'Sobrenome do autor (se houver)')}${inp('nome', '', 'Nome')}</div>${inp('titulo', 'Título da página', 'Título da página')}${inp('url', 'https://...', 'Endereço (link)')}<div class="row" style="flex-wrap:nowrap">${inp('ano', '', 'Ano (se houver)')}${inp('acesso', '', 'Data de acesso')}</div>`;
+  else if (x.tipo === 'norma') campos = `${inp('entidade', 'Ex.: Brasil. Ministério do Trabalho e Emprego', 'Órgão responsável')}${inp('titulo', 'Ex.: NR-12: segurança no trabalho em máquinas e equipamentos', 'Número e título da norma')}<div class="row" style="flex-wrap:nowrap">${inp('cidade', 'Ex.: Brasília', 'Cidade')}${inp('editora', 'Ex.: MTE', 'Editora/órgão')}${inp('ano', '', 'Ano')}</div>${inp('url', 'https://... (opcional)', 'Endereço (opcional)')}${inp('acesso', '', 'Data de acesso (se usou o link)')}`;
+  else campos = `<label class="f">Referência completa em ABNT</label><textarea class="short" data-obj="referencias" data-i="${j}" data-f="livre">${esc(x.livre)}</textarea>`;
+  return `<div class="bloco"><div class="cab"><select data-obj="referencias" data-i="${j}" data-f="tipo" style="max-width:300px">${TIPOS_REF.map(([v, t]) => `<option value="${v}" ${x.tipo === v ? 'selected' : ''}>${t}</option>`).join('')}</select><button class="mini danger" data-del-obj="referencias" data-i="${j}">Remover</button></div>${campos}
+    <p class="small" style="margin:10px 0 0;padding:8px 10px;background:var(--surface);border-radius:8px" id="refprev-${j}">${prevRef(x)}</p></div>`;
+}
+function prevRef(x) {
+  try { if (window.TCCDocx && (tem(x.titulo) || tem(x.livre))) return '<span class="muted">Vai ficar assim:</span><br>' + TCCDocx.formatarRef(x).partes.map(p => p.b ? `<b>${esc(p.t)}</b>` : esc(p.t)).join(''); } catch (e) {}
+  return '<span class="muted">A referência formatada aparece aqui.</span>';
+}
+function calcDe(c) {
+  if (c.calc) return c.calc;
+  if (c.pareto) return { cab: '%', f: l => { const t = linhasCheias(S[c.k]).reduce((a, x) => a + numBR(x[1]), 0); return temNum(l[1]) && t ? fmt(numBR(l[1]) / t * 100, 0) + '%' : ''; } };
+  return null;
+}
+function somaTxt(c) { const t = linhasCheias(S[c.k]).reduce((a, l) => a + numBR(l[c.somaCol]), 0); return c.somaReal ? real(t) : fmt(t, 2); }
+function pbTxt() { const pb = payback(); return pb == null ? '—' : fmt(pb, 1) + (pb < 2 ? ' mês' : ' meses'); }
+
+function desenhar() {
+  desenharNav();
+  const s = SEC.find(x => x.id === atual);
+  const i = SEC.indexOf(s);
+  const ant = SEC[i - 1], prox = SEC[i + 1];
+  const navb = `<div class="navbtns">${ant ? `<button data-ir="${ant.id}">← ${esc(ant.nome)}</button>` : '<span></span>'}${prox ? `<button class="primary" data-ir="${prox.id}">${esc(prox.nome)} →</button>` : ''}</div>`;
+  if (s.entrega) { $('#main').innerHTML = entregaHTML() + navb; return; }
+  $('#main').innerHTML = `<div class="cols"><div class="panel">
+      <div class="eyebrow">${esc(s.grp)}</div><h2 style="margin:4px 0 12px">${esc(s.nome)}</h2>
+      <div class="note">${s.ori}</div>
+      ${s.campos.map(campoHTML).join('')}
+      ${navb}
+    </div><aside class="panel sug" id="sugBox" aria-live="polite"></aside></div>`;
+  desenharSug();
+  carregarMiniaturas();
+}
+async function carregarMiniaturas() {
+  for (const th of document.querySelectorAll('[data-th]')) {
+    const id = th.dataset.th; if (!id) continue;
+    const u = await urlImg(id);
+    if (u) th.innerHTML = `<img src="${u}" alt="">`; else th.textContent = 'imagem não encontrada';
+  }
+}
+
+/* ---------- eventos de edição ---------- */
+function alvoFig(chave) { // 'figFluxo' | 'ferramentas.2'
+  const [k, j] = chave.split('.');
+  if (j == null) return S[k];
+  const o = S[k][+j]; if (!o.fig) o.fig = figVazia(); return o.fig;
+}
+const main = document.getElementById('main');
+main.addEventListener('input', e => {
+  const t = e.target, d = t.dataset;
+  if (d.k) { S[d.k] = t.value; const c = main.querySelector(`[data-cnt="${d.k}"]`); if (c) c.textContent = palavras(t.value) + ' palavras'; if (d.k === 'economiaMensal') { const pv = $('#pbView'); if (pv) pv.textContent = pbTxt(); } if (d.k === 'dadosUnid') { const th = main.querySelector('table[data-tab="dados"] th:nth-child(2)'); if (th) th.textContent = L(t.value) || 'Ocorrências'; } }
+  else if (d.arr) { S[d.arr] = S[d.arr] || []; S[d.arr][+d.i] = t.value; }
+  else if (d.banca) S.banca[+d.banca][d.f] = t.value;
+  else if (d.t) {
+    S[d.t][+d.r][+d.c] = t.value;
+    atualizaCalc(d.t);
+  }
+  else if (d.obj) { S[d.obj][+d.i][d.f] = t.value; if (d.obj === 'referencias' && d.f !== 'tipo') { const pv = document.getElementById('refprev-' + d.i); if (pv) pv.innerHTML = prevRef(S.referencias[+d.i]); } }
+  else if (d.leg) alvoFig(d.leg)[d.f] = t.value;
+  else if (d.disc) { S.discussao[+d.disc] = S.discussao[+d.disc] || {}; S.discussao[+d.disc][d.f] = t.value; }
+  else return;
+  mudou();
+});
+main.addEventListener('change', async e => {
+  const t = e.target, d = t.dataset;
+  if (d.k && t.tagName === 'SELECT') { S[d.k] = t.value; mudou(); }
+  if (d.t && t.tagName === 'SELECT') { S[d.t][+d.r][+d.c] = t.value; atualizaCalc(d.t); mudou(); }
+  if (t.id === 'fImport') { const f = t.files[0]; t.value = ''; if (f) importarArquivo(f); return; }
+  if (d.obj === 'referencias' && d.f === 'tipo') { S.referencias[+d.i].tipo = t.value; mudou(); desenhar(); }
+  if (d.chk) { S[d.chk] = t.checked; mudou(); desenhar(); }
+  if (d.foto) {
+    const f = t.files[0]; if (!f) return;
+    try {
+      toast('Preparando a imagem…');
+      const im = await reduzirImagem(f); const id = novoId();
+      await IDB.put(id, im);
+      const alvo = alvoFig(d.foto); const velho = alvo.img; alvo.img = id;
+      if (velho && !idEmUso(velho)) IDB.del(velho).catch(() => {});
+      salvar(); desenhar(); toast('Imagem adicionada ✓');
+    } catch (err) { toast(err.message || 'Não consegui usar essa imagem.'); }
+  }
+});
+function atualizaCalc(k) {
+  const sec0 = SEC.find(x => x.id === atual); if (!sec0 || !sec0.campos) return;
+  const c = sec0.campos.find(x => x.t === 'tabela' && x.k === k); if (!c) return;
+  const calc = calcDe(c);
+  if (calc) S[k].forEach((l, j) => { const td = main.querySelector(`[data-calc="${k}-${j}"]`); if (td) td.textContent = calc.f(l); });
+  if (c.somaCol != null) { const el = document.getElementById('soma-' + k); if (el) el.textContent = somaTxt(c); }
+}
+function idEmUso(id) { return JSON.stringify(S).includes('"' + id + '"'); }
+function idEmUso2(id) { const g = S.galeria; S.galeria = []; const r = idEmUso(id); S.galeria = g; return r; }
+function escolherDaGaleria(chave) {
+  return new Promise(async res => {
+    const d = $('#dlg');
+    $('#dlgBody').innerHTML = '<p><b>Escolha a imagem</b></p><div id="galGrid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(110px,1fr));gap:8px;max-height:60vh;overflow:auto"></div>';
+    const grid = $('#galGrid');
+    for (const [j, g] of S.galeria.entries()) {
+      const u = await urlImg(g.img);
+      const b = document.createElement('button');
+      b.style.cssText = 'padding:4px;min-height:0;flex-direction:column;font-weight:400;font-size:.75rem';
+      b.innerHTML = `<img src="${u}" alt="" style="width:100%;height:80px;object-fit:cover;border-radius:6px">${esc((g.legenda || '').slice(0, 40))}`;
+      b.onclick = () => { const alvo = alvoFig(chave); const velho = alvo.img; Object.assign(alvo, { img: g.img, legenda: alvo.legenda || g.legenda, fonte: alvo.fonte || g.fonte }); S.galeria.splice(j, 1);
+        if (velho && !idEmUso(velho)) S.galeria.push({ img: velho, legenda: '', fonte: '' }); d.close(); res(true); };
+      grid.appendChild(b);
+    }
+    const bt = $('#dlgBtns'); bt.innerHTML = ''; const c = document.createElement('button'); c.textContent = 'Cancelar'; c.onclick = () => { d.close(); res(false); }; bt.appendChild(c);
+    d.showModal();
+  });
+}
+main.addEventListener('click', async e => {
+  const b = e.target.closest('button'); if (!b) return; const d = b.dataset;
+  if (d.ir) return ir(d.ir);
+  if (d.addArr) { S[d.addArr].push(''); }
+  else if (d.delArr) { S[d.delArr].splice(+d.i, 1); }
+  else if (d.addRow) { S[d.addRow].push(Array(+d.n).fill('')); }
+  else if (d.delRow) { if (S[d.delRow].length === 1) S[d.delRow][0] = S[d.delRow][0].map(() => ''); else S[d.delRow].splice(+d.r, 1); }
+  else if (d.addObj) {
+    const novo = { fund: { titulo: '', texto: '' }, ferramentas: ferrVazia(), referencias: { tipo: 'livro' } }[d.addObj];
+    S[d.addObj].push(novo);
+  }
+  else if (d.delObj) {
+    const ok = await dialogo('<p>Remover este item? Não dá para desfazer.</p>', [['Cancelar', false], ['Remover', true, 'danger']]);
+    if (!ok) return;
+    S[d.delObj].splice(+d.i, 1);
+    if (!S[d.delObj].length) S[d.delObj].push(d.delObj === 'referencias' ? { tipo: 'livro' } : d.delObj === 'ferramentas' ? ferrVazia() : { titulo: '', texto: '' });
+  }
+  else if (d.up) { const j = +d.up; [S.ferramentas[j - 1], S.ferramentas[j]] = [S.ferramentas[j], S.ferramentas[j - 1]]; }
+  else if (d.tirar) { const a = alvoFig(d.tirar); const v = a.img; a.img = ''; if (v && !idEmUso(v)) IDB.del(v).catch(() => {}); }
+  else if (d.gerar != null) return gerar();
+  else if (d.enviar != null) return enviar();
+  else if (d.limparSobras) { S.sobras = []; }
+  else if (d.galeria) { const ok = await escolherDaGaleria(d.galeria); if (!ok) return; }
+  else if (d.limparGaleria) { const ok = await dialogo('<p>Apagar as imagens que não foram usadas?</p>', [['Cancelar', false], ['Apagar', true, 'danger']]); if (!ok) return; for (const g of S.galeria) if (!idEmUso2(g.img)) IDB.del(g.img).catch(() => {}); S.galeria = []; }
+  else if (d.ver) return ir(d.ver);
+  else return;
+  salvar(); desenhar();
+});
+
+/* ---------- entrega ---------- */
+function entregaHTML() {
+  let erros = 0, avisos = 0, vazios = [];
+  const linhas = SEC.filter(s => !s.entrega).map(s => {
+    const st = status(s);
+    erros += st.erros; avisos += st.avisos;
+    if (st.c === 'nada' && !s.opc) vazios.push(s.nome);
+    return `<button data-ver="${s.id}"><span>${esc(s.nome)}</span><span class="st ${st.c}">${st.c === 'ok' ? '✓ ok' : st.txt}</span></button>`;
+  }).join('');
+  const pronto = !erros && !vazios.length;
+  return `<div class="panel"><div class="eyebrow">Final</div><h2 style="margin:4px 0 12px">Gerar o TCC</h2>
+    ${pronto ? '<div class="tudook">✓ Nenhum problema obrigatório. O trabalho está pronto para gerar!</div>'
+      : `<div class="note"><p><b>Ainda falta:</b> ${vazios.length ? `${vazios.length} parte(s) em branco` : ''}${vazios.length && erros ? ' e ' : ''}${erros ? `${erros} correção(ões) obrigatória(s) (✗)` : ''}.</p>
+         <p>Vocês podem gerar o arquivo mesmo assim para mostrar ao professor. O que faltar aparece no Word marcado em amarelo como <b>[FALTA: …]</b>.</p></div>`}
+    <h3 style="margin:16px 0 8px">Situação de cada parte</h3><div class="resumo-grid">${linhas}</div>
+    <h3 style="margin:4px 0 8px">Entregar</h3>
+    ${urlEnvio() ? `<div class="row"><button class="primary" data-enviar="1" id="bEnviar">📤 Enviar para o professor</button>${S.ultimoEnvio ? `<span class="small muted">Último envio: ${esc(S.ultimoEnvio)}</span>` : ''}</div>
+      <p class="hint">O professor recebe o Word formatado e a cópia de trabalho. Podem enviar de novo quando quiserem: cada envio fica guardado com a data.</p>`
+      : '<p class="hint">O envio direto para o professor ainda não foi ativado. Baixem o Word e entreguem no Classroom.</p>'}
+    <h3 style="margin:16px 0 8px">Baixar</h3>
+    <div class="row"><button data-gerar="1" id="bGerar">⬇ Baixar o TCC em Word (formatado)</button><button id="bCopia2" onclick="salvarCopia()">Salvar cópia do trabalho</button>
+    <a class="btn" href="Modelo_TCC_Tecnico_PCP_CEEP.docx" download>Modelo do PCP (Word)</a></div>
+    <div class="note" style="margin-top:14px"><p><b>Como entregar:</b> ${urlEnvio() ? 'usem o botão “Enviar para o professor”.' : 'postem o arquivo Word no Classroom. O professor abre e corrige.'}</p>
+    <p>O sumário e a lista de figuras são atualizados ao abrir no Word (clique em “Sim” se ele perguntar). No Google Docs, clique no sumário e em <b>atualizar</b>.</p>
+    <p>Para continuar o trabalho em outro computador, usem <b>Salvar cópia</b> e depois <b>Abrir cópia</b>.</p></div></div>`;
+}
+const urlEnvio = () => L(window.TCC_CONFIG && window.TCC_CONFIG.urlEnvio);
+async function montarDocx() {
+  const imgs = {};
+  const semGaleria = Object.assign({}, S, { galeria: [] });
+  const ids = (JSON.stringify(semGaleria).match(/"i[a-z0-9]{8,}"/g) || []).map(x => x.slice(1, -1));
+  for (const id of new Set(ids)) { const v = await IDB.get(id).catch(() => null); if (v) imgs[id] = { data: new Uint8Array(v.data), w: v.w, h: v.h, type: v.type }; }
+  const doc = TCCDocx.construir(S, imgs, window.docx);
+  return docx.Packer.toBlob(doc);
+}
+const nomeDocx = () => 'TCC_' + (L(S.titulo) || 'PCP').normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^A-Za-z0-9]+/g, '_').slice(0, 50) + '.docx';
+async function gerar() {
+  const b = $('#bGerar');
+  if (!window.docx || !window.TCCDocx) { toast('Aguarde: a ferramenta ainda está carregando.'); return; }
+  try {
+    b.disabled = true; b.textContent = 'Gerando…';
+    const blob = await montarDocx();
+    baixar(blob, nomeDocx());
+    toast('Arquivo gerado ✓');
+  } catch (err) { console.error(err); toast('Erro ao gerar o arquivo. Salvem uma cópia e avisem o professor.'); }
+  finally { b.disabled = false; b.textContent = '⬇ Baixar o TCC em Word (formatado)'; }
+}
+/* ---------- enviar para o professor (Google Apps Script do professor) ---------- */
+const blobB64 = blob => new Promise((res, rej) => { const r = new FileReader(); r.onload = () => res(String(r.result).split(',')[1] || ''); r.onerror = () => rej(r.error); r.readAsDataURL(blob); });
+const agoraBR = () => new Date().toLocaleString('pt-BR', { dateStyle: 'short', timeStyle: 'short' });
+async function enviar() {
+  const url = urlEnvio(); if (!url) return;
+  if (!window.docx || !window.TCCDocx) { toast('Aguarde: a ferramenta ainda está carregando.'); return; }
+  const nomes = S.integrantes.filter(tem);
+  if (!tem(S.titulo) || !nomes.length) { await dialogo('<p><b>Antes de enviar,</b> preencham o título e os nomes em “Dados da equipe”.</p>', [['Entendi', true, 'primary']]); return ir('grupo'); }
+  let erros = 0, avisos = 0, vazias = 0;
+  SEC.filter(s => !s.entrega).forEach(s => { const st = status(s); erros += st.erros; avisos += st.avisos; if (st.c === 'nada' && !s.opc) vazias++; });
+  const ok = await dialogo(`<p><b>Enviar o trabalho para o professor?</b></p>
+    <p class="small"><b>${esc(S.titulo)}</b><br>${nomes.map(esc).join(', ')}</p>
+    ${erros || vazias ? `<p class="small" style="color:var(--bad)">Ainda há ${vazias ? vazias + ' parte(s) em branco' : ''}${vazias && erros ? ' e ' : ''}${erros ? erros + ' correção(ões) obrigatória(s)' : ''}. Podem enviar assim mesmo, por exemplo para o professor ver como está.</p>` : '<p class="small" style="color:var(--ok)">✓ Nenhuma correção obrigatória pendente.</p>'}`,
+    [['Cancelar', false], ['Enviar', true, 'primary']]);
+  if (!ok) return;
+  const b = $('#bEnviar'); b.disabled = true; b.textContent = 'Preparando…';
+  try {
+    const docxB64 = await blobB64(await montarDocx());
+    const copiaB64 = await blobB64(new Blob([JSON.stringify(await dadosCopia())], { type: 'application/json' }));
+    const corpo = JSON.stringify({ app: APP, curso: 'PCP', titulo: L(S.titulo), integrantes: nomes, equipamento: L(S.organizacao), organizacao: L(S.organizacao), erros, avisos, vazias, docxB64, copiaB64 });
+    if (corpo.length > 45 * 1024 * 1024) throw new Error('O trabalho ficou grande demais para enviar. Tirem algumas fotos repetidas.');
+    b.textContent = 'Enviando…';
+    let resp = null;
+    try { const r = await fetch(url, { method: 'POST', body: corpo, redirect: 'follow' }); resp = await r.json(); } catch (e) { resp = null; }
+    if (resp && resp.ok) {
+      S.ultimoEnvio = agoraBR(); salvar(); desenhar();
+      await dialogo('<p style="font-size:2.5rem;margin:0;color:var(--ok);text-align:center">✓</p><p style="text-align:center"><b>Trabalho enviado ao professor!</b></p><p class="small" style="text-align:center">Se fizerem mudanças, podem enviar de novo.</p>', [['Ok', true, 'primary']]);
+      return;
+    }
+    if (resp && resp.erro) throw new Error(resp.erro);
+    // plano B: envio por formulário numa nova aba (quando o recebedor exige estar logado no @escola)
+    const f = document.createElement('form');
+    f.method = 'POST'; f.action = url; f.target = '_blank'; f.style.display = 'none';
+    const t = document.createElement('textarea'); t.name = 'dados'; t.value = corpo; f.appendChild(t);
+    document.body.appendChild(f); f.submit(); setTimeout(() => f.remove(), 3000);
+    S.ultimoEnvio = agoraBR() + ' (confirmar na aba aberta)'; salvar(); desenhar();
+    await dialogo('<p><b>Abrimos uma nova aba para concluir o envio.</b></p><p class="small">Se pedir, entrem com o e-mail @escola. A aba deve mostrar “Trabalho enviado ao professor!”. Se aparecer erro, salvem uma cópia e avisem o professor.</p>', [['Ok', true, 'primary']]);
+  } catch (err) {
+    console.error(err);
+    await dialogo(`<p><b>Não foi possível enviar.</b></p><p class="small">${esc(err.message || 'Verifiquem a internet e tentem de novo.')}</p><p class="small">Enquanto isso, baixem o Word e entreguem no Classroom.</p>`, [['Ok', true, 'primary']]);
+  } finally { const bb = $('#bEnviar'); if (bb) { bb.disabled = false; bb.textContent = '📤 Enviar para o professor'; } }
+}
+function baixar(blob, nome) { const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = nome; document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 1000); }
+
+/* ---------- cópia de segurança ---------- */
+const ab2b64 = buf => { let s = ''; const u = new Uint8Array(buf); for (let i = 0; i < u.length; i += 0x8000) s += String.fromCharCode.apply(null, u.subarray(i, i + 0x8000)); return btoa(s); };
+const b642ab = b => { const s = atob(b); const u = new Uint8Array(s.length); for (let i = 0; i < s.length; i++) u[i] = s.charCodeAt(i); return u.buffer; };
+async function dadosCopia() {
+  const imagens = {};
+  for (const id of await IDB.keys().catch(() => [])) { if (!idEmUso(id)) continue; const v = await IDB.get(id); imagens[id] = { w: v.w, h: v.h, type: v.type, b64: ab2b64(v.data) }; }
+  return { app: APP, versao: 1, salvoEm: new Date().toISOString(), trabalho: S, imagens };
+}
+async function salvarCopia() {
+  const dados = await dadosCopia();
+  const nome = 'copia_TCC_' + (S.integrantes.find(tem) || 'grupo').split(' ')[0] + '_' + new Date().toISOString().slice(0, 10) + '.json';
+  baixar(new Blob([JSON.stringify(dados)], { type: 'application/json' }), nome);
+  toast('Cópia salva ✓ Guardem no Drive.');
+}
+window.salvarCopia = salvarCopia;
+$('#bSalvar').onclick = salvarCopia;
+$('#bAbrir').onclick = () => $('#fAbrir').click();
+$('#fAbrir').onchange = async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    const d = JSON.parse(await f.text());
+    if (d.app !== APP || !d.trabalho) throw new Error(d.app === 'tcc-mecanica-ceep' ? 'Essa cópia é do Assistente do TCC de Mecânica. Abram no assistente certo.' : 'Esse arquivo não é uma cópia do Assistente do TCC do PCP.');
+    const ok = await dialogo('<p><b>Abrir esta cópia?</b></p><p>O trabalho que está agora neste navegador será substituído.</p>', [['Cancelar', false], ['Abrir', true, 'primary']]);
+    if (!ok) return;
+    await IDB.clear();
+    for (const [id, v] of Object.entries(d.imagens || {})) await IDB.put(id, { w: v.w, h: v.h, type: v.type, data: b642ab(v.b64) });
+    S = Object.assign(estadoInicial(), d.trabalho);
+    Object.keys(urlCache).forEach(k => delete urlCache[k]);
+    salvar(); desenhar(); toast('Cópia aberta ✓');
+  } catch (err) { toast(err.message || 'Não consegui abrir esse arquivo.'); }
+};
+$('#bNovo').onclick = async () => {
+  const ok = await dialogo('<p><b>Começar um trabalho novo?</b></p><p>Tudo o que está neste navegador será apagado, inclusive as fotos. Se ainda não salvaram, cliquem em <b>Salvar cópia</b> antes.</p>',
+    [['Cancelar', false], ['Salvar cópia antes', 'copia'], ['Apagar e começar', true, 'danger']]);
+  if (ok === 'copia') return salvarCopia();
+  if (!ok) return;
+  await IDB.clear().catch(() => {});
+  S = estadoInicial(); atual = SEC[0].id; salvar(); desenhar();
+};
+
+/* ---------- importar o que a equipe já fez ---------- */
+// chave do dado importado -> seção onde ele aparece
+const SEC_DO_CAMPO = { resumo: 'resumo', palavras: 'resumo', dedicatoria: 'pre', agradecimentos: 'pre', tema: 'tema', contexto: 'tema', problema: 'problema',
+  justificativa: 'justificativa', objGeral: 'objetivos', objEsp: 'objetivos', historico: 'historico', produtos: 'historico', produtosTexto: 'historico',
+  estrutura: 'estrutura', capacidade: 'estrutura', processo: 'estrutura', fund: 'fund', tipoPesquisa: 'metodo', objeto: 'metodo', coleta: 'metodo',
+  analise: 'metodo', etapas: 'metodo', procAtual: 'procAtual', procAnalise: 'procAtual', dadosTexto: 'dados', dados: 'dados', dadosAnalise: 'dados',
+  indAtuais: 'dados', causasTexto: 'causas', porques: 'causas', causasAnalise: 'causas', gut: 'gut', sintese: 'gut', acoes: 'proposta', w2h: 'proposta',
+  w2hTexto: 'proposta', indicadores: 'indicadores', ferramentas: 'ferramentas', resultados: 'resultados', resultadosTexto: 'resultados',
+  economiaTexto: 'financeiro', economiaMensal: 'financeiro', tarefas: 'apendices', discussao: 'discussao', discussaoTexto: 'discussao', conclusao: 'conclusao', referencias: 'referencias', roteiro: 'apendices', ia: 'apendices',
+  titulo: 'grupo', integrantes: 'grupo', organizacao: 'grupo' };
+function campoVazio(k) {
+  const v = S[k];
+  if (v == null) return true;
+  if (k === 'tipoPesquisa') return !tem(v) || v === estadoInicial().tipoPesquisa;
+  if (typeof v === 'string') return !tem(v);
+  if (k === 'objEsp' || k === 'integrantes') return !v.some(tem);
+  if (k === 'fund') return !v.some(f => tem(f.titulo) || tem(f.texto));
+  if (k === 'ferramentas') return !v.some(f => [f.titulo, f.dados, f.formula, f.substituicao, f.significado].some(tem) || (f.fig && f.fig.img));
+  if (k === 'referencias') return !v.some(x => tem(x.titulo) || tem(x.livre));
+  if (k === 'etapas') return !v.some(l => tem(l[2]));
+  if (k === 'discussao') return !v.some(d => d && (tem(d.resultado) || tem(d.situacao)));
+  if (k === 'tarefas') return !v.some(tem);
+  if (Array.isArray(v) && Array.isArray(v[0])) return vazioTab(v);
+  return false;
+}
+function trabalhoVazio() { return SEC.filter(s => s.vazio && !['grupo', 'metodo', 'apendices'].includes(s.id)).every(s => s.vazio()); }
+async function importarArquivo(file) {
+  if (!window.TCCImport) { toast('Aguarde: a ferramenta ainda está carregando.'); return; }
+  let res;
+  try {
+    toast('Lendo o arquivo…');
+    const blocos = await TCCImport.ler(file, new URL('../vendor/', location.href).href);
+    res = TCCImport.mapear(blocos);
+  } catch (err) { console.error(err); toast(err.message || 'Não consegui ler esse arquivo.'); return; }
+  const chaves = Object.keys(res.dados);
+  if (!chaves.length && !res.imagens.length) {
+    await dialogo('<p><b>Não encontrei as partes do TCC nesse arquivo.</b></p><p>O assistente reconhece as partes pelos títulos do modelo (Introdução, Caracterização da organização, Diagnóstico do processo, Proposta de melhoria...). Confiram se o arquivo tem esses títulos ou copiem e colem o texto em cada parte.</p>', [['Entendi', true, 'primary']]);
+    return;
+  }
+  if (res.modelo) {
+    const seg = await dialogo('<p><b>Esse arquivo ainda tem o texto de exemplo do modelo</b> (Confeitaria Doce Sabor).</p><p>O assistente vai trazer só o que não for do exemplo, mas confiram com cuidado: o que sobrar do exemplo aparece marcado com ✗.</p>', [['Cancelar', false], ['Continuar', true, 'primary']]);
+    if (!seg) return;
+  }
+  let modo = 'vazios';
+  if (!trabalhoVazio()) {
+    modo = await dialogo(`<p><b>Já existe conteúdo neste trabalho.</b></p><p>O que fazer com as partes que já estão preenchidas?</p>`,
+      [['Cancelar', null], ['Substituir pelo arquivo', 'substituir', 'danger'], ['Completar só o que está em branco', 'vazios', 'primary']]);
+    if (!modo) return;
+  }
+  $('#toast').hidden = true;
+  const D = res.dados; const aplicados = new Set();
+  const larg = { produtos: 4, estrutura: 3, etapas: 3, dados: 2, indAtuais: 3, porques: 2, gut: 4, acoes: 3, w2h: 7, indicadores: 4, resultados: 5, ia: 5, siglas: 2 };
+  if (D.tarefasTab) { const ns = (D.integrantes || S.integrantes); D.tarefas = ns.map(nm => { const l = D.tarefasTab.find(x => tem(nm) && semAcento(x[0]) === semAcento(nm)); return l ? l[1] : ''; }); delete D.tarefasTab; if (!D.tarefas.some(tem)) delete D.tarefas; }
+  const chaves2 = Object.keys(D); chaves.length = 0; chaves.push(...chaves2);
+  for (const k of chaves) {
+    if (modo === 'substituir' || campoVazio(k)) {
+      let v = D[k];
+      if (k === 'objEsp') v = v.filter(tem).slice(0, 5);
+      if (k === 'integrantes') { v = v.slice(0, 6); while (v.length < 6) v.push(''); }
+      if (larg[k]) v = v.map(l => Array.from({ length: larg[k] }, (_, i) => L(l[i])));
+      if (k === 'ferramentas') v = v.map(f => Object.assign(ferrVazia(), f));
+      if (k === 'discussao') { const es = (D.objEsp || S.objEsp).filter(tem); v = es.map((o, i) => { const l = v.find(x => semAcento(x[0]).slice(0, 25) === semAcento(o).slice(0, 25)) || v[i] || []; return { resultado: L(l[1]), situacao: ['Atingido', 'Atingido em parte', 'Não atingido'].find(x => semAcento(x) === semAcento(l[2])) || '' }; }); }
+      S[k] = v; aplicados.add(k);
+    }
+  }
+  // imagens
+  let fotos = 0, fotosSobra = 0;
+  for (const im of res.imagens) {
+    const a = im.alvo || { tipo: 'sobra' };
+    try {
+      const tipo = im.ext === 'png' ? 'image/png' : im.ext === 'gif' ? 'image/gif' : 'image/jpeg';
+      const red = await reduzirImagem(new Blob([im.bytes], { type: tipo }));
+      const id = novoId(); await IDB.put(id, red);
+      const fig = { img: id, legenda: im.legenda || '', fonte: im.fonte || '' };
+      let ok = false;
+      if (a.tipo === 'campo' && S[a.k] && (!S[a.k].img || modo === 'substituir')) { S[a.k] = fig; ok = true; }
+      else if (a.tipo === 'ferramenta' && aplicados.has('ferramentas')) { const f = S.ferramentas[a.i]; if (f && !f.fig.img) { f.fig = fig; ok = true; } }
+      if (ok) fotos++; else { S.galeria.push(fig); fotosSobra++; }
+    } catch (e) { fotosSobra++; }
+  }
+  // garante a forma esperada pelas telas
+  if (!S.fund.length) S.fund.push({ titulo: '', texto: '' });
+  if (!S.ferramentas.length) S.ferramentas.push(ferrVazia());
+  S.ferramentas.forEach(f => { if (!f.fig) f.fig = figVazia(); });
+  while (S.objEsp.length < 3) S.objEsp.push('');
+  if (!S.referencias.length) S.referencias.push({ tipo: 'livro' });
+  Object.keys(larg).forEach(k => { if (!Array.isArray(S[k]) || !S[k].length) S[k] = linhas0(1, larg[k]); });
+  S.sobras = (modo === 'substituir' ? [] : (S.sobras || [])).concat(res.sobras);
+  if (!Array.isArray(S.galeria)) S.galeria = [];
+  S.importadoDe = `${file.name} (${new Date().toLocaleDateString('pt-BR')})`;
+  salvar(); desenhar();
+  // relatório
+  const secs = [...new Set([...aplicados].map(k => SEC_DO_CAMPO[k]).filter(Boolean))];
+  const nomes = SEC.filter(s => secs.includes(s.id)).map(s => `<li>${esc(s.nome)}</li>`).join('');
+  const naoAplic = chaves.filter(k => !aplicados.has(k)).length;
+  await dialogo(`<p><b>Pronto! O arquivo foi lido.</b></p>
+    <p>Partes preenchidas com o que vocês já tinham:</p><ul style="margin:.3em 0;padding-left:1.2em;max-height:30vh;overflow:auto">${nomes || '<li>nenhuma</li>'}</ul>
+    ${fotos ? `<p>${fotos} imagem(ns) colocada(s) nas partes certas.</p>` : ''}
+    ${naoAplic ? `<p class="small">${naoAplic} parte(s) do arquivo não foram usadas porque já estavam preenchidas aqui.</p>` : ''}
+    ${res.sobras.length || fotosSobra ? `<p class="small">${res.sobras.length ? res.sobras.length + ' trecho(s)' : ''}${res.sobras.length && fotosSobra ? ' e ' : ''}${fotosSobra ? fotosSobra + ' imagem(ns)' : ''} não tinham lugar certo. ${res.sobras.length ? 'Os trechos estão listados em “Dados da equipe”.' : ''}${fotosSobra ? ' As imagens podem ser escolhidas em qualquer figura, no botão “Usar imagem do arquivo enviado”.' : ''}</p>` : ''}
+    <p><b>Agora:</b> confiram cada parte. As que estão com <span style="color:var(--bad)">✗</span> precisam de correção.</p>`, [['Ver a situação de cada parte', true, 'primary']]);
+  ir('entrega');
+}
+
+// garante tamanhos mínimos (cópias antigas)
+['integrantes'].forEach(k => { while (S[k].length < 6) S[k].push(''); });
+['tarefas', 'discussao', 'galeria', 'sobras'].forEach(k => { if (!Array.isArray(S[k])) S[k] = []; });
+if (!Array.isArray(S.ferramentas) || !S.ferramentas.length) S.ferramentas = [ferrVazia()];
+S.ferramentas.forEach(f => { if (!f.fig) f.fig = figVazia(); });
+desenhar();
+window.addEventListener('load', () => { if (atual === 'referencias') desenhar(); });
+</script>
+</body>
+</html>

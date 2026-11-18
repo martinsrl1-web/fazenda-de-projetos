@@ -383,7 +383,7 @@
       features: { updateFields: true },
       creator: integrantes.join(', ') || 'Grupo do TCC',
       title: titulo || 'TCC – Técnico em Mecânica',
-      description: 'Gerado pelo Assistente do TCC – Fazenda de Projetos',
+      description: 'Gerado pelo Assistente do TCC – Técnico em Mecânica (CEEP Fazenda Rio Grande)',
       styles: {
         default: { document: { run: { font: FONT, size: 24 }, paragraph: { spacing: { line: L15 } } } },
         paragraphStyles: [
