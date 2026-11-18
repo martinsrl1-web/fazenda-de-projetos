@@ -7,11 +7,11 @@
 <meta name="robots" content="noindex">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@500;700;800&family=Big+Shoulders+Display:wght@700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=JetBrains+Mono:wght@500;700&display=swap">
 <style>
 :root{
   --bg:#f3f5f7; --surface:#ffffff; --ink:#18212b; --muted:#5b6876; --line:#d6dde4;
-  --accent:#1f5fa8; --accent-ink:#ffffff; --accent-soft:#e3edf8;
+  --accent:#312B50; --accent-ink:#ffffff; --accent-soft:#e8e6f0; --marca:#913032; --navy:#312B50;
   --ok:#1d7a4a; --ok-soft:#e2f3ea;
   --bad:#b3261e; --bad-soft:#fbe4e2;
   --near:#8a6d00; --near-soft:#fbf3cf;
@@ -23,7 +23,7 @@
 }
 @media (prefers-color-scheme: dark){:root{
   --bg:#11161c; --surface:#1a2129; --ink:#e7edf3; --muted:#9aa7b4; --line:#2c3743;
-  --accent:#6aa6ec; --accent-ink:#0b1622; --accent-soft:#1d2d40;
+  --accent:#b7b0e6; --accent-ink:#17142a; --accent-soft:#272340; --marca:#d9686b; --navy:#312B50;
   --ok:#5fc890; --ok-soft:#16301f;
   --bad:#ff8a80; --bad-soft:#3a1c1a;
   --near:#e5c64a; --near-soft:#352e0e;
@@ -36,7 +36,14 @@ body{background:var(--bg); color:var(--ink); font-family:var(--f-body); font-siz
 .wrap{max-width:1200px; margin:0 auto; padding:20px max(16px, env(safe-area-inset-right,0px)) 48px max(16px, env(safe-area-inset-left,0px))}
 header.top{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; flex-wrap:wrap}
 h1,h2,h3{font-family:var(--f-display); text-wrap:balance; margin:0; letter-spacing:-.01em}
-h1{font-size:1.65rem; font-weight:800}
+h1{font-family:"Big Shoulders Display", var(--f-display); font-size:2.1rem; font-weight:800; text-transform:uppercase; letter-spacing:.01em}
+.marca-topo{height:8px; background:linear-gradient(90deg, var(--marca) 0 34%, var(--navy) 34% 100%)}
+.cab-marca{display:flex; align-items:center; gap:14px}
+.cab-marca img{width:64px; height:64px; flex:none}
+.cab-marca .eyebrow{color:var(--marca)}
+button.primary{box-shadow:inset 0 -3px 0 var(--marca)}
+nav.secs button.cur{box-shadow:inset 3px 0 0 var(--marca)}
+@media (max-width:520px){ .cab-marca img{width:48px; height:48px} h1{font-size:1.7rem} }
 h2{font-size:1.35rem; font-weight:800}
 h3{font-size:1.02rem; font-weight:700}
 .eyebrow{font-family:var(--f-mono); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--muted)}
@@ -119,12 +126,13 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
 </style>
 </head>
 <body>
+<div class="marca-topo"></div>
 <div class="wrap">
   <header class="top">
-    <div>
+    <div class="cab-marca"><img src="../marca/ceep-cor.png" alt="CEEP Erotides Ângelo Nichele – Fazenda Rio Grande"><div>
       <div class="eyebrow">TCC – CEEP FRG · Técnico em Planejamento e Controle da Produção</div>
       <h1>Assistente do TCC</h1>
-    </div>
+    </div></div>
     <div class="toolbar">
       <span class="saved" id="salvo">Salvo neste navegador</span>
       <button class="mini" id="bSalvar" title="Baixar uma cópia para continuar em outro computador">Salvar cópia</button>
