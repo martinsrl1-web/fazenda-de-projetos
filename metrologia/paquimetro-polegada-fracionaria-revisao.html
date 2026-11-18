@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Revisão Polegada Fracionária</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<style>
+:root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--bad:#B3261E;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80}}
+:root[data-theme="dark"]{--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.5 Barlow,'Arial Narrow',Arial,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 40px}
+h1{font:800 clamp(36px,8vw,60px)/.95 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:0 0 4px}
+.sub{color:var(--muted);margin:0 0 14px;max-width:66ch}
+.stage{background:#1D3B5C;border-radius:6px;padding:10px 4px 4px;overflow:hidden;touch-action:none;user-select:none;-webkit-user-select:none}
+.stage svg{display:block;width:100%;height:auto;margin:0 auto}
+#zoom{cursor:grab;max-height:50dvh}#zoom.fixed{cursor:default}#zoom.drag{cursor:grabbing}
+.ctl{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;padding:8px 0 4px}
+.ctl button{font:700 18px/1 'Big Shoulders Display','Arial Narrow',sans-serif;min-width:62px;min-height:44px;padding:0 8px;border-radius:4px;border:1px solid #4E6E8E;background:#24486E;color:#E8EEF3;cursor:pointer;font-variant-numeric:tabular-nums}
+.ctl button:disabled{opacity:.35;cursor:default}
+.ctl i{width:12px}
+.rot{display:none;color:#BFD3E6;font-size:14px;text-align:center;margin:2px 0 0}
+.tabs{display:flex;margin:14px 0 12px;border:2px solid var(--ink);border-radius:4px;overflow:hidden;width:fit-content;max-width:100%}
+.tabs button{font:700 20px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:11px 18px;min-height:48px;background:transparent;color:var(--ink);border:0;cursor:pointer}
+.tabs button+button{border-left:2px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.big{font:800 clamp(48px,12vw,88px)/.95 'Big Shoulders Display','Arial Narrow',sans-serif;font-variant-numeric:tabular-nums}
+.big small{font-size:.38em;margin-left:.2em;color:var(--muted)}
+.stats{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.stats b{display:block;font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--ink)}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+button.act{font:700 19px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:13px 22px;min-height:48px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer}
+button.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.5;cursor:default}
+button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+input.n{font:800 40px/1 'Big Shoulders Display',sans-serif;min-height:54px;padding:4px 8px;border:2px solid var(--ink);border-radius:4px;background:var(--bg);color:var(--ink);text-align:right;width:6.5ch}
+.fin{display:inline-flex;align-items:center;gap:8px}
+.unit{font:800 30px/1 'Big Shoulders Display',sans-serif;color:var(--muted)}
+.soma{display:grid;grid-template-columns:auto auto auto;gap:8px 12px;align-items:center;justify-content:start;margin-top:10px}
+.soma .op{font:800 34px/1 'Big Shoulders Display',sans-serif;color:var(--muted);text-align:right}
+.soma .lb{font-size:15px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.soma hr{grid-column:1/-1;width:100%;border:0;border-top:3px solid var(--ink);margin:2px 0}
+.soma output{font:800 44px/1 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums;text-align:right;padding-right:10px}
+.contas{display:flex;gap:16px 36px;flex-wrap:wrap;margin-top:10px}
+.conta{display:grid;grid-template-columns:auto auto auto;gap:2px 10px;align-items:baseline;padding:10px 16px;border-radius:6px;background:var(--panel);border:1px solid var(--line)}
+.conta .tt{grid-column:1/-1;font-size:14px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.conta .op{font:800 30px/1.1 'Big Shoulders Display',sans-serif;color:var(--muted);text-align:right}
+.conta .v{font:800 34px/1.1 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums;text-align:right}
+.conta .m{font-size:14px;font-weight:700}
+.conta .m.ok{color:var(--ok)}.conta .m.no{color:var(--bad)}
+.conta .v.no{color:var(--bad);text-decoration:line-through;text-decoration-thickness:2px}
+.conta hr{grid-column:1/-1;width:100%;border:0;border-top:3px solid var(--ink);margin:2px 0}
+.lbl{font-size:14px;color:var(--muted);display:block;margin-bottom:2px;letter-spacing:.06em;text-transform:uppercase}
+.fb{margin-top:12px;padding:12px 14px;border-left:6px solid var(--line);background:var(--bg);border-radius:0 4px 4px 0}
+.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.eq{color:var(--muted);margin:8px 0 0}.eq b{color:var(--ink)}
+label.chk{display:flex;gap:8px;align-items:center;cursor:pointer}
+details.how{margin-top:12px;border-top:1px solid var(--line);padding-top:8px;color:var(--muted)}
+details.how summary{cursor:pointer;font-weight:600;color:var(--ink)}
+details.how ol{margin:6px 0 0;padding-left:22px}
+.copied{color:var(--ok);font-weight:700;margin-left:8px}
+.task{display:inline-block;font:700 14px/1 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;background:var(--ink);color:var(--bg);padding:5px 8px;border-radius:3px;margin-bottom:8px}
+@media (max-width:640px){.tabs{width:100%}.tabs button{flex:1;padding:11px 4px;font-size:17px}.row .act{flex:1 1 auto}.ctl button{min-width:56px;font-size:16px}.ctl i{display:none}}
+@media (orientation:portrait) and (max-width:640px){.rot{display:block}}
+@media (orientation:landscape) and (max-height:820px){
+ main{padding:10px 18px 18px;max-width:1200px}h1{font-size:34px;margin:0 0 6px}.sub{display:none}
+ #zoom{max-height:44dvh}.tabs{margin:8px 0}.tabs button{padding:8px 16px;min-height:42px;font-size:18px}
+ .panel{padding:12px 16px}.stats{margin-bottom:6px}.stats b{font-size:24px}.big{font-size:54px}.row{margin-top:8px}.fb{margin-top:8px;padding:8px 12px}
+}
+@media (prefers-reduced-motion:no-preference){.fb{animation:pop .18s ease-out}@keyframes pop{from{transform:translateY(4px);opacity:.4}}}
+
+/* Cabeçalho comum do site Fazenda de Projetos */
+.fp-in{max-width:1000px;margin-inline:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.fp-brand{font:800 27px/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.fp-brand b{color:var(--accent);font-weight:800}
+.fp-onde{font:600 13.5px/1.2 Barlow,'Arial Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fp-rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+.fin .fstack{display:inline-flex;flex-direction:column;align-items:center;gap:4px}
+.fin .fstack i{display:block;width:100%;height:3px;background:var(--ink);border-radius:2px}
+input.n.w{width:2.6ch;text-align:center}
+input.n.f{width:3.2ch;font-size:30px;min-height:44px;text-align:center}
+.fr{display:inline-flex;flex-direction:column;align-items:center;vertical-align:middle;line-height:1;font-size:.5em;margin-left:.08em}
+.fr span:first-child{border-bottom:.08em solid currentColor;padding:0 .1em .06em}
+.fr span:last-child{padding-top:.06em}
+.conta .v .fr{font-size:.62em}
+.cnt{font:800 30px/1 'Big Shoulders Display',sans-serif;color:var(--muted)}
+.tab8{border-collapse:collapse;margin-top:8px;font-size:15px}
+.tab8 td,.tab8 th{border:1px solid var(--line);padding:4px 8px;text-align:center}
+
+/* Correção bem visível: verde com ✓ quando acerta, vermelho com ✗ quando erra */
+.fb.ok,.fb.no{border-left-width:8px;padding:14px 16px;display:flow-root}
+.fb.ok{background:color-mix(in srgb,var(--ok) 13%,var(--bg))}
+.fb.no{background:color-mix(in srgb,var(--bad) 12%,var(--bg))}
+.fb.ok::before,.fb.no::before{content:'✓';float:left;width:58px;height:58px;border-radius:50%;background:#17703F;color:#fff;font:800 38px/58px Arial,sans-serif;text-align:center;margin:0 14px 6px 0}
+.fb.no::before{content:'✗';background:#B3261E}
+.fb.ok>strong:first-child,.fb.ok>b:first-child{color:#17703F;font-size:24px}
+.fb.no>strong:first-child,.fb.no>b:first-child{color:#B3261E;font-size:24px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fb.ok>strong:first-child,:root:not([data-theme="light"]) .fb.ok>b:first-child{color:var(--ok)}:root:not([data-theme="light"]) .fb.no>strong:first-child,:root:not([data-theme="light"]) .fb.no>b:first-child{color:var(--bad)}}
+.conta .m.ok,.conta .m.no{color:#fff;border-radius:12px;padding:3px 9px;font-size:14px;white-space:nowrap}
+.conta .m.ok{background:#17703F}.conta .m.no{background:#B3261E}
+.par b.okc::before{content:'✓ ';}.par b.noc::before{content:'✗ ';}
+.bsoma{display:flex;flex-wrap:wrap;align-items:center;gap:12px 18px;margin-top:12px}
+.bgrp{display:flex;flex-direction:column;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 14px}
+.bgrp .lb{font-size:15px;color:var(--muted);letter-spacing:.05em;text-transform:uppercase}
+.mix{display:inline-flex;align-items:center;gap:10px}
+input.n.bwh{width:2.4ch;font-size:64px;min-height:120px;text-align:center;padding:4px}
+input.n.bf{width:2.8ch;font-size:36px;min-height:52px;text-align:center;padding:2px 4px}
+.fst{display:inline-flex;flex-direction:column;align-items:center;gap:5px}
+.fst i{display:block;width:100%;min-width:3ch;height:4px;background:var(--ink);border-radius:2px}
+.fst .den{font:800 36px/52px 'Big Shoulders Display',sans-serif}
+.pol{font:800 40px/1 'Big Shoulders Display',sans-serif;color:var(--muted);align-self:flex-start;margin-top:8px}
+.bop{font:800 52px/1 'Big Shoulders Display',sans-serif;color:var(--muted)}
+.sf{display:inline-flex;flex-direction:column;align-items:center;font-size:.8em;line-height:1;vertical-align:middle;margin:0 .08em}
+.sf span:first-child{border-bottom:4px solid currentColor;padding:0 .1em .08em}.sf span:last-child{padding-top:.08em}
+@media (max-width:640px){.bsoma{flex-direction:column;align-items:stretch;gap:6px}.bop{text-align:center;line-height:.9}.bsoma output{min-height:0;justify-content:center;flex-wrap:wrap;font-size:38px}}
+.bsoma output{gap:.25em;font:800 44px/1 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums;min-height:120px;display:flex;align-items:center}
+.qgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(46px,1fr));gap:6px;margin-top:10px}
+.qgrid button{position:relative;min-height:42px;font:700 17px/1 'Big Shoulders Display',sans-serif;background:var(--bg);color:var(--ink);border:1px solid var(--line);border-radius:4px;cursor:pointer}
+.qgrid button i{position:absolute;top:4px;right:4px;width:8px;height:8px;border-radius:50%;background:#FF2E93}
+.qgrid button.g-ok{background:#17703F;color:#fff;border-color:#17703F}
+.qgrid button.g-no{background:#B3261E;color:#fff;border-color:#B3261E}
+.qgrid button.g-at{outline:3px solid var(--accent);outline-offset:2px}
+.grd{margin-top:14px}.grd summary{cursor:pointer;font-weight:600;min-height:40px;display:flex;align-items:center}
+.nav{margin-top:12px}
+.ctl[hidden]{display:none!important}
+</style>
+</head>
+<body>
+<header class="fp-top">
+  <div class="fp-in"><a class="fp-brand" href="../index.html">Fazenda <b>de Projetos</b></a><span class="fp-onde">Metrologia · Paquímetro</span></div>
+  <div class="fp-rule" aria-hidden="true"></div>
+</header>
+<main>
+<h1>Revisão: Paquímetro em Polegada Fracionária</h1>
+<p class="sub">Para revisar antes da avaliação, sem nota. São 120 leituras: em algumas a <b style="color:#FF2E93">linha rosa</b> mostra o traço do nônio que coincide; nas outras, você descobre o traço sozinho. Escreva a leitura com a fração simplificada.</p>
+<div class="stage">
+  <svg id="zoom" viewBox="0 0 2000 600" xmlns="http://www.w3.org/2000/svg" role="slider" tabindex="0" aria-label="Escala fixa e nônio: arraste para mover o cursor">
+    <defs><clipPath id="cb"><rect x="22" y="22" width="1956" height="306"/></clipPath></defs>
+    <rect x="20" y="20" width="1960" height="310" rx="6" fill="#C9CBCD" stroke="#373435" stroke-width="5"/>
+    <g id="beam" clip-path="url(#cb)"></g>
+    <g id="plate"></g>
+    <g id="guide" stroke-linecap="round"></g>
+  </svg>
+  <div class="ctl" id="ctl" hidden>
+    <button data-d="-128" aria-label="Fechar 1 polegada">−1"</button>
+    <button data-d="-8" aria-label="Fechar 1/16 de polegada">−1/16</button>
+    <button data-d="-1" aria-label="Fechar 1/128 de polegada">−1/128</button>
+    <i></i>
+    <button data-d="1" aria-label="Abrir 1/128 de polegada">+1/128</button>
+    <button data-d="8" aria-label="Abrir 1/16 de polegada">+1/16</button>
+    <button data-d="128" aria-label="Abrir 1 polegada">+1"</button>
+  </div>
+  <p class="rot">Gire o celular para ver a escala maior.</p>
+</div>
+<div class="tabs" role="tablist" aria-label="Modo">
+  <button role="tab" data-m="todas">Todas</button>
+  <button role="tab" data-m="com">Com o traço</button>
+  <button role="tab" data-m="sem">Descubra o traço</button>
+</div>
+<section class="panel" id="panel" aria-live="polite"></section>
+</main>
+<script>
+/* Polegada fracionária: escala fixa de 1/16" (8 unidades de 1/128"), nônio de 8 divisões -> resolução 1/128".
+   A posição do cursor (S.p) é sempre um número inteiro de 1/128". */
+const FD=8,ND=8,PPU=7.5,MAX=704,ZX=640,MARG=150,LINE=330,W=2000,BX0=22,BX1=1978;
+const VD=(FD-1)*PPU,VL=ND*VD;
+const $=id=>document.getElementById(id),P=$('panel'),Z=$('zoom');
+const S={mode:'todas',p:157,cam:0,target:0,task:'read',round:1,score:0,correct:0,streak:0,best:0,done:false,answered:false,hint:false,guide:true,last:null,played:0,used:null};
+const RN=()=>({basic:50,medio:20,avancado:10})[S.mode]||10;
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a);
+
+/* ---------- frações (u em 1/128") ---------- */
+function parts(u,den=128){const w=Math.floor(u/den);let n=u%den,d=den;if(n){const g=gcd(n,d);n/=g;d/=g}return{w,n,d}}
+function fTxt(u){const {w,n,d}=parts(u);return n?`${w?w+' ':''}${n}/${d}"`:`${w}"`}
+function rawTxt(u,den){const w=Math.floor(u/den),n=u%den;return n?`${w?w+' ':''}${n}/${den}"`:`${w}"`}
+function fHTML(u){const {w,n,d}=parts(u);if(!n)return `${w}"`;return `${w?w:''}<span class="fr"><span>${n}</span><span>${d}</span></span>"`}
+const mm=u=>u/128*25.4;
+const mmTxt=v=>v.toFixed(2).replace('.',',')+' mm';
+function simpChain(n,d){if(!n)return `0`;let s=`${n}/${d}`;while(n%2===0&&d>1){n/=2;d/=2;s+=` = ${n}/${d}`}return s}
+function explain(u){const n=Math.floor(u/FD),r=u%FD,w=Math.floor(n/16),k=n%16,fx=n*FD;
+  const esc=`${w?w+'" + ':''}${k}/16"${k?` = ${w?w+' ':''}${k*8}/128"`:''}`;
+  return `Escala fixa: ${w?`<b>${w}"</b> e `:''}<b>${k}</b> divisões de 1/16" (${esc}). Nônio: ${r?`${r}º traço = <b>${r}/128"</b>`:'o zero coincide, nada a somar'}. Soma em 128 avos: ${w?w+' ':''}${k*8}/128 + ${r}/128 = ${w?w+' ':''}${k*8+r}/128${(k*8+r)&&(k*8+r)%2===0?` → simplificando: ${simpChain(k*8+r,128)}`:(k*8+r)?' (numerador ímpar: já está simplificada)':''} → leitura <b>${fTxt(u)}</b>`}
+
+/* ---------- desenho ---------- */
+const zeroX=()=>(S.p-S.cam)*PPU;
+function follow(){const x=zeroX();if(x<MARG)S.cam=S.p-MARG/PPU;else if(x>W-VL-MARG)S.cam=S.p-(W-VL-MARG)/PPU}
+const centerCam=()=>{S.cam=S.p-ZX/PPU};
+function drawBeam(){let h='';
+  const first=Math.max(0,Math.floor(S.cam/FD)-1),last=Math.ceil((S.cam+W/PPU)/FD)+1,maxm=6.5*16;
+  for(let m=first;m<=Math.min(last,maxm);m++){const x=(m*FD-S.cam)*PPU;if(x<BX0||x>BX1)continue;
+    const L=m%16===0?225:m%8===0?180:m%4===0?145:m%2===0?112:82;
+    h+=`<line x1="${x}" x2="${x}" y1="${LINE-L}" y2="${LINE}" stroke="#2A2829" stroke-width="${m%16===0?5:3.4}"/>`;
+    if(m%16===0){const lab=m/16,half=66*0.32*String(lab).length+4;
+      if(x-half>BX0+6&&x+half<BX1-6)h+=`<text x="${x}" y="${LINE-L-10}" text-anchor="middle" font-size="66" font-weight="900" font-family="'Arial Black',Arial,Helvetica,sans-serif" fill="#14202B">${lab}</text>`}}
+  const inch=Math.floor(S.cam/128),xi=(inch*128-S.cam)*PPU;
+  if(S.cam>0&&xi<BX0+40)h+=`<rect x="${BX0+8}" y="${BX0+8}" width="150" height="54" rx="6" fill="#14202B" opacity=".85"/><text x="${BX0+83}" y="${BX0+46}" text-anchor="middle" font-size="34" font-weight="700" font-family="Arial,Helvetica,sans-serif" fill="#F2A93B">◂ ${inch}"</text>`;
+  $('beam').innerHTML=h}
+function drawPlate(){const z=zeroX(),x0=z-110,x1=z+VL+110,yb=LINE+230;
+  let h=`<rect x="${x0}" y="${LINE}" width="${x1-x0}" height="230" fill="#E6E7E8"/><path d="M${x0} ${LINE} V${yb-6} Q${x0} ${yb} ${x0+6} ${yb} H${x1-6} Q${x1} ${yb} ${x1} ${yb-6} V${LINE}" fill="none" stroke="#373435" stroke-width="5"/>`;
+  for(let k=0;k<=ND;k++){const x=z+k*VD,lab=k%4===0;
+    h+=`<line x1="${x}" x2="${x}" y1="${LINE}" y2="${LINE+(lab?120:80)}" stroke="#2A2829" stroke-width="${k===0?5:3.4}"/>`;
+    if(lab)h+=`<text x="${x}" y="${LINE+170}" text-anchor="middle" font-size="40" font-weight="700" font-family="Arial,Helvetica,sans-serif" fill="#2A2829">${k}</text>`}
+  h+=`<text x="${x1-14}" y="${LINE+214}" text-anchor="end" font-size="26" font-family="Arial,Helvetica,sans-serif" fill="#4A4849">1/128 in</text>`;
+  $('plate').innerHTML=h}
+function drawGuide(){const n=Math.floor(S.p/FD),r=S.p%FD,z=zeroX();let g='';
+  const full=S.answered,showHint=S.hint&&!S.answered,pink=!!(S.q&&S.q.traco)&&!S.answered;
+  if(full||showHint){const xm=(n*FD-S.cam)*PPU;if(xm>BX0&&xm<BX1)g+=`<line x1="${xm}" x2="${xm}" y1="${LINE-240}" y2="${LINE-4}" stroke="#E07B00" stroke-width="7" stroke-dasharray="20 14" opacity=".85"/>`}
+  if(full||pink){const xa=z+r*VD,col=pink?'#FF2E93':'#E07B00';
+    g+=`<line x1="${xa}" x2="${xa}" y1="${LINE-200}" y2="${LINE+118}" stroke="${col}" stroke-width="7" opacity=".6"/><circle cx="${xa}" cy="${LINE+132}" r="11" fill="${col}"/>`}
+  $('guide').innerHTML=g}
+function draw(){drawBeam();drawPlate();drawGuide();
+  const can=canMove();Z.classList.toggle('fixed',!can);document.querySelectorAll('#ctl button').forEach(b=>b.disabled=!can);
+  Z.setAttribute('aria-valuetext',can?fTxt(S.p):'cursor fixo')}
+
+/* ---------- movimento ---------- */
+const canMove=()=>false;
+function setP(p){p=Math.max(0,Math.min(MAX,Math.round(p)));if(p===S.p)return;S.p=p;follow();draw();}
+const svgX=e=>{const pt=Z.createSVGPoint();pt.x=e.clientX;pt.y=e.clientY;return pt.matrixTransform(Z.getScreenCTM().inverse()).x};
+let drag=null;
+Z.addEventListener('pointerdown',e=>{if(!canMove())return;drag={x:svgX(e),p:S.p};Z.setPointerCapture(e.pointerId);Z.classList.add('drag');Z.focus()});
+Z.addEventListener('pointermove',e=>{if(drag)setP(drag.p+(svgX(e)-drag.x)/PPU)});
+['pointerup','pointercancel'].forEach(v=>Z.addEventListener(v,()=>{drag=null;Z.classList.remove('drag')}));
+Z.addEventListener('keydown',e=>{if(!canMove())return;const d={ArrowLeft:-1,ArrowDown:-1,ArrowRight:1,ArrowUp:1,PageUp:FD,PageDown:-FD}[e.key];if(d){e.preventDefault();setP(S.p+d)}});
+document.querySelectorAll('#ctl button').forEach(b=>b.onclick=()=>setP(S.p+ +b.dataset.d));
+
+/* ---------- respostas ---------- */
+const val=id=>{const x=($(id)?.value||'').trim();return x===''?null:x};
+function readFrac(){const w=val('aw'),n=val('an'),d=val('ad');if(w===null&&n===null)return null;
+  const Wv=w===null?0:parseInt(w,10),N=n===null?0:parseInt(n,10),D=n===null?1:parseInt(d===null?'':d,10);
+  if([Wv,N].some(x=>isNaN(x)||x<0)||isNaN(D)||D<=0)return{bad:true};
+  return{u:(Wv*D+N)*128/D,simp:N===0||(gcd(N,D)===1&&N<D),txt:(Wv?Wv+(N?' ':''):'')+(N?N+'/'+D:'')+'"'}}
+const fracIn=`<span class="fin"><input class="n w" id="aw" inputmode="numeric" autocomplete="off" aria-label="Polegadas inteiras"><span class="fstack"><input class="n f" id="an" inputmode="numeric" autocomplete="off" aria-label="Numerador"><i></i><input class="n f" id="ad" inputmode="numeric" autocomplete="off" aria-label="Denominador"></span><span class="unit">"</span></span>`;
+function readMm(){const v=parseFloat((val('amm')||'').replace(',','.'));return isNaN(v)?null:v}
+const howTo=`<details class="how"><summary>Como ler (passo a passo)</summary><ol>
+<li>Escala fixa: veja a última polegada inteira e conte as divisões de 1/16" até o zero do nônio.</li>
+<li>Nônio: ache o traço que coincide com um traço da escala fixa. Cada traço vale 1/128".</li>
+<li>Passe a escala fixa para 128 avos (multiplique as divisões por 8, porque 1/16 = 8/128) e some com o nônio.</li>
+<li>Simplifique: divida em cima e embaixo por 2 enquanto der.</li></ol>
+<table class="tab8"><tr><th>Traço do nônio</th><td>1</td><td>2</td><td>3</td><td>4</td><td>5</td><td>6</td><td>7</td><td>8</td></tr><tr><th>Vale</th><td>1/128</td><td>1/64</td><td>3/128</td><td>1/32</td><td>5/128</td><td>3/64</td><td>7/128</td><td>1/16</td></tr></table></details>`;
+
+/* conta armada da resposta: escala fixa + nônio = leitura */
+function conta(u,sua){const n=Math.floor(u/FD),r=u%FD,w=Math.floor(n/16),k=n%16;
+  const certa=`<div class="conta"><span class="tt">Resposta certa</span>
+   <span class="op"></span><span class="v">${rawTxt(w*16+k,16)}</span><span class="m">escala fixa${k?` = ${rawTxt(w*128+k*8,128)}`:''}</span>
+   <span class="op">+</span><span class="v">${r}/128"</span><span class="m">nônio, ${r}º traço</span><hr>
+   <span class="op">=</span><span class="v">${rawTxt(u,128)}</span><span class="m">${parts(u).d!==128&&u%128?'= '+fTxt(u)+' simplificado':''}</span></div>`;
+  return `<div class="contas">${sua||''}${certa}</div>`}
+/* ---------- banco de questões (fixo: a questão 37 é a mesma para todos) ---------- */
+function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const BANK=(()=>{const R=mulberry(20261118),ri=(a,b)=>a+Math.floor(R()*(b-a+1)),used=new Set(),L=[];
+  const faixas=[[1,127,36],[129,255,32],[257,383,24],[385,511,16],[513,696,12]];
+  for(const [lo,hi,n] of faixas){let k=0,t=0;while(k<n&&t<5000){t++;const u=ri(lo,hi);if(used.has(u))continue;
+    if(u%FD===0&&R()<.8)continue;used.add(u);L.push(u);k++}}
+  for(let i=L.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[L[i],L[j]]=[L[j],L[i]]}
+  return L.map((u,i)=>({n:i+1,u,traco:i%2===0}))})();
+const KEY='paq-pol-fr-revisao-v1';
+let RES={};try{RES=JSON.parse(localStorage.getItem(KEY)||'{}')||{}}catch(e){RES={}}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(RES))}catch(e){}};
+const lista=()=>BANK.filter(q=>S.mode==='todas'||(S.mode==='com'?q.traco:!q.traco));
+function abrir(q){S.q=q;S.p=q.u;S.answered=false;S.hint=false;S.last=null;centerCam();draw();panelRev()}
+function vizinha(d){const L=lista(),i=L.indexOf(S.q);abrir(L[(i+d+L.length)%L.length])}
+function pendente(){const L=lista(),i=L.indexOf(S.q);for(let k=1;k<=L.length;k++){const q=L[(i+k)%L.length];if(!RES[q.n])return abrir(q)}abrir(L[(i+1)%L.length])}
+function conferir(){const a=readFrac();if(!a||a.bad){$('an').focus();return}
+  const exact=Math.abs(a.u-S.p)<1e-9,ok=exact&&a.simp;
+  RES[S.q.n]={ok,txt:a.txt};save();S.answered=true;S.last={exact,simp:a.simp,txt:a.txt,ok};draw();panelRev();const n=$('next');if(n)n.focus({preventScroll:true})}
+function placar(){const L=lista(),r=L.filter(q=>RES[q.n]),c=r.filter(q=>RES[q.n].ok).length;
+  return `<div class="stats"><span>Questão<b>${S.q.n}</b></span><span>Respondidas<b>${r.length}/${L.length}</b></span><span>Acertos<b>${c}</b></span><span>Erros<b>${r.length-c}</b></span></div>`}
+function grade(){return `<details class="grd" ${S.gridOpen?'open':''}><summary>Escolher questão (verde = acertou, vermelho = errou)</summary><div class="qgrid">${lista().map(q=>{const r=RES[q.n];
+  return `<button data-q="${q.n}" class="${r?(r.ok?'g-ok':'g-no'):''}${q===S.q?' g-at':''}" aria-label="Questão ${q.n}${q.traco?', com o traço':', descubra o traço'}${r?(r.ok?', acertou':', errou'):''}">${q.n}${q.traco?'<i></i>':''}</button>`}).join('')}</div>
+  <p class="eq" style="margin:8px 0 0">Bolinha rosa: questão com o traço marcado. <button class="act ghost" id="zerar" style="min-height:36px;padding:4px 12px;font-size:15px">Apagar minhas respostas</button></p></details>`}
+function panelRev(){const q=S.q,l=S.last;let h=placar();
+  h+=q.traco?`<span class="task" style="background:#C2185B;color:#fff">Com o traço marcado</span>`:`<span class="task">Descubra o traço</span>`;
+  h+=`<p style="margin:0 0 6px">${q.traco?'A <b style="color:#FF2E93">linha rosa</b> mostra o traço do nônio que coincide. ':'Ache o traço do nônio que coincide com um traço da escala fixa. '}Qual é a leitura? Escreva a fração <b>simplificada</b>.</p>`;
+  if(!S.answered){h+=`<div class="row">${fracIn}<button class="act" id="ok">Conferir</button><button class="act ghost" id="hint" ${S.hint?'disabled':''}>Dica</button></div>`;
+    if(S.hint){const n=Math.floor(S.p/FD);h+=`<p class="eq">Dica: a escala fixa marca <b>${rawTxt(n,16)}</b> = <b>${rawTxt(n*8,128)}</b> (linha tracejada laranja). ${q.traco?'Some com o traço da linha rosa.':'Falta achar o traço do nônio que coincide: cada traço vale 1/128".'}</p>`}}
+  else{const sua=`<div class="conta"><span class="tt">Sua resposta</span><span class="op"></span><span class="v${l.ok?'':' no'}">${l.txt}</span><span class="m ${l.ok?'ok':'no'}">${l.ok?'✓ certo':'✗ errado'}</span></div>`;
+    const msg=l.ok?`Você respondeu ${l.txt}.`:l.exact?`Você respondeu ${l.txt}: o valor está certo, mas falta simplificar para <b>${fTxt(S.p)}</b>.`:`Você respondeu ${l.txt}. O certo era <b>${fTxt(S.p)}</b>.`;
+    h+=`<div class="fb ${l.ok?'ok':'no'}"><strong>${l.ok?'Certo!':'Não foi dessa vez.'}</strong><br>${msg}${!q.traco?` A linha laranja no paquímetro mostra o traço que coincide: o <b>${S.p%FD}º</b>.`:''}${conta(S.p,sua)}<p class="eq">${explain(S.p)}</p></div>`}
+  h+=`<div class="row nav"><button class="act ghost" id="prev">◂ Anterior</button>${S.answered?'<button class="act ghost" id="again">Tentar de novo</button>':''}<button class="act" id="next">Próxima ▸</button><button class="act ghost" id="pend">Próxima sem resposta</button></div>`;
+  h+=grade()+howTo;P.innerHTML=h;
+  const ok=$('ok');if(ok){ok.onclick=conferir;P.querySelectorAll('input.n').forEach(i=>i.onkeydown=e=>{if(e.key==='Enter')ok.click()})}
+  if($('hint'))$('hint').onclick=()=>{S.hint=true;draw();panelRev()};
+  $('prev').onclick=()=>vizinha(-1);$('next').onclick=()=>vizinha(1);$('pend').onclick=pendente;
+  if($('again'))$('again').onclick=()=>abrir(q);
+  P.querySelector('.grd').ontoggle=e=>{S.gridOpen=e.target.open};
+  P.querySelectorAll('.qgrid button').forEach(b=>b.onclick=()=>{abrir(BANK[+b.dataset.q-1]);document.querySelector('.stage').scrollIntoView({behavior:'smooth'})});
+  $('zerar').onclick=()=>{if(!RES||!Object.keys(RES).length)return;RES={};save();panelRev()}}
+
+/* ---------- abas ---------- */
+const mtabs=[...document.querySelectorAll('.tabs button')];
+function setMode(m){S.mode=m;mtabs.forEach(b=>b.setAttribute('aria-selected',b.dataset.m===m));
+  const L=lista();abrir(L.find(q=>!RES[q.n])||L[0])}
+mtabs.forEach(b=>b.onclick=()=>setMode(b.dataset.m));
+setMode('todas');
+</script>
+</body>
+</html>
