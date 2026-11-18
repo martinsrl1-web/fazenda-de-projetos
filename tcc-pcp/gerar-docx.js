@@ -298,15 +298,12 @@
       T.push(P([tr(`O Quadro ${q.n} relaciona cada causa identificada no diagnóstico à ação proposta e à ferramenta correspondente.`)]), ...q.blocos);
     } else T.push(P([falta()('quadro de causas e ações')]));
     T.push(h2('6.2 PLANO DE AÇÃO'));
-    const w = rows(st.w2h, 7);
-    const custo = w.reduce((a, r) => a + n(r[6]), 0);
-    if (w.length) {
-      const q = quadro('Quadro', 'Plano de ação 5W2H', ['O quê', 'Por quê', 'Onde', 'Quando', 'Quem', 'Como', 'Quanto'],
-        w.map(r => r.slice(0, 6).concat([temN(r[6]) ? 'R$ ' + real(n(r[6])) : r[6]])), [1.8, 1.6, 1.2, 1, 1.4, 1.6, 1.2], fonteAut);
-      T.push(P([tr(`O plano de ação foi estruturado pela ferramenta 5W2H, apresentada no Quadro ${q.n}, que define o que será feito, por quê, onde, quando, por quem, como e quanto custa cada ação.`)]), ...q.blocos);
-      T.push(P([tr(`O custo total estimado da proposta é de R$ ${real(custo)}.`)]));
-    } else T.push(P([falta()('plano de ação 5W2H')]));
-    if (tem(st.w2hTexto)) T.push(...textoCorrido(st.w2hTexto));
+    const custo = num(st.investimento);
+    if (tem(st.planoTexto)) T.push(...textoCorrido(st.planoTexto));
+    if (st.figPlano && st.figPlano.img) { const fg = figura(st.figPlano, 'Plano de ação'); T.push(P([tr(`O plano de ação está apresentado na Figura ${fg.n}.`)]), ...fg.blocos); }
+    if (!tem(st.planoTexto) && !(st.figPlano && st.figPlano.img)) T.push(P([falta()('plano de ação')]));
+    if (/\d/.test(String(st.investimento || ''))) T.push(P([tr(`O custo total estimado da proposta é de R$ ${real(custo)}.`)]));
+    else T.push(P([falta()('custo total da proposta')]));
     T.push(h2('6.3 INDICADORES DE DESEMPENHO'));
     const inds = rows(st.indicadores, 4);
     if (inds.length) {
@@ -354,7 +351,7 @@
       const pb = custo / eco;
       T.push(P([tr(`Como o investimento total foi de R$ ${real(custo)} e a economia estimada é de R$ ${real(eco)} por mês, o tempo de retorno é obtido pela Equação ${cont.eq + 1}:`)], { keepNext: true }),
         equacao(`Payback = Investimento ÷ Economia mensal = ${real(custo)} ÷ ${real(eco)} ≈ ${fmt(pb, 1)} ${pb < 2 ? 'mês' : 'meses'}`));
-    } else T.push(P([falta()('investimento (custo do 5W2H) e economia mensal para o payback')]));
+    } else T.push(P([falta()('custo total da proposta e economia mensal para o payback')]));
     if (tem(st.financeiroTexto)) T.push(...textoCorrido(st.financeiroTexto));
     T.push(h2('8.3 DISCUSSÃO'));
     if (objEsp.length) {

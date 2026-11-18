@@ -194,7 +194,7 @@
     [/^diagnostico/, 'diag'], [/(descricao|mapeamento) do processo atual|^processo atual/, 'procAtual'],
     [/levantamento de dados|dados do problema|^levantamento/, 'dadosTexto'], [/analise das causas|^causas/, 'causasTexto'],
     [/priorizacao|matriz gut/, 'gut'], [/sintese do diagnostico/, 'sintese'],
-    [/^proposta|proposta de melhoria/, 'proposta'], [/relacao entre causas|causas e acoes/, 'acoes'], [/plano de acao|5w2h/, 'w2hTexto'],
+    [/^proposta|proposta de melhoria/, 'proposta'], [/relacao entre causas|causas e acoes/, 'acoes'], [/plano de acao|5w2h/, 'planoTexto'],
     [/indicadores de desempenho|^indicadores/, 'indicadores'],
     [/aplicacao das ferramentas|^aplicacao/, 'aplic'],
     [/^resultados e discussao|^resultados/, 'resultadosTexto'], [/apresentacao dos resultados/, 'resultadosTexto'],
@@ -212,7 +212,7 @@
   const RX_EX = /doce sabor|marcia ribeiro|confeiteira-chefe|chocolate em barra|leite condensado|creme de leite|distribuidora x/;
   // frases que o próprio assistente escreve no Word: não precisam voltar para o texto
   const AUTO = [/^(a|o) (tabela|quadro|figura) \d+ (apresenta|relaciona|compara|reune|organiza|ilustra)/, /^as possiveis causas foram organizadas no diagrama/,
-    /^para aprofundar a causa principal/, /^as causas identificadas foram priorizadas pela matriz gut/, /^o plano de acao foi estruturado pela ferramenta 5w2h/,
+    /^para aprofundar a causa principal/, /^as causas identificadas foram priorizadas pela matriz gut/, /^o plano de acao foi estruturado pela ferramenta 5w2h/, /^o plano de acao esta apresentado/,
     /^o custo total estimado da proposta e de/, /^para avaliar a melhoria, foram definidos os indicadores/, /^o calculo (foi feito pela equacao|resultou em)/,
     /^substituindo os valores/, /^como o investimento total foi de/, /^a organizacao conta com \d+ colaboradores/, /^para alcanca-lo, foram definidos/,
     /^este trabalho esta organizado em nove secoes/, /^o resultado esta apresentado na figura/];
@@ -234,7 +234,7 @@
 
   /* --------------------------------------------- distribuir nas seções */
   // capítulo atual -> para onde vai o texto de um subtítulo desconhecido
-  const PADRAO_CAP = { tema: 'tema', carac: 'historico', fund: 'fund', metodo: 'tipoPesquisa', diag: 'procAtual', proposta: 'w2hTexto', aplic: 'aplic', resultadosTexto: 'resultadosTexto', apendice: 'sobra' };
+  const PADRAO_CAP = { tema: 'tema', carac: 'historico', fund: 'fund', metodo: 'tipoPesquisa', diag: 'procAtual', proposta: 'planoTexto', aplic: 'aplic', resultadosTexto: 'resultadosTexto', apendice: 'sobra' };
   function mapear(blocos) {
     const D = {}; const sobras = []; const imagens = []; let modelo = false;
     const anexa = (k, t) => { D[k] = D[k] ? D[k] + '\n\n' + t : t; };
@@ -275,7 +275,7 @@
             if (['fund', 'aplic', 'metodo', 'diag', 'proposta', 'carac', 'tema', 'resultadosTexto', 'conclusao', 'referencias', 'apendice'].includes(c) && !sub) cap = c;
             if (c === 'fund') cur.fund = null;
             if (c === 'aplic') cur.ferr = null;
-            alvo = { carac: 'historico', diag: 'procAtual', proposta: 'w2hTexto', metodo: 'tipoPesquisa' }[c] || c;
+            alvo = { carac: 'historico', diag: 'procAtual', proposta: 'planoTexto', metodo: 'tipoPesquisa' }[c] || c;
             continue;
           }
           if (!comecou) continue;
@@ -285,8 +285,9 @@
         }
         if (!comecou && alvo === 'capa') continue;
         if (alvo !== 'referencias' && RX_EX.test(norm(t))) { modelo = true; continue; }
+        { const m = t.match(/economia estimada [ée] de R\$\s?([\d.]+,\d{2})/i); if (m) D.economiaMensal = m[1]; const c = t.match(/custo total estimado da proposta [ée] de R\$\s?([\d.]+,\d{2})/i); if (c) D.investimento = c[1]; }
         if (alvo !== 'referencias' && doExemplo(t)) continue; // frase igual à do modelo (o Word gerado escreve de novo)
-        if (auto(t)) { const m = t.match(/economia estimada [ée] de R\$\s?([\d.]+,\d{2})/i); if (m) D.economiaMensal = m[1]; continue; }
+        if (auto(t)) { const m = t.match(/economia estimada [ée] de R\$\s?([\d.]+,\d{2})/i); if (m) D.economiaMensal = m[1]; const c = t.match(/custo total estimado da proposta [ée] de R\$\s?([\d.]+,\d{2})/i); if (c) D.investimento = c[1]; continue; }
         // equações numeradas: na aplicação viram fórmula/cálculo
         const eq = t.match(/^(.*=.*?)\s*\(\d+\)$/);
         if (eq && alvo === 'aplic') { if (!cur.ferr) novaFerr(''); if (!cur.ferr.formula) cur.ferr.formula = limpa(eq[1]); else cur.ferr.substituicao = limpa(eq[1]); continue; }
@@ -307,7 +308,7 @@
           case 'fund': if (!cur.fund) novoTopico(''); cur.fund.texto = cur.fund.texto ? cur.fund.texto + '\n\n' + t : t; break;
           case 'aplic': if (!cur.ferr) novaFerr(''); cur.ferr.dados = cur.ferr.dados ? cur.ferr.dados + '\n\n' + t : t; break;
           case 'estrutura': anexa('historico', t); break;
-          case 'etapas': case 'acoes': case 'indicadores': case 'gut': anexa({ etapas: 'analise', acoes: 'w2hTexto', indicadores: 'w2hTexto', gut: 'sintese' }[alvo], t); break;
+          case 'etapas': case 'acoes': case 'indicadores': case 'gut': anexa({ etapas: 'analise', acoes: 'planoTexto', indicadores: 'planoTexto', gut: 'sintese' }[alvo], t); break;
           case 'gutTexto': anexa('sintese', t); break;
           case 'roteiro': anexa('roteiro', tiraMarca(t)); break;
           case 'ia': sobras.push(t); break;
@@ -323,6 +324,13 @@
         if (corpoT.length && corpoT.filter(l => LINHAS_EX.has(norm(l.map(limpa).join(' | ')).slice(0, 40))).length >= Math.ceil(corpoT.length / 2)) { modelo = true; continue; }
         const res = tabela(b.linhas, alvo);
         if (res && res.k === 'ignorar') { modelo = true; continue; }
+        if (res && res.k === 'w2h') {
+          const cab = ['O quê', 'Por quê', 'Onde', 'Quando', 'Quem', 'Como', 'Quanto'];
+          res.linhas.forEach(l => anexa('planoTexto', cab.map((c, i) => limpa(l[i]) ? c + ': ' + limpa(l[i]) : '').filter(Boolean).join('; ') + '.'));
+          const tot = res.linhas.reduce((a, l) => { const x = parseFloat(String(l[6] || '').replace(/[^\d,.]/g, '').replace(/\.(?=\d{3})/g, '').replace(',', '.')); return a + (isNaN(x) ? 0 : x); }, 0);
+          if (tot && !D.investimento) D.investimento = tot.toFixed(2).replace('.', ',');
+          continue;
+        }
         if (res) D[res.k] = (D[res.k] || []).concat(res.linhas);
         else if (alvo !== 'ignorar' && comecou) sobras.push(b.linhas.map(l => l.join(' | ')).join('\n'));
       } else if (b.tipo === 'img') {
@@ -365,7 +373,7 @@
       if (ehNome) { if (!vistos.has(n)) { vistos.add(n); nomes.push(l.toLowerCase().replace(/(^|\s)(\S)/g, (m, a, c) => a + c.toUpperCase()).replace(/\s(De|Da|Do|Dos|Das|E)\s/g, m => m.toLowerCase())); } continue; }
       if (!titulo && l.length >= 15 && l.length <= 220 && !/^(trabalho|monografia|orientador|orienta|banca|prof|apoio|fazenda rio grande|centro estadual|curso)/.test(n) && !/^\d{4}$/.test(l) && !/^ceep\b/.test(n) && !/universidade|faculdade|instituto|colegio|erotides/.test(n) && !RX_EX.test(n) && !/kanban para reducao de rupturas/.test(n)) titulo = l;
     }
-    if (nomes.length) D.integrantes = nomes.slice(0, 6);
+    if (nomes.length) D.integrantes = nomes.slice(0, 4);
     if (titulo) D.titulo = titulo.charAt(0) + titulo.slice(1).toLowerCase();
   }
 

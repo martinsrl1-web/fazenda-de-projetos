@@ -164,7 +164,7 @@ const ferrVazia = () => ({ titulo: '', dados: '', formula: '', variaveis: '', su
 function estadoInicial() {
   return {
     organizacao: '', titulo: '', subtitulo: '', curso: 'Curso Técnico em Planejamento e Controle da Produção', orientador: 'Prof. Rodrigo Leandro Martins', ano: ANO,
-    ficticia: false, integrantes: ['', '', '', '', '', ''],
+    ficticia: false, integrantes: ['', '', '', ''],
     dedicatoria: '', agradecimentos: '', resumo: '', palavras: '',
     tema: '', contexto: '', problema: '', justificativa: '', objGeral: '', objEsp: ['', '', '', ''],
     historico: '', produtos: linhas0(3, 4), produtosTexto: '', estrutura: linhas0(3, 3), capacidade: '', processo: '',
@@ -172,19 +172,19 @@ function estadoInicial() {
     tipoPesquisa: 'Quanto à natureza, trata-se de uma pesquisa aplicada, pois buscou solucionar um problema prático de uma organização. Quanto aos objetivos, classifica-se como descritiva, uma vez que descreve o processo estudado e seus resultados. Quanto aos procedimentos, caracteriza-se como estudo de caso (GIL, 2017). A abordagem é quantitativa, pois se baseia em indicadores numéricos.',
     objeto: '', coleta: '', analise: '',
     etapas: [['Levantamento bibliográfico', 'Livros e artigos', ''], ['Caracterização da organização', '', ''], ['Mapeamento do processo atual', '', ''],
-      ['Análise das causas', '', ''], ['Elaboração da proposta', '5W2H', ''], ['Aplicação das ferramentas', '', ''], ['Avaliação dos resultados', 'Indicadores', '']],
+      ['Análise das causas', '', ''], ['Elaboração da proposta', '', ''], ['Aplicação das ferramentas', '', ''], ['Avaliação dos resultados', 'Indicadores', '']],
     procAtual: '', figFluxo: figVazia(), procAnalise: '',
     dadosTexto: '', dados: linhas0(4, 2), dadosUnid: '', dadosAnalise: '', indAtuais: linhas0(3, 3),
     causasTexto: '', figIshikawa: figVazia(), porques: linhas0(5, 2), causasAnalise: '',
     gut: linhas0(4, 4), sintese: '',
-    acoes: linhas0(4, 3), w2h: linhas0(4, 7), w2hTexto: '', indicadores: linhas0(3, 4),
+    acoes: linhas0(4, 3), planoTexto: '', figPlano: figVazia(), investimento: '', indicadores: linhas0(3, 4),
     ferramentas: [ferrVazia(), ferrVazia()],
     resultados: linhas0(3, 5), resultadosTexto: '', figResultado: figVazia(),
     economiaTexto: '', economiaMensal: '', financeiroTexto: '',
     discussao: [], discussaoTexto: '', conclusao: '',
     referencias: [{ tipo: 'livro' }],
     roteiro: '', naoUsouIA: false, ia: linhas0(1, 5), tarefas: [],
-    siglas: [['5W2H', 'What, Why, Where, When, Who, How, How much'], ['ABNT', 'Associação Brasileira de Normas Técnicas'], ['GUT', 'Gravidade, Urgência e Tendência'], ['PCP', 'Planejamento e Controle da Produção']],
+    siglas: [['ABNT', 'Associação Brasileira de Normas Técnicas'], ['GUT', 'Gravidade, Urgência e Tendência'], ['PCP', 'Planejamento e Controle da Produção']],
     sobras: [], galeria: [], importadoDe: '',
   };
 }
@@ -301,7 +301,7 @@ const real = v => v.toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumF
 const fmt = (v, d = 1) => v.toLocaleString('pt-BR', { maximumFractionDigits: d });
 // cálculos automáticos
 const gutNota = l => (temNum(l[1]) && temNum(l[2]) && temNum(l[3])) ? numBR(l[1]) * numBR(l[2]) * numBR(l[3]) : null;
-const custo5w2h = () => linhasCheias(S.w2h).reduce((a, l) => a + numBR(l[6]), 0);
+const custoTotal = () => numBR(S.investimento);
 function variacao(antes, depois) {
   if (!temNum(antes) || !temNum(depois)) return '–';
   const a = numBR(antes), d = numBR(depois);
@@ -310,7 +310,7 @@ function variacao(antes, depois) {
   const v = (d - a) / a * 100; return (v > 0 ? '+' : v < 0 ? '−' : '') + fmt(Math.abs(v), 0) + '%';
 }
 function payback() {
-  const inv = custo5w2h(), eco = numBR(S.economiaMensal);
+  const inv = custoTotal(), eco = numBR(S.economiaMensal);
   if (!inv || !eco) return null;
   return inv / eco;
 }
@@ -335,7 +335,7 @@ sec({ id: 'grupo', grp: 'Começo', nome: 'Dados da equipe',
     { t: 'check', k: 'ficticia', rot: 'A organização é fictícia ou os dados são simulados' },
     { t: 'input', k: 'titulo', rot: 'Título do trabalho', dica: 'Ferramenta + problema + organização. Ex.: Aplicação do Kanban para reduzir faltas de material em uma metalúrgica de pequeno porte' },
     { t: 'input', k: 'subtitulo', rot: 'Subtítulo', opc: true },
-    { t: 'lista', k: 'integrantes', rot: 'Nomes completos dos integrantes', max: 6, fixo: true, dica: 'Um nome completo por linha, sem abreviar.' },
+    { t: 'lista', k: 'integrantes', rot: 'Nomes completos dos integrantes (no máximo 4)', max: 4, fixo: true, dica: 'Um nome completo por linha, sem abreviar. A equipe pode ter no máximo 4 alunos.' },
     { t: 'input', k: 'orientador', rot: 'Orientador' },
   ],
   check() {
@@ -348,6 +348,7 @@ sec({ id: 'grupo', grp: 'Começo', nome: 'Dados da equipe',
     }
     const ns = S.integrantes.filter(tem);
     if (!ns.length) r.push(E('Faltam os nomes dos integrantes.'));
+    if (ns.length > 4) r.push(E(`São ${ns.length} nomes. A equipe do TCC do PCP pode ter no máximo 4 alunos.`));
     ns.forEach(n => { if (n.trim().split(/\s+/).length < 2) r.push(A(`Nome incompleto: “${n}”. Usem o nome completo.`)); });
     return r;
   },
@@ -633,14 +634,16 @@ sec({ id: 'gut', grp: '5 Diagnóstico', nome: '5.4–5.5 Priorização e síntes
 });
 
 /* ---------------------------------------------------- 6 PROPOSTA */
-sec({ id: 'proposta', grp: '6 Proposta', nome: '6.1–6.2 Ações e plano 5W2H',
+sec({ id: 'proposta', grp: '6 Proposta', nome: '6.1–6.2 Ações e plano de ação',
   ori: `<p>Toda ação precisa atacar uma <b>causa do Capítulo 5</b>: ação sem causa é palpite.</p>
-  <p><b>6.1</b> liguem cada causa a uma ação e a uma ferramenta. <b>6.2</b> montem o plano 5W2H. Na coluna “Quanto”, coloquem o valor em reais (use 0 quando não houver custo): o <b>custo total é somado sozinho</b> e vira o investimento do Capítulo 8.</p>
+  <p><b>6.1</b> liguem cada causa a uma ação e à ferramenta escolhida. <b>6.2</b> expliquem como as ações serão feitas (o que, quem, quando, onde e quanto custa). Podem usar a ferramenta que preferirem: cronograma, 5W2H, PDCA, quadro de tarefas...; se montarem uma tabela ou cronograma na planilha, coloquem como imagem.</p>
+  <p>Informem o <b>custo total da proposta</b>: ele vira o investimento da análise financeira (item 8.2).</p>
   <p>Organização fictícia: deixem claro que a implantação é simulada. Empresa real: digam se a proposta foi aceita, implantada ou apenas sugerida.</p>`,
   campos: [
     { t: 'tabela', k: 'acoes', rot: '6.1 Relação entre causas e ações', cols: ['Causa (Capítulo 5)', 'Ação proposta', 'Ferramenta'], pesos: [2.2, 3, 1.6] },
-    { t: 'tabela', k: 'w2h', rot: '6.2 Plano de ação 5W2H', cols: ['O quê', 'Por quê', 'Onde', 'Quando', 'Quem', 'Como', 'Quanto (R$)'], pesos: [1.8, 1.6, 1.2, 1, 1.3, 1.6, 1], somaCol: 6, somaRot: 'Custo total (R$)', somaReal: true },
-    { t: 'area', k: 'w2hTexto', rot: 'Comentário sobre o plano', curto: true, opc: true, dica: 'Ex.: O custo total estimado é compatível com o porte da empresa.' },
+    { t: 'area', k: 'planoTexto', rot: '6.2 Plano de ação', dica: 'Como cada ação será feita: responsável, prazo, local, recursos e custo.' },
+    { t: 'figura', k: 'figPlano', rot: 'Tabela ou cronograma do plano', opc: true, legPad: 'Plano de ação' },
+    { t: 'input', k: 'investimento', rot: 'Custo total da proposta (R$)', dica: 'Use 0 se a proposta não tiver custo. Ex.: 470,00' },
   ],
   check() {
     const r = [], a = linhasCheias(S.acoes);
@@ -655,19 +658,16 @@ sec({ id: 'proposta', grp: '6 Proposta', nome: '6.1–6.2 Ações e plano 5W2H',
       const sem = linhasCheias(S.gut).filter(l => !a.some(x => semAcento(x[0]).includes(semAcento(l[0]).slice(0, 12)) || semAcento(l[0]).includes(semAcento(x[0]).slice(0, 12))));
       if (sem.length === causasGut.length) r.push(A('As causas da tabela de ações não batem com as da matriz GUT. Usem os mesmos nomes de causas do Capítulo 5.'));
     }
-    const w = linhasCheias(S.w2h);
-    if (!w.length) r.push(E('Preencham o plano 5W2H.'));
-    w.forEach(l => {
-      const n = l[0] || 'ação';
-      const falt = ['O quê', 'Por quê', 'Onde', 'Quando', 'Quem', 'Como'].filter((_, k) => !tem(l[k]));
-      if (falt.length) r.push(E(`5W2H “${n}”: falta ${falt.join(', ')}.`));
-      if (!temNum(l[6])) r.push(E(`5W2H “${n}”: falta o custo (use 0 se não houver).`));
-    });
-    if (S.ficticia && (w.length || a.length) && !/simulad|fict[íi]ci/i.test(S.w2hTexto + S.sintese + S.economiaTexto + S.resultadosTexto)) r.push(A('Organização fictícia: deixem claro em algum comentário que a implantação é simulada.'));
-    r.push(...analisa(S.w2hTexto));
+    if (!tem(S.planoTexto) && !S.figPlano.img) r.push(E('Falta o plano de ação (6.2): expliquem como as ações serão feitas.'));
+    else {
+      r.push(...analisa(S.planoTexto));
+      if (tem(S.planoTexto) && !/respons|quem|prazo|semana|m[eê]s|dia|data/i.test(S.planoTexto) && !S.figPlano.img) r.push(A('No plano, digam quem faz cada ação e em que prazo.'));
+    }
+    if (!temNum(S.investimento)) r.push(E('Informem o custo total da proposta (use 0 se não houver custo).'));
+    if (S.ficticia && a.length && !/simulad|fict[íi]ci/i.test(S.planoTexto + S.sintese + S.economiaTexto + S.resultadosTexto)) r.push(A('Organização fictícia: deixem claro em algum texto que a implantação é simulada.'));
     return r;
   },
-  vazio: () => vazioTab(S.acoes) && vazioTab(S.w2h),
+  vazio: () => vazioTab(S.acoes) && !tem(S.planoTexto) && !S.figPlano.img,
 });
 sec({ id: 'indicadores', grp: '6 Proposta', nome: '6.3 Indicadores',
   ori: `<p>Os indicadores que vão medir a melhoria, cada um com <b>fórmula, valor atual e meta</b>. O valor atual vem do Capítulo 5.</p>
@@ -750,14 +750,14 @@ sec({ id: 'resultados', grp: '8 Resultados', nome: '8.1 Resultados',
   vazio: () => vazioTab(S.resultados) && !tem(S.resultadosTexto),
 });
 sec({ id: 'financeiro', grp: '8 Resultados', nome: '8.2 Análise financeira',
-  ori: `<p>Traduzam a melhoria em dinheiro. O <b>investimento</b> vem do custo total do plano 5W2H (item 6.2). Informem a <b>economia por mês</b> e expliquem a conta: o <b>payback</b> (tempo de retorno) é calculado sozinho.</p>
+  ori: `<p>Traduzam a melhoria em dinheiro. O <b>investimento</b> é o custo total da proposta (item 6.2). Informem a <b>economia por mês</b> e expliquem a conta: o <b>payback</b> (tempo de retorno) é calculado sozinho.</p>
   <p class="small">Ex.: Cada compra emergencial custava R$ 60,00 a mais. Com a redução de 9 para 2 compras por mês, a economia é de 7 × R$ 60,00 = R$ 420,00 por mês.</p>`,
   campos: [{ t: 'financeiro' }],
   check() {
     const r = [...analisa(S.economiaTexto, { numero: true }), ...analisa(S.financeiroTexto)];
     if (!tem(S.economiaTexto)) r.push(E('Expliquem como a economia foi calculada.'));
     if (!temNum(S.economiaMensal)) r.push(E('Informem a economia por mês (em R$).'));
-    if (!custo5w2h() && linhasCheias(S.w2h).length) r.push(A('O plano 5W2H está com custo total zero. Confiram a coluna “Quanto”.'));
+    if (!temNum(S.investimento)) r.push(A('Falta o custo total da proposta no item 6.2.'));
     const pb = payback();
     if (pb != null && pb < 0.1) r.push(A('O retorno ficou rápido demais. Confiram se a economia está por mês.'));
     return r;
@@ -973,9 +973,9 @@ function campoHTML(c, i) {
       <label class="f">4. Interpretação: o que o resultado significa para a organização</label><textarea class="short" data-obj="ferramentas" data-i="${j}" data-f="significado" placeholder="Ex.: Assim, sempre que o estoque chegar a 48 kg, um novo pedido deve ser feito.">${esc(x.significado)}</textarea></div>`).join('')
       + (S.ferramentas.length < 8 ? '<button class="mini" data-add-obj="ferramentas">+ Ferramenta</button>' : '');
     case 'financeiro': {
-      const inv = custo5w2h(), pb = payback();
-      return `<div class="bloco"><div class="row" style="justify-content:space-between"><span><b>Investimento</b> (custo total do 5W2H)</span><span style="font-family:var(--f-mono);font-weight:700">R$ ${real(inv)}</span></div>
-        ${linhasCheias(S.w2h).length ? '' : '<p class="hint">Preencham o plano 5W2H (item 6.2) para calcular o investimento.</p>'}</div>
+      const inv = custoTotal(), pb = payback();
+      return `<div class="bloco"><div class="row" style="justify-content:space-between"><span><b>Investimento</b> (custo total da proposta)</span><span style="font-family:var(--f-mono);font-weight:700">R$ ${real(inv)}</span></div>
+        ${temNum(S.investimento) ? '' : '<p class="hint">Informem o custo total da proposta no item 6.2.</p>'}</div>
         <label class="f" for="cEco">Como a economia foi calculada</label><textarea id="cEco" class="short" data-k="economiaTexto">${esc(S.economiaTexto)}</textarea>
         <label class="f" for="cEcoM">Economia por mês (R$)</label><input type="text" id="cEcoM" data-k="economiaMensal" value="${esc(S.economiaMensal)}" placeholder="Ex.: 420,00" style="max-width:220px">
         <div class="bloco"><div class="row" style="justify-content:space-between"><span><b>Payback</b> = investimento ÷ economia mensal</span><span id="pbView" style="font-family:var(--f-mono);font-weight:700">${pbTxt()}</span></div></div>
@@ -1297,8 +1297,8 @@ const SEC_DO_CAMPO = { resumo: 'resumo', palavras: 'resumo', dedicatoria: 'pre',
   justificativa: 'justificativa', objGeral: 'objetivos', objEsp: 'objetivos', historico: 'historico', produtos: 'historico', produtosTexto: 'historico',
   estrutura: 'estrutura', capacidade: 'estrutura', processo: 'estrutura', fund: 'fund', tipoPesquisa: 'metodo', objeto: 'metodo', coleta: 'metodo',
   analise: 'metodo', etapas: 'metodo', procAtual: 'procAtual', procAnalise: 'procAtual', dadosTexto: 'dados', dados: 'dados', dadosAnalise: 'dados',
-  indAtuais: 'dados', causasTexto: 'causas', porques: 'causas', causasAnalise: 'causas', gut: 'gut', sintese: 'gut', acoes: 'proposta', w2h: 'proposta',
-  w2hTexto: 'proposta', indicadores: 'indicadores', ferramentas: 'ferramentas', resultados: 'resultados', resultadosTexto: 'resultados',
+  indAtuais: 'dados', causasTexto: 'causas', porques: 'causas', causasAnalise: 'causas', gut: 'gut', sintese: 'gut', acoes: 'proposta', planoTexto: 'proposta', investimento: 'proposta',
+  indicadores: 'indicadores', ferramentas: 'ferramentas', resultados: 'resultados', resultadosTexto: 'resultados',
   economiaTexto: 'financeiro', economiaMensal: 'financeiro', tarefas: 'apendices', discussao: 'discussao', discussaoTexto: 'discussao', conclusao: 'conclusao', referencias: 'referencias', roteiro: 'apendices', ia: 'apendices',
   titulo: 'grupo', integrantes: 'grupo', organizacao: 'grupo' };
 function campoVazio(k) {
@@ -1342,14 +1342,14 @@ async function importarArquivo(file) {
   }
   $('#toast').hidden = true;
   const D = res.dados; const aplicados = new Set();
-  const larg = { produtos: 4, estrutura: 3, etapas: 3, dados: 2, indAtuais: 3, porques: 2, gut: 4, acoes: 3, w2h: 7, indicadores: 4, resultados: 5, ia: 5, siglas: 2 };
+  const larg = { produtos: 4, estrutura: 3, etapas: 3, dados: 2, indAtuais: 3, porques: 2, gut: 4, acoes: 3, indicadores: 4, resultados: 5, ia: 5, siglas: 2 };
   if (D.tarefasTab) { const ns = (D.integrantes || S.integrantes); D.tarefas = ns.map(nm => { const l = D.tarefasTab.find(x => tem(nm) && semAcento(x[0]) === semAcento(nm)); return l ? l[1] : ''; }); delete D.tarefasTab; if (!D.tarefas.some(tem)) delete D.tarefas; }
   const chaves2 = Object.keys(D); chaves.length = 0; chaves.push(...chaves2);
   for (const k of chaves) {
     if (modo === 'substituir' || campoVazio(k)) {
       let v = D[k];
       if (k === 'objEsp') v = v.filter(tem).slice(0, 5);
-      if (k === 'integrantes') { v = v.slice(0, 6); while (v.length < 6) v.push(''); }
+      if (k === 'integrantes') { v = v.slice(0, 4); while (v.length < 4) v.push(''); }
       if (larg[k]) v = v.map(l => Array.from({ length: larg[k] }, (_, i) => L(l[i])));
       if (k === 'ferramentas') v = v.map(f => Object.assign(ferrVazia(), f));
       if (k === 'discussao') { const es = (D.objEsp || S.objEsp).filter(tem); v = es.map((o, i) => { const l = v.find(x => semAcento(x[0]).slice(0, 25) === semAcento(o).slice(0, 25)) || v[i] || []; return { resultado: L(l[1]), situacao: ['Atingido', 'Atingido em parte', 'Não atingido'].find(x => semAcento(x) === semAcento(l[2])) || '' }; }); }
@@ -1396,7 +1396,9 @@ async function importarArquivo(file) {
 }
 
 // garante tamanhos mínimos (cópias antigas)
-['integrantes'].forEach(k => { while (S[k].length < 6) S[k].push(''); });
+while (S.integrantes.length < 4) S.integrantes.push('');
+while (S.integrantes.length > 4 && !tem(S.integrantes[S.integrantes.length - 1])) S.integrantes.pop();
+if (!S.figPlano) S.figPlano = figVazia();
 ['tarefas', 'discussao', 'galeria', 'sobras'].forEach(k => { if (!Array.isArray(S[k])) S[k] = []; });
 if (!Array.isArray(S.ferramentas) || !S.ferramentas.length) S.ferramentas = [ferrVazia()];
 S.ferramentas.forEach(f => { if (!f.fig) f.fig = figVazia(); });
