@@ -26,6 +26,7 @@
 .rev-item .rev-acoes{display:flex; gap:6px; flex-shrink:0}
 .rev-item button, .rev-rodape button{font-size:.78rem; padding:4px 9px; border-radius:7px; border:1px solid var(--line,#ccc); background:#fff; cursor:pointer}
 .rev-item button.ok, .rev-rodape button.ok{background:#1d7a4a; border-color:#1d7a4a; color:#fff; font-weight:600}
+.rev-item button.rev-alt{padding:1px 7px; font-size:.8rem; color:#1d7a4a; border-color:#9fd4b4; margin:2px 0}
 .rev-sug{margin-top:12px; padding:10px 12px; background:#f3f7f4; border-radius:8px; white-space:pre-wrap; line-height:1.55}
 .rev-sug mark{background:#c9ecd6; color:inherit; padding:0 2px; border-radius:3px}
 .rev-rodape{display:flex; gap:8px; flex-wrap:wrap; margin-top:10px; align-items:center}
@@ -112,7 +113,7 @@
       p.innerHTML = `<h4>${itens.length === 1 ? '1 ponto para corrigir' : itens.length + ' pontos para corrigir'}</h4>` +
         itens.map((it, i) => `<div class="rev-item"><div><span class="rev-tipo ${it.tipo[0]}">${it.tipo[1]}</span>
           <span class="rev-o">${esc(texto.substr(it.off, it.len)) || '(espaço)'}</span> → <span class="rev-n">${esc(it.troca) || '(apagar)'}</span>
-          ${it.alt.length ? `<span class="rev-msg"> ou ${it.alt.map(esc).join(', ')}</span>` : ''}
+          ${it.alt.length ? `<span class="rev-msg"> ou </span>${it.alt.map((a, k) => `<button class="rev-alt" data-rev="alt" data-i="${i}" data-a="${k}" title="Usar esta forma">${esc(a)}</button>`).join(' ')}` : ''}
           <span class="rev-exp">${esc(it.msg)}</span></div>
           <div class="rev-acoes"><button class="ok" data-rev="um" data-i="${i}">Corrigir</button><button data-rev="ign" data-i="${i}" title="Não é erro (nome, termo técnico…)">Não é erro</button></div></div>`).join('') +
         `<div class="rev-sug"><b style="display:block;margin-bottom:4px;white-space:normal">Sugestão: o texto com as correções (em verde)</b>${c.html}</div>
@@ -132,7 +133,8 @@
       const i = +b.dataset.i, it = itens[i];
       if (acao === 'ign') ignorar(texto.substr(it.off, it.len).toLowerCase());
       let novo = texto;
-      if (acao === 'um') {
+      if (acao === 'alt') { it.troca = it.alt[+b.dataset.a]; }
+      if (acao === 'um' || acao === 'alt') {
         novo = texto.slice(0, it.off) + it.troca + texto.slice(it.off + it.len);
         const delta = it.troca.length - it.len;
         itens.forEach(x => { if (x.off > it.off) x.off += delta; });
