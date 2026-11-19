@@ -73,6 +73,7 @@ label.f .muted{font-weight:400}
 .note ul{margin:.3em 0; padding-left:1.2em}
 .toolbar{display:flex; gap:8px; flex-wrap:wrap; align-items:center}
 .saved{font-family:var(--f-mono); font-size:.75rem; color:var(--muted)}
+#bNuvem{background:var(--marca); border-color:var(--marca); color:#fff; font-weight:600}
 
 /* layout com menu lateral */
 .layout{display:grid; grid-template-columns:290px minmax(0,1fr); gap:18px; align-items:start}
@@ -135,6 +136,8 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
     </div></div>
     <div class="toolbar">
       <span class="saved" id="salvo">Salvo neste navegador</span>
+      <span class="saved" id="nuvemSt"></span>
+      <button class="mini" id="bNuvem" title="Guardar o trabalho na nuvem para abrir em qualquer computador">☁ Nuvem</button>
       <button class="mini" id="bSalvar" title="Baixar uma cópia para continuar em outro computador">Salvar cópia</button>
       <button class="mini" id="bAbrir" title="Abrir uma cópia salva antes">Abrir cópia</button>
       <button class="mini danger" id="bNovo">Novo trabalho</button>
@@ -152,6 +155,7 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
 <dialog id="dlg"><div id="dlgBody"></div><div class="row" style="justify-content:flex-end;margin-top:16px" id="dlgBtns"></div></dialog>
 
 <script src="config.js"></script>
+<script src="../tccs/nuvem.js"></script>
 <script src="../vendor/docx.iife.js" defer></script>
 <script src="gerar-docx.js" defer></script>
 <script src="importar.js" defer></script>
@@ -201,6 +205,7 @@ try { S = Object.assign(estadoInicial(), JSON.parse(localStorage.getItem(CHAVE) 
 let salvarT = null;
 function salvar() {
   clearTimeout(salvarT);
+  if (window.NuvemTCC) NuvemTCC.mudou();
   document.getElementById('salvo').textContent = 'Salvando…';
   salvarT = setTimeout(() => {
     try { localStorage.setItem(CHAVE, JSON.stringify(S)); document.getElementById('salvo').textContent = 'Salvo neste navegador ✓'; }
@@ -333,7 +338,8 @@ const sec = d => SEC.push(d);
 
 sec({ id: 'grupo', grp: 'Começo', nome: 'Dados da equipe',
   ori: `<p>Preencham primeiro os dados da equipe. Tudo fica salvo neste navegador enquanto vocês trabalham.</p>
-  <ul><li>Em computador da escola, usem <b>Salvar cópia</b> no fim de cada aula e guardem o arquivo no Drive.</li>
+  <ul><li><b>Para abrir o trabalho em qualquer computador</b>, cliquem em <b>☁ Nuvem</b> lá em cima e criem o código da equipe (uma vez só). Depois ele é salvo sozinho.</li>
+  <li>Em computador da escola, no fim da aula, cliquem em <b>☁</b> e em <b>Sair deste computador</b>.</li>
   <li>À direita aparecem as <b>sugestões</b>: <span style="color:var(--bad)">✗ precisa mudar</span>, <span style="color:var(--near)">! vale revisar</span>, <span style="color:var(--ok)">✓ está bom</span>.</li>
   <li>A sequência segue o <b>Modelo de TCC do Técnico em PCP</b>: do problema (Capítulos 1 a 5) à solução (Capítulos 6 a 9).</li>
   <li>No final, em <b>Gerar o TCC</b>, vocês baixam o Word já formatado e enviam ao professor.</li></ul>`,
@@ -1192,7 +1198,7 @@ function entregaHTML() {
     <a class="btn" href="Modelo_TCC_Tecnico_PCP_CEEP.docx" download>Modelo do PCP (Word)</a></div>
     <div class="note" style="margin-top:14px"><p><b>Como entregar:</b> ${urlEnvio() ? 'usem o botão “Enviar para o professor”.' : 'postem o arquivo Word no Classroom. O professor abre e corrige.'}</p>
     <p>O sumário e a lista de figuras são atualizados ao abrir no Word (clique em “Sim” se ele perguntar). No Google Docs, clique no sumário e em <b>atualizar</b>.</p>
-    <p>Para continuar o trabalho em outro computador, usem <b>Salvar cópia</b> e depois <b>Abrir cópia</b>.</p></div></div>`;
+    <p>Para continuar o trabalho em outro computador, usem a <b>☁ Nuvem</b> (código e senha da equipe). Se a internet não deixar, usem <b>Salvar cópia</b> e depois <b>Abrir cópia</b>.</p></div></div>`;
 }
 const urlEnvio = () => L(window.TCC_CONFIG && window.TCC_CONFIG.urlEnvio);
 async function montarDocx() {
@@ -1273,6 +1279,13 @@ async function salvarCopia() {
   baixar(new Blob([JSON.stringify(dados)], { type: 'application/json' }), nome);
   toast('Cópia salva ✓ Guardem no Drive.');
 }
+async function aplicarCopia(trabalho, imagens) {
+  await IDB.clear();
+  for (const [id, v] of Object.entries(imagens || {})) await IDB.put(id, { w: v.w, h: v.h, type: v.type, data: b642ab(v.b64) });
+  S = Object.assign(estadoInicial(), trabalho);
+  Object.keys(urlCache).forEach(k => delete urlCache[k]);
+  salvar(); desenhar();
+}
 window.salvarCopia = salvarCopia;
 $('#bSalvar').onclick = salvarCopia;
 $('#bAbrir').onclick = () => $('#fAbrir').click();
@@ -1283,14 +1296,12 @@ $('#fAbrir').onchange = async e => {
     if (d.app !== APP || !d.trabalho) throw new Error(d.app === 'tcc-mecanica-ceep' ? 'Essa cópia é do Assistente do TCC de Mecânica. Abram no assistente certo.' : 'Esse arquivo não é uma cópia do Assistente do TCC do PCP.');
     const ok = await dialogo('<p><b>Abrir esta cópia?</b></p><p>O trabalho que está agora neste navegador será substituído.</p>', [['Cancelar', false], ['Abrir', true, 'primary']]);
     if (!ok) return;
-    await IDB.clear();
-    for (const [id, v] of Object.entries(d.imagens || {})) await IDB.put(id, { w: v.w, h: v.h, type: v.type, data: b642ab(v.b64) });
-    S = Object.assign(estadoInicial(), d.trabalho);
-    Object.keys(urlCache).forEach(k => delete urlCache[k]);
-    salvar(); desenhar(); toast('Cópia aberta ✓');
+    await aplicarCopia(d.trabalho, d.imagens);
+    toast('Cópia aberta ✓');
   } catch (err) { toast(err.message || 'Não consegui abrir esse arquivo.'); }
 };
 $('#bNovo').onclick = async () => {
+  if (window.NuvemTCC && NuvemTCC.ligado()) { await dialogo('<p><b>Este computador está ligado à nuvem de uma equipe.</b></p><p class="small">Para começar outro trabalho, primeiro cliquem em <b>☁</b> e em <b>Sair deste computador</b>.</p>', [['Ok', true, 'primary']]); return; }
   const ok = await dialogo('<p><b>Começar um trabalho novo?</b></p><p>Tudo o que está neste navegador será apagado, inclusive as fotos. Se ainda não salvaram, cliquem em <b>Salvar cópia</b> antes.</p>',
     [['Cancelar', false], ['Salvar cópia antes', 'copia'], ['Apagar e começar', true, 'danger']]);
   if (ok === 'copia') return salvarCopia();
@@ -1298,6 +1309,20 @@ $('#bNovo').onclick = async () => {
   await IDB.clear().catch(() => {});
   S = estadoInicial(); atual = SEC[0].id; salvar(); desenhar();
 };
+
+/* ---------- nuvem da equipe (código + senha) ---------- */
+if (window.NuvemTCC) NuvemTCC.iniciar({
+  app: APP, prefixo: 'PCP', url: urlEnvio,
+  botao: () => $('#bNuvem'), elStatus: () => $('#nuvemSt'),
+  trabalho: () => S,
+  nome: () => L(S.titulo) || S.integrantes.filter(tem).map(n => n.split(' ')[0]).join(', '),
+  idsUsados: async () => (await IDB.keys().catch(() => [])).filter(idEmUso),
+  lerImagem: async id => { const v = await IDB.get(id).catch(() => null); return v ? { w: v.w, h: v.h, type: v.type, b64: ab2b64(v.data) } : null; },
+  aplicar: aplicarCopia,
+  vazio: () => trabalhoVazio() && !S.integrantes.some(tem) && !tem(S.titulo),
+  limpar: async () => { await IDB.clear().catch(() => {}); S = estadoInicial(); atual = SEC[0].id; salvar(); desenhar(); },
+  dialogo, toast, esc,
+});
 
 /* ---------- importar o que a equipe já fez ---------- */
 // chave do dado importado -> seção onde ele aparece
