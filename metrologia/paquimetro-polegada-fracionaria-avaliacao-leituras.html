@@ -262,7 +262,7 @@ function montar(v){return v.map(n=>{const q=BANK[n-1];return{tema:q.traco?0:1,u:
 /* ===== estado ===== */
 const KEY='paq-pol-fr-aval35-v1',N=35,NV=35;
 /* endereço do Google Apps Script do professor (planilha + PDF no Drive). Vazio = não envia. */
-const ENVIO_URL='';
+const ENVIO_URL='https://script.google.com/macros/s/AKfycbyFB7_droCXROAI6XYOwXPQlW5S7BbAAkjhTChnu6u0_gRGSFc3YeC8m9vTUzGcc2Wi/exec';
 let S={f:-1,i:0,ord:[],res:{},t:{},v:[]},E=[];
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');
   if(s&&Array.isArray(s.ord)&&s.ord.length===N&&Array.isArray(s.v)&&s.v.length===NV){S.ord=s.ord;S.res=s.res||{};S.t=s.t||{};S.v=s.v;S.nome=s.nome||'';S.turma=s.turma||'';S.tent=s.tent||1;S.enviado=s.enviado||0}}catch(e){}
