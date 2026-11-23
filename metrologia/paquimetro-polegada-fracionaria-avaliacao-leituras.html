@@ -191,8 +191,8 @@ input.nn.f{width:4ch}
     <li>O tempo de cada exercício é marcado. Cada exercício vale a primeira resposta.</li>
     <li>Quando você terminar as 25, o resultado e o relatório em PDF vão <b>sozinhos para o professor</b>. Você também pode baixar o PDF.</li>
   </ul>
-  <label class="f">Nome completo<input type="text" id="nome" autocomplete="name" maxlength="60"></label>
-  <label class="f" style="margin-top:10px">Turma<input type="text" id="turma" maxlength="20"></label>
+  <label class="f">Nome completo<input type="text" id="nome" autocomplete="name" maxlength="60" autocapitalize="characters" style="text-transform:uppercase"></label>
+  <label class="f" style="margin-top:10px">Número de chamada<input type="text" id="turma" inputmode="numeric" maxlength="3" style="max-width:8ch"></label>
   <div id="imsg" aria-live="polite"></div>
   <div class="row"><button class="act" id="comecar">Começar a avaliação</button></div>
 </section>
@@ -359,7 +359,7 @@ function dados(){const resp=S.ord.filter(i=>S.res[i]),ok=resp.filter(i=>S.res[i]
   return {resp,ok,err,tt,med:resp.length?tr/resp.length:0,pct:resp.length?Math.round(ok.length/resp.length*100):0}}
 const resTxt=r=>r?(r.ok?'Acertou':r.quase?'Errou (faltou simplificar)':'Errou'):'Não respondido';
 const nota10=d=>(Math.round(d.ok.length/N*100)/10).toFixed(1).replace('.',',');
-function relatorio(){const d=dados();$('rcab').innerHTML=`<b>${esc(S.nome)}</b>${S.turma?' · Turma '+esc(S.turma):''} · ${new Date().toLocaleDateString('pt-BR')}`;
+function relatorio(){const d=dados();$('rcab').innerHTML=`<b>${esc(S.nome)}</b>${S.turma?' · Nº de chamada '+esc(S.turma):''} · ${new Date().toLocaleDateString('pt-BR')}`;
   const nums=a=>a.length?a.map(num).sort((x,y)=>x-y).join(', '):'nenhum';
   $('rel').innerHTML=`<div class="resumo">
      <div>Nota<b>${nota10(d)}</b></div><div>Acertos<b style="color:var(--ok)">${d.ok.length}</b></div><div>Erros<b style="color:var(--bad)">${d.err.length}</b></div>
@@ -380,12 +380,14 @@ if($('zerar'))$('zerar').onclick=()=>{if(confirm('Apagar todas as respostas e os
 $('trocar').onclick=()=>{if(confirm('Trocar de aluno apaga tudo o que foi respondido neste aparelho. Continuar?')){novo();S.enviado=0;S.tentouEnvio=0;S.nome='';S.turma='';salvar();tela();window.scrollTo(0,0)}};
 function tela(){const ok=!!S.nome;$('inicio').hidden=ok;$('painel').hidden=!ok;$('ex').hidden=!ok;
   if(!ok){$('calc').hidden=true;$('relpanel').hidden=true;$('nome').value='';$('turma').value='';return}
-  $('calc').hidden=false;$('anome').textContent=S.nome;$('aturma').textContent=S.turma?'· Turma '+S.turma:'';chips();render()}
-$('comecar').onclick=()=>{const n=$('nome').value.trim().replace(/\s+/g,' '),t=$('turma').value.trim();
+  $('calc').hidden=false;$('anome').textContent=S.nome;$('aturma').textContent=S.turma?'· Nº de chamada '+S.turma:'';chips();render()}
+$('comecar').onclick=()=>{const n=$('nome').value.trim().replace(/\s+/g,' ').toLocaleUpperCase('pt-BR'),t=$('turma').value.trim().replace(/^0+(?=\d)/,'');
   if(n.length<3||!/\s/.test(n)){$('imsg').innerHTML='<p class="erro">Escreva o seu nome completo (nome e sobrenome).</p>';$('nome').focus();return}
-  if(!t){$('imsg').innerHTML='<p class="erro">Escreva a sua turma.</p>';$('turma').focus();return}
+  if(!/^\d{1,3}$/.test(t)){$('imsg').innerHTML='<p class="erro">Escreva o seu número de chamada (só números).</p>';$('turma').focus();return}
   S.nome=n;S.turma=t;salvar();tela();window.scrollTo(0,0)};
 $('nome').addEventListener('keydown',e=>{if(e.key==='Enter')$('turma').focus()});
+$('nome').addEventListener('input',e=>{const el=e.target,p=el.selectionStart;el.value=el.value.toLocaleUpperCase('pt-BR');try{el.setSelectionRange(p,p)}catch(_){}});
+$('turma').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'')});
 $('turma').addEventListener('keydown',e=>{if(e.key==='Enter')$('comecar').click()});
 
 /* ===== calculadora ===== */
@@ -405,7 +407,7 @@ function gerarPDF(){
   doc.setFillColor(168,84,0);doc.rect(0,0,210,6,'F');
   linha('FAZENDA DE PROJETOS · Metrologia · Polegada fracionária',9,true,[79,95,108]);y+=1;
   linha(`Avaliação: Paquímetro em Polegada Fracionária (${N} leituras)`,15,true);y+=2;
-  linha(`Nome: ${S.nome}    Turma: ${S.turma||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`,10);y+=2;
+  linha(`Nome: ${S.nome}    Número de chamada: ${S.turma||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`,10);y+=2;
   linha(`Nota: ${nota10(d)} (de 0 a 10)    Acertos: ${d.ok.length} de ${N}    Erros: ${d.err.length}    Aproveitamento: ${d.pct}%`,12,true,d.pct>=70?[23,112,63]:[179,38,30]);// ${d.ok.length}    Erros: ${d.err.length}    Aproveitamento: ${d.pct}%`,12,true,d.pct>=70?[23,112,63]:[179,38,30]);
   linha(`Tempo total: ${ftempo(d.tt)}    Tempo médio por exercício: ${ftempo(d.med)}`,10.5);y+=2;
   linha(`Acertou: ${nums(d.ok)}`,10,true,[23,112,63]);
@@ -416,7 +418,7 @@ function gerarPDF(){
   const cab=()=>{doc.setFillColor(29,59,92);doc.rect(X,y-4.3,W,6.4,'F');doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(255,255,255);let x=X+1.5;cols.forEach(([n,w])=>{doc.text(n,x,y);x+=w});y+=5};
   if(y>250){doc.addPage();y=18}cab();
   S.ord.forEach((i,k)=>{const e=E[i],r=S.res[i];
-    const cel=[String(num(i)),e.en+(ctx(e)?' ('+ctx(e)+')':''),r?txtResp(e,r.r):'—',r?txtCerta(e):'—',resTxt(r),ftempo(gasto(i))];
+    const cel=[String(num(i)),'Leitura '+(e.rosa?'com o traço marcado':'descobrindo o traço')+' (questão '+e.banco+' da revisão)',r?txtResp(e,r.r):'—',r?txtCerta(e):'—',resTxt(r),ftempo(gasto(i))];
     doc.setFontSize(FS);const ls=cel.map((c,j)=>doc.splitTextToSize(t(c),cols[j][1]-3));const h=Math.max(...ls.map(l=>l.length))*LH+2.4;
     if(y+h>288){doc.addPage();y=18;cab()}
     if(k%2){doc.setFillColor(238,242,245);doc.rect(X,y-3.6,W,h,'F')}
@@ -424,7 +426,7 @@ function gerarPDF(){
       doc.setFont('helvetica',j===0||j===4?'bold':'normal');doc.setTextColor(...cor);doc.text(l,x,y);x+=cols[j][1]});
     y+=h});
   const nm=S.nome.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
-  return {doc,nome:`avaliacao-25-leituras-${(S.turma||'').toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'')}-${nm||'aluno'}.pdf`}}
+  return {doc,nome:`avaliacao-25-leituras-n${String(S.turma||'').padStart(2,'0')}-${nm||'aluno'}.pdf`}}
 $('pdf').onclick=()=>{
   if(!window.jspdf||!window.jspdf.jsPDF){$('rmsg').innerHTML='<p class="erro">O gerador de PDF não carregou. Confira a internet e recarregue a página.</p>';return}
   if(Object.keys(S.res).length<N){$('rmsg').innerHTML='<p class="erro">Termine todos os exercícios antes de baixar o relatório.</p>';return}
