@@ -21,6 +21,7 @@ O site começa por Metrologia e Tecnologia Mecânica dos Materiais. Desenho Mec�
 | `metrologia/slides/paquimetro-polegada-milesimal.pdf` e `.pptx` | Slides da aula Paquímetro Polegada Milesimal (modelo CEEP), em PDF e PowerPoint |
 | `metrologia/regua-polegada-fracionaria.html` | Simulador Régua em Polegada Fracionária (1/16"): explorar, básico, médio e avançado |
 | `metrologia/paquimetro-polegada-fracionaria.html` | Simulador Paquímetro Polegada Fracionária (1/128"): explorar, básico, médio e avançado |
+| `metrologia/paquimetro-polegada-fracionaria-avaliacao-leituras.html` | Avaliação de 35 leituras sorteadas do banco da revisão; ao terminar envia o resultado (linha na planilha + PDF no Drive) pelo Apps Script em `ferramentas/apps-script-resultados.gs` (endereço em `ENVIO_URL`) |
 | `metrologia/paquimetro-polegada-fracionaria-revisao.html` | Revisão para a avaliação (sem nota): banco fixo de 120 leituras de paquímetro em polegada fracionária, metade com o traço marcado e metade para descobrir o traço |
 | `metrologia/paquimetro-polegada-fracionaria-avaliacao.html` | Avaliação Polegada Fracionária (frações, régua e paquímetro): 20 exercícios sorteados, relatório em PDF |
 | `metrologia/slides/polegada-fracionaria-fracoes-e-regua.pdf` e `.pptx` | Slides da aula 1: frações da polegada e régua (modelo CEEP) |

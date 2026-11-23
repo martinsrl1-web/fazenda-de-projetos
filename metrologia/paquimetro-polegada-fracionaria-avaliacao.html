@@ -219,7 +219,7 @@ function explicaRegua(u16){const w=Math.floor(u16/16),n=u16%16;
 
 /* desenho do paquímetro (igual ao simulador) */
 const FD=8,PPU=7.5,LINE=330,W=1500,BX0=22,BX1=1478,VD=(FD-1)*PPU,VL=8*VD;
-function paq(u,rosa){const cam=u-640/PPU,z=(u-cam)*PPU;let h=`<rect x="20" y="20" width="1460" height="310" rx="6" fill="#C9CBCD" stroke="#373435" stroke-width="5"/><g clip-path="url(#cp${u})">`;
+function paq(u,rosa){const cam=Math.min(u-640/PPU,Math.floor(u/128)*128-80/PPU),z=(u-cam)*PPU;let h=`<rect x="20" y="20" width="1460" height="310" rx="6" fill="#C9CBCD" stroke="#373435" stroke-width="5"/><g clip-path="url(#cp${u})">`;
   const first=Math.max(0,Math.floor(cam/FD)-1),last=Math.ceil((cam+W/PPU)/FD)+1;
   for(let m=first;m<=last;m++){const x=(m*FD-cam)*PPU;if(x<BX0||x>BX1)continue;const L=m%16===0?225:m%8===0?180:m%4===0?145:m%2===0?112:82;
     h+=`<line x1="${x}" x2="${x}" y1="${LINE-L}" y2="${LINE}" stroke="#2A2829" stroke-width="${m%16===0?5:3.4}"/>`;
@@ -230,7 +230,7 @@ function paq(u,rosa){const cam=u-640/PPU,z=(u-cam)*PPU;let h=`<rect x="20" y="20
   h+=`<rect x="${x0}" y="${LINE}" width="${x1-x0}" height="230" fill="#E6E7E8"/><path d="M${x0} ${LINE} V${yb-6} Q${x0} ${yb} ${x0+6} ${yb} H${x1-6} Q${x1} ${yb} ${x1} ${yb-6} V${LINE}" fill="none" stroke="#373435" stroke-width="5"/>`;
   for(let k=0;k<=8;k++){const x=z+k*VD,lb=k%4===0;h+=`<line x1="${x}" x2="${x}" y1="${LINE}" y2="${LINE+(lb?120:80)}" stroke="#2A2829" stroke-width="${k===0?5:3.4}"/>`;
     if(lb)h+=`<text x="${x}" y="${LINE+170}" text-anchor="middle" font-size="40" font-weight="700" font-family="Arial,sans-serif" fill="#2A2829">${k}</text>`}
-  h+=`<text x="${x1-14}" y="${LINE+214}" text-anchor="end" font-size="26" font-family="Arial,sans-serif" fill="#4A4849">1/128 in</text>`;
+  h+=`<text x="${x0+14}" y="${LINE+214}" text-anchor="start" font-size="26" font-family="Arial,sans-serif" fill="#4A4849">1/128 in</text>`;
   if(rosa){const xa=z+(u%FD)*VD;h+=`<line x1="${xa}" x2="${xa}" y1="${LINE-200}" y2="${LINE+118}" stroke="#FF2E93" stroke-width="7" opacity=".6"/><circle cx="${xa}" cy="${LINE+132}" r="11" fill="#FF2E93"/>`}
   return `<svg viewBox="0 0 1500 600" role="img" aria-label="Paquímetro em polegada fracionária${rosa?', com o traço do nônio que coincide marcado em rosa':''}"><defs><clipPath id="cp${u}"><rect x="22" y="22" width="1456" height="306"/></clipPath></defs>${h}</svg>`}
 /* desenho da régua (igual ao simulador): u16 em 1/16" */

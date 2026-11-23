@@ -191,7 +191,7 @@ function explain(u){const n=Math.floor(u/FD),r=u%FD,w=Math.floor(n/16),k=n%16,fx
 /* ---------- desenho ---------- */
 const zeroX=()=>(S.p-S.cam)*PPU;
 function follow(){const x=zeroX();if(x<MARG)S.cam=S.p-MARG/PPU;else if(x>W-VL-MARG)S.cam=S.p-(W-VL-MARG)/PPU}
-const centerCam=()=>{S.cam=S.p-ZX/PPU};
+const centerCam=()=>{S.cam=Math.min(S.p-ZX/PPU,Math.floor(S.p/128)*128-80/PPU)};/* sempre mostra a última polegada inteira */
 function drawBeam(){let h='';
   const first=Math.max(0,Math.floor(S.cam/FD)-1),last=Math.ceil((S.cam+W/PPU)/FD)+1,maxm=6.5*16;
   for(let m=first;m<=Math.min(last,maxm);m++){const x=(m*FD-S.cam)*PPU;if(x<BX0||x>BX1)continue;
