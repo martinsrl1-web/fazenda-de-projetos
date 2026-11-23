@@ -199,7 +199,7 @@ function drawBeam(){let h='';
     h+=`<line x1="${x}" x2="${x}" y1="${LINE-L}" y2="${LINE}" stroke="#2A2829" stroke-width="${m%16===0?5:3.4}"/>`;
     if(m%16===0){const lab=m/16,half=66*0.32*String(lab).length+4;
       if(x-half>BX0+6&&x+half<BX1-6)h+=`<text x="${x}" y="${LINE-L-10}" text-anchor="middle" font-size="66" font-weight="900" font-family="'Arial Black',Arial,Helvetica,sans-serif" fill="#14202B">${lab}</text>`}}
-  const inch=Math.floor(S.cam/128),xi=(inch*128-S.cam)*PPU;
+  const inch=Math.floor(S.p/128),xi=(inch*128-S.cam)*PPU;
   if(S.cam>0&&xi<BX0+40)h+=`<rect x="${BX0+8}" y="${BX0+8}" width="150" height="54" rx="6" fill="#14202B" opacity=".85"/><text x="${BX0+83}" y="${BX0+46}" text-anchor="middle" font-size="34" font-weight="700" font-family="Arial,Helvetica,sans-serif" fill="#F2A93B">◂ ${inch}"</text>`;
   $('beam').innerHTML=h}
 function drawPlate(){const z=zeroX(),x0=z-110,x1=z+VL+110,yb=LINE+230;
