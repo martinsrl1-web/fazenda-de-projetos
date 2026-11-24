@@ -166,6 +166,7 @@ dialog::backdrop{background:rgba(0,0,0,.4)}
 <script src="config.js"></script>
 <script src="../tccs/nuvem.js"></script>
 <script src="../tccs/revisor.js"></script>
+<script src="../tccs/slides.js"></script>
 <script src="../vendor/docx.iife.js" defer></script>
 <script src="gerar-docx.js" defer></script>
 <script src="importar.js" defer></script>
@@ -751,6 +752,7 @@ sec({ id: 'apendices', grp: 'Final', nome: 'Apêndices e siglas',
   vazio: () => !S.desenhos.some(d => d.img) && vazioTab(S.ia) && !S.naoUsouIA && !(S.tarefas || []).some(tem),
 });
 sec({ id: 'entrega', grp: 'Final', nome: 'Gerar o TCC', entrega: true });
+sec({ id: 'slides', grp: 'Final', nome: 'Apresentação (slides)', entrega: true, slides: true });
 
 /* =====================================================================
    STATUS
@@ -944,6 +946,7 @@ function desenhar() {
   const i = SEC.indexOf(s);
   const ant = SEC[i - 1], prox = SEC[i + 1];
   const navb = `<div class="navbtns">${ant ? `<button data-ir="${ant.id}">← ${esc(ant.nome)}</button>` : '<span></span>'}${prox ? `<button class="primary" data-ir="${prox.id}">${esc(prox.nome)} →</button>` : ''}</div>`;
+  if (s.slides && window.SlidesTCC) { SlidesTCC.desenhar($('#main'), navb); return; }
   if (s.entrega) { $('#main').innerHTML = entregaHTML() + navb; return; }
   $('#main').innerHTML = `<div class="cols"><div class="panel">
       <div class="eyebrow">${esc(s.grp)}</div><h2 style="margin:4px 0 12px">${esc(s.nome)}</h2>
@@ -1188,6 +1191,10 @@ $('#bNovo').onclick = async () => {
   await IDB.clear().catch(() => {});
   S = estadoInicial(); atual = SEC[0].id; salvar(); desenhar();
 };
+
+/* ---------- apresentação (slides) ---------- */
+if (window.SlidesTCC) SlidesTCC.iniciar({ curso: 'mec', S: () => S,
+  lerImagem: async id => { const v = await IDB.get(id).catch(() => null); return v ? { w: v.w, h: v.h, type: v.type, b64: ab2b64(v.data) } : null; } });
 
 /* ---------- revisor de português (LanguageTool) ---------- */
 if (window.RevisorTCC) RevisorTCC.iniciar({ main: document.getElementById('main') });
