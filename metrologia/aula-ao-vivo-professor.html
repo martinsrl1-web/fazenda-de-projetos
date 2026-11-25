@@ -317,7 +317,7 @@ $('testar').onclick=async()=>{P.codigo=$('cod').value.trim().toUpperCase();guard
   try{const j=await apiPost({acao:'testar',chave:P.codigo});if(!j.ok)throw 0;msg('<p class="okc">✓ Código certo.</p>');$('inicio').hidden=false}
   catch(e){msg('<p class="erro">Código errado ou sem internet.</p>');$('inicio').hidden=true}};
 $('nova').onclick=async()=>{if(P.sessao&&P.fase!=='fim'&&!confirm('Começar uma aula nova? A aula atual será encerrada.'))return;
-  P.sessao='A'+Date.now().toString(36);P.q=-1;P.fase='espera';P.res={};P.alunos={};guardar();
+  P.sessao='A'+Date.now().toString(36);P.q=-1;P.fase='espera';P.res={};P.alunos={};P.cod={};guardar();
   try{const j=await controle();if(!j.ok)throw 0}catch(e){msg('<p class="erro">Não consegui abrir a aula. Confira o código e a internet.</p>');return}
   abrirPalco()};
 $('continuar').onclick=()=>{if(!P.sessao)return;abrirPalco()};
@@ -329,7 +329,7 @@ let ultimaAtual=0;
 async function buscar(){clearTimeout(timer);if(P.fase==='fim'||P.fase==='fechada'||$('palco').hidden)return;
   const marca=P.sessao+'|'+P.q+'|'+P.fase;
   try{const j=await apiPost({acao:'respostas',chave:P.codigo,sessao:P.sessao,q:Math.max(P.q,0)});
-    if(j.ok&&marca===P.sessao+'|'+P.q+'|'+P.fase){vivo=j;Object.assign(P.alunos,j.alunos);guardar();ultimaAtual=Date.now();painel()}}catch(e){}
+    if(j.ok&&marca===P.sessao+'|'+P.q+'|'+P.fase){vivo=j;juntar(j.alunos);guardar();ultimaAtual=Date.now();painel()}}catch(e){}
   clearTimeout(timer);timer=setTimeout(buscar,P.fase==='aberta'||P.fase==='espera'?2000:8000)}
 document.addEventListener('visibilitychange',()=>{if(!document.hidden)buscar()});
 setInterval(()=>{const el=$('atual');if(el&&ultimaAtual)el.textContent='atualizado há '+Math.round((Date.now()-ultimaAtual)/1000)+' s'},1000);
@@ -342,11 +342,11 @@ async function avancar(){if(ocupado)return;ocupado=true;try{
   vivo={respostas:{},alunos:vivo.alunos};guardar();desenhar();await controle();buscar()}
   catch(e){msg('<p class="erro">Sem conexão. Aperte Enter de novo.</p>')}finally{ocupado=false}}
 
-async function revelar(){try{const j=await apiPost({acao:'respostas',chave:P.codigo,sessao:P.sessao,q:P.q});if(j.ok){vivo=j;Object.assign(P.alunos,j.alunos)}}catch(e){}
+async function revelar(){try{const j=await apiPost({acao:'respostas',chave:P.codigo,sessao:P.sessao,q:P.q});if(j.ok){vivo=j;juntar(j.alunos)}}catch(e){}
   const Q=QS[P.q],r={};Object.entries(vivo.respostas||{}).forEach(([ch,o])=>{const c=corrigir(Q,o.resp);r[ch]={nome:o.nome,resp:o.resp,ok:c.ok,quase:c.quase}});
   P.res[P.q]=r;P.fase='revelada';guardar();desenhar();
   try{await controle()}catch(e){}
-  try{await apiPost({acao:'salvar',chave:P.codigo,aula:AULA+' ('+P.sessao+')',linhas:Object.entries(r).map(([ch,o])=>({q:P.q+1,certa:fTxt(Q.u),chamada:+ch,nome:o.nome,resp:frTxt(o.resp),resultado:o.ok?'Acertou':o.quase?'Errou (faltou simplificar)':'Errou'}))})}catch(e){}
+  try{await apiPost({acao:'salvar',chave:P.codigo,aula:AULA+' ('+P.sessao+')',linhas:Object.entries(r).map(([ch,o])=>({q:P.q+1,certa:fTxt(Q.u),chamada:+ch,nome:cod(ch)+' · '+o.nome,resp:frTxt(o.resp),resultado:o.ok?'Acertou':o.quase?'Errou (faltou simplificar)':'Errou'}))})}catch(e){}
   ocupado=false;buscar()}
 
 async function voltar(){if(ocupado||P.q<=0||P.fase==='espera')return;ocupado=true;try{if(P.fase==='fim'){P.fase='revelada'}else{P.q--;P.fase='revelada'}guardar();desenhar();await controle()}catch(e){}finally{ocupado=false}}
@@ -359,8 +359,12 @@ $('avancar').onclick=avancar;$('voltar').onclick=voltar;
 $('sair').onclick=()=>{$('palco').hidden=true;$('config').hidden=false;document.body.classList.remove('modo-tv');clearTimeout(timer);$('continuar').hidden=!P.sessao};
 $('encerrar').onclick=async()=>{if(!confirm('Encerrar a aula para todos os alunos?'))return;P.fase='fechada';guardar();try{await controle()}catch(e){}$('sair').click()};
 
-const nomeCurto=n=>{const p=String(n||'').split(' ');return p.length>1?p[0]+' '+p[p.length-1][0]+'.':p[0]};
-const turma=()=>Object.entries(P.alunos).sort((a,b)=>a[0]-b[0]);
+/* cada aluno recebe um código na ordem em que entra (Aluno 1, Aluno 2…); na tela só aparece o código */
+function juntar(al){P.cod=P.cod||{};Object.assign(P.alunos,al||{});Object.keys(al||{}).sort((a,b)=>a-b).forEach(c=>{if(!P.cod[c])P.cod[c]=Object.keys(P.cod).length+1})}
+Object.keys(P.alunos||{}).forEach(c=>{P.cod=P.cod||{};if(!P.cod[c])P.cod[c]=Object.keys(P.cod).length+1});
+const cod=c=>{P.cod=P.cod||{};if(!P.cod[c])P.cod[c]=Object.keys(P.cod).length+1;return 'Aluno '+P.cod[c]};
+const porCod=(a,b)=>(P.cod[a]||999)-(P.cod[b]||999);
+const turma=()=>Object.entries(P.alunos).sort((a,b)=>porCod(a[0],b[0]));
 
 function desenhar(){const T=$('tela'),f=P.fase;
   $('avancar').textContent=f==='espera'?'Começar ▸':f==='aberta'?'Fechar e mostrar a resposta ▸':f==='revelada'?(P.q<QS.length-1?'Próxima leitura ▸':'Ver o resultado final ▸'):'—';
@@ -379,25 +383,25 @@ const ERROS_PROVA={71:'5/7',91:'4/6',41:'5/6',20:'6/7',96:'4/5',89:'6/8',10:'6/9
 const taxaProva=b=>{const e=ERROS_PROVA[b];return e?`na avaliação, ${e.split('/')[0]} de ${e.split('/')[1]} erraram`:''};
 
 function painel(){const L=$('lista'),f=P.fase,tur=turma();
-  if(f==='espera'){L.innerHTML=`<h3>${tur.length} ${tur.length===1?'aluno entrou':'alunos entraram'}</h3><div class="chips">${tur.map(([c,n])=>`<span class="chip">${c}. ${esc(nomeCurto(n))}</span>`).join('')}</div>`;return}
+  if(f==='espera'){L.innerHTML=`<h3>${tur.length} ${tur.length===1?'aluno entrou':'alunos entraram'}</h3><div class="chips">${tur.map(([c])=>`<span class="chip">${cod(c)}</span>`).join('')}</div>`;return}
   if(f==='aberta'){const R=vivo.respostas||{},resp=Object.keys(R),falta=tur.filter(([c])=>!R[c]);
     L.innerHTML=`<div class="contador"><b>${resp.length}</b><span>de ${tur.length} responderam</span></div><p class="eq" id="atual" style="margin:2px 0 0;font-size:14px"></p>
-      <h3>Já responderam</h3><div class="chips">${resp.sort((a,b)=>a-b).map(c=>`<span class="chip feito">${c}. ${esc(nomeCurto(R[c].nome))}</span>`).join('')||'<span class="eq">ninguém ainda</span>'}</div>
-      ${falta.length?`<h3>Faltam</h3><div class="chips">${falta.map(([c,n])=>`<span class="chip">${c}. ${esc(nomeCurto(n))}</span>`).join('')}</div>`:''}`;return}
+      <h3>Já responderam</h3><div class="chips">${resp.sort(porCod).map(c=>`<span class="chip feito">${cod(c)}</span>`).join('')||'<span class="eq">ninguém ainda</span>'}</div>
+      ${falta.length?`<h3>Faltam</h3><div class="chips">${falta.map(([c])=>`<span class="chip">${cod(c)}</span>`).join('')}</div>`:''}`;return}
   if(f==='revelada'){const r=P.res[P.q]||{},E=Object.entries(r).sort((a,b)=>a[0]-b[0]),ok=E.filter(([,o])=>o.ok),no=E.filter(([,o])=>!o.ok),sem=tur.filter(([c])=>!r[c]);
     const pct=E.length?Math.round(100*ok.length/E.length):0;
     L.innerHTML=`<div class="contador ${pct>=70?'bom':'ruim'}"><b>${ok.length}/${E.length}</b><span>acertaram (${pct}%)</span></div>
-      <h3 class="hok">✓ Acertaram</h3><div class="chips">${ok.map(([c,o])=>`<span class="chip ok">${c}. ${esc(nomeCurto(o.nome))}</span>`).join('')||'<span class="eq">ninguém</span>'}</div>
-      <h3 class="hno">✗ Erraram</h3><div class="chips">${no.map(([c,o])=>`<span class="chip no">${c}. ${esc(nomeCurto(o.nome))} <i>${esc(frTxt(o.resp))}${o.quase?' (simplificar)':''}</i></span>`).join('')||'<span class="eq">ninguém</span>'}</div>
-      ${sem.length?`<h3>Não responderam</h3><div class="chips">${sem.map(([c,n])=>`<span class="chip">${c}. ${esc(nomeCurto(n))}</span>`).join('')}</div>`:''}`;return}
+      <h3 class="hok">✓ Acertaram</h3><div class="chips">${ok.map(([c])=>`<span class="chip ok">${cod(c)}</span>`).join('')||'<span class="eq">ninguém</span>'}</div>
+      <h3 class="hno">✗ Erraram</h3><div class="chips">${no.map(([c,o])=>`<span class="chip no">${cod(c)} <i>${esc(frTxt(o.resp))}${o.quase?' (não simplificou)':''}</i></span>`).join('')||'<span class="eq">ninguém</span>'}</div>
+      ${sem.length?`<h3>Não responderam</h3><div class="chips">${sem.map(([c])=>`<span class="chip">${cod(c)}</span>`).join('')}</div>`:''}`;return}
   if(f==='fim'){L.innerHTML=`<h3>Aula encerrada</h3><p class="eq">As respostas de cada leitura também foram para a aba "Aula ao vivo" da sua planilha.</p><button class="act ghost" id="csv">Baixar resultado (CSV)</button>`;$('csv').onclick=baixarCSV}}
 
 function placarFinal(){const tur=turma();return tur.map(([c,n])=>{let a=0,r=0;QS.forEach((q,i)=>{const o=(P.res[i]||{})[c];if(o){r++;if(o.ok)a++}});return{c,n,a,r}}).sort((x,y)=>y.a-x.a||x.c-y.c)}
 function final(){const pl=placarFinal(),porQ=QS.map((q,i)=>{const E=Object.values(P.res[i]||{});return{i,n:E.length,ok:E.filter(o=>o.ok).length}});
-  return `<div class="final"><div><h2>Placar da turma</h2><table class="rank"><thead><tr><th>Nº</th><th>Aluno</th><th>Acertos</th></tr></thead><tbody>${pl.map(p=>`<tr><td>${p.c}</td><td>${esc(p.n)}</td><td><b>${p.a}</b> de ${QS.length}</td></tr>`).join('')}</tbody></table></div>
+  return `<div class="final"><div><h2>Placar da turma</h2><table class="rank"><thead><tr><th>Código</th><th>Acertos</th></tr></thead><tbody>${pl.map(p=>`<tr><td>${cod(p.c)}</td><td><b>${p.a}</b> de ${QS.length}</td></tr>`).join('')}</tbody></table></div>
     <div><h2>Acertos por leitura</h2><div class="barras">${porQ.map(x=>{const pc=x.n?Math.round(100*x.ok/x.n):0;return `<div class="bar"><span>${x.i+1}</span><i style="width:${pc}%" class="${pc>=70?'bom':'ruim'}"></i><em>${pc}%</em></div>`}).join('')}</div></div></div>`}
-function baixarCSV(){const pl=placarFinal(),cab=['Nº de chamada','Nome','Acertos','Respondidas'].concat(QS.map((q,i)=>'L'+(i+1)+' '+fTxt(q.u).replace('"','')));
-  const linhas=pl.map(p=>[p.c,p.n,p.a,p.r].concat(QS.map((q,i)=>{const o=(P.res[i]||{})[p.c];return o?(o.ok?'certo':'errado: '+frTxt(o.resp)):''})));
+function baixarCSV(){const pl=placarFinal(),cab=['Código','Nº de chamada','Nome','Acertos','Respondidas'].concat(QS.map((q,i)=>'L'+(i+1)+' '+fTxt(q.u).replace('"','')));
+  const linhas=pl.map(p=>[cod(p.c),p.c,p.n,p.a,p.r].concat(QS.map((q,i)=>{const o=(P.res[i]||{})[p.c];return o?(o.ok?'certo':'errado: '+frTxt(o.resp)):''})));
   const csv=[cab].concat(linhas).map(l=>l.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(';')).join('\n');
   const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv'}));a.download='aula-ao-vivo-polegada-fracionaria.csv';a.click()}
 
