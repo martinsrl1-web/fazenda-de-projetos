@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Aula ao Vivo: Polegada Fracionária</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<style>
+:root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--bad:#B3261E;--zone:#CFE6D8;--steel:#1D3B5C;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}}
+:root[data-theme="dark"]{--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 Barlow,'Arial Narrow',Arial,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 48px}
+h1{font:800 clamp(36px,8vw,60px)/.95 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:0 0 6px}
+h2{font:800 clamp(26px,5vw,36px)/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:34px 0 10px;letter-spacing:.01em}
+h3{font:700 22px/1.1 'Big Shoulders Display','Arial Narrow',sans-serif;margin:18px 0 6px;letter-spacing:.02em}
+.sub{color:var(--muted);margin:0 0 18px;max-width:66ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.big{font:800 clamp(48px,12vw,88px)/.9 'Big Shoulders Display','Arial Narrow',sans-serif;font-variant-numeric:tabular-nums}
+.big small{font-size:.38em;margin-left:.2em;color:var(--muted)}
+.stats{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.stats b{display:block;font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+button.act,a.act{display:inline-flex;align-items:center;justify-content:center;font:700 19px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:13px 22px;min-height:48px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;text-decoration:none}
+button.ghost,a.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabs{display:flex;margin:16px 0 12px;border:2px solid var(--ink);border-radius:4px;overflow:hidden;width:fit-content;max-width:100%}
+.tabs button{font:700 20px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:11px 18px;min-height:48px;background:transparent;color:var(--ink);border:0;cursor:pointer}
+.tabs button+button{border-left:2px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.fb{margin-top:12px;padding:12px 14px;border-left:6px solid var(--line);background:var(--bg);border-radius:0 4px 4px 0}
+.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.okc{color:var(--ok);font-weight:700}.noc{color:var(--bad);font-weight:700}
+input[type=text],input[type=number],select,textarea{font:600 18px/1.2 Barlow,Arial,sans-serif;padding:10px 12px;min-height:46px;border:2px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);max-width:100%}
+textarea{width:100%;min-height:90px;resize:vertical}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--muted);font-size:15px}
+.num{font-variant-numeric:tabular-nums}
+@media (max-width:640px){.tabs{width:100%}.tabs button{flex:1;padding:11px 6px}.row .act{flex:1 1 auto}}
+@media (prefers-reduced-motion:no-preference){.fb{animation:pop .18s ease-out}@keyframes pop{from{transform:translateY(4px);opacity:.4}}}
+@media print{.fp-rule,.noprint{display:none!important}body{background:#fff;color:#000}}
+
+/* Cabeçalho comum do site Fazenda de Projetos */
+.fp-in{max-width:1000px;margin-inline:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.fp-brand{font:800 27px/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.fp-brand b{color:var(--accent);font-weight:800}
+.fp-onde{font:600 13.5px/1.2 Barlow,'Arial Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fp-rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+.trilha{display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.trilha a{font:600 15px/1.2 Barlow,sans-serif;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:4px;padding:10px 12px;min-height:44px;display:inline-flex;align-items:center;background:var(--panel)}
+.trilha a[aria-current]{border-color:var(--accent);color:var(--accent);font-weight:700}
+.trilha .t{flex-basis:100%;font:600 13px/1 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* Página */
+.top{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 10px}
+.chips button{font:600 15px/1 Barlow,sans-serif;padding:9px 12px;min-height:40px;border:1.5px solid var(--line);border-radius:20px;background:var(--panel);color:var(--ink);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;margin-bottom:16px}
+.grade button{font:800 18px/1 'Big Shoulders Display',sans-serif;min-height:44px;border:1.5px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+.grade button.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.grade button.no{background:var(--bad);border-color:var(--bad);color:#fff}
+.grade button[aria-current="true"]{outline:3px solid var(--accent);outline-offset:1px}
+.ex{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.ex .cab{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--muted);font:600 14px/1.2 Barlow,sans-serif;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.ex h2{margin:0 0 10px;font-size:clamp(28px,5vw,40px)}
+.desenho{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px;margin:10px 0 14px}
+.desenho svg{display:block;width:100%;height:auto;max-height:46dvh;margin:0 auto;color:var(--ink)}
+.desenho text{font-family:Barlow,'Arial Narrow',Arial,sans-serif}
+.en{font-size:19px;font-weight:600;margin:0 0 12px}
+.alts{display:flex;flex-direction:column;gap:6px}
+.alt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:2px solid var(--line);border-radius:4px;background:var(--bg);cursor:pointer;min-height:46px}
+.alt input{margin-top:4px;width:18px;height:18px;flex:none}
+.alt.c{border-color:var(--ok)}.alt.x{border-color:var(--bad)}
+.resp{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.resp input{width:9ch;font-weight:800;font-size:24px}
+.placar{display:flex;gap:20px;flex-wrap:wrap;color:var(--muted)}
+.placar b{display:block;font:800 30px/1 'Big Shoulders Display',sans-serif;color:var(--ink)}
+.erro{color:var(--bad);font-weight:600}
+.s-ink{stroke:var(--ink)}.s-mut{stroke:var(--muted)}.s-acc{stroke:var(--accent)}
+.f-ink{fill:var(--ink)}.f-mut{fill:var(--muted)}.f-acc{fill:var(--accent)}.f-ok{fill:var(--ok)}.f-bad{fill:var(--bad)}
+.f-steel{fill:#C9D2DE}.f-zone{fill:var(--zone)}.f-out{fill:var(--bad);opacity:.18}.f-panel{fill:var(--panel)}.f-bg{fill:var(--bg)}
+.f-lcd{fill:#0B1620}.f-lcdtxt{fill:#9FF0C2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .f-steel{fill:#4A6178}}
+:root[data-theme="dark"] .f-steel{fill:#4A6178}
+.tempo{font-variant-numeric:tabular-nums}
+.par{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 0}
+.par div{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+.par span{display:block;font:600 13px/1.2 Barlow,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.par b{font-weight:700}
+.fim{background:var(--ink);color:var(--bg);border-radius:6px;padding:16px 18px;margin-top:12px}
+.fim a{color:var(--bg)}
+.resumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:12px 0}
+.resumo div{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;color:var(--muted);font-size:14px}
+.resumo b{display:block;font:800 30px/1.05 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.listas p{margin:6px 0}
+.rtab{width:100%;border-collapse:collapse;font-size:15px;margin-top:10px}
+.rtab th{text-align:left;font:600 13px/1.2 Barlow,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px;border-bottom:2px solid var(--line)}
+.rtab td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+.rtab td.n{font:800 20px/1 'Big Shoulders Display',sans-serif;white-space:nowrap}
+.rtab .ctx{display:block;color:var(--muted);font-size:13.5px;margin-top:2px}
+.rtab tr.no td.res{color:var(--bad);font-weight:700}.rtab tr.ok td.res{color:var(--ok);font-weight:700}
+.rtab tr.nr td{color:var(--muted)}
+.rtab button.link{font:inherit;text-align:left;background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer}
+@media (max-width:720px){
+ .par{grid-template-columns:1fr}
+ .rtab thead{display:none}
+ .rtab tr{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;padding:10px 0;border-bottom:1px solid var(--line)}
+ .rtab td{border:0;padding:2px 0}
+ .rtab td.n{grid-row:span 5}
+ .rtab td[data-l]::before{content:attr(data-l) ': ';font-weight:600;color:var(--muted)}
+}
+.aluno{display:flex;justify-content:space-between;align-items:center;gap:8px 16px;flex-wrap:wrap;margin-bottom:10px;font-size:16px}
+.aluno b{font-size:18px}
+.aluno button{font:600 14px/1 Barlow,sans-serif;background:none;border:0;color:var(--accent);text-decoration:underline;cursor:pointer;padding:6px 0}
+.inicio{max-width:620px}
+.inicio input{width:100%}
+.inicio ul{padding-left:20px;margin:6px 0 14px}.inicio li{margin-bottom:4px}
+[hidden]{display:none!important}
+.dica{background:var(--zone);border-radius:4px;padding:8px 12px;margin:0 0 10px;font-size:16px}
+.dica b{font-weight:700}
+.nivel{display:inline-block;font:700 14px/1 Barlow,sans-serif;letter-spacing:.08em;text-transform:uppercase;background:var(--accent);color:var(--accent-ink);padding:6px 10px;border-radius:3px;margin-bottom:8px}
+
+/* Paquímetro em polegada */
+.desenho.paq{background:#1D3B5C;border-color:#1D3B5C;padding:8px 4px}
+.desenho.paq svg{max-height:40dvh}
+.resp .un{font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--muted)}
+.conta{display:inline-grid;grid-template-columns:auto auto auto;gap:2px 10px;align-items:baseline;padding:10px 16px;border-radius:6px;background:var(--panel);border:1px solid var(--line);margin-top:10px}
+.conta .tt{grid-column:1/-1;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.conta .op{font:800 26px/1.1 'Big Shoulders Display',sans-serif;color:var(--muted);text-align:right}
+.conta .v{font:800 30px/1.1 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums;text-align:right}
+.conta .lb{font-size:14px;color:var(--muted)}
+.conta hr{grid-column:1/-1;width:100%;border:0;border-top:3px solid var(--ink);margin:2px 0}
+
+.fin{display:inline-flex;align-items:center;gap:8px}
+.fin .fstack{display:inline-flex;flex-direction:column;align-items:center;gap:4px}
+.fin .fstack i{display:block;width:100%;height:3px;background:var(--ink);border-radius:2px}
+input.nn{font:800 30px/1 'Big Shoulders Display',sans-serif;min-height:46px;padding:4px 6px;border:2px solid var(--ink);border-radius:4px;background:var(--bg);color:var(--ink);text-align:center}
+input.nn.w{width:2.6ch;font-size:38px;min-height:54px}
+input.nn.f{width:4ch}
+.lbl2{font-size:14px;color:var(--muted)}
+
+/* Correção bem visível: verde com ✓ quando acerta, vermelho com ✗ quando erra */
+.fb.ok,.fb.no{border-left-width:8px;padding:14px 16px;display:flow-root}
+.fb.ok{background:color-mix(in srgb,var(--ok) 13%,var(--bg))}
+.fb.no{background:color-mix(in srgb,var(--bad) 12%,var(--bg))}
+.fb.ok::before,.fb.no::before{content:'✓';float:left;width:58px;height:58px;border-radius:50%;background:#17703F;color:#fff;font:800 38px/58px Arial,sans-serif;text-align:center;margin:0 14px 6px 0}
+.fb.no::before{content:'✗';background:#B3261E}
+.fb.ok>strong:first-child,.fb.ok>b:first-child{color:#17703F;font-size:24px}
+.fb.no>strong:first-child,.fb.no>b:first-child{color:#B3261E;font-size:24px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fb.ok>strong:first-child,:root:not([data-theme="light"]) .fb.ok>b:first-child{color:var(--ok)}:root:not([data-theme="light"]) .fb.no>strong:first-child,:root:not([data-theme="light"]) .fb.no>b:first-child{color:var(--bad)}}
+.conta .m.ok,.conta .m.no{color:#fff;border-radius:12px;padding:3px 9px;font-size:14px;white-space:nowrap}
+.conta .m.ok{background:#17703F}.conta .m.no{background:#B3261E}
+.par b.okc::before{content:'✓ ';}.par b.noc::before{content:'✗ ';}
+.envia{font-weight:700;font-size:18px}
+.grade button.feito{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.gravada{margin:12px 0;padding:12px 14px;border-left:6px solid var(--ink);background:var(--panel);border-radius:4px;font-size:18px}
+.provagrid{display:block}
+.calc{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;max-width:340px}
+.calc .ct{font:700 14px/1 Barlow,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.cvis{min-height:22px;font:600 17px/1.2 Barlow,sans-serif;color:var(--muted);text-align:right;word-break:break-all}
+.cres{font:800 38px/1.1 'Big Shoulders Display',sans-serif;text-align:right;margin-bottom:10px;font-variant-numeric:tabular-nums;word-break:break-all}
+.cbt{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.cbt button{min-height:52px;font:800 24px/1 'Big Shoulders Display',sans-serif;border:1.5px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);cursor:pointer}
+.cbt button.cop{background:color-mix(in srgb,var(--accent) 16%,var(--bg))}.cbt button.cfn{color:var(--muted)}
+.cbt button.ceq{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.cbt button:active{transform:translateY(1px)}
+@media (min-width:1100px){main{max-width:1320px}.provagrid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}.calc{position:sticky;top:12px;margin-top:14px}}
+.espera{display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;padding:42px 14px;font-size:19px}
+.espera b{font:800 32px/1.1 'Big Shoulders Display',sans-serif}.espera strong{font-size:1.3em}
+.qcab{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;font:700 15px/1.2 Barlow,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tag{background:var(--steel);color:#fff;border-radius:4px;padding:5px 10px;letter-spacing:.06em}.tag.rosa{background:#C2185B}
+.svgbox{background:var(--steel);border-radius:6px;padding:10px}.svgbox svg{display:block;width:100%;height:auto}
+.en{font-weight:600;margin:12px 0 4px}.enviada{color:var(--ok);font-weight:700;font-size:18px}
+.quem{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.quem b{color:var(--ink)}.quem button{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font:inherit}
+#rede{background:#B3261E;color:#fff;padding:8px 12px;border-radius:4px;margin-bottom:10px}
+/* professor */
+body.modo-tv .fp-top,body.modo-tv .sub,body.modo-tv h1,body.modo-tv .tagtop{display:none}
+body.modo-tv main{max-width:none;padding:14px 22px}
+.tv{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:18px;align-items:start}
+.barra{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.barra .pos{font:800 40px/1 'Big Shoulders Display',sans-serif}
+.svgbox.grande{padding:14px}.en.grande{font-size:28px;text-align:center;margin-top:18px}
+.certa{display:flex;align-items:baseline;gap:18px;margin:16px 0 6px}.certa span{font:700 18px/1 Barlow,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.certa b{font:800 72px/1 'Big Shoulders Display',sans-serif;color:var(--ok)}
+.lado{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;position:sticky;top:12px;max-height:calc(100vh - 30px);overflow:auto}
+.lado h3{font:700 15px/1 Barlow,sans-serif;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 0 8px}
+.lado h3.hok{color:var(--ok)}.lado h3.hno{color:var(--bad)}
+.contador{display:flex;align-items:baseline;gap:10px}.contador b{font:800 68px/1 'Big Shoulders Display',sans-serif}.contador span{font-size:20px;color:var(--muted)}
+.contador.bom b{color:var(--ok)}.contador.ruim b{color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{border:1px solid var(--line);border-radius:14px;padding:4px 10px;font-size:16px;background:var(--bg)}
+.chip.feito{background:var(--steel);color:#fff;border-color:var(--steel)}.chip.ok{background:#17703F;color:#fff;border-color:#17703F}.chip.no{background:#B3261E;color:#fff;border-color:#B3261E}
+.chip i{font-style:normal;opacity:.85;margin-left:4px}
+.lobby{display:flex;gap:30px;align-items:center;flex-wrap:wrap;background:var(--panel);border-radius:8px;padding:30px}
+.lobby h2{font:800 54px/1 'Big Shoulders Display',sans-serif;margin:0 0 10px}.lobby .link{font:700 28px/1.2 Barlow,sans-serif;color:var(--accent);word-break:break-all;margin:0 0 10px}
+#qr{background:#fff;padding:12px;border-radius:6px}
+.final{display:grid;grid-template-columns:1fr 1fr;gap:24px}.final h2{font:800 36px/1 'Big Shoulders Display',sans-serif;margin:0 0 10px}
+.rank{width:100%;border-collapse:collapse;font-size:17px}.rank th,.rank td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
+.barras{display:flex;flex-direction:column;gap:4px}.bar{display:grid;grid-template-columns:30px 1fr 52px;align-items:center;gap:8px;font-size:15px}
+.bar i{display:block;height:16px;border-radius:3px;min-width:2px}.bar i.bom{background:var(--ok)}.bar i.ruim{background:var(--bad)}.bar em{font-style:normal;text-align:right}
+.teclas{color:var(--muted);font-size:15px}
+.tagtop{display:inline-block;margin-bottom:10px}
+#tela .conta{transform:scale(1.35);transform-origin:left top;margin-bottom:60px}
+@media (max-width:1000px){.tv,.final{grid-template-columns:1fr}.lado{position:static;max-height:none}}
+</style>
+</head>
+<body>
+<header class="fp-top">
+  <div class="fp-in"><a class="fp-brand" href="../index.html">Fazenda <b>de Projetos</b></a><span class="fp-onde">Metrologia · Paquímetro</span></div>
+  <div class="fp-rule" aria-hidden="true"></div>
+</header>
+<main>
+<span class="tag tagtop">Aula ao vivo</span>
+<h1>Leituras em Polegada Fracionária: Aula ao Vivo</h1>
+<p class="sub">O professor passa uma leitura por vez. Responda no celular, com a fração simplificada. Não vale nota.</p>
+<section class="panel" id="entrada">
+  <label class="f">Nome completo<input type="text" id="nome" autocomplete="name" maxlength="60" autocapitalize="characters" style="text-transform:uppercase"></label>
+  <label class="f" style="margin-top:10px">Número de chamada<input type="text" id="chamada" inputmode="numeric" maxlength="2" style="max-width:8ch"></label>
+  <div id="emsg" aria-live="polite"></div>
+  <div class="row" style="margin-top:14px"><button class="act" id="entrar">Entrar na aula</button></div>
+</section>
+<section id="palco" hidden>
+  <div class="quem"><span>Aluno: <b id="quem"></b></span><button id="trocar">Não é você? Trocar</button></div>
+  <div id="rede" hidden>Sem conexão com a aula. Confira a internet.</div>
+  <div class="panel" id="ques" aria-live="polite"></div>
+</section>
+</main>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const embaralhar=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const L1=j=>String.fromCharCode(65+j);
+const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a);
+
+/* ===== frações: valores em 1/128 de polegada (inteiros) ===== */
+function fTxt(u){const w=Math.floor(u/128);let n=u%128,d=128;if(!n)return w+'"';const g=gcd(n,d);n/=g;d/=g;return (w?w+' ':'')+n+'/'+d+'"'}
+function rawTxt(u,den){const w=Math.floor(u/den),n=u%den;return n?(w?w+' ':'')+n+'/'+den+'"':w+'"'}
+function cadeia(n,d){let s=n+'/'+d;while(n&&n%2===0){n/=2;d/=2;s+=' = '+n+'/'+d}return s}
+function explicaPaq(u){const n=Math.floor(u/8),r=u%8,t=u%128;
+  return `Escala fixa: ${rawTxt(n,16)} = ${rawTxt(n*8,128)}. Nônio: ${r?r+'º traço = '+r+'/128"':'o zero coincide'}. Soma: ${rawTxt(n*8,128)} + ${r}/128" = ${rawTxt(u,128)}${t&&t%2===0?' → '+cadeia(t,128):''}. Leitura ${fTxt(u)}.`}
+function explicaRegua(u16){const w=Math.floor(u16/16),n=u16%16;
+  return `${w?w+'" inteira'+(w>1?'s':'')+' + ':''}${n} tracinho${n===1?'':'s'} de 1/16" = ${n}/16"${n%2===0&&n?' → '+cadeia(n,16):''}. Leitura ${fTxt(u16*8)}.`}
+
+/* desenho do paquímetro (igual ao simulador) */
+const FD=8,PPU=7.5,LINE=330,W=1500,BX0=22,BX1=1478,VD=(FD-1)*PPU,VL=8*VD;
+function paq(u,rosa){const cam=Math.min(u-640/PPU,Math.floor(u/128)*128-80/PPU),z=(u-cam)*PPU;let h=`<rect x="20" y="20" width="1460" height="310" rx="6" fill="#C9CBCD" stroke="#373435" stroke-width="5"/><g clip-path="url(#cp${u})">`;
+  const first=Math.max(0,Math.floor(cam/FD)-1),last=Math.ceil((cam+W/PPU)/FD)+1;
+  for(let m=first;m<=last;m++){const x=(m*FD-cam)*PPU;if(x<BX0||x>BX1)continue;const L=m%16===0?225:m%8===0?180:m%4===0?145:m%2===0?112:82;
+    h+=`<line x1="${x}" x2="${x}" y1="${LINE-L}" y2="${LINE}" stroke="#2A2829" stroke-width="${m%16===0?5:3.4}"/>`;
+    if(m%16===0){const lab=m/16,half=66*0.32*String(lab).length+4;if(x-half>BX0+6&&x+half<BX1-6)h+=`<text x="${x}" y="${LINE-L-10}" text-anchor="middle" font-size="66" font-weight="900" font-family="'Arial Black',Arial,sans-serif" fill="#14202B">${lab}</text>`}}
+  const inch=Math.floor(u/128),xi=(inch*128-cam)*PPU;
+  if(cam>0&&xi<BX0+40)h+=`<rect x="${BX0+8}" y="${BX0+8}" width="150" height="54" rx="6" fill="#14202B" opacity=".85"/><text x="${BX0+83}" y="${BX0+46}" text-anchor="middle" font-size="34" font-weight="700" font-family="Arial,sans-serif" fill="#F2A93B">◂ ${inch}"</text>`;
+  h+='</g>';const x0=z-110,x1=z+VL+110,yb=LINE+230;
+  h+=`<rect x="${x0}" y="${LINE}" width="${x1-x0}" height="230" fill="#E6E7E8"/><path d="M${x0} ${LINE} V${yb-6} Q${x0} ${yb} ${x0+6} ${yb} H${x1-6} Q${x1} ${yb} ${x1} ${yb-6} V${LINE}" fill="none" stroke="#373435" stroke-width="5"/>`;
+  for(let k=0;k<=8;k++){const x=z+k*VD,lb=k%4===0;h+=`<line x1="${x}" x2="${x}" y1="${LINE}" y2="${LINE+(lb?120:80)}" stroke="#2A2829" stroke-width="${k===0?5:3.4}"/>`;
+    if(lb)h+=`<text x="${x}" y="${LINE+170}" text-anchor="middle" font-size="40" font-weight="700" font-family="Arial,sans-serif" fill="#2A2829">${k}</text>`}
+  h+=`<text x="${x0+14}" y="${LINE+214}" text-anchor="start" font-size="26" font-family="Arial,sans-serif" fill="#4A4849">1/128 in</text>`;
+  if(rosa){const xa=z+(u%FD)*VD;h+=`<line x1="${xa}" x2="${xa}" y1="${LINE-200}" y2="${LINE+118}" stroke="#FF2E93" stroke-width="7" opacity=".6"/><circle cx="${xa}" cy="${LINE+132}" r="11" fill="#FF2E93"/>`}
+  return `<svg viewBox="0 0 1500 600" role="img" aria-label="Paquímetro em polegada fracionária${rosa?', com o traço do nônio que coincide marcado em rosa':''}"><defs><clipPath id="cp${u}"><rect x="22" y="22" width="1456" height="306"/></clipPath></defs>${h}</svg>`}
+/* desenho da régua (igual ao simulador): u16 em 1/16" */
+function regua(u16){const X0=60,LN=250,PX=1880/96,xe=X0+u16*PX;let h='';
+  h+=`<rect x="${X0}" y="70" width="${xe-X0}" height="${LN-74}" fill="#8FA7BF" stroke="#24486E" stroke-width="4"/><text x="${X0+12}" y="104" font-size="28" font-family="Arial,sans-serif" fill="#14202B">peça</text>`;
+  h+=`<rect x="${X0-40}" y="40" width="40" height="${LN+110}" fill="#5C6670"/><rect x="${X0}" y="${LN}" width="${96*PX+20}" height="160" rx="4" fill="#D9DBDD" stroke="#373435" stroke-width="4"/>`;
+  for(let k=0;k<=96;k++){const x=X0+k*PX,L=k%16===0?110:k%8===0?86:k%4===0?66:k%2===0?50:36;
+    h+=`<line x1="${x}" x2="${x}" y1="${LN}" y2="${LN+L}" stroke="#2A2829" stroke-width="${k%16===0?4.5:2.6}"/>`;
+    if(k%16===0&&k>0&&k<96)h+=`<text x="${x}" y="${LN+148}" text-anchor="middle" font-size="40" font-weight="900" font-family="'Arial Black',Arial,sans-serif" fill="#14202B">${k/16}</text>`}
+  h+=`<line x1="${xe}" x2="${xe}" y1="60" y2="${LN+120}" stroke="#FF2E93" stroke-width="5" opacity=".85"/>`;
+  return `<svg viewBox="0 0 2000 430" role="img" aria-label="Régua em polegada com uma peça; a linha rosa marca o fim da peça">${h}</svg>`}
+
+function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const BANK=(()=>{const R=mulberry(20261118),ri=(a,b)=>a+Math.floor(R()*(b-a+1)),used=new Set(),L=[];
+  const faixas=[[1,127,36],[129,255,32],[257,383,24],[385,511,16],[513,696,12]];
+  for(const [lo,hi,n] of faixas){let k=0,t=0;while(k<n&&t<5000){t++;const u=ri(lo,hi);if(used.has(u))continue;
+    if(u%FD===0&&R()<.8)continue;used.add(u);L.push(u);k++}}
+  for(let i=L.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[L[i],L[j]]=[L[j],L[i]]}
+  return L.map((u,i)=>({n:i+1,u,traco:i%2===0}))})();
+function parseFr(r){if(!r)return null;const w=r.w===''?0:+r.w,n=r.n===''?0:+r.n,d=r.n===''?1:+r.d;
+  if([w,n,d].some(x=>isNaN(x)||x<0||!Number.isInteger(x))||d===0)return null;return{u:(w*d+n)*128/d,simp:n===0||(gcd(n,d)===1&&n<d)}}
+const frTxt=r=>{if(!r)return '—';const w=r.w===''?'':r.w,n=r.n;return (n!==''?(w?w+' ':'')+n+'/'+r.d:(w||'0'))+'"'};
+function armada(u){const n=Math.floor(u/8),r=u%8;return `<div class="conta"><span class="tt">Conta armada</span><span class="op"></span><span class="v">${rawTxt(n*8,128)}</span><span class="lb">escala fixa (${rawTxt(n,16)})</span><span class="op">+</span><span class="v">${r}/128"</span><span class="lb">nônio</span><hr><span class="op">=</span><span class="v">${rawTxt(u,128)}</span><span class="lb">${fTxt(u)!==rawTxt(u,128)?'= '+fTxt(u):'leitura'}</span></div>`}
+/* ===== aula ao vivo: comum a aluno e professor ===== */
+const API='https://script.google.com/macros/s/AKfycbyFB7_droCXROAI6XYOwXPQlW5S7BbAAkjhTChnu6u0_gRGSFc3YeC8m9vTUzGcc2Wi/exec';
+const AULA='Retomada: leituras do paquímetro em polegada fracionária';
+/* as 30 leituras mais erradas na avaliação de 25 leituras (números do banco da revisão), da menor para a maior medida */
+const LISTA=[71,91,41,20,96,89,10,29,6,42,116,36,46,13,19,107,52,83,84,70,57,94,87,88,120,50,58,113,111,62];
+const QS=LISTA.map((n,i)=>{const b=BANK[n-1];return{i,banco:n,u:b.u,rosa:b.traco}});
+async function apiGet(){const r=await fetch(API+'?acao=estado&_='+Date.now());return r.json()}
+async function apiPost(o){const r=await fetch(API,{method:'POST',body:JSON.stringify(o)});return r.json()}
+function corrigir(q,resp){const p=parseFr(resp);if(!p)return{ok:false,quase:false};const exato=Math.abs(p.u-q.u)<1e-9;return{ok:exato&&p.simp,quase:exato&&!p.simp}}
+const frBox=(dis,v)=>{v=v||{w:'',n:'',d:''};return `<div class="resp"><span class="fin"><input class="nn w" id="aw" inputmode="numeric" maxlength="2" value="${esc(v.w)}" ${dis} aria-label="Polegadas inteiras"><span class="fstack"><input class="nn f" id="an" inputmode="numeric" maxlength="3" value="${esc(v.n)}" ${dis} aria-label="Numerador"><i></i><input class="nn f" id="ad" inputmode="numeric" maxlength="3" value="${esc(v.d)}" ${dis} aria-label="Denominador"></span><span class="un">"</span></span><span class="lbl2">inteiro · numerador / denominador</span></div>`};
+const lerFr=()=>({w:$('aw').value.trim(),n:$('an').value.trim(),d:$('ad').value.trim()});
+
+/* ===== aluno ===== */
+const KA='aula-vivo-pol-fr-aluno';
+let A={nome:'',chamada:'',sessao:'',minhas:{}};try{Object.assign(A,JSON.parse(localStorage.getItem(KA)||'{}'))}catch(e){}
+const guardar=()=>{try{localStorage.setItem(KA,JSON.stringify(A))}catch(e){}};
+let EST={fase:'fechada'},chaveTela='',enviando=false,falhas=0;
+
+function telaEntrada(){$('entrada').hidden=!!A.nome;$('palco').hidden=!A.nome;
+  if(A.nome){$('quem').textContent=`${A.nome} · Nº ${A.chamada}`}}
+$('nome').addEventListener('input',e=>{const el=e.target,p=el.selectionStart;el.value=el.value.toLocaleUpperCase('pt-BR');try{el.setSelectionRange(p,p)}catch(_){}});
+$('chamada').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'')});
+$('entrar').onclick=()=>{const n=$('nome').value.trim().replace(/\s+/g,' ').toLocaleUpperCase('pt-BR'),c=$('chamada').value.replace(/^0+(?=\d)/,'');
+  if(n.split(' ').length<2){$('emsg').innerHTML='<p class="erro">Escreva o seu nome completo.</p>';$('nome').focus();return}
+  if(!/^\d{1,2}$/.test(c)){$('emsg').innerHTML='<p class="erro">Escreva o seu número de chamada (só números).</p>';$('chamada').focus();return}
+  A.nome=n;A.chamada=c;guardar();telaEntrada();chaveTela='';if(EST.sessao)entrarSessao();desenhar()};
+$('trocar').onclick=()=>{if(!confirm('Trocar de aluno neste aparelho?'))return;A={nome:'',chamada:'',sessao:'',minhas:{}};guardar();telaEntrada();chaveTela=''};
+
+async function entrarSessao(){try{await apiPost({acao:'entrar',sessao:EST.sessao,chamada:A.chamada,nome:A.nome})}catch(e){}}
+
+async function consultar(){try{const e=await apiGet();falhas=0;$('rede').hidden=true;
+    if(e.sessao&&e.sessao!==A.sessao){A.sessao=e.sessao;A.minhas={};guardar();if(A.nome)entrarSessao()}
+    EST=e;desenhar()}
+  catch(err){falhas++;if(falhas>=2)$('rede').hidden=false}
+  finally{setTimeout(consultar,3000+Math.random()*2000)}}
+
+function acertos(){return Object.keys(A.minhas).filter(q=>QS[q]&&corrigir(QS[q],A.minhas[q]).ok).length}
+
+function desenhar(){if(!A.nome)return;const f=EST.fase,q=+EST.q,k=[EST.sessao,f,q].join('|');if(k===chaveTela)return;chaveTela=k;
+  const P=$('ques');
+  if(!EST.sessao||f==='fechada'){P.innerHTML=`<div class="espera"><b>Aguardando o professor começar a aula…</b><span>Deixe esta página aberta.</span></div>`;return}
+  if(f==='espera'){P.innerHTML=`<div class="espera"><b>Você está na aula! ✓</b><span>Quando o professor passar a primeira leitura, ela aparece aqui.</span></div>`;return}
+  if(f==='fim'){const a=acertos();P.innerHTML=`<div class="espera"><b>Fim da aula</b><span>Você acertou <strong>${a} de ${QS.length}</strong> leituras.</span></div>`;return}
+  const Q=QS[q];if(!Q){P.innerHTML='';return}
+  const minha=A.minhas[q],cab=`<div class="qcab"><span>Leitura ${q+1} de ${QS.length}</span><span class="tag ${Q.rosa?'rosa':''}">${Q.rosa?'Traço marcado':'Descubra o traço'}</span></div>`;
+  if(f==='aberta'){
+    P.innerHTML=`${cab}<div class="svgbox">${paq(Q.u,Q.rosa)}</div>
+      <p class="en">${Q.rosa?'A <b style="color:#FF2E93">linha rosa</b> mostra o traço do nônio que coincide. ':'Ache o traço do nônio que coincide com a escala fixa. '}Qual é a leitura? Escreva a fração <b>simplificada</b>.</p>
+      ${frBox('',minha)}<div class="row"><button class="act" id="enviar">${minha?'Mudar a resposta':'Enviar resposta'}</button></div>
+      <div id="emsg2" aria-live="polite">${minha?`<p class="enviada">✓ Resposta enviada: <b>${esc(frTxt(minha))}</b>. Pode mudar até o professor fechar.</p>`:''}</div>`;
+    $('enviar').onclick=enviar;P.querySelectorAll('input').forEach(i=>i.onkeydown=e=>{if(e.key==='Enter')enviar()});
+    if(!minha)setTimeout(()=>{const a=$('aw');if(a)a.focus({preventScroll:true})},50);return}
+  if(f==='revelada'){const c=minha?corrigir(Q,minha):null;
+    P.innerHTML=`${cab}<div class="svgbox">${paq(Q.u,true)}</div>
+      <div class="fb ${c&&c.ok?'ok':'no'}"><strong>${!minha?'Você não respondeu.':c.ok?'Certo!':c.quase?'Quase: faltou simplificar.':'Não foi dessa vez.'}</strong><br>
+      ${minha?`Sua resposta: <b>${esc(frTxt(minha))}</b>. `:''}Leitura certa: <b>${fTxt(Q.u)}</b>.${armada(Q.u)}<p class="eq">${explicaPaq(Q.u)}</p></div>
+      <p class="eq">Você já acertou ${acertos()} de ${q+1}. Aguarde a próxima leitura.</p>`;return}}
+
+async function enviar(){if(enviando)return;const r=lerFr();const p=parseFr(r);
+  if(!p){$('emsg2').innerHTML='<p class="erro">Preencha a fração (numerador e denominador).</p>';$('an').focus();return}
+  const q=+EST.q;enviando=true;$('enviar').disabled=true;$('emsg2').innerHTML='<p class="eq">Enviando…</p>';
+  try{const j=await apiPost({acao:'responder',sessao:EST.sessao,q,chamada:A.chamada,nome:A.nome,resp:r});
+    if(j.ok){A.minhas[q]=r;guardar();$('emsg2').innerHTML=`<p class="enviada">✓ Resposta enviada: <b>${esc(frTxt(r))}</b>. Pode mudar até o professor fechar.</p>`;$('enviar').textContent='Mudar a resposta'}
+    else{$('emsg2').innerHTML='<p class="erro">O professor já fechou esta leitura.</p>'}}
+  catch(e){$('emsg2').innerHTML='<p class="erro">Não foi possível enviar. Confira a internet e tente de novo.</p>'}
+  finally{enviando=false;const b=$('enviar');if(b)b.disabled=false}}
+
+telaEntrada();consultar();
+
+</script>
+</body>
+</html>

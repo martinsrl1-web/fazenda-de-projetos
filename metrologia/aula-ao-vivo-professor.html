@@ -1,0 +1,397 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Aula ao Vivo: Professor</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<style>
+:root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--bad:#B3261E;--zone:#CFE6D8;--steel:#1D3B5C;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}}
+:root[data-theme="dark"]{--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 Barlow,'Arial Narrow',Arial,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 48px}
+h1{font:800 clamp(36px,8vw,60px)/.95 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:0 0 6px}
+h2{font:800 clamp(26px,5vw,36px)/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:34px 0 10px;letter-spacing:.01em}
+h3{font:700 22px/1.1 'Big Shoulders Display','Arial Narrow',sans-serif;margin:18px 0 6px;letter-spacing:.02em}
+.sub{color:var(--muted);margin:0 0 18px;max-width:66ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.big{font:800 clamp(48px,12vw,88px)/.9 'Big Shoulders Display','Arial Narrow',sans-serif;font-variant-numeric:tabular-nums}
+.big small{font-size:.38em;margin-left:.2em;color:var(--muted)}
+.stats{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.stats b{display:block;font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+button.act,a.act{display:inline-flex;align-items:center;justify-content:center;font:700 19px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:13px 22px;min-height:48px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;text-decoration:none}
+button.ghost,a.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabs{display:flex;margin:16px 0 12px;border:2px solid var(--ink);border-radius:4px;overflow:hidden;width:fit-content;max-width:100%}
+.tabs button{font:700 20px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:11px 18px;min-height:48px;background:transparent;color:var(--ink);border:0;cursor:pointer}
+.tabs button+button{border-left:2px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.fb{margin-top:12px;padding:12px 14px;border-left:6px solid var(--line);background:var(--bg);border-radius:0 4px 4px 0}
+.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.okc{color:var(--ok);font-weight:700}.noc{color:var(--bad);font-weight:700}
+input[type=text],input[type=number],select,textarea{font:600 18px/1.2 Barlow,Arial,sans-serif;padding:10px 12px;min-height:46px;border:2px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);max-width:100%}
+textarea{width:100%;min-height:90px;resize:vertical}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--muted);font-size:15px}
+.num{font-variant-numeric:tabular-nums}
+@media (max-width:640px){.tabs{width:100%}.tabs button{flex:1;padding:11px 6px}.row .act{flex:1 1 auto}}
+@media (prefers-reduced-motion:no-preference){.fb{animation:pop .18s ease-out}@keyframes pop{from{transform:translateY(4px);opacity:.4}}}
+@media print{.fp-rule,.noprint{display:none!important}body{background:#fff;color:#000}}
+
+/* Cabeçalho comum do site Fazenda de Projetos */
+.fp-in{max-width:1000px;margin-inline:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.fp-brand{font:800 27px/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.fp-brand b{color:var(--accent);font-weight:800}
+.fp-onde{font:600 13.5px/1.2 Barlow,'Arial Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fp-rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+.trilha{display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.trilha a{font:600 15px/1.2 Barlow,sans-serif;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:4px;padding:10px 12px;min-height:44px;display:inline-flex;align-items:center;background:var(--panel)}
+.trilha a[aria-current]{border-color:var(--accent);color:var(--accent);font-weight:700}
+.trilha .t{flex-basis:100%;font:600 13px/1 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* Página */
+.top{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 10px}
+.chips button{font:600 15px/1 Barlow,sans-serif;padding:9px 12px;min-height:40px;border:1.5px solid var(--line);border-radius:20px;background:var(--panel);color:var(--ink);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;margin-bottom:16px}
+.grade button{font:800 18px/1 'Big Shoulders Display',sans-serif;min-height:44px;border:1.5px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+.grade button.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.grade button.no{background:var(--bad);border-color:var(--bad);color:#fff}
+.grade button[aria-current="true"]{outline:3px solid var(--accent);outline-offset:1px}
+.ex{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.ex .cab{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--muted);font:600 14px/1.2 Barlow,sans-serif;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.ex h2{margin:0 0 10px;font-size:clamp(28px,5vw,40px)}
+.desenho{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px;margin:10px 0 14px}
+.desenho svg{display:block;width:100%;height:auto;max-height:46dvh;margin:0 auto;color:var(--ink)}
+.desenho text{font-family:Barlow,'Arial Narrow',Arial,sans-serif}
+.en{font-size:19px;font-weight:600;margin:0 0 12px}
+.alts{display:flex;flex-direction:column;gap:6px}
+.alt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:2px solid var(--line);border-radius:4px;background:var(--bg);cursor:pointer;min-height:46px}
+.alt input{margin-top:4px;width:18px;height:18px;flex:none}
+.alt.c{border-color:var(--ok)}.alt.x{border-color:var(--bad)}
+.resp{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.resp input{width:9ch;font-weight:800;font-size:24px}
+.placar{display:flex;gap:20px;flex-wrap:wrap;color:var(--muted)}
+.placar b{display:block;font:800 30px/1 'Big Shoulders Display',sans-serif;color:var(--ink)}
+.erro{color:var(--bad);font-weight:600}
+.s-ink{stroke:var(--ink)}.s-mut{stroke:var(--muted)}.s-acc{stroke:var(--accent)}
+.f-ink{fill:var(--ink)}.f-mut{fill:var(--muted)}.f-acc{fill:var(--accent)}.f-ok{fill:var(--ok)}.f-bad{fill:var(--bad)}
+.f-steel{fill:#C9D2DE}.f-zone{fill:var(--zone)}.f-out{fill:var(--bad);opacity:.18}.f-panel{fill:var(--panel)}.f-bg{fill:var(--bg)}
+.f-lcd{fill:#0B1620}.f-lcdtxt{fill:#9FF0C2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .f-steel{fill:#4A6178}}
+:root[data-theme="dark"] .f-steel{fill:#4A6178}
+.tempo{font-variant-numeric:tabular-nums}
+.par{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 0}
+.par div{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+.par span{display:block;font:600 13px/1.2 Barlow,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.par b{font-weight:700}
+.fim{background:var(--ink);color:var(--bg);border-radius:6px;padding:16px 18px;margin-top:12px}
+.fim a{color:var(--bg)}
+.resumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:12px 0}
+.resumo div{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;color:var(--muted);font-size:14px}
+.resumo b{display:block;font:800 30px/1.05 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.listas p{margin:6px 0}
+.rtab{width:100%;border-collapse:collapse;font-size:15px;margin-top:10px}
+.rtab th{text-align:left;font:600 13px/1.2 Barlow,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px;border-bottom:2px solid var(--line)}
+.rtab td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+.rtab td.n{font:800 20px/1 'Big Shoulders Display',sans-serif;white-space:nowrap}
+.rtab .ctx{display:block;color:var(--muted);font-size:13.5px;margin-top:2px}
+.rtab tr.no td.res{color:var(--bad);font-weight:700}.rtab tr.ok td.res{color:var(--ok);font-weight:700}
+.rtab tr.nr td{color:var(--muted)}
+.rtab button.link{font:inherit;text-align:left;background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer}
+@media (max-width:720px){
+ .par{grid-template-columns:1fr}
+ .rtab thead{display:none}
+ .rtab tr{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;padding:10px 0;border-bottom:1px solid var(--line)}
+ .rtab td{border:0;padding:2px 0}
+ .rtab td.n{grid-row:span 5}
+ .rtab td[data-l]::before{content:attr(data-l) ': ';font-weight:600;color:var(--muted)}
+}
+.aluno{display:flex;justify-content:space-between;align-items:center;gap:8px 16px;flex-wrap:wrap;margin-bottom:10px;font-size:16px}
+.aluno b{font-size:18px}
+.aluno button{font:600 14px/1 Barlow,sans-serif;background:none;border:0;color:var(--accent);text-decoration:underline;cursor:pointer;padding:6px 0}
+.inicio{max-width:620px}
+.inicio input{width:100%}
+.inicio ul{padding-left:20px;margin:6px 0 14px}.inicio li{margin-bottom:4px}
+[hidden]{display:none!important}
+.dica{background:var(--zone);border-radius:4px;padding:8px 12px;margin:0 0 10px;font-size:16px}
+.dica b{font-weight:700}
+.nivel{display:inline-block;font:700 14px/1 Barlow,sans-serif;letter-spacing:.08em;text-transform:uppercase;background:var(--accent);color:var(--accent-ink);padding:6px 10px;border-radius:3px;margin-bottom:8px}
+
+/* Paquímetro em polegada */
+.desenho.paq{background:#1D3B5C;border-color:#1D3B5C;padding:8px 4px}
+.desenho.paq svg{max-height:40dvh}
+.resp .un{font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--muted)}
+.conta{display:inline-grid;grid-template-columns:auto auto auto;gap:2px 10px;align-items:baseline;padding:10px 16px;border-radius:6px;background:var(--panel);border:1px solid var(--line);margin-top:10px}
+.conta .tt{grid-column:1/-1;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.conta .op{font:800 26px/1.1 'Big Shoulders Display',sans-serif;color:var(--muted);text-align:right}
+.conta .v{font:800 30px/1.1 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums;text-align:right}
+.conta .lb{font-size:14px;color:var(--muted)}
+.conta hr{grid-column:1/-1;width:100%;border:0;border-top:3px solid var(--ink);margin:2px 0}
+
+.fin{display:inline-flex;align-items:center;gap:8px}
+.fin .fstack{display:inline-flex;flex-direction:column;align-items:center;gap:4px}
+.fin .fstack i{display:block;width:100%;height:3px;background:var(--ink);border-radius:2px}
+input.nn{font:800 30px/1 'Big Shoulders Display',sans-serif;min-height:46px;padding:4px 6px;border:2px solid var(--ink);border-radius:4px;background:var(--bg);color:var(--ink);text-align:center}
+input.nn.w{width:2.6ch;font-size:38px;min-height:54px}
+input.nn.f{width:4ch}
+.lbl2{font-size:14px;color:var(--muted)}
+
+/* Correção bem visível: verde com ✓ quando acerta, vermelho com ✗ quando erra */
+.fb.ok,.fb.no{border-left-width:8px;padding:14px 16px;display:flow-root}
+.fb.ok{background:color-mix(in srgb,var(--ok) 13%,var(--bg))}
+.fb.no{background:color-mix(in srgb,var(--bad) 12%,var(--bg))}
+.fb.ok::before,.fb.no::before{content:'✓';float:left;width:58px;height:58px;border-radius:50%;background:#17703F;color:#fff;font:800 38px/58px Arial,sans-serif;text-align:center;margin:0 14px 6px 0}
+.fb.no::before{content:'✗';background:#B3261E}
+.fb.ok>strong:first-child,.fb.ok>b:first-child{color:#17703F;font-size:24px}
+.fb.no>strong:first-child,.fb.no>b:first-child{color:#B3261E;font-size:24px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fb.ok>strong:first-child,:root:not([data-theme="light"]) .fb.ok>b:first-child{color:var(--ok)}:root:not([data-theme="light"]) .fb.no>strong:first-child,:root:not([data-theme="light"]) .fb.no>b:first-child{color:var(--bad)}}
+.conta .m.ok,.conta .m.no{color:#fff;border-radius:12px;padding:3px 9px;font-size:14px;white-space:nowrap}
+.conta .m.ok{background:#17703F}.conta .m.no{background:#B3261E}
+.par b.okc::before{content:'✓ ';}.par b.noc::before{content:'✗ ';}
+.envia{font-weight:700;font-size:18px}
+.grade button.feito{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.gravada{margin:12px 0;padding:12px 14px;border-left:6px solid var(--ink);background:var(--panel);border-radius:4px;font-size:18px}
+.provagrid{display:block}
+.calc{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;max-width:340px}
+.calc .ct{font:700 14px/1 Barlow,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.cvis{min-height:22px;font:600 17px/1.2 Barlow,sans-serif;color:var(--muted);text-align:right;word-break:break-all}
+.cres{font:800 38px/1.1 'Big Shoulders Display',sans-serif;text-align:right;margin-bottom:10px;font-variant-numeric:tabular-nums;word-break:break-all}
+.cbt{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.cbt button{min-height:52px;font:800 24px/1 'Big Shoulders Display',sans-serif;border:1.5px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);cursor:pointer}
+.cbt button.cop{background:color-mix(in srgb,var(--accent) 16%,var(--bg))}.cbt button.cfn{color:var(--muted)}
+.cbt button.ceq{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.cbt button:active{transform:translateY(1px)}
+@media (min-width:1100px){main{max-width:1320px}.provagrid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}.calc{position:sticky;top:12px;margin-top:14px}}
+.espera{display:flex;flex-direction:column;gap:8px;align-items:center;text-align:center;padding:42px 14px;font-size:19px}
+.espera b{font:800 32px/1.1 'Big Shoulders Display',sans-serif}.espera strong{font-size:1.3em}
+.qcab{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:10px;font:700 15px/1.2 Barlow,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+.tag{background:var(--steel);color:#fff;border-radius:4px;padding:5px 10px;letter-spacing:.06em}.tag.rosa{background:#C2185B}
+.svgbox{background:var(--steel);border-radius:6px;padding:10px}.svgbox svg{display:block;width:100%;height:auto}
+.en{font-weight:600;margin:12px 0 4px}.enviada{color:var(--ok);font-weight:700;font-size:18px}
+.quem{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.quem b{color:var(--ink)}.quem button{background:none;border:0;color:var(--muted);text-decoration:underline;cursor:pointer;font:inherit}
+#rede{background:#B3261E;color:#fff;padding:8px 12px;border-radius:4px;margin-bottom:10px}
+/* professor */
+body.modo-tv .fp-top,body.modo-tv .sub,body.modo-tv h1,body.modo-tv .tagtop{display:none}
+body.modo-tv main{max-width:none;padding:14px 22px}
+.tv{display:grid;grid-template-columns:minmax(0,1fr) 380px;gap:18px;align-items:start}
+.barra{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.barra .pos{font:800 40px/1 'Big Shoulders Display',sans-serif}
+.svgbox.grande{padding:14px}.en.grande{font-size:28px;text-align:center;margin-top:18px}
+.certa{display:flex;align-items:baseline;gap:18px;margin:16px 0 6px}.certa span{font:700 18px/1 Barlow,sans-serif;text-transform:uppercase;letter-spacing:.06em;color:var(--muted)}
+.certa b{font:800 72px/1 'Big Shoulders Display',sans-serif;color:var(--ok)}
+.lado{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:16px;position:sticky;top:12px;max-height:calc(100vh - 30px);overflow:auto}
+.lado h3{font:700 15px/1 Barlow,sans-serif;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin:16px 0 8px}
+.lado h3.hok{color:var(--ok)}.lado h3.hno{color:var(--bad)}
+.contador{display:flex;align-items:baseline;gap:10px}.contador b{font:800 68px/1 'Big Shoulders Display',sans-serif}.contador span{font-size:20px;color:var(--muted)}
+.contador.bom b{color:var(--ok)}.contador.ruim b{color:var(--bad)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}.chip{border:1px solid var(--line);border-radius:14px;padding:4px 10px;font-size:16px;background:var(--bg)}
+.chip.feito{background:var(--steel);color:#fff;border-color:var(--steel)}.chip.ok{background:#17703F;color:#fff;border-color:#17703F}.chip.no{background:#B3261E;color:#fff;border-color:#B3261E}
+.chip i{font-style:normal;opacity:.85;margin-left:4px}
+.lobby{display:flex;gap:30px;align-items:center;flex-wrap:wrap;background:var(--panel);border-radius:8px;padding:30px}
+.lobby h2{font:800 54px/1 'Big Shoulders Display',sans-serif;margin:0 0 10px}.lobby .link{font:700 28px/1.2 Barlow,sans-serif;color:var(--accent);word-break:break-all;margin:0 0 10px}
+#qr{background:#fff;padding:12px;border-radius:6px}
+.final{display:grid;grid-template-columns:1fr 1fr;gap:24px}.final h2{font:800 36px/1 'Big Shoulders Display',sans-serif;margin:0 0 10px}
+.rank{width:100%;border-collapse:collapse;font-size:17px}.rank th,.rank td{padding:6px 8px;border-bottom:1px solid var(--line);text-align:left}
+.barras{display:flex;flex-direction:column;gap:4px}.bar{display:grid;grid-template-columns:30px 1fr 52px;align-items:center;gap:8px;font-size:15px}
+.bar i{display:block;height:16px;border-radius:3px;min-width:2px}.bar i.bom{background:var(--ok)}.bar i.ruim{background:var(--bad)}.bar em{font-style:normal;text-align:right}
+.teclas{color:var(--muted);font-size:15px}
+.tagtop{display:inline-block;margin-bottom:10px}
+#tela .conta{transform:scale(1.35);transform-origin:left top;margin-bottom:60px}
+@media (max-width:1000px){.tv,.final{grid-template-columns:1fr}.lado{position:static;max-height:none}}
+</style>
+</head>
+<body>
+<header class="fp-top">
+  <div class="fp-in"><a class="fp-brand" href="../index.html">Fazenda <b>de Projetos</b></a><span class="fp-onde">Metrologia · Paquímetro</span></div>
+  <div class="fp-rule" aria-hidden="true"></div>
+</header>
+<main>
+<span class="tag tagtop">Aula ao vivo · professor</span>
+<h1>Aula ao Vivo: Tela do Professor</h1>
+<p class="sub">Projete esta tela. Cada <b>Enter</b> avança: abre a leitura, fecha e mostra quem acertou, passa para a próxima. Seta para a esquerda volta. <b>F</b> deixa em tela cheia.</p>
+<section class="panel" id="config">
+  <label class="f">Código do professor<input type="text" id="cod" autocomplete="off" maxlength="20" style="max-width:16ch;text-transform:uppercase"></label>
+  <div class="row" style="margin-top:12px"><button class="act ghost" id="testar">Conferir o código</button></div>
+  <div id="pmsg" aria-live="polite"></div>
+  <div id="inicio" hidden style="margin-top:14px"><div class="row"><button class="act" id="nova">Começar uma aula nova</button><button class="act ghost" id="continuar" hidden>Continuar</button></div>
+  <p class="eq">São 30 leituras: as que a turma mais errou na avaliação de 25 leituras.</p></div>
+</section>
+<section id="palco" hidden>
+  <div class="barra"><span class="pos" id="pos"></span><span class="row"><button class="act ghost" id="voltar">◂ Voltar</button><button class="act" id="avancar"></button><button class="act ghost" id="sair">Sair</button><button class="act ghost" id="encerrar">Encerrar aula</button></span></div>
+  <div class="tv"><div id="tela"></div><aside class="lado" id="lista" aria-live="polite"></aside></div>
+  <p class="teclas">Enter: avançar · ←: voltar · F: tela cheia</p>
+</section>
+</main>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const embaralhar=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const L1=j=>String.fromCharCode(65+j);
+const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a);
+
+/* ===== frações: valores em 1/128 de polegada (inteiros) ===== */
+function fTxt(u){const w=Math.floor(u/128);let n=u%128,d=128;if(!n)return w+'"';const g=gcd(n,d);n/=g;d/=g;return (w?w+' ':'')+n+'/'+d+'"'}
+function rawTxt(u,den){const w=Math.floor(u/den),n=u%den;return n?(w?w+' ':'')+n+'/'+den+'"':w+'"'}
+function cadeia(n,d){let s=n+'/'+d;while(n&&n%2===0){n/=2;d/=2;s+=' = '+n+'/'+d}return s}
+function explicaPaq(u){const n=Math.floor(u/8),r=u%8,t=u%128;
+  return `Escala fixa: ${rawTxt(n,16)} = ${rawTxt(n*8,128)}. Nônio: ${r?r+'º traço = '+r+'/128"':'o zero coincide'}. Soma: ${rawTxt(n*8,128)} + ${r}/128" = ${rawTxt(u,128)}${t&&t%2===0?' → '+cadeia(t,128):''}. Leitura ${fTxt(u)}.`}
+function explicaRegua(u16){const w=Math.floor(u16/16),n=u16%16;
+  return `${w?w+'" inteira'+(w>1?'s':'')+' + ':''}${n} tracinho${n===1?'':'s'} de 1/16" = ${n}/16"${n%2===0&&n?' → '+cadeia(n,16):''}. Leitura ${fTxt(u16*8)}.`}
+
+/* desenho do paquímetro (igual ao simulador) */
+const FD=8,PPU=7.5,LINE=330,W=1500,BX0=22,BX1=1478,VD=(FD-1)*PPU,VL=8*VD;
+function paq(u,rosa){const cam=Math.min(u-640/PPU,Math.floor(u/128)*128-80/PPU),z=(u-cam)*PPU;let h=`<rect x="20" y="20" width="1460" height="310" rx="6" fill="#C9CBCD" stroke="#373435" stroke-width="5"/><g clip-path="url(#cp${u})">`;
+  const first=Math.max(0,Math.floor(cam/FD)-1),last=Math.ceil((cam+W/PPU)/FD)+1;
+  for(let m=first;m<=last;m++){const x=(m*FD-cam)*PPU;if(x<BX0||x>BX1)continue;const L=m%16===0?225:m%8===0?180:m%4===0?145:m%2===0?112:82;
+    h+=`<line x1="${x}" x2="${x}" y1="${LINE-L}" y2="${LINE}" stroke="#2A2829" stroke-width="${m%16===0?5:3.4}"/>`;
+    if(m%16===0){const lab=m/16,half=66*0.32*String(lab).length+4;if(x-half>BX0+6&&x+half<BX1-6)h+=`<text x="${x}" y="${LINE-L-10}" text-anchor="middle" font-size="66" font-weight="900" font-family="'Arial Black',Arial,sans-serif" fill="#14202B">${lab}</text>`}}
+  const inch=Math.floor(u/128),xi=(inch*128-cam)*PPU;
+  if(cam>0&&xi<BX0+40)h+=`<rect x="${BX0+8}" y="${BX0+8}" width="150" height="54" rx="6" fill="#14202B" opacity=".85"/><text x="${BX0+83}" y="${BX0+46}" text-anchor="middle" font-size="34" font-weight="700" font-family="Arial,sans-serif" fill="#F2A93B">◂ ${inch}"</text>`;
+  h+='</g>';const x0=z-110,x1=z+VL+110,yb=LINE+230;
+  h+=`<rect x="${x0}" y="${LINE}" width="${x1-x0}" height="230" fill="#E6E7E8"/><path d="M${x0} ${LINE} V${yb-6} Q${x0} ${yb} ${x0+6} ${yb} H${x1-6} Q${x1} ${yb} ${x1} ${yb-6} V${LINE}" fill="none" stroke="#373435" stroke-width="5"/>`;
+  for(let k=0;k<=8;k++){const x=z+k*VD,lb=k%4===0;h+=`<line x1="${x}" x2="${x}" y1="${LINE}" y2="${LINE+(lb?120:80)}" stroke="#2A2829" stroke-width="${k===0?5:3.4}"/>`;
+    if(lb)h+=`<text x="${x}" y="${LINE+170}" text-anchor="middle" font-size="40" font-weight="700" font-family="Arial,sans-serif" fill="#2A2829">${k}</text>`}
+  h+=`<text x="${x0+14}" y="${LINE+214}" text-anchor="start" font-size="26" font-family="Arial,sans-serif" fill="#4A4849">1/128 in</text>`;
+  if(rosa){const xa=z+(u%FD)*VD;h+=`<line x1="${xa}" x2="${xa}" y1="${LINE-200}" y2="${LINE+118}" stroke="#FF2E93" stroke-width="7" opacity=".6"/><circle cx="${xa}" cy="${LINE+132}" r="11" fill="#FF2E93"/>`}
+  return `<svg viewBox="0 0 1500 600" role="img" aria-label="Paquímetro em polegada fracionária${rosa?', com o traço do nônio que coincide marcado em rosa':''}"><defs><clipPath id="cp${u}"><rect x="22" y="22" width="1456" height="306"/></clipPath></defs>${h}</svg>`}
+/* desenho da régua (igual ao simulador): u16 em 1/16" */
+function regua(u16){const X0=60,LN=250,PX=1880/96,xe=X0+u16*PX;let h='';
+  h+=`<rect x="${X0}" y="70" width="${xe-X0}" height="${LN-74}" fill="#8FA7BF" stroke="#24486E" stroke-width="4"/><text x="${X0+12}" y="104" font-size="28" font-family="Arial,sans-serif" fill="#14202B">peça</text>`;
+  h+=`<rect x="${X0-40}" y="40" width="40" height="${LN+110}" fill="#5C6670"/><rect x="${X0}" y="${LN}" width="${96*PX+20}" height="160" rx="4" fill="#D9DBDD" stroke="#373435" stroke-width="4"/>`;
+  for(let k=0;k<=96;k++){const x=X0+k*PX,L=k%16===0?110:k%8===0?86:k%4===0?66:k%2===0?50:36;
+    h+=`<line x1="${x}" x2="${x}" y1="${LN}" y2="${LN+L}" stroke="#2A2829" stroke-width="${k%16===0?4.5:2.6}"/>`;
+    if(k%16===0&&k>0&&k<96)h+=`<text x="${x}" y="${LN+148}" text-anchor="middle" font-size="40" font-weight="900" font-family="'Arial Black',Arial,sans-serif" fill="#14202B">${k/16}</text>`}
+  h+=`<line x1="${xe}" x2="${xe}" y1="60" y2="${LN+120}" stroke="#FF2E93" stroke-width="5" opacity=".85"/>`;
+  return `<svg viewBox="0 0 2000 430" role="img" aria-label="Régua em polegada com uma peça; a linha rosa marca o fim da peça">${h}</svg>`}
+
+function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const BANK=(()=>{const R=mulberry(20261118),ri=(a,b)=>a+Math.floor(R()*(b-a+1)),used=new Set(),L=[];
+  const faixas=[[1,127,36],[129,255,32],[257,383,24],[385,511,16],[513,696,12]];
+  for(const [lo,hi,n] of faixas){let k=0,t=0;while(k<n&&t<5000){t++;const u=ri(lo,hi);if(used.has(u))continue;
+    if(u%FD===0&&R()<.8)continue;used.add(u);L.push(u);k++}}
+  for(let i=L.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[L[i],L[j]]=[L[j],L[i]]}
+  return L.map((u,i)=>({n:i+1,u,traco:i%2===0}))})();
+function parseFr(r){if(!r)return null;const w=r.w===''?0:+r.w,n=r.n===''?0:+r.n,d=r.n===''?1:+r.d;
+  if([w,n,d].some(x=>isNaN(x)||x<0||!Number.isInteger(x))||d===0)return null;return{u:(w*d+n)*128/d,simp:n===0||(gcd(n,d)===1&&n<d)}}
+const frTxt=r=>{if(!r)return '—';const w=r.w===''?'':r.w,n=r.n;return (n!==''?(w?w+' ':'')+n+'/'+r.d:(w||'0'))+'"'};
+function armada(u){const n=Math.floor(u/8),r=u%8;return `<div class="conta"><span class="tt">Conta armada</span><span class="op"></span><span class="v">${rawTxt(n*8,128)}</span><span class="lb">escala fixa (${rawTxt(n,16)})</span><span class="op">+</span><span class="v">${r}/128"</span><span class="lb">nônio</span><hr><span class="op">=</span><span class="v">${rawTxt(u,128)}</span><span class="lb">${fTxt(u)!==rawTxt(u,128)?'= '+fTxt(u):'leitura'}</span></div>`}
+/* ===== aula ao vivo: comum a aluno e professor ===== */
+const API='https://script.google.com/macros/s/AKfycbyFB7_droCXROAI6XYOwXPQlW5S7BbAAkjhTChnu6u0_gRGSFc3YeC8m9vTUzGcc2Wi/exec';
+const AULA='Retomada: leituras do paquímetro em polegada fracionária';
+/* as 30 leituras mais erradas na avaliação de 25 leituras (números do banco da revisão), da menor para a maior medida */
+const LISTA=[71,91,41,20,96,89,10,29,6,42,116,36,46,13,19,107,52,83,84,70,57,94,87,88,120,50,58,113,111,62];
+const QS=LISTA.map((n,i)=>{const b=BANK[n-1];return{i,banco:n,u:b.u,rosa:b.traco}});
+async function apiGet(){const r=await fetch(API+'?acao=estado&_='+Date.now());return r.json()}
+async function apiPost(o){const r=await fetch(API,{method:'POST',body:JSON.stringify(o)});return r.json()}
+function corrigir(q,resp){const p=parseFr(resp);if(!p)return{ok:false,quase:false};const exato=Math.abs(p.u-q.u)<1e-9;return{ok:exato&&p.simp,quase:exato&&!p.simp}}
+const frBox=(dis,v)=>{v=v||{w:'',n:'',d:''};return `<div class="resp"><span class="fin"><input class="nn w" id="aw" inputmode="numeric" maxlength="2" value="${esc(v.w)}" ${dis} aria-label="Polegadas inteiras"><span class="fstack"><input class="nn f" id="an" inputmode="numeric" maxlength="3" value="${esc(v.n)}" ${dis} aria-label="Numerador"><i></i><input class="nn f" id="ad" inputmode="numeric" maxlength="3" value="${esc(v.d)}" ${dis} aria-label="Denominador"></span><span class="un">"</span></span><span class="lbl2">inteiro · numerador / denominador</span></div>`};
+const lerFr=()=>({w:$('aw').value.trim(),n:$('an').value.trim(),d:$('ad').value.trim()});
+
+/* ===== professor ===== */
+const KP='aula-vivo-pol-fr-prof';
+let P={codigo:'',sessao:'',q:-1,fase:'fechada',res:{},alunos:{}};try{Object.assign(P,JSON.parse(localStorage.getItem(KP)||'{}'))}catch(e){}
+const guardar=()=>{try{localStorage.setItem(KP,JSON.stringify(P))}catch(e){}};
+let vivo={respostas:{},alunos:{}},timer=null,ocupado=false;
+const LINK=new URL('aula-ao-vivo-polegada-fracionaria.html',location.href).href;
+
+function msg(h){$('pmsg').innerHTML=h}
+async function controle(){return apiPost({acao:'controle',chave:P.codigo,sessao:P.sessao,q:P.q,fase:P.fase,total:QS.length})}
+
+$('cod').value=P.codigo||'';
+$('testar').onclick=async()=>{P.codigo=$('cod').value.trim().toUpperCase();guardar();msg('<p class="eq">Conferindo o código…</p>');
+  try{const j=await apiPost({acao:'testar',chave:P.codigo});if(!j.ok)throw 0;msg('<p class="okc">✓ Código certo.</p>');$('inicio').hidden=false}
+  catch(e){msg('<p class="erro">Código errado ou sem internet.</p>');$('inicio').hidden=true}};
+$('nova').onclick=async()=>{if(P.sessao&&P.fase!=='fim'&&!confirm('Começar uma aula nova? A aula atual será encerrada.'))return;
+  P.sessao='A'+Date.now().toString(36);P.q=-1;P.fase='espera';P.res={};P.alunos={};guardar();
+  try{const j=await controle();if(!j.ok)throw 0}catch(e){msg('<p class="erro">Não consegui abrir a aula. Confira o código e a internet.</p>');return}
+  abrirPalco()};
+$('continuar').onclick=()=>{if(!P.sessao)return;abrirPalco()};
+if(P.sessao&&P.fase!=='fechada'){$('continuar').hidden=false;$('continuar').textContent=`Continuar a aula (${P.fase==='fim'?'encerrada':P.q<0?'na espera':'leitura '+(P.q+1)})`}
+
+function abrirPalco(){$('config').hidden=true;$('palco').hidden=false;document.body.classList.add('modo-tv');desenhar();buscar()}
+
+async function buscar(){clearTimeout(timer);if(P.fase==='fim'||P.fase==='fechada')return;
+  try{const j=await apiPost({acao:'respostas',chave:P.codigo,sessao:P.sessao,q:Math.max(P.q,0)});if(j.ok){vivo=j;Object.assign(P.alunos,j.alunos);guardar();painel()}}catch(e){}
+  timer=setTimeout(buscar,P.fase==='aberta'||P.fase==='espera'?2500:8000)}
+
+async function avancar(){if(ocupado)return;ocupado=true;try{
+  if(P.fase==='espera'){P.q=0;P.fase='aberta'}
+  else if(P.fase==='aberta'){await revelar();return}
+  else if(P.fase==='revelada'){if(P.q<QS.length-1){P.q++;P.fase='aberta'}else P.fase='fim'}
+  else return;
+  vivo={respostas:{},alunos:vivo.alunos};guardar();desenhar();await controle();buscar()}
+  catch(e){msg('<p class="erro">Sem conexão. Aperte Enter de novo.</p>')}finally{ocupado=false}}
+
+async function revelar(){try{const j=await apiPost({acao:'respostas',chave:P.codigo,sessao:P.sessao,q:P.q});if(j.ok){vivo=j;Object.assign(P.alunos,j.alunos)}}catch(e){}
+  const Q=QS[P.q],r={};Object.entries(vivo.respostas||{}).forEach(([ch,o])=>{const c=corrigir(Q,o.resp);r[ch]={nome:o.nome,resp:o.resp,ok:c.ok,quase:c.quase}});
+  P.res[P.q]=r;P.fase='revelada';guardar();desenhar();
+  try{await controle()}catch(e){}
+  try{await apiPost({acao:'salvar',chave:P.codigo,aula:AULA+' ('+P.sessao+')',linhas:Object.entries(r).map(([ch,o])=>({q:P.q+1,certa:fTxt(Q.u),chamada:+ch,nome:o.nome,resp:frTxt(o.resp),resultado:o.ok?'Acertou':o.quase?'Errou (faltou simplificar)':'Errou'}))})}catch(e){}
+  ocupado=false;buscar()}
+
+async function voltar(){if(ocupado||P.q<=0||P.fase==='espera')return;ocupado=true;try{if(P.fase==='fim'){P.fase='revelada'}else{P.q--;P.fase='revelada'}guardar();desenhar();await controle()}catch(e){}finally{ocupado=false}}
+
+document.addEventListener('keydown',e=>{if($('palco').hidden||e.target.closest('input'))return;
+  if(e.key==='Enter'||e.key===' '||e.key==='ArrowRight'||e.key==='PageDown'){e.preventDefault();avancar()}
+  else if(e.key==='ArrowLeft'||e.key==='PageUp'){e.preventDefault();voltar()}
+  else if(e.key==='f'||e.key==='F'){if(document.fullscreenElement)document.exitFullscreen();else document.documentElement.requestFullscreen().catch(()=>{})}});
+$('avancar').onclick=avancar;$('voltar').onclick=voltar;
+$('sair').onclick=()=>{$('palco').hidden=true;$('config').hidden=false;document.body.classList.remove('modo-tv');clearTimeout(timer);$('continuar').hidden=!P.sessao};
+$('encerrar').onclick=async()=>{if(!confirm('Encerrar a aula para todos os alunos?'))return;P.fase='fechada';guardar();try{await controle()}catch(e){}$('sair').click()};
+
+const nomeCurto=n=>{const p=String(n||'').split(' ');return p.length>1?p[0]+' '+p[p.length-1][0]+'.':p[0]};
+const turma=()=>Object.entries(P.alunos).sort((a,b)=>a[0]-b[0]);
+
+function desenhar(){const T=$('tela'),f=P.fase;
+  $('avancar').textContent=f==='espera'?'Começar ▸':f==='aberta'?'Fechar e mostrar a resposta ▸':f==='revelada'?(P.q<QS.length-1?'Próxima leitura ▸':'Ver o resultado final ▸'):'—';
+  $('avancar').disabled=f==='fim';$('voltar').disabled=P.q<=0||f==='espera';
+  $('pos').textContent=f==='espera'?'Sala de espera':f==='fim'?'Resultado final':`Leitura ${P.q+1} de ${QS.length}`;
+  if(f==='espera'){T.innerHTML=`<div class="lobby"><div><h2>Entrem na aula</h2><p class="link">${esc(LINK.replace(/^https?:\/\//,''))}</p><p class="eq">No celular: abra o link, escreva o nome completo e o número de chamada. Quando todos entrarem, aperte <b>Enter</b>.</p></div><div id="qr" aria-label="QR code do link da aula"></div></div>`;
+    try{new QRCode($('qr'),{text:LINK,width:260,height:260})}catch(e){$('qr').remove()}painel();return}
+  if(f==='fim'){T.innerHTML=final();painel();return}
+  const Q=QS[P.q];
+  T.innerHTML=`<div class="qcab"><span class="tag ${Q.rosa?'rosa':''}">${Q.rosa?'Traço marcado':'Descubra o traço'}</span><span class="eq">questão ${Q.banco} da revisão · ${taxaProva(Q.banco)}</span></div>
+    <div class="svgbox grande">${paq(Q.u,Q.rosa||f==='revelada')}</div>
+    ${f==='revelada'?`<div class="certa"><span>Leitura certa</span><b>${fTxt(Q.u)}</b></div>${armada(Q.u)}<p class="eq">${explicaPaq(Q.u)}</p>`:`<p class="en grande">Qual é a leitura? Respondam no celular, com a fração simplificada.</p>`}`;
+  painel()}
+
+const ERROS_PROVA={71:'5/7',91:'4/6',41:'5/6',20:'6/7',96:'4/5',89:'6/8',10:'6/9',29:'5/7',6:'6/9',42:'4/6',116:'4/6',36:'6/7',46:'4/5',13:'4/5',19:'5/7',107:'4/5',52:'5/7',83:'7/9',84:'4/5',70:'7/9',57:'11/14',94:'8/9',87:'6/9',88:'4/5',120:'3/4',50:'3/4',58:'4/5',113:'6/9',111:'5/7',62:'7/8'};
+const taxaProva=b=>{const e=ERROS_PROVA[b];return e?`na avaliação, ${e.split('/')[0]} de ${e.split('/')[1]} erraram`:''};
+
+function painel(){const L=$('lista'),f=P.fase,tur=turma();
+  if(f==='espera'){L.innerHTML=`<h3>${tur.length} ${tur.length===1?'aluno entrou':'alunos entraram'}</h3><div class="chips">${tur.map(([c,n])=>`<span class="chip">${c}. ${esc(nomeCurto(n))}</span>`).join('')}</div>`;return}
+  if(f==='aberta'){const R=vivo.respostas||{},resp=Object.keys(R),falta=tur.filter(([c])=>!R[c]);
+    L.innerHTML=`<div class="contador"><b>${resp.length}</b><span>de ${tur.length} responderam</span></div>
+      <h3>Já responderam</h3><div class="chips">${resp.sort((a,b)=>a-b).map(c=>`<span class="chip feito">${c}. ${esc(nomeCurto(R[c].nome))}</span>`).join('')||'<span class="eq">ninguém ainda</span>'}</div>
+      ${falta.length?`<h3>Faltam</h3><div class="chips">${falta.map(([c,n])=>`<span class="chip">${c}. ${esc(nomeCurto(n))}</span>`).join('')}</div>`:''}`;return}
+  if(f==='revelada'){const r=P.res[P.q]||{},E=Object.entries(r).sort((a,b)=>a[0]-b[0]),ok=E.filter(([,o])=>o.ok),no=E.filter(([,o])=>!o.ok),sem=tur.filter(([c])=>!r[c]);
+    const pct=E.length?Math.round(100*ok.length/E.length):0;
+    L.innerHTML=`<div class="contador ${pct>=70?'bom':'ruim'}"><b>${ok.length}/${E.length}</b><span>acertaram (${pct}%)</span></div>
+      <h3 class="hok">✓ Acertaram</h3><div class="chips">${ok.map(([c,o])=>`<span class="chip ok">${c}. ${esc(nomeCurto(o.nome))}</span>`).join('')||'<span class="eq">ninguém</span>'}</div>
+      <h3 class="hno">✗ Erraram</h3><div class="chips">${no.map(([c,o])=>`<span class="chip no">${c}. ${esc(nomeCurto(o.nome))} <i>${esc(frTxt(o.resp))}${o.quase?' (simplificar)':''}</i></span>`).join('')||'<span class="eq">ninguém</span>'}</div>
+      ${sem.length?`<h3>Não responderam</h3><div class="chips">${sem.map(([c,n])=>`<span class="chip">${c}. ${esc(nomeCurto(n))}</span>`).join('')}</div>`:''}`;return}
+  if(f==='fim'){L.innerHTML=`<h3>Aula encerrada</h3><p class="eq">As respostas de cada leitura também foram para a aba "Aula ao vivo" da sua planilha.</p><button class="act ghost" id="csv">Baixar resultado (CSV)</button>`;$('csv').onclick=baixarCSV}}
+
+function placarFinal(){const tur=turma();return tur.map(([c,n])=>{let a=0,r=0;QS.forEach((q,i)=>{const o=(P.res[i]||{})[c];if(o){r++;if(o.ok)a++}});return{c,n,a,r}}).sort((x,y)=>y.a-x.a||x.c-y.c)}
+function final(){const pl=placarFinal(),porQ=QS.map((q,i)=>{const E=Object.values(P.res[i]||{});return{i,n:E.length,ok:E.filter(o=>o.ok).length}});
+  return `<div class="final"><div><h2>Placar da turma</h2><table class="rank"><thead><tr><th>Nº</th><th>Aluno</th><th>Acertos</th></tr></thead><tbody>${pl.map(p=>`<tr><td>${p.c}</td><td>${esc(p.n)}</td><td><b>${p.a}</b> de ${QS.length}</td></tr>`).join('')}</tbody></table></div>
+    <div><h2>Acertos por leitura</h2><div class="barras">${porQ.map(x=>{const pc=x.n?Math.round(100*x.ok/x.n):0;return `<div class="bar"><span>${x.i+1}</span><i style="width:${pc}%" class="${pc>=70?'bom':'ruim'}"></i><em>${pc}%</em></div>`}).join('')}</div></div></div>`}
+function baixarCSV(){const pl=placarFinal(),cab=['Nº de chamada','Nome','Acertos','Respondidas'].concat(QS.map((q,i)=>'L'+(i+1)+' '+fTxt(q.u).replace('"','')));
+  const linhas=pl.map(p=>[p.c,p.n,p.a,p.r].concat(QS.map((q,i)=>{const o=(P.res[i]||{})[p.c];return o?(o.ok?'certo':'errado: '+frTxt(o.resp)):''})));
+  const csv=[cab].concat(linhas).map(l=>l.map(x=>'"'+String(x).replace(/"/g,'""')+'"').join(';')).join('\n');
+  const a=document.createElement('a');a.href=URL.createObjectURL(new Blob(['﻿'+csv],{type:'text/csv'}));a.download='aula-ao-vivo-polegada-fracionaria.csv';a.click()}
+
+</script>
+</body>
+</html>
