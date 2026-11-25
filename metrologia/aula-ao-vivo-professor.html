@@ -204,8 +204,12 @@ body.modo-tv main{max-width:none;padding:14px 22px}
 .barras{display:flex;flex-direction:column;gap:4px}.bar{display:grid;grid-template-columns:30px 1fr 52px;align-items:center;gap:8px;font-size:15px}
 .bar i{display:block;height:16px;border-radius:3px;min-width:2px}.bar i.bom{background:var(--ok)}.bar i.ruim{background:var(--bad)}.bar em{font-style:normal;text-align:right}
 .teclas{color:var(--muted);font-size:15px}
+body.na-aula h1,body.na-aula .sub,body.na-aula .tagtop{display:none}
+body.na-aula main{padding-top:10px}
+#ques .svgbox svg{max-height:44vh;width:auto;max-width:100%;margin:0 auto}
 .tagtop{display:inline-block;margin-bottom:10px}
 #tela .conta{transform:scale(1.35);transform-origin:left top;margin-bottom:60px}
+@media (min-width:860px){.provagrid{display:grid;grid-template-columns:minmax(0,1fr) 280px;gap:16px;align-items:start}.provagrid .calc{position:sticky;top:12px;margin-top:0}}
 @media (max-width:1000px){.tv,.final{grid-template-columns:1fr}.lado{position:static;max-height:none}}
 </style>
 </head>
@@ -321,9 +325,14 @@ if(P.sessao&&P.fase!=='fechada'){$('continuar').hidden=false;$('continuar').text
 
 function abrirPalco(){$('config').hidden=true;$('palco').hidden=false;document.body.classList.add('modo-tv');desenhar();buscar()}
 
-async function buscar(){clearTimeout(timer);if(P.fase==='fim'||P.fase==='fechada')return;
-  try{const j=await apiPost({acao:'respostas',chave:P.codigo,sessao:P.sessao,q:Math.max(P.q,0)});if(j.ok){vivo=j;Object.assign(P.alunos,j.alunos);guardar();painel()}}catch(e){}
-  timer=setTimeout(buscar,P.fase==='aberta'||P.fase==='espera'?2500:8000)}
+let ultimaAtual=0;
+async function buscar(){clearTimeout(timer);if(P.fase==='fim'||P.fase==='fechada'||$('palco').hidden)return;
+  const marca=P.sessao+'|'+P.q+'|'+P.fase;
+  try{const j=await apiPost({acao:'respostas',chave:P.codigo,sessao:P.sessao,q:Math.max(P.q,0)});
+    if(j.ok&&marca===P.sessao+'|'+P.q+'|'+P.fase){vivo=j;Object.assign(P.alunos,j.alunos);guardar();ultimaAtual=Date.now();painel()}}catch(e){}
+  clearTimeout(timer);timer=setTimeout(buscar,P.fase==='aberta'||P.fase==='espera'?2000:8000)}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden)buscar()});
+setInterval(()=>{const el=$('atual');if(el&&ultimaAtual)el.textContent='atualizado há '+Math.round((Date.now()-ultimaAtual)/1000)+' s'},1000);
 
 async function avancar(){if(ocupado)return;ocupado=true;try{
   if(P.fase==='espera'){P.q=0;P.fase='aberta'}
@@ -357,13 +366,13 @@ function desenhar(){const T=$('tela'),f=P.fase;
   $('avancar').textContent=f==='espera'?'Começar ▸':f==='aberta'?'Fechar e mostrar a resposta ▸':f==='revelada'?(P.q<QS.length-1?'Próxima leitura ▸':'Ver o resultado final ▸'):'—';
   $('avancar').disabled=f==='fim';$('voltar').disabled=P.q<=0||f==='espera';
   $('pos').textContent=f==='espera'?'Sala de espera':f==='fim'?'Resultado final':`Leitura ${P.q+1} de ${QS.length}`;
-  if(f==='espera'){T.innerHTML=`<div class="lobby"><div><h2>Entrem na aula</h2><p class="link">${esc(LINK.replace(/^https?:\/\//,''))}</p><p class="eq">No celular: abra o link, escreva o nome completo e o número de chamada. Quando todos entrarem, aperte <b>Enter</b>.</p></div><div id="qr" aria-label="QR code do link da aula"></div></div>`;
+  if(f==='espera'){T.innerHTML=`<div class="lobby"><div><h2>Entrem na aula</h2><p class="link">${esc(LINK.replace(/^https?:\/\//,''))}</p><p class="eq">No Chromebook: abra o link, escreva o nome completo e o número de chamada. Quando todos entrarem, aperte <b>Enter</b>.</p></div><div id="qr" aria-label="QR code do link da aula"></div></div>`;
     try{new QRCode($('qr'),{text:LINK,width:260,height:260})}catch(e){$('qr').remove()}painel();return}
   if(f==='fim'){T.innerHTML=final();painel();return}
   const Q=QS[P.q];
   T.innerHTML=`<div class="qcab"><span class="tag ${Q.rosa?'rosa':''}">${Q.rosa?'Traço marcado':'Descubra o traço'}</span><span class="eq">questão ${Q.banco} da revisão · ${taxaProva(Q.banco)}</span></div>
     <div class="svgbox grande">${paq(Q.u,Q.rosa||f==='revelada')}</div>
-    ${f==='revelada'?`<div class="certa"><span>Leitura certa</span><b>${fTxt(Q.u)}</b></div>${armada(Q.u)}<p class="eq">${explicaPaq(Q.u)}</p>`:`<p class="en grande">Qual é a leitura? Respondam no celular, com a fração simplificada.</p>`}`;
+    ${f==='revelada'?`<div class="certa"><span>Leitura certa</span><b>${fTxt(Q.u)}</b></div>${armada(Q.u)}<p class="eq">${explicaPaq(Q.u)}</p>`:`<p class="en grande">Qual é a leitura? Respondam no Chromebook, com a fração simplificada.</p>`}`;
   painel()}
 
 const ERROS_PROVA={71:'5/7',91:'4/6',41:'5/6',20:'6/7',96:'4/5',89:'6/8',10:'6/9',29:'5/7',6:'6/9',42:'4/6',116:'4/6',36:'6/7',46:'4/5',13:'4/5',19:'5/7',107:'4/5',52:'5/7',83:'7/9',84:'4/5',70:'7/9',57:'11/14',94:'8/9',87:'6/9',88:'4/5',120:'3/4',50:'3/4',58:'4/5',113:'6/9',111:'5/7',62:'7/8'};
@@ -372,7 +381,7 @@ const taxaProva=b=>{const e=ERROS_PROVA[b];return e?`na avaliação, ${e.split('
 function painel(){const L=$('lista'),f=P.fase,tur=turma();
   if(f==='espera'){L.innerHTML=`<h3>${tur.length} ${tur.length===1?'aluno entrou':'alunos entraram'}</h3><div class="chips">${tur.map(([c,n])=>`<span class="chip">${c}. ${esc(nomeCurto(n))}</span>`).join('')}</div>`;return}
   if(f==='aberta'){const R=vivo.respostas||{},resp=Object.keys(R),falta=tur.filter(([c])=>!R[c]);
-    L.innerHTML=`<div class="contador"><b>${resp.length}</b><span>de ${tur.length} responderam</span></div>
+    L.innerHTML=`<div class="contador"><b>${resp.length}</b><span>de ${tur.length} responderam</span></div><p class="eq" id="atual" style="margin:2px 0 0;font-size:14px"></p>
       <h3>Já responderam</h3><div class="chips">${resp.sort((a,b)=>a-b).map(c=>`<span class="chip feito">${c}. ${esc(nomeCurto(R[c].nome))}</span>`).join('')||'<span class="eq">ninguém ainda</span>'}</div>
       ${falta.length?`<h3>Faltam</h3><div class="chips">${falta.map(([c,n])=>`<span class="chip">${c}. ${esc(nomeCurto(n))}</span>`).join('')}</div>`:''}`;return}
   if(f==='revelada'){const r=P.res[P.q]||{},E=Object.entries(r).sort((a,b)=>a[0]-b[0]),ok=E.filter(([,o])=>o.ok),no=E.filter(([,o])=>!o.ok),sem=tur.filter(([c])=>!r[c]);
