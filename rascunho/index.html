@@ -26,12 +26,6 @@ canvas{position:fixed;inset:0;width:100%;height:100%;touch-action:none;cursor:cr
 .barra button:focus-visible{outline:3px solid #6aa9ff;outline-offset:2px}
 .barra .sep{width:1px;background:#555;margin:8px 2px}
 .barra .peq{padding:0 14px}
-#confirma{position:fixed;inset:0;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.35);z-index:3}
-#confirma.on{display:flex}
-#confirma div{background:#fff;padding:22px;border-radius:16px;max-width:320px;text-align:center;box-shadow:0 10px 30px rgba(0,0,0,.3)}
-#confirma p{margin:0 0 16px;font-size:17px}
-#confirma button{min-height:48px;padding:0 20px;margin:0 4px;border-radius:12px;border:1px solid #ccc;background:#f3f3f3;font:600 16px system-ui,sans-serif}
-#confirma button.sim{background:#c62828;border-color:#c62828;color:#fff}
 @media(max-width:520px){.barra button .txt{display:none}.barra button{padding:0 14px}}
 .calc{position:fixed;right:16px;bottom:max(16px,env(safe-area-inset-bottom));width:236px;background:#2b2b2b;border-radius:18px;padding:10px;box-shadow:0 6px 20px rgba(0,0,0,.25);z-index:2}
 .calc.fechada{display:none}
@@ -78,8 +72,9 @@ canvas{position:fixed;inset:0;width:100%;height:100%;touch-action:none;cursor:cr
   <button id="desfazer" class="peq" aria-label="Desfazer">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>
   </button>
-  <button id="limpar" class="peq" aria-label="Limpar a folha">
+  <button id="limpar" aria-label="Limpar a folha">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7h16"/><path d="M9 7V4h6v3"/><path d="M6 7l1 13h10l1-13"/></svg>
+    <span class="txt">Limpar folha</span>
   </button>
   <span class="sep"></span>
   <button id="bcalc" class="peq ativo" aria-label="Mostrar ou esconder a calculadora" aria-pressed="true">
@@ -107,10 +102,6 @@ canvas{position:fixed;inset:0;width:100%;height:100%;touch-action:none;cursor:cr
   </div>
 </div>
 
-<div id="confirma"><div>
-  <p>Apagar tudo o que está na folha?</p>
-  <button id="nao">Cancelar</button><button id="sim" class="sim">Apagar tudo</button>
-</div></div>
 
 <script>
 {
@@ -193,12 +184,9 @@ bB.addEventListener('click',()=>escolher('borracha'));
 document.getElementById('desfazer').addEventListener('click',()=>{
   const s=historico.pop();if(s){ctx.putImageData(s,0,0);salvar()}
 });
-const caixa=document.getElementById('confirma');
-document.getElementById('limpar').addEventListener('click',()=>caixa.classList.add('on'));
-document.getElementById('nao').addEventListener('click',()=>caixa.classList.remove('on'));
-document.getElementById('sim').addEventListener('click',()=>{
+document.getElementById('limpar').addEventListener('click',()=>{
   guardarEstado();ctx.save();ctx.setTransform(1,0,0,1,0,0);ctx.clearRect(0,0,c.width,c.height);ctx.restore();
-  salvar();caixa.classList.remove('on');
+  salvar();
 });
 document.addEventListener('keydown',e=>{
   if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();document.getElementById('desfazer').click()}
