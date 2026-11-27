@@ -179,6 +179,7 @@ input.nn.f{width:4ch}
 .rascbar b{font:800 22px/1 'Big Shoulders Display',sans-serif;letter-spacing:.02em}.rascbar span{opacity:.8;font-size:15px;flex:1}
 #rascIf{flex:1;width:100%;border:0;display:block}
 @media print{#rascBtn,#rascOv{display:none!important}}
+#painel .aluno{display:none}
 </style>
 </head>
 <body>
@@ -486,6 +487,8 @@ async function enviar(){if(!ENVIO_URL){msgEnvio('<p style="color:var(--muted)">T
   finally{S.enviando=false}}
 $('reenviar').onclick=enviar;
 
+/* treino: começa direto, sem pedir nome */
+if(!S.nome){S.nome='TREINO';S.turma=''}
 tela();salvar();
 </script>
 <button class="act" id="rascBtn" hidden aria-expanded="false" aria-controls="rascOv">✏️ Folha de rascunho</button>
