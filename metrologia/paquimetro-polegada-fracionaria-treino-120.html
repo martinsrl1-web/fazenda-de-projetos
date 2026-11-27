@@ -172,7 +172,8 @@ input.nn.f{width:4ch}
 @media (min-width:1100px){main{max-width:1320px}.provagrid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}.calc{position:sticky;top:12px;margin-top:14px}}
 .grade button.meio{background:#9A6700;border-color:#9A6700;color:#fff}
 .fb.meio{border-left-color:#9A6700}
-#rascBtn{position:fixed;left:16px;bottom:16px;z-index:40;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+#rascBtn{position:fixed;right:16px;bottom:16px;z-index:40;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+body{padding-bottom:84px}
 #rascOv{position:fixed;inset:0;z-index:100;background:#fdfdfb;display:flex;flex-direction:column}
 #rascOv[hidden]{display:none}
 .rascbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:8px 14px;background:var(--ink);color:var(--bg)}
@@ -190,14 +191,14 @@ input.nn.f{width:4ch}
 <main>
 <div class="top">
   <div><span class="nivel">Treino · sem nota</span><h1>Treino: as 120 Leituras do Paquímetro em Polegada Fracionária</h1>
-  <p class="sub" style="margin-bottom:0">Para treinar antes da avaliação, sem nota. São as <b>120 leituras</b> da revisão, no mesmo formato da avaliação: em algumas a <b style="color:#FF2E93">linha rosa</b> mostra o traço; nas outras, você descobre. Responda, vá e volte quando quiser, e no final clique em <b>Corrigir</b> para ver a nota e a correção. Nada vai para o professor.</p></div>
+  <p class="sub" style="margin-bottom:0">Para treinar antes da avaliação, sem nota. São as <b>120 leituras</b> da revisão, no mesmo formato da avaliação: em algumas a <b style="color:#FF2E93">linha rosa</b> mostra o traço; nas outras, você descobre. Em cada leitura, clique em <b>Conferir esta resposta</b> para ver na hora se acertou. Nada vai para o professor.</p></div>
 </div>
 <section class="panel inicio" id="inicio" style="margin-top:14px">
   <h2 style="margin-top:0">Antes de começar</h2>
   <ul>
     <li>São as 120 leituras da revisão, em ordem sorteada. Não precisa fazer tudo de uma vez: as respostas ficam guardadas neste Chromebook.</li>
     <li>Escreva a fração nas caixinhas: polegadas inteiras, numerador e denominador. Simplifique a fração: com o valor certo mas sem simplificar, a questão vale <b>meio ponto</b>.</li>
-    <li>Escreva a resposta e passe para a próxima. A resposta fica guardada sozinha: você pode avançar, voltar e mudar quando quiser.</li><li>Quando responder as 120, clique em <b>Corrigir</b>. Aparecem a correção de cada leitura e a nota (só para você ver).</li><li>Use a calculadora da página ou a <b>✏️ Folha de rascunho</b> (botão no canto de baixo) para fazer as contas. Usar a folha não conta como sair da tela.</li>
+    <li>Escreva a resposta e clique em <b>Conferir esta resposta</b> para ver na hora se acertou, com a explicação.</li><li>Quando responder as 120, clique em <b>Corrigir</b>. Aparecem a correção de cada leitura e a nota (só para você ver).</li><li>Use a calculadora da página ou a <b>✏️ Folha de rascunho</b> (botão no canto de baixo, à direita) para fazer as contas. Usar a folha não conta como sair da tela.</li>
     <li>É um treino: o resultado <b>não</b> vai para o professor. No fim você pode baixar o PDF e treinar de novo.</li>
     <li>Ao enviar, o resultado e o relatório em PDF vão <b>sozinhos para o professor</b>. Você também pode baixar o PDF.</li>
   </ul>
@@ -294,12 +295,12 @@ const KEY='paq-pol-fr-treino120-v1',N=120,NV=120;
 const ENVIO_URL='';/* treino: não envia ao professor */
 let S={f:-1,i:0,ord:[],res:{},t:{},v:[]},E=[];
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');
-  if(s&&Array.isArray(s.ord)&&s.ord.length===N&&Array.isArray(s.v)&&s.v.length===NV){S.ord=s.ord;S.res=s.res||{};S.t=s.t||{};S.v=s.v;S.nome=s.nome||'';S.turma=s.turma||'';S.tent=s.tent||1;S.enviado=s.enviado||0;S.out=s.out||{};S.away=s.away||{};S.foraEm=s.foraEm||0;S.foraQ=s.foraQ;S.final=!!s.final;S.draft=s.draft||{}}}catch(e){}
+  if(s&&Array.isArray(s.ord)&&s.ord.length===N&&Array.isArray(s.v)&&s.v.length===NV){S.ord=s.ord;S.res=s.res||{};S.t=s.t||{};S.v=s.v;S.nome=s.nome||'';S.turma=s.turma||'';S.tent=s.tent||1;S.enviado=s.enviado||0;S.out=s.out||{};S.away=s.away||{};S.foraEm=s.foraEm||0;S.foraQ=s.foraQ;S.final=!!s.final;S.draft=s.draft||{};S.conf=s.conf||{}}}catch(e){}
 S.nome=S.nome||'';S.turma=S.turma||'';S.out=S.out||{};S.away=S.away||{};S.foraEm=S.foraEm||0;
 if(!S.v.length){S.v=sortearValores();S.ord=embaralhar([...Array(N).keys()])}
 E=montar(S.v);
 S.i=S.ord.find(i=>!S.res[i])??S.ord[0];
-const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify({ord:S.ord,res:S.res,t:S.t,v:S.v,nome:S.nome,turma:S.turma,tent:S.tent||1,enviado:S.enviado||0,out:S.out,away:S.away,foraEm:S.foraEm||0,foraQ:S.foraQ,final:!!S.final,draft:S.draft||{}}))}catch(e){}};
+const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify({ord:S.ord,res:S.res,t:S.t,v:S.v,nome:S.nome,turma:S.turma,tent:S.tent||1,enviado:S.enviado||0,out:S.out,away:S.away,foraEm:S.foraEm||0,foraQ:S.foraQ,final:!!S.final,draft:S.draft||{},conf:S.conf||{}}))}catch(e){}};
 /* fração "w n/d" -> {u em 1/128 (pode não ser inteiro), simp} */
 function parseFr(r){if(!r)return null;const w=r.w===''?0:+r.w,n=r.n===''?0:+r.n,d=r.n===''?1:+r.d;
   if([w,n,d].some(x=>isNaN(x)||x<0||!Number.isInteger(x))||d===0)return null;return{u:(w*d+n)*128/d,simp:n===0||(gcd(n,d)===1&&n<d)}}
@@ -342,11 +343,12 @@ function armada(u){const n=Math.floor(u/8),r=u%8;return `<div class="conta"><spa
 function placar(){const n=Object.keys(S.res).length;$('placar').innerHTML=`<span>Respondidos<b>${n}/${N}</b></span><span>Faltam<b class="num">${N-n}</b></span>`}
 function chips(){$('chips').innerHTML=[['-1','Todos']].concat(TEMAS.map((t,i)=>[i,t])).map(([v,t])=>`<button data-f="${v}" aria-pressed="${+v===S.f}">${t}</button>`).join('')}
 const revelar=()=>!!S.final;
-function grade(){$('grade').innerHTML=lista().map(i=>{const r=S.res[i];return `<button data-i="${i}" class="${r?(revelar()?(r.ok?'ok':r.quase?'meio':'no'):'feito'):''}" aria-current="${i===S.i}" aria-label="Exercício ${num(i)}${r?(revelar()?(r.ok?', acertou':', errou'):', respondido'):''}">${num(i)}</button>`}).join('')}
+const revQ=i=>S.final||!!(S.conf&&S.conf[i]);/* treino: cada questão pode ser conferida na hora */
+function grade(){$('grade').innerHTML=lista().map(i=>{const r=S.res[i];return `<button data-i="${i}" class="${r?(revQ(i)?(r.ok?'ok':r.quase?'meio':'no'):'feito'):''}" aria-current="${i===S.i}" aria-label="Exercício ${num(i)}${r?(revQ(i)?(r.ok?', acertou':', errou'):', respondido'):''}">${num(i)}</button>`}).join('')}
 
 function render(){const e=E[S.i],r=S.res[S.i],done=!!r;placar();grade();
   let corpo='';
-  if(e.tipo==='fr'){const v=(!S.final&&S.draft&&S.draft[S.i])||(done?r.r:{w:'',n:'',d:''}),dis=S.final?'disabled':'';
+  if(e.tipo==='fr'){const v=(!revQ(S.i)&&S.draft&&S.draft[S.i])||(done?r.r:{w:'',n:'',d:''}),dis=revQ(S.i)?'disabled':'';
     corpo=`<div class="resp"><span class="fin"><input class="nn w" id="aw" inputmode="numeric" maxlength="2" value="${esc(v.w)}" ${dis} aria-label="Polegadas inteiras"><span class="fstack"><input class="nn f" id="an" inputmode="numeric" maxlength="3" value="${esc(v.n)}" ${dis} aria-label="Numerador"><i></i><input class="nn f" id="ad" inputmode="numeric" maxlength="3" value="${esc(v.d)}" ${dis} aria-label="Denominador"></span><span class="un">"</span></span><span class="lbl2">inteiro · numerador / denominador</span></div>`}
   else corpo=`<div class="alts">${e.alts.map((a,j)=>{const sel=done&&r.r===j,cls=done?(j===e.c?'c':(sel?'x':'')):'';
     return `<label class="alt ${cls}"><input type="radio" name="alt" value="${j}" ${sel?'checked':''} ${done?'disabled':''}><span>${L1(j)}) ${esc(a)}</span></label>`}).join('')}</div>`;
@@ -354,15 +356,17 @@ function render(){const e=E[S.i],r=S.res[S.i],done=!!r;placar();grade();
   const fig=e.regua!==undefined?`<div class="desenho paq">${regua(e.regua)}</div>`:e.u!==undefined?`<div class="desenho paq">${paq(e.u,e.rosa)}</div>`:'';
   $('ex').innerHTML=`<div class="cab"><span>Exercício ${num(S.i)} de ${N}</span><span>${TEMAS[e.tema]}</span></div>
    ${fig}<p class="dica"><b>Paquímetro</b>: escala fixa (1/16" = 8/128") + nônio (cada traço 1/128"). Some em 128 avos e simplifique.</p><p class="en">${esc(e.en)}</p>${corpo}
-   ${!revelar()?`<p class="eq" style="margin:8px 0 0">A sua resposta fica guardada sozinha. Pode avançar, voltar e mudar quando quiser, até clicar em Corrigir.</p>`:''}
-   ${done&&revelar()?`<div class="fb ${r.ok?'ok':'no'}"><b>${r.ok?'Certo!':r.quase?'Meio certo: o valor está certo, mas faltou simplificar (vale meio ponto).':'Não foi dessa vez.'}</b> ${esc(e.exp)}
+   ${!revQ(S.i)?`<div class="row" style="margin-top:10px"><button class="act" id="confQ">Conferir esta resposta</button></div><div id="qmsg" aria-live="polite"></div>`:''}
+   ${done&&revQ(S.i)?`<div class="fb ${r.ok?'ok':'no'}"><b>${r.ok?'Certo!':r.quase?'Meio certo: o valor está certo, mas faltou simplificar (vale meio ponto).':'Não foi dessa vez.'}</b> ${esc(e.exp)}
      <div class="par"><div><span>Sua resposta</span><b class="${r.ok?'okc':'noc'}">${esc(txtResp(e,r.r))}</b></div><div><span>Resposta correta</span><b>${esc(txtCerta(e))}</b></div></div>
      ${armada(e.u)}</div>`:'<div id="emsg"></div>'}
    <div class="row">
    <button class="act ghost" id="ant" ${pos<=0?'disabled':''}>Anterior</button><button class="act" id="prox" ${pos>=L.length-1?'disabled':''}>Próximo ▸</button></div><div id="fimbox"></div>
    ${fin?`<div class="fim"><b>Treino corrigido.</b> Veja a sua nota e a correção de cada leitura no relatório logo abaixo. Clique nos números para rever cada questão corrigida. <button class="act" id="verrel" style="margin-top:10px">Ver relatório</button> <button class="act ghost" id="denovo" style="margin-top:10px">Treinar de novo</button></div>`
      :''}`;
-  if(!fin){document.querySelectorAll('#ex input.nn').forEach(a=>{a.oninput=()=>{rascunho();caixaFim()};a.onkeydown=ev=>{if(ev.key==='Enter'&&pos<L.length-1)ir(L[pos+1])}});caixaFim()}
+  if(!revQ(S.i)){document.querySelectorAll('#ex input.nn').forEach(a=>{a.oninput=()=>{rascunho();caixaFim()};a.onkeydown=ev=>{if(ev.key==='Enter')conferirQ()}});$('confQ').onclick=conferirQ}
+  if(!fin)caixaFim();
+  if(!fin&&S.conf&&S.conf[S.i]&&$('emsg')===null){const fb=document.querySelector('#ex .fb');if(fb){const b=document.createElement('button');b.className='act ghost';b.textContent='Tentar de novo esta leitura';b.style.margin='12px 0 0';b.style.display='block';b.onclick=()=>{delete S.conf[S.i];delete S.res[S.i];if(S.draft)delete S.draft[S.i];salvar();render()};fb.appendChild(b)}}
   if(fin)$('denovo').onclick=()=>{if(!confirm('Apagar as respostas e começar o treino de novo?'))return;novo();S.tentouEnvio=0;msgEnvio('');salvar();render();window.scrollTo(0,0)};
   if(fin)$('verrel').onclick=()=>$('relpanel').scrollIntoView({behavior:'smooth',block:'start'});
   $('ant').onclick=()=>ir(L[pos-1]);$('prox').onclick=()=>ir(L[pos+1]);
@@ -370,10 +374,12 @@ function render(){const e=E[S.i],r=S.res[S.i],done=!!r;placar();grade();
 function ir(i){if(i===undefined)return;if(!S.final&&$('an'))rascunho();parar();S.i=i;render();$('ex').scrollIntoView({behavior:'smooth',block:'start'})}
 
 /* guarda o que o aluno digitou, sem precisar salvar; conta como respondida quando a fração está completa */
-function rascunho(){if(S.final||!$('an'))return;const e=E[S.i];if(e.tipo!=='fr')return;const r={w:$('aw').value.trim(),n:$('an').value.trim(),d:$('ad').value.trim()};
+function rascunho(){if(S.final||!$('an')||(S.conf&&S.conf[S.i]))return;const e=E[S.i];if(e.tipo!=='fr')return;const r={w:$('aw').value.trim(),n:$('an').value.trim(),d:$('ad').value.trim()};
   S.draft=S.draft||{};S.draft[S.i]=r;const completa=(r.n===''&&r.w!=='')||(r.n!==''&&r.d!=='');const v=completa?parseFr(r):null;
   if(v){const igual=Math.abs(v.u-e.r)<1e-9;S.res[S.i]={ok:igual&&v.simp,r,quase:igual&&!v.simp}}else delete S.res[S.i];
   salvar();placar();grade()}
+function conferirQ(){rascunho();if(!S.res[S.i]){$('qmsg').innerHTML='<p class="erro">Escreva a resposta completa (numerador e denominador) antes de conferir.</p>';$('an').focus();return}
+  S.conf=S.conf||{};S.conf[S.i]=true;parar();salvar();render()}
 function caixaFim(){const B=$('fimbox');if(!B)return;const falta=S.ord.filter(i=>!S.res[i]).map(num).sort((a,b)=>a-b);
   if(falta.length){B.innerHTML=`<p class="eq" style="margin-top:10px">Respondidas: ${N-falta.length} de ${N}. Faltam: ${falta.join(', ')}. O botão <b>Corrigir</b> aparece quando todas estiverem respondidas.</p>`;return}
   B.innerHTML=`<div class="fim"><b>Você respondeu as ${N} leituras.</b> Confira as respostas clicando nos números lá em cima. Quando quiser, clique em Corrigir.<br><button class="act" id="finalizar" style="margin-top:10px">Corrigir</button></div>`;
@@ -412,7 +418,7 @@ $('rel').addEventListener('click',ev=>{const b=ev.target.closest('[data-ir]');if
 
 $('chips').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;S.f=+b.dataset.f;chips();const L=lista();if(!L.includes(S.i)){parar();S.i=L[0]}render()});
 $('grade').addEventListener('click',ev=>{const b=ev.target.closest('button');if(b)ir(+b.dataset.i)});
-const novo=()=>{t0=null;S.final=false;S.draft={};S.out={};S.away={};S.foraEm=0;S.tent=(S.tent||1)+(Object.keys(S.res).length?1:0);S.res={};S.t={};S.v=sortearValores();E=montar(S.v);S.ord=embaralhar([...Array(N).keys()]);S.f=-1;S.i=S.ord[0]};
+const novo=()=>{t0=null;S.final=false;S.draft={};S.conf={};S.out={};S.away={};S.foraEm=0;S.tent=(S.tent||1)+(Object.keys(S.res).length?1:0);S.res={};S.t={};S.v=sortearValores();E=montar(S.v);S.ord=embaralhar([...Array(N).keys()]);S.f=-1;S.i=S.ord[0]};
 if($('zerar'))$('zerar').onclick=()=>{if(confirm('Apagar todas as respostas e os tempos e começar de novo, com novas medidas e outra ordem?')){novo();S.tentouEnvio=0;msgEnvio('');salvar();chips();render();window.scrollTo(0,0)}};
 $('trocar').onclick=()=>{if(confirm('Trocar de aluno apaga tudo o que foi respondido neste aparelho. Continuar?')){novo();S.enviado=0;S.tentouEnvio=0;S.nome='';S.turma='';salvar();tela();window.scrollTo(0,0)}};
 function tela(){const ok=!!S.nome;$('inicio').hidden=ok;$('painel').hidden=!ok;$('ex').hidden=!ok;
@@ -493,7 +499,7 @@ tela();salvar();
 </script>
 <button class="act" id="rascBtn" hidden aria-expanded="false" aria-controls="rascOv">✏️ Folha de rascunho</button>
 <div id="rascOv" hidden role="dialog" aria-label="Folha de rascunho">
-  <div class="rascbar"><b>Folha de rascunho</b><span>Usar a folha não conta como sair da prova.</span><button class="act" id="rascFechar">◂ Voltar para a prova</button></div>
+  <div class="rascbar"><b>Folha de rascunho</b><span>Faça as contas aqui e volte para o treino.</span><button class="act" id="rascFechar">◂ Voltar para o treino</button></div>
   <iframe id="rascIf" title="Folha de rascunho com lápis, borracha e calculadora"></iframe>
 </div>
 <script>$('rascBtn').onclick=()=>rascunhoAbrir(true);$('rascFechar').onclick=()=>rascunhoAbrir(false);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&rascAberto)rascunhoAbrir(false)});
