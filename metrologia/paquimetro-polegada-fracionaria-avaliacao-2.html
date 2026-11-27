@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="color-scheme" content="light dark">
+<title>Avaliação 2: Polegada Fracionária</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Barlow:wght@400;600;700&family=Big+Shoulders+Display:wght@700;800&display=swap">
+<style>
+:root{--bg:#E4EAEF;--panel:#F5F8FA;--ink:#14202B;--muted:#4F5F6C;--line:#B8C4CE;--accent:#A85400;--accent-ink:#fff;--ok:#17703F;--bad:#B3261E;--zone:#CFE6D8;--steel:#1D3B5C;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}}
+:root[data-theme="dark"]{--bg:#0D1926;--panel:#132638;--ink:#E8EEF3;--muted:#98AAB9;--line:#2A4258;--accent:#F2A93B;--accent-ink:#1a1204;--ok:#5FD08F;--bad:#FF8A80;--zone:#1B4A33;--steel:#0A2238}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font:400 17px/1.55 Barlow,'Arial Narrow',Arial,sans-serif}
+main{max-width:1000px;margin:0 auto;padding:20px 16px 48px}
+h1{font:800 clamp(36px,8vw,60px)/.95 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:0 0 6px}
+h2{font:800 clamp(26px,5vw,36px)/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;margin:34px 0 10px;letter-spacing:.01em}
+h3{font:700 22px/1.1 'Big Shoulders Display','Arial Narrow',sans-serif;margin:18px 0 6px;letter-spacing:.02em}
+.sub{color:var(--muted);margin:0 0 18px;max-width:66ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.big{font:800 clamp(48px,12vw,88px)/.9 'Big Shoulders Display','Arial Narrow',sans-serif;font-variant-numeric:tabular-nums}
+.big small{font-size:.38em;margin-left:.2em;color:var(--muted)}
+.stats{display:flex;gap:24px;flex-wrap:wrap;margin-bottom:12px;color:var(--muted)}
+.stats b{display:block;font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.row{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:12px}
+button.act,a.act{display:inline-flex;align-items:center;justify-content:center;font:700 19px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:13px 22px;min-height:48px;border-radius:4px;border:2px solid var(--accent);background:var(--accent);color:var(--accent-ink);cursor:pointer;text-decoration:none}
+button.ghost,a.ghost{background:transparent;color:var(--ink);border-color:var(--line)}
+button:disabled{opacity:.45;cursor:not-allowed}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible,[tabindex]:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.tabs{display:flex;margin:16px 0 12px;border:2px solid var(--ink);border-radius:4px;overflow:hidden;width:fit-content;max-width:100%}
+.tabs button{font:700 20px/1 'Big Shoulders Display','Arial Narrow',sans-serif;letter-spacing:.03em;padding:11px 18px;min-height:48px;background:transparent;color:var(--ink);border:0;cursor:pointer}
+.tabs button+button{border-left:2px solid var(--ink)}
+.tabs button[aria-selected="true"]{background:var(--ink);color:var(--bg)}
+.fb{margin-top:12px;padding:12px 14px;border-left:6px solid var(--line);background:var(--bg);border-radius:0 4px 4px 0}
+.fb.ok{border-color:var(--ok)}.fb.no{border-color:var(--bad)}
+.okc{color:var(--ok);font-weight:700}.noc{color:var(--bad);font-weight:700}
+input[type=text],input[type=number],select,textarea{font:600 18px/1.2 Barlow,Arial,sans-serif;padding:10px 12px;min-height:46px;border:2px solid var(--line);border-radius:4px;background:var(--bg);color:var(--ink);max-width:100%}
+textarea{width:100%;min-height:90px;resize:vertical}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:600;color:var(--muted);font-size:15px}
+.num{font-variant-numeric:tabular-nums}
+@media (max-width:640px){.tabs{width:100%}.tabs button{flex:1;padding:11px 6px}.row .act{flex:1 1 auto}}
+@media (prefers-reduced-motion:no-preference){.fb{animation:pop .18s ease-out}@keyframes pop{from{transform:translateY(4px);opacity:.4}}}
+@media print{.fp-rule,.noprint{display:none!important}body{background:#fff;color:#000}}
+
+/* Cabeçalho comum do site Fazenda de Projetos */
+.fp-in{max-width:1000px;margin-inline:auto;padding:14px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px 20px;flex-wrap:wrap}
+.fp-brand{font:800 27px/1 'Big Shoulders Display','Arial Narrow',Impact,sans-serif;letter-spacing:.04em;text-transform:uppercase;text-decoration:none;color:var(--ink)}
+.fp-brand b{color:var(--accent);font-weight:800}
+.fp-onde{font:600 13.5px/1.2 Barlow,'Arial Narrow',Arial,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.fp-rule{height:24px;border-block:1px solid var(--line);
+  background-image:linear-gradient(90deg,var(--ink) 0 2px,transparent 2px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px),linear-gradient(90deg,var(--muted) 0 1px,transparent 1px);
+  background-size:80px 100%,40px 62%,8px 36%;background-repeat:repeat-x;background-position:16px 0}
+.trilha{display:flex;gap:8px;flex-wrap:wrap;margin:28px 0 0;padding-top:16px;border-top:1px solid var(--line)}
+.trilha a{font:600 15px/1.2 Barlow,sans-serif;color:var(--ink);text-decoration:none;border:1px solid var(--line);border-radius:4px;padding:10px 12px;min-height:44px;display:inline-flex;align-items:center;background:var(--panel)}
+.trilha a[aria-current]{border-color:var(--accent);color:var(--accent);font-weight:700}
+.trilha .t{flex-basis:100%;font:600 13px/1 Barlow,sans-serif;letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+
+/* Página */
+.top{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-end;justify-content:space-between}
+.chips{display:flex;gap:6px;flex-wrap:wrap;margin:14px 0 10px}
+.chips button{font:600 15px/1 Barlow,sans-serif;padding:9px 12px;min-height:40px;border:1.5px solid var(--line);border-radius:20px;background:var(--panel);color:var(--ink);cursor:pointer}
+.chips button[aria-pressed="true"]{background:var(--ink);color:var(--bg);border-color:var(--ink)}
+.grade{display:grid;grid-template-columns:repeat(auto-fill,minmax(44px,1fr));gap:6px;margin-bottom:16px}
+.grade button{font:800 18px/1 'Big Shoulders Display',sans-serif;min-height:44px;border:1.5px solid var(--line);border-radius:4px;background:var(--panel);color:var(--ink);cursor:pointer;font-variant-numeric:tabular-nums}
+.grade button.ok{background:var(--ok);border-color:var(--ok);color:#fff}
+.grade button.no{background:var(--bad);border-color:var(--bad);color:#fff}
+.grade button[aria-current="true"]{outline:3px solid var(--accent);outline-offset:1px}
+.ex{background:var(--panel);border:1px solid var(--line);border-radius:6px;padding:18px}
+.ex .cab{display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;color:var(--muted);font:600 14px/1.2 Barlow,sans-serif;letter-spacing:.08em;text-transform:uppercase;margin-bottom:8px}
+.ex h2{margin:0 0 10px;font-size:clamp(28px,5vw,40px)}
+.desenho{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px;margin:10px 0 14px}
+.desenho svg{display:block;width:100%;height:auto;max-height:46dvh;margin:0 auto;color:var(--ink)}
+.desenho text{font-family:Barlow,'Arial Narrow',Arial,sans-serif}
+.en{font-size:19px;font-weight:600;margin:0 0 12px}
+.alts{display:flex;flex-direction:column;gap:6px}
+.alt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:2px solid var(--line);border-radius:4px;background:var(--bg);cursor:pointer;min-height:46px}
+.alt input{margin-top:4px;width:18px;height:18px;flex:none}
+.alt.c{border-color:var(--ok)}.alt.x{border-color:var(--bad)}
+.resp{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.resp input{width:9ch;font-weight:800;font-size:24px}
+.placar{display:flex;gap:20px;flex-wrap:wrap;color:var(--muted)}
+.placar b{display:block;font:800 30px/1 'Big Shoulders Display',sans-serif;color:var(--ink)}
+.erro{color:var(--bad);font-weight:600}
+.s-ink{stroke:var(--ink)}.s-mut{stroke:var(--muted)}.s-acc{stroke:var(--accent)}
+.f-ink{fill:var(--ink)}.f-mut{fill:var(--muted)}.f-acc{fill:var(--accent)}.f-ok{fill:var(--ok)}.f-bad{fill:var(--bad)}
+.f-steel{fill:#C9D2DE}.f-zone{fill:var(--zone)}.f-out{fill:var(--bad);opacity:.18}.f-panel{fill:var(--panel)}.f-bg{fill:var(--bg)}
+.f-lcd{fill:#0B1620}.f-lcdtxt{fill:#9FF0C2}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .f-steel{fill:#4A6178}}
+:root[data-theme="dark"] .f-steel{fill:#4A6178}
+.tempo{font-variant-numeric:tabular-nums}
+.par{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:10px 0 0}
+.par div{background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:8px 10px}
+.par span{display:block;font:600 13px/1.2 Barlow,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.par b{font-weight:700}
+.fim{background:var(--ink);color:var(--bg);border-radius:6px;padding:16px 18px;margin-top:12px}
+.fim a{color:var(--bg)}
+.resumo{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin:12px 0}
+.resumo div{background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:10px 12px;color:var(--muted);font-size:14px}
+.resumo b{display:block;font:800 30px/1.05 'Big Shoulders Display',sans-serif;color:var(--ink);font-variant-numeric:tabular-nums}
+.listas p{margin:6px 0}
+.rtab{width:100%;border-collapse:collapse;font-size:15px;margin-top:10px}
+.rtab th{text-align:left;font:600 13px/1.2 Barlow,sans-serif;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);padding:8px;border-bottom:2px solid var(--line)}
+.rtab td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+.rtab td.n{font:800 20px/1 'Big Shoulders Display',sans-serif;white-space:nowrap}
+.rtab .ctx{display:block;color:var(--muted);font-size:13.5px;margin-top:2px}
+.rtab tr.no td.res{color:var(--bad);font-weight:700}.rtab tr.ok td.res{color:var(--ok);font-weight:700}
+.rtab tr.nr td{color:var(--muted)}
+.rtab button.link{font:inherit;text-align:left;background:none;border:0;padding:0;color:var(--accent);text-decoration:underline;cursor:pointer}
+@media (max-width:720px){
+ .par{grid-template-columns:1fr}
+ .rtab thead{display:none}
+ .rtab tr{display:grid;grid-template-columns:auto 1fr;gap:2px 10px;padding:10px 0;border-bottom:1px solid var(--line)}
+ .rtab td{border:0;padding:2px 0}
+ .rtab td.n{grid-row:span 5}
+ .rtab td[data-l]::before{content:attr(data-l) ': ';font-weight:600;color:var(--muted)}
+}
+.aluno{display:flex;justify-content:space-between;align-items:center;gap:8px 16px;flex-wrap:wrap;margin-bottom:10px;font-size:16px}
+.aluno b{font-size:18px}
+.aluno button{font:600 14px/1 Barlow,sans-serif;background:none;border:0;color:var(--accent);text-decoration:underline;cursor:pointer;padding:6px 0}
+.inicio{max-width:620px}
+.inicio input{width:100%}
+.inicio ul{padding-left:20px;margin:6px 0 14px}.inicio li{margin-bottom:4px}
+[hidden]{display:none!important}
+.dica{background:var(--zone);border-radius:4px;padding:8px 12px;margin:0 0 10px;font-size:16px}
+.dica b{font-weight:700}
+.nivel{display:inline-block;font:700 14px/1 Barlow,sans-serif;letter-spacing:.08em;text-transform:uppercase;background:var(--accent);color:var(--accent-ink);padding:6px 10px;border-radius:3px;margin-bottom:8px}
+
+/* Paquímetro em polegada */
+.desenho.paq{background:#1D3B5C;border-color:#1D3B5C;padding:8px 4px}
+.desenho.paq svg{max-height:40dvh}
+.resp .un{font:800 28px/1 'Big Shoulders Display',sans-serif;color:var(--muted)}
+.conta{display:inline-grid;grid-template-columns:auto auto auto;gap:2px 10px;align-items:baseline;padding:10px 16px;border-radius:6px;background:var(--panel);border:1px solid var(--line);margin-top:10px}
+.conta .tt{grid-column:1/-1;font-size:13px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.conta .op{font:800 26px/1.1 'Big Shoulders Display',sans-serif;color:var(--muted);text-align:right}
+.conta .v{font:800 30px/1.1 'Big Shoulders Display',sans-serif;font-variant-numeric:tabular-nums;text-align:right}
+.conta .lb{font-size:14px;color:var(--muted)}
+.conta hr{grid-column:1/-1;width:100%;border:0;border-top:3px solid var(--ink);margin:2px 0}
+
+.fin{display:inline-flex;align-items:center;gap:8px}
+.fin .fstack{display:inline-flex;flex-direction:column;align-items:center;gap:4px}
+.fin .fstack i{display:block;width:100%;height:3px;background:var(--ink);border-radius:2px}
+input.nn{font:800 30px/1 'Big Shoulders Display',sans-serif;min-height:46px;padding:4px 6px;border:2px solid var(--ink);border-radius:4px;background:var(--bg);color:var(--ink);text-align:center}
+input.nn.w{width:2.6ch;font-size:38px;min-height:54px}
+input.nn.f{width:4ch}
+.lbl2{font-size:14px;color:var(--muted)}
+
+/* Correção bem visível: verde com ✓ quando acerta, vermelho com ✗ quando erra */
+.fb.ok,.fb.no{border-left-width:8px;padding:14px 16px;display:flow-root}
+.fb.ok{background:color-mix(in srgb,var(--ok) 13%,var(--bg))}
+.fb.no{background:color-mix(in srgb,var(--bad) 12%,var(--bg))}
+.fb.ok::before,.fb.no::before{content:'✓';float:left;width:58px;height:58px;border-radius:50%;background:#17703F;color:#fff;font:800 38px/58px Arial,sans-serif;text-align:center;margin:0 14px 6px 0}
+.fb.no::before{content:'✗';background:#B3261E}
+.fb.ok>strong:first-child,.fb.ok>b:first-child{color:#17703F;font-size:24px}
+.fb.no>strong:first-child,.fb.no>b:first-child{color:#B3261E;font-size:24px}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .fb.ok>strong:first-child,:root:not([data-theme="light"]) .fb.ok>b:first-child{color:var(--ok)}:root:not([data-theme="light"]) .fb.no>strong:first-child,:root:not([data-theme="light"]) .fb.no>b:first-child{color:var(--bad)}}
+.conta .m.ok,.conta .m.no{color:#fff;border-radius:12px;padding:3px 9px;font-size:14px;white-space:nowrap}
+.conta .m.ok{background:#17703F}.conta .m.no{background:#B3261E}
+.par b.okc::before{content:'✓ ';}.par b.noc::before{content:'✗ ';}
+.envia{font-weight:700;font-size:18px}
+.grade button.feito{background:var(--ink);border-color:var(--ink);color:var(--bg)}
+.gravada{margin:12px 0;padding:12px 14px;border-left:6px solid var(--ink);background:var(--panel);border-radius:4px;font-size:18px}
+.provagrid{display:block}
+.calc{margin-top:14px;background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:12px;max-width:340px}
+.calc .ct{font:700 14px/1 Barlow,sans-serif;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+.cvis{min-height:22px;font:600 17px/1.2 Barlow,sans-serif;color:var(--muted);text-align:right;word-break:break-all}
+.cres{font:800 38px/1.1 'Big Shoulders Display',sans-serif;text-align:right;margin-bottom:10px;font-variant-numeric:tabular-nums;word-break:break-all}
+.cbt{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.cbt button{min-height:52px;font:800 24px/1 'Big Shoulders Display',sans-serif;border:1.5px solid var(--line);border-radius:6px;background:var(--bg);color:var(--ink);cursor:pointer}
+.cbt button.cop{background:color-mix(in srgb,var(--accent) 16%,var(--bg))}.cbt button.cfn{color:var(--muted)}
+.cbt button.ceq{background:var(--accent);color:var(--accent-ink);border-color:var(--accent)}
+.cbt button:active{transform:translateY(1px)}
+@media (min-width:1100px){main{max-width:1320px}.provagrid{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:16px;align-items:start}.calc{position:sticky;top:12px;margin-top:14px}}
+.grade button.meio{background:#9A6700;border-color:#9A6700;color:#fff}
+.fb.meio{border-left-color:#9A6700}
+#rascBtn{position:fixed;left:16px;bottom:16px;z-index:40;box-shadow:0 4px 14px rgba(0,0,0,.25)}
+#rascOv{position:fixed;inset:0;z-index:100;background:#fdfdfb;display:flex;flex-direction:column}
+#rascOv[hidden]{display:none}
+.rascbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding:8px 14px;background:var(--ink);color:var(--bg)}
+.rascbar b{font:800 22px/1 'Big Shoulders Display',sans-serif;letter-spacing:.02em}.rascbar span{opacity:.8;font-size:15px;flex:1}
+#rascIf{flex:1;width:100%;border:0;display:block}
+@media print{#rascBtn,#rascOv{display:none!important}}
+</style>
+</head>
+<body>
+<header class="fp-top">
+  <div class="fp-in"><a class="fp-brand" href="../index.html">Fazenda <b>de Projetos</b></a><span class="fp-onde">Metrologia · Paquímetro</span></div>
+  <div class="fp-rule" aria-hidden="true"></div>
+</header>
+<main>
+<div class="top">
+  <div><span class="nivel">Avaliação 2</span><h1>Avaliação 2: Paquímetro em Polegada Fracionária</h1>
+  <p class="sub" style="margin-bottom:0">Leitura do paquímetro em polegada fracionária. São 25 leituras sorteadas para você entre as 120 da revisão: em algumas a <b style="color:#FF2E93">linha rosa</b> mostra o traço do nônio que coincide; nas outras, você descobre o traço. Escreva as respostas como fração <b>simplificada</b>. Você pode avançar, voltar e mudar qualquer resposta até clicar em <b>Salvar e enviar ao professor</b>. Depois disso aparecem a correção e a nota, e o resultado vai sozinho para o professor.</p></div>
+</div>
+<section class="panel inicio" id="inicio" style="margin-top:14px">
+  <h2 style="margin-top:0">Antes de começar</h2>
+  <ul>
+    <li>São 25 leituras do paquímetro, sorteadas só para você entre as 120 da revisão. Cada aluno recebe leituras diferentes.</li>
+    <li>Escreva a fração nas caixinhas: polegadas inteiras, numerador e denominador. Simplifique a fração: com o valor certo mas sem simplificar, a questão vale <b>meio ponto</b>.</li>
+    <li>Escreva a resposta e passe para a próxima. A resposta fica guardada sozinha: você pode avançar, voltar e mudar quando quiser.</li><li>Quando responder as 25, revise e clique em <b>Salvar e enviar ao professor</b>. Só então aparecem a correção e a nota, e não dá mais para mudar.</li><li>Use a calculadora da página ou a <b>✏️ Folha de rascunho</b> (botão no canto de baixo) para fazer as contas. Usar a folha não conta como sair da tela.</li>
+    <li>Fique na tela da prova. Se você sair (trocar de aba, de janela ou de aplicativo), isso fica registrado no relatório do professor.</li>
+    <li>Ao enviar, o resultado e o relatório em PDF vão <b>sozinhos para o professor</b>. Você também pode baixar o PDF.</li>
+  </ul>
+  <label class="f">Nome completo<input type="text" id="nome" autocomplete="name" maxlength="60" autocapitalize="characters" style="text-transform:uppercase"></label>
+  <label class="f" style="margin-top:10px">Número de chamada<input type="text" id="turma" inputmode="numeric" maxlength="3" style="max-width:8ch"></label>
+  <div id="imsg" aria-live="polite"></div>
+  <div class="row"><button class="act" id="comecar">Começar a avaliação</button></div>
+</section>
+<section class="panel" id="painel" style="margin-top:14px" hidden>
+  <div class="aluno"><span>Aluno: <b id="anome"></b> <span id="aturma" style="color:var(--muted)"></span></span><button id="trocar">Não é você? Trocar de aluno</button></div>
+  <div class="placar" id="placar"></div>
+  <div class="chips" id="chips" role="group" aria-label="Filtrar por tema"></div>
+  <div class="grade" id="grade" aria-label="Exercícios"></div>
+</section>
+<div class="provagrid"><section class="ex" id="ex" aria-live="polite" style="margin-top:14px" hidden></section>
+<aside class="calc" id="calc" aria-label="Calculadora" hidden><div class="ct">Calculadora</div><div class="cvis" id="cexp" aria-live="polite"></div><div class="cres" id="cres">0</div>
+<div class="cbt"><button data-k="C" class="cfn">C</button><button data-k="(" class="cfn">(</button><button data-k=")" class="cfn">)</button><button data-k="/" class="cop">÷</button>
+<button data-k="7">7</button><button data-k="8">8</button><button data-k="9">9</button><button data-k="*" class="cop">×</button>
+<button data-k="4">4</button><button data-k="5">5</button><button data-k="6">6</button><button data-k="-" class="cop">−</button>
+<button data-k="1">1</button><button data-k="2">2</button><button data-k="3">3</button><button data-k="+" class="cop">+</button>
+<button data-k="0">0</button><button data-k=",">,</button><button data-k="B" class="cfn" aria-label="Apagar">⌫</button><button data-k="=" class="ceq">=</button></div></aside></div>
+<section class="panel" id="relpanel" style="margin-top:14px" hidden>
+  <h2 style="margin-top:0">Relatório</h2>
+  <p id="rcab" style="margin:0 0 4px"></p>
+  <div id="rel"></div>
+  <div id="rmsg" aria-live="polite"></div>
+  <div id="envio" aria-live="polite"></div>
+  <div class="row noprint"><button class="act" id="pdf">Baixar relatório em PDF</button><button class="act ghost" id="reenviar" hidden>Enviar de novo ao professor</button></div>
+  
+</section>
+<nav class="trilha noprint" aria-label="Polegada fracionária"><span class="t">Polegada fracionária</span><a href="regua-polegada-fracionaria.html">Simulador da régua</a><a href="paquimetro-polegada-fracionaria.html">Simulador do paquímetro</a><a href="paquimetro-polegada-fracionaria-revisao.html">Revisão (120 leituras)</a><a href="paquimetro-polegada-fracionaria-avaliacao-leituras.html">Avaliação: 25 leituras</a><a href="paquimetro-polegada-fracionaria-recuperacao.html">Recuperação</a><a href="paquimetro-polegada-fracionaria-treino-120.html">Treino: 120 leituras</a><a href="paquimetro-polegada-fracionaria-avaliacao-2.html" aria-current="page">Avaliação 2</a><a href="../index.html#d-metrologia">Voltar à trilha de Metrologia</a></nav>
+</main>
+<script src="../vendor/jspdf.umd.min.js"></script>
+<script>
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rnd=(a,b)=>a+Math.floor(Math.random()*(b-a+1));
+const embaralhar=a=>{a=[...a];for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a};
+const L1=j=>String.fromCharCode(65+j);
+const gcd=(a,b)=>b?gcd(b,a%b):Math.abs(a);
+
+/* ===== frações: valores em 1/128 de polegada (inteiros) ===== */
+function fTxt(u){const w=Math.floor(u/128);let n=u%128,d=128;if(!n)return w+'"';const g=gcd(n,d);n/=g;d/=g;return (w?w+' ':'')+n+'/'+d+'"'}
+function rawTxt(u,den){const w=Math.floor(u/den),n=u%den;return n?(w?w+' ':'')+n+'/'+den+'"':w+'"'}
+function cadeia(n,d){let s=n+'/'+d;while(n&&n%2===0){n/=2;d/=2;s+=' = '+n+'/'+d}return s}
+function explicaPaq(u){const n=Math.floor(u/8),r=u%8,t=u%128;
+  return `Escala fixa: ${rawTxt(n,16)} = ${rawTxt(n*8,128)}. Nônio: ${r?r+'º traço = '+r+'/128"':'o zero coincide'}. Soma: ${rawTxt(n*8,128)} + ${r}/128" = ${rawTxt(u,128)}${t&&t%2===0?' → '+cadeia(t,128):''}. Leitura ${fTxt(u)}.`}
+function explicaRegua(u16){const w=Math.floor(u16/16),n=u16%16;
+  return `${w?w+'" inteira'+(w>1?'s':'')+' + ':''}${n} tracinho${n===1?'':'s'} de 1/16" = ${n}/16"${n%2===0&&n?' → '+cadeia(n,16):''}. Leitura ${fTxt(u16*8)}.`}
+
+/* desenho do paquímetro (igual ao simulador) */
+const FD=8,PPU=7.5,LINE=330,W=1500,BX0=22,BX1=1478,VD=(FD-1)*PPU,VL=8*VD;
+function paq(u,rosa){const cam=Math.min(u-640/PPU,Math.floor(u/128)*128-80/PPU),z=(u-cam)*PPU;let h=`<rect x="20" y="20" width="1460" height="310" rx="6" fill="#C9CBCD" stroke="#373435" stroke-width="5"/><g clip-path="url(#cp${u})">`;
+  const first=Math.max(0,Math.floor(cam/FD)-1),last=Math.ceil((cam+W/PPU)/FD)+1;
+  for(let m=first;m<=last;m++){const x=(m*FD-cam)*PPU;if(x<BX0||x>BX1)continue;const L=m%16===0?225:m%8===0?180:m%4===0?145:m%2===0?112:82;
+    h+=`<line x1="${x}" x2="${x}" y1="${LINE-L}" y2="${LINE}" stroke="#2A2829" stroke-width="${m%16===0?5:3.4}"/>`;
+    if(m%16===0){const lab=m/16,half=66*0.32*String(lab).length+4;if(x-half>BX0+6&&x+half<BX1-6)h+=`<text x="${x}" y="${LINE-L-10}" text-anchor="middle" font-size="66" font-weight="900" font-family="'Arial Black',Arial,sans-serif" fill="#14202B">${lab}</text>`}}
+  const inch=Math.floor(u/128),xi=(inch*128-cam)*PPU;
+  if(cam>0&&xi<BX0+40)h+=`<rect x="${BX0+8}" y="${BX0+8}" width="150" height="54" rx="6" fill="#14202B" opacity=".85"/><text x="${BX0+83}" y="${BX0+46}" text-anchor="middle" font-size="34" font-weight="700" font-family="Arial,sans-serif" fill="#F2A93B">◂ ${inch}"</text>`;
+  h+='</g>';const x0=z-110,x1=z+VL+110,yb=LINE+230;
+  h+=`<rect x="${x0}" y="${LINE}" width="${x1-x0}" height="230" fill="#E6E7E8"/><path d="M${x0} ${LINE} V${yb-6} Q${x0} ${yb} ${x0+6} ${yb} H${x1-6} Q${x1} ${yb} ${x1} ${yb-6} V${LINE}" fill="none" stroke="#373435" stroke-width="5"/>`;
+  for(let k=0;k<=8;k++){const x=z+k*VD,lb=k%4===0;h+=`<line x1="${x}" x2="${x}" y1="${LINE}" y2="${LINE+(lb?120:80)}" stroke="#2A2829" stroke-width="${k===0?5:3.4}"/>`;
+    if(lb)h+=`<text x="${x}" y="${LINE+170}" text-anchor="middle" font-size="40" font-weight="700" font-family="Arial,sans-serif" fill="#2A2829">${k}</text>`}
+  h+=`<text x="${x0+14}" y="${LINE+214}" text-anchor="start" font-size="26" font-family="Arial,sans-serif" fill="#4A4849">1/128 in</text>`;
+  if(rosa){const xa=z+(u%FD)*VD;h+=`<line x1="${xa}" x2="${xa}" y1="${LINE-200}" y2="${LINE+118}" stroke="#FF2E93" stroke-width="7" opacity=".6"/><circle cx="${xa}" cy="${LINE+132}" r="11" fill="#FF2E93"/>`}
+  return `<svg viewBox="0 0 1500 600" role="img" aria-label="Paquímetro em polegada fracionária${rosa?', com o traço do nônio que coincide marcado em rosa':''}"><defs><clipPath id="cp${u}"><rect x="22" y="22" width="1456" height="306"/></clipPath></defs>${h}</svg>`}
+/* desenho da régua (igual ao simulador): u16 em 1/16" */
+function regua(u16){const X0=60,LN=250,PX=1880/96,xe=X0+u16*PX;let h='';
+  h+=`<rect x="${X0}" y="70" width="${xe-X0}" height="${LN-74}" fill="#8FA7BF" stroke="#24486E" stroke-width="4"/><text x="${X0+12}" y="104" font-size="28" font-family="Arial,sans-serif" fill="#14202B">peça</text>`;
+  h+=`<rect x="${X0-40}" y="40" width="40" height="${LN+110}" fill="#5C6670"/><rect x="${X0}" y="${LN}" width="${96*PX+20}" height="160" rx="4" fill="#D9DBDD" stroke="#373435" stroke-width="4"/>`;
+  for(let k=0;k<=96;k++){const x=X0+k*PX,L=k%16===0?110:k%8===0?86:k%4===0?66:k%2===0?50:36;
+    h+=`<line x1="${x}" x2="${x}" y1="${LN}" y2="${LN+L}" stroke="#2A2829" stroke-width="${k%16===0?4.5:2.6}"/>`;
+    if(k%16===0&&k>0&&k<96)h+=`<text x="${x}" y="${LN+148}" text-anchor="middle" font-size="40" font-weight="900" font-family="'Arial Black',Arial,sans-serif" fill="#14202B">${k/16}</text>`}
+  h+=`<line x1="${xe}" x2="${xe}" y1="60" y2="${LN+120}" stroke="#FF2E93" stroke-width="5" opacity=".85"/>`;
+  return `<svg viewBox="0 0 2000 430" role="img" aria-label="Régua em polegada com uma peça; a linha rosa marca o fim da peça">${h}</svg>`}
+
+/* ===== banco: as mesmas 120 leituras da página de revisão (mesma semente) ===== */
+function mulberry(a){return()=>{a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const BANK=(()=>{const R=mulberry(20261118),ri=(a,b)=>a+Math.floor(R()*(b-a+1)),used=new Set(),L=[];
+  const faixas=[[1,127,36],[129,255,32],[257,383,24],[385,511,16],[513,696,12]];
+  for(const [lo,hi,n] of faixas){let k=0,t=0;while(k<n&&t<5000){t++;const u=ri(lo,hi);if(used.has(u))continue;
+    if(u%FD===0&&R()<.8)continue;used.add(u);L.push(u);k++}}
+  for(let i=L.length-1;i>0;i--){const j=Math.floor(R()*(i+1));[L[i],L[j]]=[L[j],L[i]]}
+  return L.map((u,i)=>({n:i+1,u,traco:i%2===0}))})();
+const TEMAS=['Com o traço marcado','Descubra o traço'];
+/* sorteia 25 das 120: 13 com o traço marcado e 12 sem */
+function sortearValores(){const com=embaralhar(BANK.filter(q=>q.traco)).slice(0,13),sem=embaralhar(BANK.filter(q=>!q.traco)).slice(0,12);return com.concat(sem).map(q=>q.n)}
+function montar(v){return v.map(n=>{const q=BANK[n-1];return{tema:q.traco?0:1,u:q.u,rosa:q.traco,banco:n,tipo:'fr',r:q.u,
+  en:q.traco?'A linha rosa mostra o traço do nônio que coincide. Qual é a leitura do paquímetro?':'Ache o traço do nônio que coincide. Qual é a leitura do paquímetro?',exp:explicaPaq(q.u)}})}
+
+/* ===== estado ===== */
+const KEY='paq-pol-fr-av2-v1',N=25,NV=25;
+/* endereço do Google Apps Script do professor (planilha + PDF no Drive). Vazio = não envia. */
+const ENVIO_URL='https://script.google.com/macros/s/AKfycbyFB7_droCXROAI6XYOwXPQlW5S7BbAAkjhTChnu6u0_gRGSFc3YeC8m9vTUzGcc2Wi/exec';
+let S={f:-1,i:0,ord:[],res:{},t:{},v:[]},E=[];
+try{const s=JSON.parse(localStorage.getItem(KEY)||'null');
+  if(s&&Array.isArray(s.ord)&&s.ord.length===N&&Array.isArray(s.v)&&s.v.length===NV){S.ord=s.ord;S.res=s.res||{};S.t=s.t||{};S.v=s.v;S.nome=s.nome||'';S.turma=s.turma||'';S.tent=s.tent||1;S.enviado=s.enviado||0;S.out=s.out||{};S.away=s.away||{};S.foraEm=s.foraEm||0;S.foraQ=s.foraQ;S.final=!!s.final;S.draft=s.draft||{}}}catch(e){}
+S.nome=S.nome||'';S.turma=S.turma||'';S.out=S.out||{};S.away=S.away||{};S.foraEm=S.foraEm||0;
+if(!S.v.length){S.v=sortearValores();S.ord=embaralhar([...Array(N).keys()])}
+E=montar(S.v);
+S.i=S.ord.find(i=>!S.res[i])??S.ord[0];
+const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify({ord:S.ord,res:S.res,t:S.t,v:S.v,nome:S.nome,turma:S.turma,tent:S.tent||1,enviado:S.enviado||0,out:S.out,away:S.away,foraEm:S.foraEm||0,foraQ:S.foraQ,final:!!S.final,draft:S.draft||{}}))}catch(e){}};
+/* fração "w n/d" -> {u em 1/128 (pode não ser inteiro), simp} */
+function parseFr(r){if(!r)return null;const w=r.w===''?0:+r.w,n=r.n===''?0:+r.n,d=r.n===''?1:+r.d;
+  if([w,n,d].some(x=>isNaN(x)||x<0||!Number.isInteger(x))||d===0)return null;return{u:(w*d+n)*128/d,simp:n===0||(gcd(n,d)===1&&n<d)}}
+const frTxt=r=>{if(!r)return '—';const w=r.w===''?'':r.w,n=r.n;return (n!==''?(w?w+' ':'')+n+'/'+r.d:(w||'0'))+'"'};
+const lista=()=>S.ord.filter(i=>S.f<0||E[i].tema===S.f);
+const num=i=>S.ord.indexOf(i)+1;
+
+/* ===== tempo em cada exercício: conta só com a página aberta na frente e antes de responder ===== */
+let t0=null,tId=null;
+const iniciar=()=>{if(t0!==null||!S.nome||S.res[S.i]||document.hidden)return;t0=performance.now();tId=S.i};
+const parar=()=>{if(t0===null)return;S.t[tId]=(S.t[tId]||0)+(performance.now()-t0);t0=null;salvar()};
+const gasto=i=>(S.t[i]||0)+(t0!==null&&tId===i?performance.now()-t0:0);
+const ftempo=ms=>{const s=Math.round(ms/1000);if(s<60)return s+' s';const m=Math.floor(s/60),r=s%60;if(m<60)return m+' min'+(r?' '+String(r).padStart(2,'0')+' s':'');return Math.floor(m/60)+' h '+String(m%60).padStart(2,'0')+' min'};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)parar();else iniciar()});
+window.addEventListener('pagehide',parar);
+setInterval(()=>{if(t0!==null){parar();iniciar()}},1000);
+/* folha de rascunho (abre dentro da prova; não conta como sair da tela) */
+let rascAberto=false;
+function rascunhoAbrir(on){rascAberto=on;const o=$('rascOv');if(on&&!$('rascIf').src)$('rascIf').src='../rascunho/index.html';o.hidden=!on;document.body.style.overflow=on?'hidden':'';$('rascBtn').setAttribute('aria-expanded',on);if(!on)$('rascBtn').focus()}
+/* saídas da tela: a prova ficou oculta ou perdeu o foco por 1 s ou mais (troca de aba, janela ou aplicativo) */
+const MIN_FORA=1000;let vistoFoco=false;
+function rastrear(){const t=Date.now(),on=!!S.nome&&!S.final;
+  if(document.hasFocus())vistoFoco=true;const aqui=!document.hidden&&(document.hasFocus()||!vistoFoco||rascAberto);
+  if(S.foraEm&&(aqui||!on)){const d=t-S.foraEm,i=S.foraQ;if(d<MIN_FORA){S.out[i]=Math.max(0,(S.out[i]||0)-1);if(!S.out[i])delete S.out[i]}else S.away[i]=(S.away[i]||0)+d;S.foraEm=0;salvar()}
+  if(on&&!aqui&&!S.foraEm){S.foraEm=t;S.foraQ=S.i;S.out[S.i]=(S.out[S.i]||0)+1;salvar()}}
+['visibilitychange'].forEach(ev=>document.addEventListener(ev,rastrear));['blur','focus','pagehide','pageshow'].forEach(ev=>window.addEventListener(ev,rastrear));
+const somaO=o=>Object.values(o||{}).reduce((a,v)=>a+(+v||0),0);
+const fmtT=ms=>{const s=Math.round((+ms||0)/1000),m=Math.floor(s/60);return m+':'+String(s%60).padStart(2,'0')};
+const saiuQ=i=>S.out[i]?`Sim, ${S.out[i]}x (${fmtT(S.away[i])} fora)`:'Não';
+const saiuTot=()=>{const n=somaO(S.out);return n?`Sim, ${n} ${n===1?'vez':'vezes'} (${fmtT(somaO(S.away))} fora)`:'Não'};
+
+/* ===== respostas por extenso ===== */
+const txtResp=(e,r)=>e.tipo==='fr'?frTxt(r):e.alts[r];
+const txtCerta=e=>e.tipo==='fr'?fTxt(e.r):e.alts[e.c];
+const ctx=e=>'questão '+e.banco+' da revisão'+(e.rosa?', com o traço marcado':', descubra o traço');
+
+/* conta armada da resposta certa no paquímetro */
+function armada(u){const n=Math.floor(u/8),r=u%8;return `<div class="conta"><span class="tt">Conta armada</span><span class="op"></span><span class="v">${rawTxt(n*8,128)}</span><span class="lb">escala fixa (${rawTxt(n,16)})</span><span class="op">+</span><span class="v">${r}/128"</span><span class="lb">nônio</span><hr><span class="op">=</span><span class="v">${rawTxt(u,128)}</span><span class="lb">${fTxt(u)!==rawTxt(u,128)?'= '+fTxt(u):'leitura'}</span></div>`}
+
+function placar(){const n=Object.keys(S.res).length;$('placar').innerHTML=`<span>Respondidos<b>${n}/${N}</b></span><span>Faltam<b class="num">${N-n}</b></span>`}
+function chips(){$('chips').innerHTML=[['-1','Todos']].concat(TEMAS.map((t,i)=>[i,t])).map(([v,t])=>`<button data-f="${v}" aria-pressed="${+v===S.f}">${t}</button>`).join('')}
+const revelar=()=>!!S.final;
+function grade(){$('grade').innerHTML=lista().map(i=>{const r=S.res[i];return `<button data-i="${i}" class="${r?(revelar()?(r.ok?'ok':r.quase?'meio':'no'):'feito'):''}" aria-current="${i===S.i}" aria-label="Exercício ${num(i)}${r?(revelar()?(r.ok?', acertou':', errou'):', respondido'):''}">${num(i)}</button>`}).join('')}
+
+function render(){const e=E[S.i],r=S.res[S.i],done=!!r;placar();grade();
+  let corpo='';
+  if(e.tipo==='fr'){const v=(!S.final&&S.draft&&S.draft[S.i])||(done?r.r:{w:'',n:'',d:''}),dis=S.final?'disabled':'';
+    corpo=`<div class="resp"><span class="fin"><input class="nn w" id="aw" inputmode="numeric" maxlength="2" value="${esc(v.w)}" ${dis} aria-label="Polegadas inteiras"><span class="fstack"><input class="nn f" id="an" inputmode="numeric" maxlength="3" value="${esc(v.n)}" ${dis} aria-label="Numerador"><i></i><input class="nn f" id="ad" inputmode="numeric" maxlength="3" value="${esc(v.d)}" ${dis} aria-label="Denominador"></span><span class="un">"</span></span><span class="lbl2">inteiro · numerador / denominador</span></div>`}
+  else corpo=`<div class="alts">${e.alts.map((a,j)=>{const sel=done&&r.r===j,cls=done?(j===e.c?'c':(sel?'x':'')):'';
+    return `<label class="alt ${cls}"><input type="radio" name="alt" value="${j}" ${sel?'checked':''} ${done?'disabled':''}><span>${L1(j)}) ${esc(a)}</span></label>`}).join('')}</div>`;
+  const L=lista(),pos=L.indexOf(S.i),todos=Object.keys(S.res).length===N,fin=!!S.final;
+  const fig=e.regua!==undefined?`<div class="desenho paq">${regua(e.regua)}</div>`:e.u!==undefined?`<div class="desenho paq">${paq(e.u,e.rosa)}</div>`:'';
+  $('ex').innerHTML=`<div class="cab"><span>Exercício ${num(S.i)} de ${N}</span><span>${TEMAS[e.tema]}</span></div>
+   ${fig}<p class="dica"><b>Paquímetro</b>: escala fixa (1/16" = 8/128") + nônio (cada traço 1/128"). Some em 128 avos e simplifique.</p><p class="en">${esc(e.en)}</p>${corpo}
+   ${!revelar()?`<p class="eq" style="margin:8px 0 0">A sua resposta fica guardada sozinha. Pode avançar, voltar e mudar quando quiser, até enviar ao professor.</p>`:''}
+   ${done&&revelar()?`<div class="fb ${r.ok?'ok':'no'}"><b>${r.ok?'Certo!':r.quase?'Meio certo: o valor está certo, mas faltou simplificar (vale meio ponto).':'Não foi dessa vez.'}</b> ${esc(e.exp)}
+     <div class="par"><div><span>Sua resposta</span><b class="${r.ok?'okc':'noc'}">${esc(txtResp(e,r.r))}</b></div><div><span>Resposta correta</span><b>${esc(txtCerta(e))}</b></div></div>
+     ${armada(e.u)}</div>`:'<div id="emsg"></div>'}
+   <div class="row">
+   <button class="act ghost" id="ant" ${pos<=0?'disabled':''}>Anterior</button><button class="act" id="prox" ${pos>=L.length-1?'disabled':''}>Próximo ▸</button></div><div id="fimbox"></div>
+   ${fin?`<div class="fim"><b>Avaliação enviada.</b> Veja a sua nota e a correção de cada leitura no relatório logo abaixo. Clique nos números para rever cada questão corrigida. <button class="act" id="verrel" style="margin-top:10px">Ver relatório</button></div>`
+     :''}`;
+  if(!fin){document.querySelectorAll('#ex input.nn').forEach(a=>{a.oninput=()=>{rascunho();caixaFim()};a.onkeydown=ev=>{if(ev.key==='Enter'&&pos<L.length-1)ir(L[pos+1])}});caixaFim()}
+  if(fin)$('verrel').onclick=()=>$('relpanel').scrollIntoView({behavior:'smooth',block:'start'});
+  $('ant').onclick=()=>ir(L[pos-1]);$('prox').onclick=()=>ir(L[pos+1]);
+  $('relpanel').hidden=!fin;if(fin){relatorio();if(S.enviado!==(S.tent||1)&&!S.enviando&&!S.tentouEnvio){S.tentouEnvio=1;enviar()}else if(S.enviado===(S.tent||1))msgEnvio('<p class="okc envia">✓ Resultado enviado ao professor.</p>')}iniciar()}
+function ir(i){if(i===undefined)return;if(!S.final&&$('an'))rascunho();parar();S.i=i;render();$('ex').scrollIntoView({behavior:'smooth',block:'start'})}
+
+/* guarda o que o aluno digitou, sem precisar salvar; conta como respondida quando a fração está completa */
+function rascunho(){if(S.final||!$('an'))return;const e=E[S.i];if(e.tipo!=='fr')return;const r={w:$('aw').value.trim(),n:$('an').value.trim(),d:$('ad').value.trim()};
+  S.draft=S.draft||{};S.draft[S.i]=r;const completa=(r.n===''&&r.w!=='')||(r.n!==''&&r.d!=='');const v=completa?parseFr(r):null;
+  if(v){const igual=Math.abs(v.u-e.r)<1e-9;S.res[S.i]={ok:igual&&v.simp,r,quase:igual&&!v.simp}}else delete S.res[S.i];
+  salvar();placar();grade()}
+function caixaFim(){const B=$('fimbox');if(!B)return;const falta=S.ord.filter(i=>!S.res[i]).map(num).sort((a,b)=>a-b);
+  if(falta.length){B.innerHTML=`<p class="eq" style="margin-top:10px">Respondidas: ${N-falta.length} de ${N}. Faltam: ${falta.join(', ')}. O botão <b>Salvar e enviar ao professor</b> aparece quando todas estiverem respondidas.</p>`;return}
+  B.innerHTML=`<div class="fim"><b>Você respondeu as ${N} leituras.</b> Confira as respostas clicando nos números lá em cima. Quando tiver certeza, salve e envie. Depois disso, não dá mais para mudar.<br><button class="act" id="finalizar" style="margin-top:10px">Salvar e enviar ao professor</button></div>`;
+  $('finalizar').onclick=()=>{rascunho();if(S.ord.some(i=>!S.res[i])){caixaFim();return}if(!confirm('Salvar e enviar a avaliação ao professor? Depois disso você não poderá mais mudar as respostas.'))return;parar();S.final=true;salvar();render();$('relpanel').scrollIntoView({behavior:'smooth',block:'start'})}}
+function conferir(){const e=E[S.i];let r,ok,quase=false;
+  if(e.tipo==='fr'){r={w:$('aw').value.trim(),n:$('an').value.trim(),d:$('ad').value.trim()};
+    if(r.w===''&&r.n===''){$('emsg').innerHTML='<p class="erro">Escreva a resposta nas caixinhas.</p>';$('an').focus();return}
+    if(r.n!==''&&r.d===''){$('emsg').innerHTML='<p class="erro">Falta o denominador (número de baixo).</p>';$('ad').focus();return}
+    const v=parseFr(r);if(!v){$('emsg').innerHTML='<p class="erro">Use só números inteiros nas caixinhas.</p>';return}
+    const igual=Math.abs(v.u-e.r)<1e-9;ok=igual&&v.simp;quase=igual&&!v.simp}
+  else{const s=document.querySelector('input[name=alt]:checked');if(!s){$('emsg').innerHTML='<p class="erro">Escolha uma alternativa.</p>';return}r=+s.value;ok=r===e.c}
+  if(S.final)return;const tinha=!!S.res[S.i];parar();S.res[S.i]={ok,r,quase};salvar();
+  const prox=S.ord.find(i=>!S.res[i]);if(!tinha&&prox!==undefined){S.i=prox;render();$('ex').scrollIntoView({behavior:'smooth',block:'start'})}else render()}
+
+/* ===== relatório na tela ===== */
+function dados(){const resp=S.ord.filter(i=>S.res[i]),ok=resp.filter(i=>S.res[i].ok),meio=resp.filter(i=>!S.res[i].ok&&S.res[i].quase),err=resp.filter(i=>!S.res[i].ok&&!S.res[i].quase);
+  const tt=S.ord.reduce((a,i)=>a+gasto(i),0),tr=resp.reduce((a,i)=>a+gasto(i),0);
+  const pts=ok.length+meio.length/2;return {resp,ok,meio,err,pts,tt,med:resp.length?tr/resp.length:0,pct:Math.round(pts/N*100)}}
+const resTxt=r=>r?(r.ok?'Acertou':r.quase?'Meio certo (faltou simplificar)':'Errou'):'Não respondido';
+const NOTA_MAX=5;/* valor total da avaliação */
+const nota10=d=>(Math.round(d.pts/N*NOTA_MAX*10)/10).toFixed(1).replace('.',',');
+const ptsTxt=d=>String(d.pts).replace('.',',');
+function relatorio(){const d=dados();$('rcab').innerHTML=`<b>${esc(S.nome)}</b>${S.turma?' · Nº de chamada '+esc(S.turma):''} · ${new Date().toLocaleDateString('pt-BR')}`;
+  const nums=a=>a.length?a.map(num).sort((x,y)=>x-y).join(', '):'nenhum';
+  $('rel').innerHTML=`<div class="resumo">
+     <div>Nota (0 a ${String(NOTA_MAX.toFixed(1)).replace('.',',')})<b>${nota10(d)}</b></div><div>Acertos<b style="color:var(--ok)">${d.ok.length}</b></div><div>Meio certo<b style="color:#9A6700">${d.meio.length}</b></div><div>Erros<b style="color:var(--bad)">${d.err.length}</b></div>
+     <div>Aproveitamento<b>${d.pct}%</b></div><div>Saiu da tela<b style="font-size:20px">${saiuTot()}</b></div></div>
+   <div class="listas"><p><b class="okc">Acertou:</b> ${nums(d.ok)}</p><p><b style="color:#9A6700">Meio certo (faltou simplificar):</b> ${nums(d.meio)}</p><p><b class="noc">Errou:</b> ${nums(d.err)}</p></div>
+   <table class="rtab"><thead><tr><th>Nº</th><th>Exercício</th><th>Sua resposta</th><th>Resposta correta</th><th>Resultado</th><th>Saiu da tela</th></tr></thead><tbody>
+   ${S.ord.map(i=>{const e=E[i],r=S.res[i];
+     return `<tr class="${r?(r.ok?'ok':'no'):'nr'}"><td class="n">${num(i)}</td><td><button class="link" data-ir="${i}">${esc(e.en)}</button><span class="ctx">${esc(ctx(e))}</span></td>
+       <td data-l="Sua resposta">${r?esc(txtResp(e,r.r)):'—'}</td><td data-l="Correta">${r?esc(txtCerta(e)):'—'}</td>
+       <td class="res" data-l="Resultado">${resTxt(r)}</td><td data-l="Saiu da tela">${saiuQ(i)}</td></tr>`}).join('')}
+   </tbody></table>`}
+$('rel').addEventListener('click',ev=>{const b=ev.target.closest('[data-ir]');if(!b)return;S.f=-1;chips();ir(+b.dataset.ir)});
+
+$('chips').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;S.f=+b.dataset.f;chips();const L=lista();if(!L.includes(S.i)){parar();S.i=L[0]}render()});
+$('grade').addEventListener('click',ev=>{const b=ev.target.closest('button');if(b)ir(+b.dataset.i)});
+const novo=()=>{t0=null;S.final=false;S.draft={};S.out={};S.away={};S.foraEm=0;S.tent=(S.tent||1)+(Object.keys(S.res).length?1:0);S.res={};S.t={};S.v=sortearValores();E=montar(S.v);S.ord=embaralhar([...Array(N).keys()]);S.f=-1;S.i=S.ord[0]};
+if($('zerar'))$('zerar').onclick=()=>{if(confirm('Apagar todas as respostas e os tempos e começar de novo, com novas medidas e outra ordem?')){novo();S.tentouEnvio=0;msgEnvio('');salvar();chips();render();window.scrollTo(0,0)}};
+$('trocar').onclick=()=>{if(confirm('Trocar de aluno apaga tudo o que foi respondido neste aparelho. Continuar?')){novo();S.enviado=0;S.tentouEnvio=0;S.nome='';S.turma='';salvar();tela();window.scrollTo(0,0)}};
+function tela(){const ok=!!S.nome;$('inicio').hidden=ok;$('painel').hidden=!ok;$('ex').hidden=!ok;
+  if(!ok){$('calc').hidden=true;$('relpanel').hidden=true;$('nome').value='';$('turma').value='';return}
+  $('calc').hidden=false;$('anome').textContent=S.nome;$('aturma').textContent=S.turma?'· Nº de chamada '+S.turma:'';chips();render()}
+$('comecar').onclick=()=>{const n=$('nome').value.trim().replace(/\s+/g,' ').toLocaleUpperCase('pt-BR'),t=$('turma').value.trim().replace(/^0+(?=\d)/,'');
+  if(n.length<3||!/\s/.test(n)){$('imsg').innerHTML='<p class="erro">Escreva o seu nome completo (nome e sobrenome).</p>';$('nome').focus();return}
+  if(!/^\d{1,3}$/.test(t)){$('imsg').innerHTML='<p class="erro">Escreva o seu número de chamada (só números).</p>';$('turma').focus();return}
+  S.nome=n;S.turma=t;salvar();tela();window.scrollTo(0,0)};
+$('nome').addEventListener('keydown',e=>{if(e.key==='Enter')$('turma').focus()});
+$('nome').addEventListener('input',e=>{const el=e.target,p=el.selectionStart;el.value=el.value.toLocaleUpperCase('pt-BR');try{el.setSelectionRange(p,p)}catch(_){}});
+$('turma').addEventListener('input',e=>{e.target.value=e.target.value.replace(/\D/g,'')});
+$('turma').addEventListener('keydown',e=>{if(e.key==='Enter')$('comecar').click()});
+
+/* ===== calculadora ===== */
+(()=>{let ex='',res='0',fim=false;const show=()=>{$('cexp').textContent=ex.replace(/\*/g,'×').replace(/\//g,'÷').replace(/-/g,'−').replace(/\./g,',')||' ';$('cres').textContent=res};
+  const calc=()=>{if(!/^[0-9+\-*/().\s]+$/.test(ex))return 'Erro';try{const v=Function('"use strict";return ('+ex+')')();if(!isFinite(v))return 'Erro';return String(Math.round(v*1e6)/1e6).replace('.',',')}catch(e){return 'Erro'}};
+  const tecla=k=>{if(k==='C'){ex='';res='0'}else if(k==='B'){ex=ex.slice(0,-1)}else if(k==='='){if(ex){res=calc();fim=true}}
+    else{if(fim&&/[0-9(,]/.test(k)){ex=''}else if(fim&&res!=='Erro'){ex=res.replace(',','.')}fim=false;ex+=k===','?'.':k}show()};
+  $('calc').addEventListener('click',e=>{const b=e.target.closest('button');if(b)tecla(b.dataset.k)});show()})();
+
+/* ===== relatório em PDF ===== */
+function gerarPDF(){
+  const d=dados();
+  const doc=new window.jspdf.jsPDF({unit:'mm',format:'a4'}),X=15,W=180;let y=18;
+  const t=s=>String(s).replace(/−/g,'-').replace(/÷/g,'/').replace(/×/g,'x').replace(/→/g,'->').replace(/º/g,'o');
+  const linha=(s,sz=10.5,b=false,c=[20,32,43],ind=0)=>{doc.setFont('helvetica',b?'bold':'normal');doc.setFontSize(sz);doc.setTextColor(...c);doc.splitTextToSize(t(s),W-ind).forEach(l=>{if(y>284){doc.addPage();y=18}doc.text(l,X+ind,y);y+=sz*.45})};
+  const nums=a=>a.length?a.map(num).sort((x,y)=>x-y).join(', '):'nenhum';
+  doc.setFillColor(168,84,0);doc.rect(0,0,210,6,'F');
+  linha('FAZENDA DE PROJETOS · Metrologia · Polegada fracionária',9,true,[79,95,108]);y+=1;
+  linha(`Avaliação 2: Paquímetro em Polegada Fracionária (${N} leituras)`,15,true);y+=2;
+  y+=2;linha(S.nome,20,true,[20,32,43]);y+=1;linha(`Número de chamada: ${S.turma||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`,10);y+=2;
+  linha(`Nota: ${nota10(d)} (de 0 a ${NOTA_MAX.toFixed(1).replace('.',',')})    Acertos: ${d.ok.length}    Meio certo: ${d.meio.length}    Erros: ${d.err.length}    Pontos: ${ptsTxt(d)} de ${N}`,12,true,d.pct>=70?[23,112,63]:[179,38,30]);// ${d.ok.length}    Erros: ${d.err.length}    Aproveitamento: ${d.pct}%`,12,true,d.pct>=70?[23,112,63]:[179,38,30]);
+  linha(`Saiu da tela durante a prova: ${saiuTot()}`,10.5,true,somaO(S.out)?[179,38,30]:[23,112,63]);y+=2;
+  linha(`Acertou: ${nums(d.ok)}`,10,true,[23,112,63]);
+  linha(`Meio certo (faltou simplificar): ${nums(d.meio)}`,10,true,[154,103,0]);
+  linha(`Errou: ${nums(d.err)}`,10,true,[179,38,30]);
+  y+=2;TEMAS.forEach((tm,k)=>{const ids=S.ord.filter(i=>E[i].tema===k),a=ids.filter(i=>S.res[i]&&S.res[i].ok);linha(`${tm}: ${a.length} de ${ids.length}`,9.5)});
+  y+=4;
+  const cols=[['Nº',9],['Exercício',63],['Sua resposta',34],['Resposta correta',34],['Resultado',20],['Saiu da tela',20]],FS=8.5,LH=3.7;
+  const cab=()=>{doc.setFillColor(29,59,92);doc.rect(X,y-4.3,W,6.4,'F');doc.setFont('helvetica','bold');doc.setFontSize(8.5);doc.setTextColor(255,255,255);let x=X+1.5;cols.forEach(([n,w])=>{doc.text(n,x,y);x+=w});y+=5};
+  if(y>250){doc.addPage();y=18}cab();
+  S.ord.forEach((i,k)=>{const e=E[i],r=S.res[i];
+    const cel=[String(num(i)),'Leitura '+(e.rosa?'com o traço marcado':'descobrindo o traço')+' (questão '+e.banco+' da revisão)',r?txtResp(e,r.r):'—',r?txtCerta(e):'—',resTxt(r),saiuQ(i)];
+    doc.setFontSize(FS);const ls=cel.map((c,j)=>doc.splitTextToSize(t(c),cols[j][1]-3));const h=Math.max(...ls.map(l=>l.length))*LH+2.4;
+    if(y+h>288){doc.addPage();y=18;cab()}
+    if(k%2){doc.setFillColor(238,242,245);doc.rect(X,y-3.6,W,h,'F')}
+    let x=X+1.5;ls.forEach((l,j)=>{const cor=j===4&&r?(r.ok?[23,112,63]:[179,38,30]):j===2&&r&&!r.ok?[179,38,30]:[20,32,43];
+      doc.setFont('helvetica',j===0||j===4?'bold':'normal');doc.setTextColor(...cor);doc.text(l,x,y);x+=cols[j][1]});
+    y+=h});
+  const nm=S.nome.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-|-$/g,'');
+  return {doc,nome:`avaliacao2-25-leituras-n${String(S.turma||'').padStart(2,'0')}-${nm||'aluno'}.pdf`}}
+$('pdf').onclick=()=>{
+  if(!window.jspdf||!window.jspdf.jsPDF){$('rmsg').innerHTML='<p class="erro">O gerador de PDF não carregou. Confira a internet e recarregue a página.</p>';return}
+  if(!S.final){$('rmsg').innerHTML='<p class="erro">Envie a recuperação ao professor antes de baixar o relatório.</p>';return}
+  parar();iniciar();const g=gerarPDF();g.doc.save(g.nome);$('rmsg').innerHTML='<p class="okc">PDF gerado. Confira nos downloads.</p>'};
+
+/* ===== envio automático ao professor (Google Apps Script: linha na planilha + PDF no Drive) ===== */
+function msgEnvio(h){$('envio').innerHTML=h}
+async function enviar(){if(!ENVIO_URL){msgEnvio('<p style="color:var(--muted)">Envio automático ainda não configurado: baixe o PDF e entregue ao professor.</p>');return}
+  if(!window.jspdf||!window.jspdf.jsPDF){msgEnvio('<p class="erro">O gerador de PDF não carregou. Confira a internet, recarregue a página e clique em Enviar de novo.</p>');$('reenviar').hidden=false;return}
+  if(S.enviando)return;S.enviando=true;$('reenviar').hidden=true;msgEnvio('<p class="envia">Enviando o resultado ao professor…</p>');
+  try{const d=dados(),g=gerarPDF(),pdf=g.doc.output('datauristring').split(',')[1];
+    const corpo={avaliacao:'Paquímetro polegada fracionária - Avaliação 2',nome:S.nome,turma:S.turma,tentativa:S.tent||1,nota:nota10(d),acertos:d.pts,erros:d.err.length+d.meio.length,total:N,pct:d.pct,
+      tempo:saiuTot(),errou:d.err.map(num).sort((a,b)=>a-b).join(', ')+(d.meio.length?' | meio certo: '+d.meio.map(num).sort((a,b)=>a-b).join(', '):''),
+      detalhe:S.ord.map(i=>{const e=E[i],r=S.res[i];return `${num(i)}) ${fTxt(e.u)} — respondeu ${r?txtResp(e,r.r):'—'} — ${resTxt(r)}`}).join('\n'),
+      arquivo:g.nome,pdf};
+    const resp=await fetch(ENVIO_URL,{method:'POST',body:JSON.stringify(corpo)});const j=await resp.json().catch(()=>({}));
+    if(!resp.ok||!j.ok)throw new Error(j.erro||'falha');
+    S.enviado=S.tent||1;salvar();msgEnvio('<p class="okc envia">✓ Resultado enviado ao professor.</p>')}
+  catch(e){msgEnvio('<p class="erro">Não foi possível enviar agora. Confira a internet e clique em <b>Enviar de novo ao professor</b>. Se não der, baixe o PDF e entregue ao professor.</p>');$('reenviar').hidden=false}
+  finally{S.enviando=false}}
+$('reenviar').onclick=enviar;
+
+tela();salvar();
+</script>
+<button class="act" id="rascBtn" hidden aria-expanded="false" aria-controls="rascOv">✏️ Folha de rascunho</button>
+<div id="rascOv" hidden role="dialog" aria-label="Folha de rascunho">
+  <div class="rascbar"><b>Folha de rascunho</b><span>Usar a folha não conta como sair da prova.</span><button class="act" id="rascFechar">◂ Voltar para a prova</button></div>
+  <iframe id="rascIf" title="Folha de rascunho com lápis, borracha e calculadora"></iframe>
+</div>
+<script>$('rascBtn').onclick=()=>rascunhoAbrir(true);$('rascFechar').onclick=()=>rascunhoAbrir(false);document.addEventListener('keydown',e=>{if(e.key==='Escape'&&rascAberto)rascunhoAbrir(false)});
+setInterval(()=>{const b=$('rascBtn');const on=!!S.nome&&!S.final;if(b.hidden===on)b.hidden=!on},500);</script>
+</body>
+</html>

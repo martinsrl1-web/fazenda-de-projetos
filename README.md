@@ -25,6 +25,8 @@ O site começa por Metrologia e Tecnologia Mecânica dos Materiais. Desenho Mec�
 | `metrologia/aula-ao-vivo-polegada-fracionaria.html` | Aula ao vivo (aluno): responde no celular a leitura que o professor abriu |
 | `metrologia/aula-ao-vivo-professor.html` | Aula ao vivo (professor): controla as 30 leituras mais erradas, vê quem acertou e quem errou; usa o Apps Script de `ferramentas/` |
 | `metrologia/paquimetro-polegada-fracionaria-recuperacao.html` | Recuperação: 25 leituras sorteadas, calculadora, respostas guardadas sozinhas (o aluno vai e volta e muda à vontade) e um único botão Salvar e enviar ao professor no final; resultado vai para a planilha e o PDF para o Drive |
+| `metrologia/paquimetro-polegada-fracionaria-treino-120.html` | Treino sem nota com as 120 leituras no formato da avaliação (vai e volta, folha de rascunho, calculadora, Corrigir no final); não envia ao professor |
+| `metrologia/paquimetro-polegada-fracionaria-avaliacao-2.html` | Avaliação 2: mesmo formato da recuperação (25 leituras, nota de 0 a 5,0, meio ponto sem simplificar, folha de rascunho), envia planilha + PDF |
 | `metrologia/paquimetro-polegada-fracionaria-revisao.html` | Revisão para a avaliação (sem nota): banco fixo de 120 leituras de paquímetro em polegada fracionária, metade com o traço marcado e metade para descobrir o traço |
 | `metrologia/paquimetro-polegada-fracionaria-avaliacao.html` | Avaliação Polegada Fracionária (frações, régua e paquímetro): 20 exercícios sorteados, relatório em PDF |
 | `metrologia/slides/polegada-fracionaria-fracoes-e-regua.pdf` e `.pptx` | Slides da aula 1: frações da polegada e régua (modelo CEEP) |

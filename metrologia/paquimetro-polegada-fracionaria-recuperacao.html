@@ -196,7 +196,7 @@ input.nn.f{width:4ch}
   <ul>
     <li>São 25 leituras do paquímetro, sorteadas só para você entre as 120 da revisão. Cada aluno recebe leituras diferentes.</li>
     <li>Escreva a fração nas caixinhas: polegadas inteiras, numerador e denominador. Simplifique a fração: com o valor certo mas sem simplificar, a questão vale <b>meio ponto</b>.</li>
-    <li>Escreva a resposta e passe para a próxima. A resposta fica guardada sozinha: você pode avançar, voltar e mudar quando quiser.</li><li>Quando responder as 25, revise e clique em <b>Salvar e enviar ao professor</b>. Só então aparecem a correção e a nota, e não dá mais para mudar.</li><li>Use a calculadora da página se precisar fazer contas.</li>
+    <li>Escreva a resposta e passe para a próxima. A resposta fica guardada sozinha: você pode avançar, voltar e mudar quando quiser.</li><li>Quando responder as 25, revise e clique em <b>Salvar e enviar ao professor</b>. Só então aparecem a correção e a nota, e não dá mais para mudar.</li><li>Use a calculadora da página ou a <b>✏️ Folha de rascunho</b> (botão no canto de baixo) para fazer as contas. Usar a folha não conta como sair da tela.</li>
     <li>Fique na tela da prova. Se você sair (trocar de aba, de janela ou de aplicativo), isso fica registrado no relatório do professor.</li>
     <li>Ao enviar, o resultado e o relatório em PDF vão <b>sozinhos para o professor</b>. Você também pode baixar o PDF.</li>
   </ul>
@@ -227,7 +227,7 @@ input.nn.f{width:4ch}
   <div class="row noprint"><button class="act" id="pdf">Baixar relatório em PDF</button><button class="act ghost" id="reenviar" hidden>Enviar de novo ao professor</button></div>
   
 </section>
-<nav class="trilha noprint" aria-label="Polegada fracionária"><span class="t">Polegada fracionária</span><a href="regua-polegada-fracionaria.html">Simulador da régua</a><a href="paquimetro-polegada-fracionaria.html">Simulador do paquímetro</a><a href="paquimetro-polegada-fracionaria-revisao.html">Revisão (120 leituras)</a><a href="paquimetro-polegada-fracionaria-avaliacao-leituras.html">Avaliação: 25 leituras</a><a href="paquimetro-polegada-fracionaria-recuperacao.html" aria-current="page">Recuperação</a><a href="../index.html#d-metrologia">Voltar à trilha de Metrologia</a></nav>
+<nav class="trilha noprint" aria-label="Polegada fracionária"><span class="t">Polegada fracionária</span><a href="regua-polegada-fracionaria.html">Simulador da régua</a><a href="paquimetro-polegada-fracionaria.html">Simulador do paquímetro</a><a href="paquimetro-polegada-fracionaria-revisao.html">Revisão (120 leituras)</a><a href="paquimetro-polegada-fracionaria-avaliacao-leituras.html">Avaliação: 25 leituras</a><a href="paquimetro-polegada-fracionaria-recuperacao.html" aria-current="page">Recuperação</a><a href="paquimetro-polegada-fracionaria-treino-120.html">Treino: 120 leituras</a><a href="../index.html#d-metrologia">Voltar à trilha de Metrologia</a></nav>
 </main>
 <script src="../vendor/jspdf.umd.min.js"></script>
 <script>
@@ -391,12 +391,13 @@ function dados(){const resp=S.ord.filter(i=>S.res[i]),ok=resp.filter(i=>S.res[i]
   const tt=S.ord.reduce((a,i)=>a+gasto(i),0),tr=resp.reduce((a,i)=>a+gasto(i),0);
   const pts=ok.length+meio.length/2;return {resp,ok,meio,err,pts,tt,med:resp.length?tr/resp.length:0,pct:Math.round(pts/N*100)}}
 const resTxt=r=>r?(r.ok?'Acertou':r.quase?'Meio certo (faltou simplificar)':'Errou'):'Não respondido';
-const nota10=d=>(Math.round(d.pts/N*100)/10).toFixed(1).replace('.',',');
+const NOTA_MAX=5;/* valor total da avaliação */
+const nota10=d=>(Math.round(d.pts/N*NOTA_MAX*10)/10).toFixed(1).replace('.',',');
 const ptsTxt=d=>String(d.pts).replace('.',',');
 function relatorio(){const d=dados();$('rcab').innerHTML=`<b>${esc(S.nome)}</b>${S.turma?' · Nº de chamada '+esc(S.turma):''} · ${new Date().toLocaleDateString('pt-BR')}`;
   const nums=a=>a.length?a.map(num).sort((x,y)=>x-y).join(', '):'nenhum';
   $('rel').innerHTML=`<div class="resumo">
-     <div>Nota<b>${nota10(d)}</b></div><div>Acertos<b style="color:var(--ok)">${d.ok.length}</b></div><div>Meio certo<b style="color:#9A6700">${d.meio.length}</b></div><div>Erros<b style="color:var(--bad)">${d.err.length}</b></div>
+     <div>Nota (0 a ${String(NOTA_MAX.toFixed(1)).replace('.',',')})<b>${nota10(d)}</b></div><div>Acertos<b style="color:var(--ok)">${d.ok.length}</b></div><div>Meio certo<b style="color:#9A6700">${d.meio.length}</b></div><div>Erros<b style="color:var(--bad)">${d.err.length}</b></div>
      <div>Aproveitamento<b>${d.pct}%</b></div><div>Saiu da tela<b style="font-size:20px">${saiuTot()}</b></div></div>
    <div class="listas"><p><b class="okc">Acertou:</b> ${nums(d.ok)}</p><p><b style="color:#9A6700">Meio certo (faltou simplificar):</b> ${nums(d.meio)}</p><p><b class="noc">Errou:</b> ${nums(d.err)}</p></div>
    <table class="rtab"><thead><tr><th>Nº</th><th>Exercício</th><th>Sua resposta</th><th>Resposta correta</th><th>Resultado</th><th>Saiu da tela</th></tr></thead><tbody>
@@ -441,8 +442,8 @@ function gerarPDF(){
   doc.setFillColor(168,84,0);doc.rect(0,0,210,6,'F');
   linha('FAZENDA DE PROJETOS · Metrologia · Polegada fracionária',9,true,[79,95,108]);y+=1;
   linha(`Recuperação: Paquímetro em Polegada Fracionária (${N} leituras)`,15,true);y+=2;
-  linha(`Nome: ${S.nome}    Número de chamada: ${S.turma||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`,10);y+=2;
-  linha(`Nota: ${nota10(d)} (de 0 a 10)    Acertos: ${d.ok.length}    Meio certo: ${d.meio.length}    Erros: ${d.err.length}    Pontos: ${ptsTxt(d)} de ${N}`,12,true,d.pct>=70?[23,112,63]:[179,38,30]);// ${d.ok.length}    Erros: ${d.err.length}    Aproveitamento: ${d.pct}%`,12,true,d.pct>=70?[23,112,63]:[179,38,30]);
+  y+=2;linha(S.nome,20,true,[20,32,43]);y+=1;linha(`Número de chamada: ${S.turma||'—'}    Data: ${new Date().toLocaleDateString('pt-BR')} às ${new Date().toLocaleTimeString('pt-BR',{hour:'2-digit',minute:'2-digit'})}`,10);y+=2;
+  linha(`Nota: ${nota10(d)} (de 0 a ${NOTA_MAX.toFixed(1).replace('.',',')})    Acertos: ${d.ok.length}    Meio certo: ${d.meio.length}    Erros: ${d.err.length}    Pontos: ${ptsTxt(d)} de ${N}`,12,true,d.pct>=70?[23,112,63]:[179,38,30]);// ${d.ok.length}    Erros: ${d.err.length}    Aproveitamento: ${d.pct}%`,12,true,d.pct>=70?[23,112,63]:[179,38,30]);
   linha(`Saiu da tela durante a prova: ${saiuTot()}`,10.5,true,somaO(S.out)?[179,38,30]:[23,112,63]);y+=2;
   linha(`Acertou: ${nums(d.ok)}`,10,true,[23,112,63]);
   linha(`Meio certo (faltou simplificar): ${nums(d.meio)}`,10,true,[154,103,0]);
