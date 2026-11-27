@@ -180,14 +180,14 @@ input.nn.f{width:4ch}
 <main>
 <div class="top">
   <div><span class="nivel">Recuperação</span><h1>Recuperação: Paquímetro em Polegada Fracionária</h1>
-  <p class="sub" style="margin-bottom:0">Leitura do paquímetro em polegada fracionária. São 25 leituras sorteadas para você entre as 120 da revisão: em algumas a <b style="color:#FF2E93">linha rosa</b> mostra o traço do nônio que coincide; nas outras, você descobre o traço. Escreva as respostas como fração <b>simplificada</b>. Você pode mudar qualquer resposta até clicar em <b>Enviar ao professor</b>. Depois disso aparecem a correção e a nota, e o resultado vai sozinho para o professor.</p></div>
+  <p class="sub" style="margin-bottom:0">Leitura do paquímetro em polegada fracionária. São 25 leituras sorteadas para você entre as 120 da revisão: em algumas a <b style="color:#FF2E93">linha rosa</b> mostra o traço do nônio que coincide; nas outras, você descobre o traço. Escreva as respostas como fração <b>simplificada</b>. Você pode avançar, voltar e mudar qualquer resposta até clicar em <b>Salvar e enviar ao professor</b>. Depois disso aparecem a correção e a nota, e o resultado vai sozinho para o professor.</p></div>
 </div>
 <section class="panel inicio" id="inicio" style="margin-top:14px">
   <h2 style="margin-top:0">Antes de começar</h2>
   <ul>
     <li>São 25 leituras do paquímetro, sorteadas só para você entre as 120 da revisão. Cada aluno recebe leituras diferentes.</li>
     <li>Escreva a fração nas caixinhas: polegadas inteiras, numerador e denominador. A fração precisa estar simplificada.</li>
-    <li>Clique em <b>Salvar resposta</b> em cada leitura. Até enviar, você pode voltar em qualquer número e <b>alterar a resposta</b>.</li><li>Quando terminar as 25, revise e clique em <b>Enviar ao professor</b>. Só então aparecem a correção e a nota, e não dá mais para mudar.</li><li>Use a calculadora da página se precisar fazer contas.</li>
+    <li>Escreva a resposta e passe para a próxima. A resposta fica guardada sozinha: você pode avançar, voltar e mudar quando quiser.</li><li>Quando responder as 25, revise e clique em <b>Salvar e enviar ao professor</b>. Só então aparecem a correção e a nota, e não dá mais para mudar.</li><li>Use a calculadora da página se precisar fazer contas.</li>
     <li>Fique na tela da prova. Se você sair (trocar de aba, de janela ou de aplicativo), isso fica registrado no relatório do professor.</li>
     <li>Ao enviar, o resultado e o relatório em PDF vão <b>sozinhos para o professor</b>. Você também pode baixar o PDF.</li>
   </ul>
@@ -284,12 +284,12 @@ const KEY='paq-pol-fr-rec25-v1',N=25,NV=25;
 const ENVIO_URL='https://script.google.com/macros/s/AKfycbyFB7_droCXROAI6XYOwXPQlW5S7BbAAkjhTChnu6u0_gRGSFc3YeC8m9vTUzGcc2Wi/exec';
 let S={f:-1,i:0,ord:[],res:{},t:{},v:[]},E=[];
 try{const s=JSON.parse(localStorage.getItem(KEY)||'null');
-  if(s&&Array.isArray(s.ord)&&s.ord.length===N&&Array.isArray(s.v)&&s.v.length===NV){S.ord=s.ord;S.res=s.res||{};S.t=s.t||{};S.v=s.v;S.nome=s.nome||'';S.turma=s.turma||'';S.tent=s.tent||1;S.enviado=s.enviado||0;S.out=s.out||{};S.away=s.away||{};S.foraEm=s.foraEm||0;S.foraQ=s.foraQ;S.final=!!s.final}}catch(e){}
+  if(s&&Array.isArray(s.ord)&&s.ord.length===N&&Array.isArray(s.v)&&s.v.length===NV){S.ord=s.ord;S.res=s.res||{};S.t=s.t||{};S.v=s.v;S.nome=s.nome||'';S.turma=s.turma||'';S.tent=s.tent||1;S.enviado=s.enviado||0;S.out=s.out||{};S.away=s.away||{};S.foraEm=s.foraEm||0;S.foraQ=s.foraQ;S.final=!!s.final;S.draft=s.draft||{}}}catch(e){}
 S.nome=S.nome||'';S.turma=S.turma||'';S.out=S.out||{};S.away=S.away||{};S.foraEm=S.foraEm||0;
 if(!S.v.length){S.v=sortearValores();S.ord=embaralhar([...Array(N).keys()])}
 E=montar(S.v);
 S.i=S.ord.find(i=>!S.res[i])??S.ord[0];
-const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify({ord:S.ord,res:S.res,t:S.t,v:S.v,nome:S.nome,turma:S.turma,tent:S.tent||1,enviado:S.enviado||0,out:S.out,away:S.away,foraEm:S.foraEm||0,foraQ:S.foraQ,final:!!S.final}))}catch(e){}};
+const salvar=()=>{try{localStorage.setItem(KEY,JSON.stringify({ord:S.ord,res:S.res,t:S.t,v:S.v,nome:S.nome,turma:S.turma,tent:S.tent||1,enviado:S.enviado||0,out:S.out,away:S.away,foraEm:S.foraEm||0,foraQ:S.foraQ,final:!!S.final,draft:S.draft||{}}))}catch(e){}};
 /* fração "w n/d" -> {u em 1/128 (pode não ser inteiro), simp} */
 function parseFr(r){if(!r)return null;const w=r.w===''?0:+r.w,n=r.n===''?0:+r.n,d=r.n===''?1:+r.d;
   if([w,n,d].some(x=>isNaN(x)||x<0||!Number.isInteger(x))||d===0)return null;return{u:(w*d+n)*128/d,simp:n===0||(gcd(n,d)===1&&n<d)}}
@@ -333,7 +333,7 @@ function grade(){$('grade').innerHTML=lista().map(i=>{const r=S.res[i];return `<
 
 function render(){const e=E[S.i],r=S.res[S.i],done=!!r;placar();grade();
   let corpo='';
-  if(e.tipo==='fr'){const v=done?r.r:{w:'',n:'',d:''},dis=S.final?'disabled':'';
+  if(e.tipo==='fr'){const v=(!S.final&&S.draft&&S.draft[S.i])||(done?r.r:{w:'',n:'',d:''}),dis=S.final?'disabled':'';
     corpo=`<div class="resp"><span class="fin"><input class="nn w" id="aw" inputmode="numeric" maxlength="2" value="${esc(v.w)}" ${dis} aria-label="Polegadas inteiras"><span class="fstack"><input class="nn f" id="an" inputmode="numeric" maxlength="3" value="${esc(v.n)}" ${dis} aria-label="Numerador"><i></i><input class="nn f" id="ad" inputmode="numeric" maxlength="3" value="${esc(v.d)}" ${dis} aria-label="Denominador"></span><span class="un">"</span></span><span class="lbl2">inteiro · numerador / denominador</span></div>`}
   else corpo=`<div class="alts">${e.alts.map((a,j)=>{const sel=done&&r.r===j,cls=done?(j===e.c?'c':(sel?'x':'')):'';
     return `<label class="alt ${cls}"><input type="radio" name="alt" value="${j}" ${sel?'checked':''} ${done?'disabled':''}><span>${L1(j)}) ${esc(a)}</span></label>`}).join('')}</div>`;
@@ -341,22 +341,29 @@ function render(){const e=E[S.i],r=S.res[S.i],done=!!r;placar();grade();
   const fig=e.regua!==undefined?`<div class="desenho paq">${regua(e.regua)}</div>`:e.u!==undefined?`<div class="desenho paq">${paq(e.u,e.rosa)}</div>`:'';
   $('ex').innerHTML=`<div class="cab"><span>Exercício ${num(S.i)} de ${N}</span><span>${TEMAS[e.tema]}</span></div>
    ${fig}<p class="dica"><b>Paquímetro</b>: escala fixa (1/16" = 8/128") + nônio (cada traço 1/128"). Some em 128 avos e simplifique.</p><p class="en">${esc(e.en)}</p>${corpo}
-   ${done&&!revelar()?`<div class="gravada"><b>Resposta salva:</b> ${esc(txtResp(e,r.r))}. Você pode alterar nas caixinhas e clicar em <b>Alterar resposta</b> até enviar ao professor.</div>`:''}
+   ${!revelar()?`<p class="eq" style="margin:8px 0 0">A sua resposta fica guardada sozinha. Pode avançar, voltar e mudar quando quiser, até enviar ao professor.</p>`:''}
    ${done&&revelar()?`<div class="fb ${r.ok?'ok':'no'}"><b>${r.ok?'Certo!':r.quase?'O valor está certo, mas falta simplificar.':'Não foi dessa vez.'}</b> ${esc(e.exp)}
      <div class="par"><div><span>Sua resposta</span><b class="${r.ok?'okc':'noc'}">${esc(txtResp(e,r.r))}</b></div><div><span>Resposta correta</span><b>${esc(txtCerta(e))}</b></div></div>
      ${armada(e.u)}</div>`:'<div id="emsg"></div>'}
-   <div class="row">${fin?'':`<button class="act" id="conf">${done?'Alterar resposta':'Salvar resposta'}</button>`}
-   <button class="act ghost" id="ant" ${pos<=0?'disabled':''}>Anterior</button><button class="act ${done?'':'ghost'}" id="prox" ${pos>=L.length-1?'disabled':''}>Próximo</button></div>
+   <div class="row">
+   <button class="act ghost" id="ant" ${pos<=0?'disabled':''}>Anterior</button><button class="act" id="prox" ${pos>=L.length-1?'disabled':''}>Próximo ▸</button></div><div id="fimbox"></div>
    ${fin?`<div class="fim"><b>Recuperação enviada.</b> Veja a sua nota e a correção de cada leitura no relatório logo abaixo. Clique nos números para rever cada questão corrigida. <button class="act" id="verrel" style="margin-top:10px">Ver relatório</button></div>`
-     :todos?`<div class="fim"><b>Você respondeu as ${N} leituras.</b> Confira as respostas clicando nos números lá em cima. Quando tiver certeza, envie. Depois de enviar, não dá mais para mudar.<br><button class="act" id="finalizar" style="margin-top:10px">Enviar ao professor</button></div>`
-     :`<p class="eq" style="margin-top:10px">Respondidas: ${Object.keys(S.res).length} de ${N}. O botão <b>Enviar ao professor</b> aparece quando você responder todas.</p>`}`;
-  if(!fin){$('conf').onclick=conferir;document.querySelectorAll('#ex input.nn').forEach(a=>a.onkeydown=ev=>{if(ev.key==='Enter')conferir()})}
-  if(!fin&&todos)$('finalizar').onclick=()=>{if(!confirm('Enviar a recuperação ao professor? Depois disso você não poderá mais mudar as respostas.'))return;parar();S.final=true;salvar();render();$('relpanel').scrollIntoView({behavior:'smooth',block:'start'})};
+     :''}`;
+  if(!fin){document.querySelectorAll('#ex input.nn').forEach(a=>{a.oninput=()=>{rascunho();caixaFim()};a.onkeydown=ev=>{if(ev.key==='Enter'&&pos<L.length-1)ir(L[pos+1])}});caixaFim()}
   if(fin)$('verrel').onclick=()=>$('relpanel').scrollIntoView({behavior:'smooth',block:'start'});
   $('ant').onclick=()=>ir(L[pos-1]);$('prox').onclick=()=>ir(L[pos+1]);
   $('relpanel').hidden=!fin;if(fin){relatorio();if(S.enviado!==(S.tent||1)&&!S.enviando&&!S.tentouEnvio){S.tentouEnvio=1;enviar()}else if(S.enviado===(S.tent||1))msgEnvio('<p class="okc envia">✓ Resultado enviado ao professor.</p>')}iniciar()}
-function ir(i){if(i===undefined)return;parar();S.i=i;render();$('ex').scrollIntoView({behavior:'smooth',block:'start'})}
+function ir(i){if(i===undefined)return;if(!S.final&&$('an'))rascunho();parar();S.i=i;render();$('ex').scrollIntoView({behavior:'smooth',block:'start'})}
 
+/* guarda o que o aluno digitou, sem precisar salvar; conta como respondida quando a fração está completa */
+function rascunho(){if(S.final||!$('an'))return;const e=E[S.i];if(e.tipo!=='fr')return;const r={w:$('aw').value.trim(),n:$('an').value.trim(),d:$('ad').value.trim()};
+  S.draft=S.draft||{};S.draft[S.i]=r;const completa=(r.n===''&&r.w!=='')||(r.n!==''&&r.d!=='');const v=completa?parseFr(r):null;
+  if(v){const igual=Math.abs(v.u-e.r)<1e-9;S.res[S.i]={ok:igual&&v.simp,r,quase:igual&&!v.simp}}else delete S.res[S.i];
+  salvar();placar();grade()}
+function caixaFim(){const B=$('fimbox');if(!B)return;const falta=S.ord.filter(i=>!S.res[i]).map(num).sort((a,b)=>a-b);
+  if(falta.length){B.innerHTML=`<p class="eq" style="margin-top:10px">Respondidas: ${N-falta.length} de ${N}. Faltam: ${falta.join(', ')}. O botão <b>Salvar e enviar ao professor</b> aparece quando todas estiverem respondidas.</p>`;return}
+  B.innerHTML=`<div class="fim"><b>Você respondeu as ${N} leituras.</b> Confira as respostas clicando nos números lá em cima. Quando tiver certeza, salve e envie. Depois disso, não dá mais para mudar.<br><button class="act" id="finalizar" style="margin-top:10px">Salvar e enviar ao professor</button></div>`;
+  $('finalizar').onclick=()=>{rascunho();if(S.ord.some(i=>!S.res[i])){caixaFim();return}if(!confirm('Salvar e enviar a recuperação ao professor? Depois disso você não poderá mais mudar as respostas.'))return;parar();S.final=true;salvar();render();$('relpanel').scrollIntoView({behavior:'smooth',block:'start'})}}
 function conferir(){const e=E[S.i];let r,ok,quase=false;
   if(e.tipo==='fr'){r={w:$('aw').value.trim(),n:$('an').value.trim(),d:$('ad').value.trim()};
     if(r.w===''&&r.n===''){$('emsg').innerHTML='<p class="erro">Escreva a resposta nas caixinhas.</p>';$('an').focus();return}
@@ -389,7 +396,7 @@ $('rel').addEventListener('click',ev=>{const b=ev.target.closest('[data-ir]');if
 
 $('chips').addEventListener('click',ev=>{const b=ev.target.closest('button');if(!b)return;S.f=+b.dataset.f;chips();const L=lista();if(!L.includes(S.i)){parar();S.i=L[0]}render()});
 $('grade').addEventListener('click',ev=>{const b=ev.target.closest('button');if(b)ir(+b.dataset.i)});
-const novo=()=>{t0=null;S.final=false;S.out={};S.away={};S.foraEm=0;S.tent=(S.tent||1)+(Object.keys(S.res).length?1:0);S.res={};S.t={};S.v=sortearValores();E=montar(S.v);S.ord=embaralhar([...Array(N).keys()]);S.f=-1;S.i=S.ord[0]};
+const novo=()=>{t0=null;S.final=false;S.draft={};S.out={};S.away={};S.foraEm=0;S.tent=(S.tent||1)+(Object.keys(S.res).length?1:0);S.res={};S.t={};S.v=sortearValores();E=montar(S.v);S.ord=embaralhar([...Array(N).keys()]);S.f=-1;S.i=S.ord[0]};
 if($('zerar'))$('zerar').onclick=()=>{if(confirm('Apagar todas as respostas e os tempos e começar de novo, com novas medidas e outra ordem?')){novo();S.tentouEnvio=0;msgEnvio('');salvar();chips();render();window.scrollTo(0,0)}};
 $('trocar').onclick=()=>{if(confirm('Trocar de aluno apaga tudo o que foi respondido neste aparelho. Continuar?')){novo();S.enviado=0;S.tentouEnvio=0;S.nome='';S.turma='';salvar();tela();window.scrollTo(0,0)}};
 function tela(){const ok=!!S.nome;$('inicio').hidden=ok;$('painel').hidden=!ok;$('ex').hidden=!ok;
